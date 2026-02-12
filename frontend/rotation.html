@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotation - Trading System</title>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+        <div class="container">
+            <!-- Loading -->
+            <div id="loading" class="loading-overlay">
+                <div class="spinner"></div>
+            </div>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title">
+                    <span>🔄</span> Sector Rotation
+                </div>
+                <div class="page-actions">
+                    <button class="btn btn-ghost btn-sm" onclick="loadRotationData()">Refresh</button>
+                </div>
+            </div>
+
+            <div id="content" style="display:none; opacity:0; transition:opacity 0.5s;">
+
+                <!-- Sector Grid -->
+                <div class="glass-panel mb-4">
+                    <div class="panel-header">
+                        <div class="panel-title">Sector Performance</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--sp-4);"
+                        id="sectorsGrid">
+                        <!-- JS injected here -->
+                    </div>
+                </div>
+
+                <!-- Rotation Matrix -->
+                <div class="glass-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">Rotation Matrix</div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); height: 500px;">
+                        <!-- Leading -->
+                        <div class="glass-panel"
+                            style="background: rgba(16, 185, 129, 0.05); border-color: var(--success);">
+                            <div class="panel-title text-success mb-4">📈 Leading</div>
+                            <div class="text-sm text-muted mb-2">High Return + Strong Momentum</div>
+                            <div id="quadLeading" class="d-flex flex-col gap-2"></div>
+                        </div>
+
+                        <!-- Weakening -->
+                        <div class="glass-panel"
+                            style="background: rgba(245, 158, 11, 0.05); border-color: var(--warning);">
+                            <div class="panel-title text-warning mb-4">📉 Weakening</div>
+                            <div class="text-sm text-muted mb-2">High Return + Weak Momentum</div>
+                            <div id="quadWeakening" class="d-flex flex-col gap-2"></div>
+                        </div>
+
+                        <!-- Improving -->
+                        <div class="glass-panel"
+                            style="background: rgba(99, 102, 241, 0.05); border-color: var(--primary);">
+                            <div class="panel-title" style="color:var(--primary);">🔄 Improving</div>
+                            <div class="text-sm text-muted mb-2">Low Return + Strong Momentum</div>
+                            <div id="quadImproving" class="d-flex flex-col gap-2"></div>
+                        </div>
+
+                        <!-- Lagging -->
+                        <div class="glass-panel"
+                            style="background: rgba(239, 68, 68, 0.05); border-color: var(--danger);">
+                            <div class="panel-title text-danger mb-4">📊 Lagging</div>
+                            <div class="text-sm text-muted mb-2">Low Return + Weak Momentum</div>
+                            <div id="quadLagging" class="d-flex flex-col gap-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== Modal ========== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">Sector Top 10</div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="modal-loading">
+                    <div class="modal-spinner"></div>
+                    Loading top stocks...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+
+        // Close modal when clicking on overlay
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                closeModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+                closeModal();
+            }
+        });
+
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+        }
+
+        async function openSectorModal(sectorName) {
+            // Show modal with loading state
+            modalTitle.textContent = `${sectorName} - Top 10 Stocks`;
+            modalBody.innerHTML = `
+                <div class="modal-loading">
+                    <div class="modal-spinner"></div>
+                    Loading top stocks...
+                </div>
+            `;
+            modalOverlay.classList.add('active');
+
+            try {
+                // Encode sector name for URL
+                const encodedSector = encodeURIComponent(sectorName);
+                const response = await fetch(`${CONFIG.API_BASE}/sectors/US/${encodedSector}/top?limit=10`);
+
+                if (!response.ok) {
+                    throw new Error(`API returned ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Build table HTML
+                const tableHtml = `
+                    <table class="top-stocks-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">Rank</th>
+                                <th>Symbol</th>
+                                <th>Company Name</th>
+                                <th style="text-align: right;">Price</th>
+                                <th style="text-align: right;">Change %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.stocks.map((stock, index) => {
+                    const changeClass = parseFloat(stock.change_pct || 0) >= 0 ? 'positive' : 'negative';
+                    const name = stock.company_name || stock.name || '-';
+                    // Use Utils if available or local format
+                    const price = Utils.formatNumber(stock.price || stock.current_price);
+                    const chg = Utils.formatNumber(stock.change_pct);
+
+                    return `
+                                    <tr>
+                                        <td><span class="rank-badge">${index + 1}</span></td>
+                                        <td><span class="stock-symbol">${stock.symbol}</span></td>
+                                        <td>
+                                            <div>${name}</div>
+                                            <div class="stock-name">${stock.sector || ''}</div>
+                                        </td>
+                                        <td style="text-align: right;">${price}</td>
+                                        <td style="text-align: right;" class="${changeClass}">
+                                            ${chg}%
+                                        </td>
+                                    </tr>
+                                `;
+                }).join('')}
+                        </tbody>
+                    </table>
+                `;
+
+                modalBody.innerHTML = tableHtml;
+
+            } catch (error) {
+                console.error('Error loading top stocks:', error);
+                modalBody.innerHTML = `
+                    <div class="modal-error">
+                        ⚠️ Failed to load top stocks<br>
+                        <small style="color: #9ca3af; font-size: 14px; margin-top: 8px; display: block;">
+                            ${error.message}
+                        </small>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadRotationData() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/rotation/sectors`);
+                const data = await response.json();
+
+                // Sector Cards
+                const sectorsHtml = data.sectors.map(sector => {
+                    const returnClass = parseFloat(sector.current_return) >= 0 ? 'text-success' : 'text-danger';
+                    const momentumClass = parseFloat(sector.momentum) >= 0 ? 'text-success' : 'text-danger';
+
+                    // Determine simplified strength class for visual flavor
+                    let borderStyle = 'border: 1px solid var(--border);';
+                    if (parseFloat(sector.relative_strength) > 105) borderStyle = 'border: 1px solid var(--success);';
+                    if (parseFloat(sector.relative_strength) < 95) borderStyle = 'border: 1px solid var(--danger);';
+
+                    return `
+                        <div style="background:var(--bg-surface-2); padding:var(--sp-4); border-radius:var(--radius-sm); cursor:pointer; transition:all 0.2s; ${borderStyle}" 
+                             onclick="openSectorModal('${sector.sector}')"
+                             onmouseover="this.style.background='var(--bg-surface)'"
+                             onmouseout="this.style.background='var(--bg-surface-2)'">
+                            
+                            <div class="d-flex justify-content-between items-center mb-2">
+                                <div class="font-bold text-sm">${sector.sector}</div>
+                                <div class="badge badge-neutral">#${sector.rank}</div>
+                            </div>
+                            
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:var(--fs-xs);">
+                                <div>
+                                    <div class="text-muted">Return</div>
+                                    <div class="${returnClass} font-bold">${UI.formatNumber(sector.current_return)}%</div>
+                                </div>
+                                <div>
+                                    <div class="text-muted">Momentum</div>
+                                    <div class="${momentumClass} font-bold">${UI.formatNumber(sector.momentum)}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                document.getElementById('sectorsGrid').innerHTML = sectorsHtml;
+
+                // Rotation Matrix
+                const leading = [];
+                const weakening = [];
+                const improving = [];
+                const lagging = [];
+
+                data.sectors.forEach(s => {
+                    const ret = parseFloat(s.current_return);
+                    const mom = parseFloat(s.momentum);
+
+                    // Badge style for matrix
+                    const badge = `<span class="badge" style="background:var(--bg-surface); padding:4px 8px; margin-bottom:4px; display:inline-block; border:1px solid var(--border);">${s.sector}</span>`;
+
+                    if (ret >= 2 && mom >= 0.5) leading.push(badge);
+                    else if (ret >= 2 && mom < 0.5) weakening.push(badge);
+                    else if (ret < 2 && mom >= 0.5) improving.push(badge);
+                    else lagging.push(badge);
+                });
+
+                document.getElementById('quadLeading').innerHTML = leading.join(' ') || '<span class="text-muted">-</span>';
+                document.getElementById('quadWeakening').innerHTML = weakening.join(' ') || '<span class="text-muted">-</span>';
+                document.getElementById('quadImproving').innerHTML = improving.join(' ') || '<span class="text-muted">-</span>';
+                document.getElementById('quadLagging').innerHTML = lagging.join(' ') || '<span class="text-muted">-</span>';
+
+                document.getElementById('loading').style.display = 'none';
+                const content = document.getElementById('content');
+                if (content) {
+                    content.style.display = 'block';
+                    void content.offsetWidth;
+                    content.style.opacity = 1;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                UI.showToast('Failed to load rotation data', 'error');
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        // Initialize (common.js loads sidebar)
+        loadRotationData();
+    </script>
+</body>
+
+</html>

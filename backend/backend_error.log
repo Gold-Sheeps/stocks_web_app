@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "C:\Users\o_van\Desktop\stocks_market_checker\backend\app\services\screener_service.py", line 76, in scan_stocks
+    total_score = self._calculate_total_score_v2(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\o_van\Desktop\stocks_market_checker\backend\app\services\screener_service.py", line 114, in _calculate_total_score_v2
+    score += (rs_score / 100) * 40
+TypeError: unsupported operand type(s) for +=: 'float' and 'decimal.Decimal'

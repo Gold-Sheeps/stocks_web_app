@@ -1,0 +1,349 @@
+=== Running DataService Directly ===
+
+--- Updating Indices ---
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+Updating Indices: 6 symbols
+DEBUG: Saving ^DJI, rows=3
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+DB DEBUG: Query: SELECT symbol_key FROM instruments WHERE symbol_key = %s Params: ('^DJI',)
+Command execution error: リレーション"instruments"の新しい行は検査制約"instruments_market_check"に違反しています
+DETAIL:  失敗した行は(^DJI, INDEX, Index ^DJI, USD, t, 2026-02-11 15:06:40.618005, 2026-02-11 15:06:40.618005)を含みます
+Created instrument: ^DJI
+Row error ^DJI 2026-02-06 00:00:00: name 'query' is not defined
+Row error ^DJI 2026-02-09 00:00:00: name 'query' is not defined
+Row error ^DJI 2026-02-10 00:00:00: name 'query' is not defined
+DEBUG: Saved ^DJI, inserted=0
+DEBUG: Saving ^GSPC, rows=3
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+DB DEBUG: Query: SELECT symbol_key FROM instruments WHERE symbol_key = %s Params: ('^GSPC',)
+Command execution error: リレーション"instruments"の新しい行は検査制約"instruments_market_check"に違反しています
+DETAIL:  失敗した行は(^GSPC, INDEX, Index ^GSPC, USD, t, 2026-02-11 15:06:40.646991, 2026-02-11 15:06:40.646991)を含みます
+Created instrument: ^GSPC
+Row error ^GSPC 2026-02-06 00:00:00: name 'query' is not defined
+Row error ^GSPC 2026-02-09 00:00:00: name 'query' is not defined
+Row error ^GSPC 2026-02-10 00:00:00: name 'query' is not defined
+DEBUG: Saved ^GSPC, inserted=0
+DEBUG: Saving ^IXIC, rows=3
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+DB DEBUG: Query: SELECT symbol_key FROM instruments WHERE symbol_key = %s Params: ('^IXIC',)
+Command execution error: リレーション"instruments"の新しい行は検査制約"instruments_market_check"に違反しています
+DETAIL:  失敗した行は(^IXIC, INDEX, Index ^IXIC, USD, t, 2026-02-11 15:06:40.677001, 2026-02-11 15:06:40.677001)を含みます
+Created instrument: ^IXIC
+Row error ^IXIC 2026-02-06 00:00:00: name 'query' is not defined
+Row error ^IXIC 2026-02-09 00:00:00: name 'query' is not defined
+Row error ^IXIC 2026-02-10 00:00:00: name 'query' is not defined
+DEBUG: Saved ^IXIC, inserted=0
+DEBUG: Saving ^N225, rows=3
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+DB DEBUG: Query: SELECT symbol_key FROM instruments WHERE symbol_key = %s Params: ('^N225',)
+Row error ^N225 2026-02-06 00:00:00: name 'query' is not defined
+Row error ^N225 2026-02-09 00:00:00: name 'query' is not defined
+Row error ^N225 2026-02-10 00:00:00: name 'query' is not defined
+DEBUG: Saved ^N225, inserted=0
+DEBUG: Saving ^RUT, rows=3
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+DB DEBUG: Query: SELECT symbol_key FROM instruments WHERE symbol_key = %s Params: ('^RUT',)
+Command execution error: リレーション"instruments"の新しい行は検査制約"instruments_market_check"に違反しています
+DETAIL:  失敗した行は(^RUT, INDEX, Index ^RUT, USD, t, 2026-02-11 15:06:40.845218, 2026-02-11 15:06:40.845218)を含みます
+Created instrument: ^RUT
+Row error ^RUT 2026-02-06 00:00:00: name 'query' is not defined
+Row error ^RUT 2026-02-09 00:00:00: name 'query' is not defined
+Row error ^RUT 2026-02-10 00:00:00: name 'query' is not defined
+DEBUG: Saved ^RUT, inserted=0
+DEBUG: Saving ^VIX, rows=3
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+DB DEBUG: Query: SELECT symbol_key FROM instruments WHERE symbol_key = %s Params: ('^VIX',)
+Command execution error: リレーション"instruments"の新しい行は検査制約"instruments_market_check"に違反しています
+DETAIL:  失敗した行は(^VIX, INDEX, Index ^VIX, USD, t, 2026-02-11 15:06:40.876008, 2026-02-11 15:06:40.876008)を含みます
+Created instrument: ^VIX
+Row error ^VIX 2026-02-06 00:00:00: name 'query' is not defined
+Row error ^VIX 2026-02-09 00:00:00: name 'query' is not defined
+Row error ^VIX 2026-02-10 00:00:00: name 'query' is not defined
+DEBUG: Saved ^VIX, inserted=0
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+Result: {'status': 'success', 'processed': 6, 'failed': 0, 'failed_details': []}
+
+--- Updating Sector ---
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+Updating Sector: 11 symbols
+DEBUG: Saving XLE, rows=21
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+DB DEBUG: Query: SELECT symbol_key FROM instruments WHERE symbol_key = %s Params: ('XLE',)
+Row error XLE 2026-01-12 00:00:00: name 'query' is not defined
+Row error XLE 2026-01-13 00:00:00: name 'query' is not defined
+Row error XLE 2026-01-14 00:00:00: name 'query' is not defined
+Row error XLE 2026-01-15 00:00:00: name 'query' is not defined
+Row error XLE 2026-01-16 00:00:00: name 'query' is not defined
+Row error XLE 2026-01-20 00:00:00: name 'query' is not defined
+Row error XLE 2026-01-21 00:00:00: name 'query' is not defined
+Row error XLE 2026-01-22 00:00:00: name 'query' is not defined
+Row error XLE 2026-01-23 00:00:00: name 'query' is not defined
+Row error XLE 2026-01-26 00:00:00: name 'query' is not defined
+Row error XLE 2026-01-27 00:00:00: name 'query' is not defined
+Row error XLE 2026-01-28 00:00:00: name 'query' is not defined
+Row error XLE 2026-01-29 00:00:00: name 'query' is not defined
+Row error XLE 2026-01-30 00:00:00: name 'query' is not defined
+Row error XLE 2026-02-02 00:00:00: name 'query' is not defined
+Row error XLE 2026-02-03 00:00:00: name 'query' is not defined
+Row error XLE 2026-02-04 00:00:00: name 'query' is not defined
+Row error XLE 2026-02-05 00:00:00: name 'query' is not defined
+Row error XLE 2026-02-06 00:00:00: name 'query' is not defined
+Row error XLE 2026-02-09 00:00:00: name 'query' is not defined
+Row error XLE 2026-02-10 00:00:00: name 'query' is not defined
+DEBUG: Saved XLE, inserted=0
+DEBUG: Saving XLB, rows=21
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+DB DEBUG: Query: SELECT symbol_key FROM instruments WHERE symbol_key = %s Params: ('XLB',)
+Row error XLB 2026-01-12 00:00:00: name 'query' is not defined
+Row error XLB 2026-01-13 00:00:00: name 'query' is not defined
+Row error XLB 2026-01-14 00:00:00: name 'query' is not defined
+Row error XLB 2026-01-15 00:00:00: name 'query' is not defined
+Row error XLB 2026-01-16 00:00:00: name 'query' is not defined
+Row error XLB 2026-01-20 00:00:00: name 'query' is not defined
+Row error XLB 2026-01-21 00:00:00: name 'query' is not defined
+Row error XLB 2026-01-22 00:00:00: name 'query' is not defined
+Row error XLB 2026-01-23 00:00:00: name 'query' is not defined
+Row error XLB 2026-01-26 00:00:00: name 'query' is not defined
+Row error XLB 2026-01-27 00:00:00: name 'query' is not defined
+Row error XLB 2026-01-28 00:00:00: name 'query' is not defined
+Row error XLB 2026-01-29 00:00:00: name 'query' is not defined
+Row error XLB 2026-01-30 00:00:00: name 'query' is not defined
+Row error XLB 2026-02-02 00:00:00: name 'query' is not defined
+Row error XLB 2026-02-03 00:00:00: name 'query' is not defined
+Row error XLB 2026-02-04 00:00:00: name 'query' is not defined
+Row error XLB 2026-02-05 00:00:00: name 'query' is not defined
+Row error XLB 2026-02-06 00:00:00: name 'query' is not defined
+Row error XLB 2026-02-09 00:00:00: name 'query' is not defined
+Row error XLB 2026-02-10 00:00:00: name 'query' is not defined
+DEBUG: Saved XLB, inserted=0
+DEBUG: Saving XLP, rows=21
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+DB DEBUG: Query: SELECT symbol_key FROM instruments WHERE symbol_key = %s Params: ('XLP',)
+Row error XLP 2026-01-12 00:00:00: name 'query' is not defined
+Row error XLP 2026-01-13 00:00:00: name 'query' is not defined
+Row error XLP 2026-01-14 00:00:00: name 'query' is not defined
+Row error XLP 2026-01-15 00:00:00: name 'query' is not defined
+Row error XLP 2026-01-16 00:00:00: name 'query' is not defined
+Row error XLP 2026-01-20 00:00:00: name 'query' is not defined
+Row error XLP 2026-01-21 00:00:00: name 'query' is not defined
+Row error XLP 2026-01-22 00:00:00: name 'query' is not defined
+Row error XLP 2026-01-23 00:00:00: name 'query' is not defined
+Row error XLP 2026-01-26 00:00:00: name 'query' is not defined
+Row error XLP 2026-01-27 00:00:00: name 'query' is not defined
+Row error XLP 2026-01-28 00:00:00: name 'query' is not defined
+Row error XLP 2026-01-29 00:00:00: name 'query' is not defined
+Row error XLP 2026-01-30 00:00:00: name 'query' is not defined
+Row error XLP 2026-02-02 00:00:00: name 'query' is not defined
+Row error XLP 2026-02-03 00:00:00: name 'query' is not defined
+Row error XLP 2026-02-04 00:00:00: name 'query' is not defined
+Row error XLP 2026-02-05 00:00:00: name 'query' is not defined
+Row error XLP 2026-02-06 00:00:00: name 'query' is not defined
+Row error XLP 2026-02-09 00:00:00: name 'query' is not defined
+Row error XLP 2026-02-10 00:00:00: name 'query' is not defined
+DEBUG: Saved XLP, inserted=0
+DEBUG: Saving XLI, rows=21
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+DB DEBUG: Query: SELECT symbol_key FROM instruments WHERE symbol_key = %s Params: ('XLI',)
+Row error XLI 2026-01-12 00:00:00: name 'query' is not defined
+Row error XLI 2026-01-13 00:00:00: name 'query' is not defined
+Row error XLI 2026-01-14 00:00:00: name 'query' is not defined
+Row error XLI 2026-01-15 00:00:00: name 'query' is not defined
+Row error XLI 2026-01-16 00:00:00: name 'query' is not defined
+Row error XLI 2026-01-20 00:00:00: name 'query' is not defined
+Row error XLI 2026-01-21 00:00:00: name 'query' is not defined
+Row error XLI 2026-01-22 00:00:00: name 'query' is not defined
+Row error XLI 2026-01-23 00:00:00: name 'query' is not defined
+Row error XLI 2026-01-26 00:00:00: name 'query' is not defined
+Row error XLI 2026-01-27 00:00:00: name 'query' is not defined
+Row error XLI 2026-01-28 00:00:00: name 'query' is not defined
+Row error XLI 2026-01-29 00:00:00: name 'query' is not defined
+Row error XLI 2026-01-30 00:00:00: name 'query' is not defined
+Row error XLI 2026-02-02 00:00:00: name 'query' is not defined
+Row error XLI 2026-02-03 00:00:00: name 'query' is not defined
+Row error XLI 2026-02-04 00:00:00: name 'query' is not defined
+Row error XLI 2026-02-05 00:00:00: name 'query' is not defined
+Row error XLI 2026-02-06 00:00:00: name 'query' is not defined
+Row error XLI 2026-02-09 00:00:00: name 'query' is not defined
+Row error XLI 2026-02-10 00:00:00: name 'query' is not defined
+DEBUG: Saved XLI, inserted=0
+DEBUG: Saving XLRE, rows=21
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+DB DEBUG: Query: SELECT symbol_key FROM instruments WHERE symbol_key = %s Params: ('XLRE',)
+Row error XLRE 2026-01-12 00:00:00: name 'query' is not defined
+Row error XLRE 2026-01-13 00:00:00: name 'query' is not defined
+Row error XLRE 2026-01-14 00:00:00: name 'query' is not defined
+Row error XLRE 2026-01-15 00:00:00: name 'query' is not defined
+Row error XLRE 2026-01-16 00:00:00: name 'query' is not defined
+Row error XLRE 2026-01-20 00:00:00: name 'query' is not defined
+Row error XLRE 2026-01-21 00:00:00: name 'query' is not defined
+Row error XLRE 2026-01-22 00:00:00: name 'query' is not defined
+Row error XLRE 2026-01-23 00:00:00: name 'query' is not defined
+Row error XLRE 2026-01-26 00:00:00: name 'query' is not defined
+Row error XLRE 2026-01-27 00:00:00: name 'query' is not defined
+Row error XLRE 2026-01-28 00:00:00: name 'query' is not defined
+Row error XLRE 2026-01-29 00:00:00: name 'query' is not defined
+Row error XLRE 2026-01-30 00:00:00: name 'query' is not defined
+Row error XLRE 2026-02-02 00:00:00: name 'query' is not defined
+Row error XLRE 2026-02-03 00:00:00: name 'query' is not defined
+Row error XLRE 2026-02-04 00:00:00: name 'query' is not defined
+Row error XLRE 2026-02-05 00:00:00: name 'query' is not defined
+Row error XLRE 2026-02-06 00:00:00: name 'query' is not defined
+Row error XLRE 2026-02-09 00:00:00: name 'query' is not defined
+Row error XLRE 2026-02-10 00:00:00: name 'query' is not defined
+DEBUG: Saved XLRE, inserted=0
+DEBUG: Saving XLU, rows=21
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+DB DEBUG: Query: SELECT symbol_key FROM instruments WHERE symbol_key = %s Params: ('XLU',)
+Row error XLU 2026-01-12 00:00:00: name 'query' is not defined
+Row error XLU 2026-01-13 00:00:00: name 'query' is not defined
+Row error XLU 2026-01-14 00:00:00: name 'query' is not defined
+Row error XLU 2026-01-15 00:00:00: name 'query' is not defined
+Row error XLU 2026-01-16 00:00:00: name 'query' is not defined
+Row error XLU 2026-01-20 00:00:00: name 'query' is not defined
+Row error XLU 2026-01-21 00:00:00: name 'query' is not defined
+Row error XLU 2026-01-22 00:00:00: name 'query' is not defined
+Row error XLU 2026-01-23 00:00:00: name 'query' is not defined
+Row error XLU 2026-01-26 00:00:00: name 'query' is not defined
+Row error XLU 2026-01-27 00:00:00: name 'query' is not defined
+Row error XLU 2026-01-28 00:00:00: name 'query' is not defined
+Row error XLU 2026-01-29 00:00:00: name 'query' is not defined
+Row error XLU 2026-01-30 00:00:00: name 'query' is not defined
+Row error XLU 2026-02-02 00:00:00: name 'query' is not defined
+Row error XLU 2026-02-03 00:00:00: name 'query' is not defined
+Row error XLU 2026-02-04 00:00:00: name 'query' is not defined
+Row error XLU 2026-02-05 00:00:00: name 'query' is not defined
+Row error XLU 2026-02-06 00:00:00: name 'query' is not defined
+Row error XLU 2026-02-09 00:00:00: name 'query' is not defined
+Row error XLU 2026-02-10 00:00:00: name 'query' is not defined
+DEBUG: Saved XLU, inserted=0
+DEBUG: Saving XLC, rows=21
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+DB DEBUG: Query: SELECT symbol_key FROM instruments WHERE symbol_key = %s Params: ('XLC',)
+Row error XLC 2026-01-12 00:00:00: name 'query' is not defined
+Row error XLC 2026-01-13 00:00:00: name 'query' is not defined
+Row error XLC 2026-01-14 00:00:00: name 'query' is not defined
+Row error XLC 2026-01-15 00:00:00: name 'query' is not defined
+Row error XLC 2026-01-16 00:00:00: name 'query' is not defined
+Row error XLC 2026-01-20 00:00:00: name 'query' is not defined
+Row error XLC 2026-01-21 00:00:00: name 'query' is not defined
+Row error XLC 2026-01-22 00:00:00: name 'query' is not defined
+Row error XLC 2026-01-23 00:00:00: name 'query' is not defined
+Row error XLC 2026-01-26 00:00:00: name 'query' is not defined
+Row error XLC 2026-01-27 00:00:00: name 'query' is not defined
+Row error XLC 2026-01-28 00:00:00: name 'query' is not defined
+Row error XLC 2026-01-29 00:00:00: name 'query' is not defined
+Row error XLC 2026-01-30 00:00:00: name 'query' is not defined
+Row error XLC 2026-02-02 00:00:00: name 'query' is not defined
+Row error XLC 2026-02-03 00:00:00: name 'query' is not defined
+Row error XLC 2026-02-04 00:00:00: name 'query' is not defined
+Row error XLC 2026-02-05 00:00:00: name 'query' is not defined
+Row error XLC 2026-02-06 00:00:00: name 'query' is not defined
+Row error XLC 2026-02-09 00:00:00: name 'query' is not defined
+Row error XLC 2026-02-10 00:00:00: name 'query' is not defined
+DEBUG: Saved XLC, inserted=0
+DEBUG: Saving XLV, rows=21
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+DB DEBUG: Query: SELECT symbol_key FROM instruments WHERE symbol_key = %s Params: ('XLV',)
+Row error XLV 2026-01-12 00:00:00: name 'query' is not defined
+Row error XLV 2026-01-13 00:00:00: name 'query' is not defined
+Row error XLV 2026-01-14 00:00:00: name 'query' is not defined
+Row error XLV 2026-01-15 00:00:00: name 'query' is not defined
+Row error XLV 2026-01-16 00:00:00: name 'query' is not defined
+Row error XLV 2026-01-20 00:00:00: name 'query' is not defined
+Row error XLV 2026-01-21 00:00:00: name 'query' is not defined
+Row error XLV 2026-01-22 00:00:00: name 'query' is not defined
+Row error XLV 2026-01-23 00:00:00: name 'query' is not defined
+Row error XLV 2026-01-26 00:00:00: name 'query' is not defined
+Row error XLV 2026-01-27 00:00:00: name 'query' is not defined
+Row error XLV 2026-01-28 00:00:00: name 'query' is not defined
+Row error XLV 2026-01-29 00:00:00: name 'query' is not defined
+Row error XLV 2026-01-30 00:00:00: name 'query' is not defined
+Row error XLV 2026-02-02 00:00:00: name 'query' is not defined
+Row error XLV 2026-02-03 00:00:00: name 'query' is not defined
+Row error XLV 2026-02-04 00:00:00: name 'query' is not defined
+Row error XLV 2026-02-05 00:00:00: name 'query' is not defined
+Row error XLV 2026-02-06 00:00:00: name 'query' is not defined
+Row error XLV 2026-02-09 00:00:00: name 'query' is not defined
+Row error XLV 2026-02-10 00:00:00: name 'query' is not defined
+DEBUG: Saved XLV, inserted=0
+DEBUG: Saving XLK, rows=21
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+DB DEBUG: Query: SELECT symbol_key FROM instruments WHERE symbol_key = %s Params: ('XLK',)
+Row error XLK 2026-01-12 00:00:00: name 'query' is not defined
+Row error XLK 2026-01-13 00:00:00: name 'query' is not defined
+Row error XLK 2026-01-14 00:00:00: name 'query' is not defined
+Row error XLK 2026-01-15 00:00:00: name 'query' is not defined
+Row error XLK 2026-01-16 00:00:00: name 'query' is not defined
+Row error XLK 2026-01-20 00:00:00: name 'query' is not defined
+Row error XLK 2026-01-21 00:00:00: name 'query' is not defined
+Row error XLK 2026-01-22 00:00:00: name 'query' is not defined
+Row error XLK 2026-01-23 00:00:00: name 'query' is not defined
+Row error XLK 2026-01-26 00:00:00: name 'query' is not defined
+Row error XLK 2026-01-27 00:00:00: name 'query' is not defined
+Row error XLK 2026-01-28 00:00:00: name 'query' is not defined
+Row error XLK 2026-01-29 00:00:00: name 'query' is not defined
+Row error XLK 2026-01-30 00:00:00: name 'query' is not defined
+Row error XLK 2026-02-02 00:00:00: name 'query' is not defined
+Row error XLK 2026-02-03 00:00:00: name 'query' is not defined
+Row error XLK 2026-02-04 00:00:00: name 'query' is not defined
+Row error XLK 2026-02-05 00:00:00: name 'query' is not defined
+Row error XLK 2026-02-06 00:00:00: name 'query' is not defined
+Row error XLK 2026-02-09 00:00:00: name 'query' is not defined
+Row error XLK 2026-02-10 00:00:00: name 'query' is not defined
+DEBUG: Saved XLK, inserted=0
+DEBUG: Saving XLF, rows=21
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+DB DEBUG: Query: SELECT symbol_key FROM instruments WHERE symbol_key = %s Params: ('XLF',)
+Row error XLF 2026-01-12 00:00:00: name 'query' is not defined
+Row error XLF 2026-01-13 00:00:00: name 'query' is not defined
+Row error XLF 2026-01-14 00:00:00: name 'query' is not defined
+Row error XLF 2026-01-15 00:00:00: name 'query' is not defined
+Row error XLF 2026-01-16 00:00:00: name 'query' is not defined
+Row error XLF 2026-01-20 00:00:00: name 'query' is not defined
+Row error XLF 2026-01-21 00:00:00: name 'query' is not defined
+Row error XLF 2026-01-22 00:00:00: name 'query' is not defined
+Row error XLF 2026-01-23 00:00:00: name 'query' is not defined
+Row error XLF 2026-01-26 00:00:00: name 'query' is not defined
+Row error XLF 2026-01-27 00:00:00: name 'query' is not defined
+Row error XLF 2026-01-28 00:00:00: name 'query' is not defined
+Row error XLF 2026-01-29 00:00:00: name 'query' is not defined
+Row error XLF 2026-01-30 00:00:00: name 'query' is not defined
+Row error XLF 2026-02-02 00:00:00: name 'query' is not defined
+Row error XLF 2026-02-03 00:00:00: name 'query' is not defined
+Row error XLF 2026-02-04 00:00:00: name 'query' is not defined
+Row error XLF 2026-02-05 00:00:00: name 'query' is not defined
+Row error XLF 2026-02-06 00:00:00: name 'query' is not defined
+Row error XLF 2026-02-09 00:00:00: name 'query' is not defined
+Row error XLF 2026-02-10 00:00:00: name 'query' is not defined
+DEBUG: Saved XLF, inserted=0
+DEBUG: Saving XLY, rows=21
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+DB DEBUG: Query: SELECT symbol_key FROM instruments WHERE symbol_key = %s Params: ('XLY',)
+Row error XLY 2026-01-12 00:00:00: name 'query' is not defined
+Row error XLY 2026-01-13 00:00:00: name 'query' is not defined
+Row error XLY 2026-01-14 00:00:00: name 'query' is not defined
+Row error XLY 2026-01-15 00:00:00: name 'query' is not defined
+Row error XLY 2026-01-16 00:00:00: name 'query' is not defined
+Row error XLY 2026-01-20 00:00:00: name 'query' is not defined
+Row error XLY 2026-01-21 00:00:00: name 'query' is not defined
+Row error XLY 2026-01-22 00:00:00: name 'query' is not defined
+Row error XLY 2026-01-23 00:00:00: name 'query' is not defined
+Row error XLY 2026-01-26 00:00:00: name 'query' is not defined
+Row error XLY 2026-01-27 00:00:00: name 'query' is not defined
+Row error XLY 2026-01-28 00:00:00: name 'query' is not defined
+Row error XLY 2026-01-29 00:00:00: name 'query' is not defined
+Row error XLY 2026-01-30 00:00:00: name 'query' is not defined
+Row error XLY 2026-02-02 00:00:00: name 'query' is not defined
+Row error XLY 2026-02-03 00:00:00: name 'query' is not defined
+Row error XLY 2026-02-04 00:00:00: name 'query' is not defined
+Row error XLY 2026-02-05 00:00:00: name 'query' is not defined
+Row error XLY 2026-02-06 00:00:00: name 'query' is not defined
+Row error XLY 2026-02-09 00:00:00: name 'query' is not defined
+Row error XLY 2026-02-10 00:00:00: name 'query' is not defined
+DEBUG: Saved XLY, inserted=0
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+Calculating Sector Rotation...
+DB DEBUG: Query: SELECT trading_date, close FROM price_daily WHERE symbol_key = %s ORDER BY trading_date DESC LIMIT 30 Params: ('^GSPC',)
+Not enough benchmark data
+DB Connect: host=localhost port=5432 dbname=postgres user=postgres password=test (PID: 8816)
+Result Sector: {'status': 'success', 'processed': 11, 'failed': 0, 'failed_details': []}

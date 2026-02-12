@@ -1,0 +1,931 @@
+/* 
+ * Neo-Dark Finance 2026 Design System 
+ * common.css - Single Source of Truth
+ */
+
+:root {
+    /* --- 1. Design Tokens --- */
+
+    /* Colors: Backgrounds */
+    --bg-body: #0f172a;
+    /* Deep Blue-Black (Slate 900+) */
+    --bg-surface: #1e293b;
+    /* Slate 800 */
+    --bg-surface-2: #334155;
+    /* Slate 700 */
+    --bg-sidebar: #0f172a;
+    /* Matches body for seamless look */
+
+    /* Colors: Text */
+    --text-main: #f8fafc;
+    /* Slate 50 */
+    --text-muted: #cbd5e1;
+    /* Slate 300 - High legibility */
+    --text-faint: #64748b;
+    /* Slate 500 - Valid for labels only */
+
+    /* Colors: Brand & Status */
+    --primary: #6366f1;
+    /* Indigo 500 - Electric Violet */
+    --primary-hover: #4f46e5;
+    --accent: #06b6d4;
+    /* Cyan 500 */
+
+    --success: #10b981;
+    /* Emerald 500 */
+    --danger: #ef4444;
+    /* Red 500 */
+    --warning: #f59e0b;
+    /* Amber 500 */
+    --info: #3b82f6;
+    /* Blue 500 */
+
+    /* Colors: UI Elements */
+    --border: rgba(255, 255, 255, 0.1);
+    --border-focus: var(--primary);
+    --focus-ring: rgba(99, 102, 241, 0.4);
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+
+    /* Typography */
+    --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Roboto Mono', 'Segoe UI Mono', monospace;
+
+    --fs-xs: 0.75rem;
+    /* 12px */
+    --fs-sm: 0.875rem;
+    /* 14px */
+    --fs-base: 1rem;
+    /* 16px */
+    --fs-lg: 1.125rem;
+    /* 18px */
+    --fs-xl: 1.25rem;
+    /* 20px */
+    --fs-2xl: 1.5rem;
+    /* 24px */
+    --fs-3xl: 1.875rem;
+    /* 30px */
+
+    --lh-tight: 1.25;
+    --lh-normal: 1.5;
+    --lh-relaxed: 1.75;
+
+    /* Spacing & Layout */
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 16px;
+    --sp-6: 24px;
+    --sp-8: 32px;
+
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+
+    --sidebar-width: 260px;
+    --header-height: 64px;
+
+    /* Z-Index */
+    --z-sidebar: 50;
+    --z-header: 40;
+    --z-modal: 100;
+    --z-toast: 200;
+
+    /* Animation */
+    --dur-fast: 150ms;
+    --dur-normal: 300ms;
+    --dur-slow: 500ms;
+    --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --dur-fast: 0s;
+        --dur-normal: 0s;
+        --dur-slow: 0s;
+    }
+}
+
+/* --- 2. Base / Reset --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    font-family: var(--font-sans);
+    font-size: var(--fs-base);
+    line-height: var(--lh-normal);
+    color: var(--text-main);
+    background-color: var(--bg-body);
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-surface-2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-faint);
+}
+
+/* --- 3. Layout Components --- */
+
+/* Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    background-color: var(--bg-surface);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: var(--z-sidebar);
+    overflow-y: auto;
+    transition: transform var(--dur-normal) var(--ease-out);
+    padding: 14px 12px;
+}
+
+.sidebar__brand {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 10px 14px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 10px;
+}
+
+.brand-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--primary);
+    box-shadow: 0 0 18px rgba(6, 182, 212, .55);
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-title {
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: .2px;
+    color: var(--text-main);
+}
+
+.brand-sub {
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 6px;
+}
+
+.nav-menu a {
+    display: flex;
+    align-items: center;
+    padding: 10px 10px;
+    border-radius: 12px;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: transform .12s ease, background .12s ease, color .12s ease;
+    font-size: var(--fs-sm);
+    font-weight: 500;
+}
+
+.nav-menu a:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-main);
+    transform: translateY(-1px);
+}
+
+.nav-menu a.active {
+    background: rgba(99, 102, 241, 0.14);
+    color: var(--text-main);
+    border: 1px solid rgba(99, 102, 241, 0.22);
+}
+
+.sidebar__footer {
+    margin-top: 14px;
+    padding: 10px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+/* Container for Mobile Toggle (Future proofing) */
+#sidebar-container {
+    /* Main container that holds the sidebar content */
+    z-index: var(--z-sidebar);
+}
+
+/* Hide original sidebar container styles if they conflict, but here we just style the .sidebar class which is inside sidebar-container */
+
+/* Main Content Wrapper */
+.main-content {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    min-width: 0;
+    /* Prevents flex overflow */
+    padding: var(--sp-6);
+    transition: margin-left var(--dur-normal) var(--ease-out);
+}
+
+.container {
+    max-width: 1400px;
+    /* Limit width for readability on ultra-wide */
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-6);
+}
+
+/* Page Header */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--sp-4);
+    padding-bottom: var(--sp-4);
+    border-bottom: 1px solid var(--border);
+}
+
+.page-title {
+    font-size: var(--fs-2xl);
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.025em;
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+}
+
+.page-actions {
+    display: flex;
+    gap: var(--sp-3);
+}
+
+/* --- 4. UI Components --- */
+
+/* Glass Panel (Card) */
+.glass-panel {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--sp-6);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+    position: relative;
+    overflow: hidden;
+    /* For inner glow effects */
+}
+
+.glass-panel:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--sp-4);
+}
+
+.panel-title {
+    font-size: var(--fs-lg);
+    font-weight: 600;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    padding: var(--sp-2) var(--sp-4);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all var(--dur-fast) var(--ease-out);
+    text-decoration: none;
+    line-height: 1.4;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+    color: white;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 4px 8px rgba(99, 102, 241, 0.4);
+    filter: brightness(1.1);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+}
+
+.btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+    border-color: var(--text-faint);
+}
+
+.btn-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.btn-danger:hover {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-sm {
+    padding: 4px 10px;
+    font-size: var(--fs-xs);
+}
+
+/* Inputs */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-4);
+}
+
+label {
+    font-size: var(--fs-sm);
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+    background: var(--bg-body);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    padding: var(--sp-2) var(--sp-3);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-size: var(--fs-sm);
+    transition: all var(--dur-fast);
+    width: 100%;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+/* Tables (Finance Style) */
+.table-container {
+    overflow-x: auto;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+}
+
+.table-finance {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-sm);
+    white-space: nowrap;
+}
+
+.table-finance th,
+.table-finance td {
+    padding: var(--sp-3) var(--sp-4);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.table-finance th {
+    background: var(--bg-surface-2);
+    color: var(--text-muted);
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    text-transform: uppercase;
+    font-size: var(--fs-xs);
+    letter-spacing: 0.05em;
+}
+
+.table-finance tr {
+    transition: background var(--dur-fast);
+}
+
+.table-finance tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.table-finance td.text-right,
+.table-finance th.text-right {
+    text-align: right;
+}
+
+.table-finance td.num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Status Colors & Badges */
+.text-success {
+    color: var(--success);
+}
+
+.text-danger {
+    color: var(--danger);
+}
+
+.text-warning {
+    color: var(--warning);
+}
+
+.text-muted {
+    color: var(--text-muted);
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.badge-success {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--success);
+}
+
+.badge-danger {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--danger);
+}
+
+.badge-warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--warning);
+}
+
+.badge-neutral {
+    background: var(--bg-surface-2);
+    color: var(--text-muted);
+}
+
+.badge-accent {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--primary);
+}
+
+/* Alerts */
+.alert {
+    padding: var(--sp-4);
+    border-radius: var(--radius-md);
+    border-left: 4px solid;
+    background: var(--bg-surface-2);
+    margin-bottom: var(--sp-4);
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+}
+
+.alert-danger {
+    border-color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.alert-warning {
+    border-color: var(--warning);
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.alert-message {
+    color: var(--text-main);
+    font-size: var(--fs-sm);
+    line-height: var(--lh-normal);
+}
+
+.alert-title {
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: block;
+}
+
+/* Empty State */
+.empty-state {
+    padding: var(--sp-8);
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Loaders / Skeleton */
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    border-radius: var(--radius-md);
+}
+
+/* Toast Notification (Container) */
+#toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    z-index: var(--z-toast);
+}
+
+.toast {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--primary);
+    padding: var(--sp-4);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    min-width: 300px;
+    max-width: 400px;
+    animation: slideIn var(--dur-normal) var(--ease-out);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.toast.success {
+    border-left-color: var(--success);
+}
+
+.toast.error {
+    border-left-color: var(--danger);
+}
+
+.toast.info {
+    border-left-color: var(--info);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+    }
+}
+
+/* Utility Classes */
+.d-flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.gap-2 {
+    gap: var(--sp-2);
+}
+
+.gap-4 {
+    gap: var(--sp-4);
+}
+
+.mt-4 {
+    margin-top: var(--sp-4);
+}
+
+.mb-4 {
+    margin-bottom: var(--sp-4);
+}
+
+.w-full {
+    width: 100%;
+}
+
+.text-sm {
+    font-size: var(--fs-sm);
+}
+
+.text-lg {
+    font-size: var(--fs-lg);
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+/* --- Phase 5-1: Stock Detail Utilities --- */
+
+/* Chips */
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin-top: var(--sp-2);
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    font-size: 12px;
+    line-height: 1.2;
+    background: rgba(255, 255, 255, 0.03);
+    white-space: nowrap;
+}
+
+.chip--success {
+    border-color: rgba(16, 185, 129, 0.4);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.chip--danger {
+    border-color: rgba(239, 68, 68, 0.4);
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.chip--caution {
+    border-color: rgba(245, 158, 11, 0.4);
+    background: rgba(245, 158, 11, 0.05);
+}
+
+.chip--neutral {
+    border-color: var(--border);
+    background: var(--bg-surface-2);
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+}
+
+.tab {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    padding: 12px 4px;
+    cursor: pointer;
+    font-weight: 600;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.tab:hover {
+    color: var(--text-main);
+}
+
+.tab.is-active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.is-active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Key-Value List */
+.kv-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.kv-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.kv-key {
+    font-size: var(--fs-sm);
+    color: var(--text-muted);
+}
+
+.kv-val {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Borders */
+.border-success {
+    border-color: var(--success) !important;
+}
+
+.border-danger {
+    border-color: var(--danger) !important;
+}
+
+.border-caution {
+    border-color: var(--warning) !important;
+}
+
+.border-neutral {
+    border-color: var(--border) !important;
+}
+
+.border-nodata {
+    border-color: var(--text-faint) !important;
+    opacity: 0.7;
+}
+
+/* Grid */
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--sp-6);
+}
+
+/* Skeleton */
+.skeleton {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-sm);
+    animation: pulse 1.5s infinite;
+}
+
+.h-240 {
+    height: 240px;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+
+    100% {
+        opacity: 0.6;
+    }
+}
+
+.bullets {
+    padding-left: 20px;
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+}
+
+.bullets li {
+    margin-bottom: 4px;
+}
+
+/* --- Minimal utilities (Safety Net) --- */
+.flex {
+    display: flex;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.gap-2 {
+    gap: 8px;
+}
+
+.gap-4 {
+    gap: 16px;
+}
+
+.mt-2 {
+    margin-top: 8px;
+}
+
+.mt-4 {
+    margin-top: 16px;
+}
+
+.mb-2 {
+    margin-bottom: 8px;
+}
+
+.mb-4 {
+    margin-bottom: 16px;
+}
+
+.mt-16 {
+    margin-top: 64px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.alert--hidden {
+    display: none !important;
+}
+
+.alert--warning {
+    border-color: var(--warning);
+    background: rgba(245, 158, 11, 0.1);
+}
+
+/* Main Alias to match common.css .main-content */
+.main {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    min-width: 0;
+    padding: var(--sp-6);
+    transition: margin-left var(--dur-normal) var(--ease-out);
+}

@@ -1,0 +1,250 @@
+import sys
+sys.path.insert(0, 'src')
+from app.db.database import Database
+from decimal import Decimal
+from datetime import datetime, date, timedelta
+from app.models.schemas import StockInfo, PricePoint, Indicators, StockDetailResponse
+
+
+class StockDetailService:
+    """Stock Detail画面のビジネスロジチE"""
+    
+    def __init__(self):
+        self.db = Database()
+        self.db.connect()
+    
+    def get_stock_detail(self, symbol: str) -> StockDetailResponse:
+        """銘柄詳細チEEタを取征E""
+        stock_info = self._get_stock_info(symbol)
+        price_history = self._get_price_history(symbol, period=1825)  # 5年刁E紁E*365日EE
+        indicators = self._get_indicators(symbol)
+        
+        return StockDetailResponse(
+            stock_info=stock_info,
+            price_history=price_history,
+            indicators=indicators
+        )
+    
+    def _get_stock_info(self, symbol: str) -> StockInfo:
+        """銘柄基本惁Eを取征E""
+        # 最新の価格チEEタと銘柄惁Eを取征E
+        query = """
+            SELECT 
+                i.symbol_key,
+                i.name,
+                i.market,
+                p.close,
+                p.volume,
+                p.trading_date,
+                pc.close as prev_close
+            FROM instruments i
+            LEFT JOIN LATERAL (
+                SELECT close, volume, trading_date
+                FROM price_daily
+                WHERE symbol_key = i.symbol_key
+                ORDER BY trading_date DESC
+                LIMIT 1
+            ) p ON true
+            LEFT JOIN LATERAL (
+                SELECT close
+                FROM price_daily
+                WHERE symbol_key = i.symbol_key
+                  AND trading_date < p.trading_date
+                ORDER BY trading_date DESC
+                LIMIT 1
+            ) pc ON true
+            WHERE i.symbol_key = %s
+        """
+        
+        result = self.db.execute_query(query, (symbol,))
+        if not result:
+            raise ValueError(f"Symbol {symbol} not found")
+        
+        symbol_key, name, market, close, volume, trading_date, prev_close = result[0]
+        
+        # 変動玁E箁E
+        change_pct = 0.0
+        if prev_close and close:
+            change_pct = ((float(close) - float(prev_close)) / float(prev_close)) * 100
+        
+        # YTD計算！E朁E日基準！E
+        ytd_pct, ytd_start_price = self._calculate_ytd(symbol)
+        
+        return StockInfo(
+            symbol=symbol_key,
+            name=name or symbol_key,
+            market=market,
+            currency="USD",
+            current_price=Decimal(str(close)) if close else Decimal("0"),
+            change_pct=Decimal(str(round(change_pct, 2))),
+            volume=int(volume) if volume else 0,
+            market_cap=None,  # TODO: 時価総額データ追加
+            last_updated=datetime.now(),
+            ytd_change_pct=Decimal(str(round(ytd_pct, 2))) if ytd_pct else None,
+            ytd_start_price=Decimal(str(ytd_start_price)) if ytd_start_price else None
+        )
+    
+    def _calculate_ytd(self, symbol: str) -> tuple[float, float]:
+        """YTDE年初来E騰落玁E計箁E""
+        current_year = datetime.now().year
+        jan1 = date(current_year, 1, 1)
+        
+        # 1朁E日またEそE直後E最初E営業日の終値を取征E
+        query = """
+            SELECT close, trading_date
+            FROM price_daily
+            WHERE symbol_key = %s
+              AND trading_date >= %s
+            ORDER BY trading_date ASC
+            LIMIT 1
+        """
+        
+        jan1_result = self.db.execute_query(query, (symbol, jan1))
+        if not jan1_result:
+            return None, None
+        
+        jan1_close = float(jan1_result[0][0])
+        
+        # 現在価格を取征E
+        current_query = """
+            SELECT close
+            FROM price_daily
+            WHERE symbol_key = %s
+            ORDER BY trading_date DESC
+            LIMIT 1
+        """
+        
+        current_result = self.db.execute_query(current_query, (symbol,))
+        if not current_result:
+            return None, None
+        
+        current_close = float(current_result[0][0])
+        
+        # YTD変動玁E箁E
+        ytd_pct = ((current_close - jan1_close) / jan1_close) * 100
+        
+        return ytd_pct, jan1_close
+    
+    def _get_price_history(self, symbol: str, period: int = 180) -> list[PricePoint]:
+        """価格履歴を取得(ローソク足用EE""
+        query = """
+            SELECT 
+                trading_date,
+                open,
+                high,
+                low,
+                close,
+                volume
+            FROM price_daily
+            WHERE symbol_key = %s
+            ORDER BY trading_date DESC
+            LIMIT %s
+        """
+        
+        results = self.db.execute_query(query, (symbol, period))
+        
+        history = []
+        for row in reversed(results):  # 古ぁEEソーチE
+            trading_date, open_price, high, low, close, volume = row
+            history.append(PricePoint(
+                date=trading_date.isoformat(),
+                open=Decimal(str(open_price)) if open_price else Decimal("0"),
+                high=Decimal(str(high)) if high else Decimal("0"),
+                low=Decimal(str(low)) if low else Decimal("0"),
+                close=Decimal(str(close)) if close else Decimal("0"),
+                volume=int(volume) if volume else 0
+            ))
+        
+        return history
+    
+    def _get_indicators(self, symbol: str) -> Indicators:
+        """チEニカル持Eを取征E""
+        query = """
+            SELECT 
+                sma20,
+                sma50,
+                sma200,
+                ema21,
+                rsi14,
+                macd,
+                macd_signal,
+                macd_hist,
+                rs_score,
+                atr14,
+                dist_to_52w_high_pct
+            FROM indicator_daily
+            WHERE symbol_key = %s
+            ORDER BY trading_date DESC
+            LIMIT 1
+        """
+        
+        result = self.db.execute_query(query, (symbol,))
+        if not result or not result[0]:
+            return Indicators()
+        
+        row = result[0]
+        sma20, sma50, sma200, ema21, rsi14, macd, macd_signal, macd_hist, rs_score, atr14, dist_52w = row
+        
+        return Indicators(
+            ma5=None,  # TODO: SMA5を追加するか、削除
+            ma20=Decimal(str(sma20)) if sma20 else None,
+            ma50=Decimal(str(sma50)) if sma50 else None,
+            sma200=Decimal(str(sma200)) if sma200 else None,
+            ema21=Decimal(str(ema21)) if ema21 else None,
+            rsi=Decimal(str(rsi14)) if rsi14 else None,
+            macd=Decimal(str(macd)) if macd else None,
+            signal=Decimal(str(macd_signal)) if macd_signal else None,
+            macd_hist=Decimal(str(macd_hist)) if macd_hist else None,
+            rs_rating=int(rs_score) if rs_score else None,
+            atr14=Decimal(str(atr14)) if atr14 else None,
+            dist_52w_high_pct=Decimal(str(dist_52w)) if dist_52w else None
+        )
+    
+    def get_signals(self, symbol: str) -> dict:
+        """シグナル履歴を取征E""
+        query = """
+            SELECT 
+                trading_date,
+                close,
+                macd_hist,
+                dist_to_52w_high_pct,
+                rs_score
+            FROM indicator_daily
+            WHERE symbol_key = %s
+            ORDER BY trading_date DESC
+            LIMIT 100
+        """
+        
+        results = self.db.execute_query(query, (symbol,))
+        
+        signals = {
+            "MACD+": [],
+            "BREAKOUT": [],
+            "HIGH_RS": []
+        }
+        
+        for row in results:
+            trading_date, close, macd_hist, dist_52w, rs_score = row
+            
+            # MACD+シグナルEEACD Histogram > 0EE
+            if macd_hist and float(macd_hist) > 0:
+                signals["MACD+"].append({
+                    "date": trading_date.isoformat(),
+                    "price": float(close)
+                })
+            
+            # BREAKOUTシグナルEE2週高値から5%以冁EE
+            if dist_52w and float(dist_52w) >= -5:
+                signals["BREAKOUT"].append({
+                    "date": trading_date.isoformat(),
+                    "price": float(close)
+                })
+            
+            # HIGH_RSシグナルEES Rating >= 80EE
+            if rs_score and int(rs_score) >= 80:
+                signals["HIGH_RS"].append({
+                    "date": trading_date.isoformat(),
+                    "price": float(close)
+                })
+        
+        return {"signals": signals}

@@ -1,0 +1,30 @@
+2026-02-11 17:09:11,308 - INFO - >>> Step 1: Schema Updates (Adding Columns)
+2026-02-11 17:09:11,308 - INFO - [DRY-RUN] Would execute: ALTER TABLE watchlist ADD COLUMN IF NOT EXISTS symbol_key VARCHAR(50);
+2026-02-11 17:09:11,321 - INFO - [DRY-RUN] Would execute: ALTER TABLE trades ADD COLUMN IF NOT EXISTS symbol_key VARCHAR(50);
+2026-02-11 17:09:11,322 - INFO - [DRY-RUN] Would execute: ALTER TABLE holdings ADD COLUMN IF NOT EXISTS symbol_key VARCHAR(50);
+2026-02-11 17:09:11,322 - INFO - [DRY-RUN] Would execute: ALTER TABLE sector_rotation ADD COLUMN IF NOT EXISTS etf_symbol_key VARCHAR(50);
+2026-02-11 17:09:11,323 - INFO - >>> Step 2: Loading Instruments
+2026-02-11 17:09:11,328 - INFO - Loaded 5107 instruments for lookup
+2026-02-11 17:09:11,329 - INFO - >>> Step 3a: Migrating Watchlist
+2026-02-11 17:09:11,329 - INFO - Watchlist: NVDA -> NVDA
+2026-02-11 17:09:11,329 - INFO - Watchlist: CRWV -> CRWV
+2026-02-11 17:09:11,329 - INFO - >>> Step 3b: Migrating Trades
+2026-02-11 17:09:11,330 - INFO - No trades to migrate.
+2026-02-11 17:09:11,330 - INFO - >>> Step 3c: Migrating Holdings
+2026-02-11 17:09:11,331 - INFO - No holdings to migrate.
+2026-02-11 17:09:11,331 - INFO - >>> Step 3d: Migrating Sector Rotation
+2026-02-11 17:09:11,332 - INFO - No sector rotation rows to migrate.
+2026-02-11 17:09:11,332 - INFO - DRY RUN COMPLETE: No changes committed to data (DDL might have run if not using transaction DDL).
+2026-02-11 17:10:03,783 - INFO - >>> Step 1: Schema Updates (Adding Columns)
+2026-02-11 17:10:03,787 - INFO - >>> Step 2: Loading Instruments
+2026-02-11 17:10:03,792 - INFO - Loaded 5107 instruments for lookup
+2026-02-11 17:10:03,792 - INFO - >>> Step 3a: Migrating Watchlist
+2026-02-11 17:10:03,794 - INFO - Watchlist: NVDA -> NVDA
+2026-02-11 17:10:03,794 - INFO - Watchlist: CRWV -> CRWV
+2026-02-11 17:10:03,794 - INFO - >>> Step 3b: Migrating Trades
+2026-02-11 17:10:03,795 - INFO - No trades to migrate.
+2026-02-11 17:10:03,795 - INFO - >>> Step 3c: Migrating Holdings
+2026-02-11 17:10:03,797 - INFO - No holdings to migrate.
+2026-02-11 17:10:03,797 - INFO - >>> Step 3d: Migrating Sector Rotation
+2026-02-11 17:10:03,798 - INFO - No sector rotation rows to migrate.
+2026-02-11 17:10:03,798 - INFO - Committing changes...

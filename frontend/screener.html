@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screener - Trading System</title>
+    <link rel="stylesheet" href="/css/common.css?v=20260211">
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+        <div class="container">
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title">
+                    <span>🔍</span> Stock Screener
+                </div>
+                <div class="page-actions" style="width: 400px;">
+                    <div class="input-group" style="flex-direction:row; margin:0;">
+                        <input type="text" id="searchInput" placeholder="Symbol (e.g. AAPL, 7203)"
+                            onkeypress="if(event.key==='Enter') searchSymbol()" />
+                        <button class="btn btn-primary" onclick="searchSymbol()">Search</button>
+                        <button class="btn btn-ghost" onclick="clearSearch()">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="glass-panel mb-4">
+                <div class="panel-header">
+                    <div class="panel-title">Filter Conditions</div>
+                    <button id="btnSearch" class="btn btn-primary btn-sm">Apply Filters</button>
+                </div>
+
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--sp-4);">
+                    <div class="input-group">
+                        <label>Price Range</label>
+                        <div class="d-flex gap-2">
+                            <input type="number" id="priceMin" placeholder="Min">
+                            <span class="text-muted">-</span>
+                            <input type="number" id="priceMax" placeholder="Max">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Technical</label>
+                        <select id="rsiFilter">
+                            <option value="">RSI: All</option>
+                            <option value="oversold">Oversold (< 30)</option>
+                            <option value="neutral">Neutral (30-70)</option>
+                            <option value="overbought">Overbought (> 70)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Volume</label>
+                        <input type="number" id="volumeMin" placeholder="Min Volume">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div id="loading" class="loading-overlay" style="display:none;">
+                <div class="spinner"></div>
+            </div>
+
+            <!-- Results -->
+            <div class="glass-panel" id="resultsCard" style="display:none;">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        Results: <span id="resultTotal">0</span>
+                        <span class="text-muted text-sm ml-2 font-normal">(Showing <span
+                                id="resultRange">0-0</span>)</span>
+                    </div>
+                    <div class="pagination d-flex gap-2 text-white">
+                        <button class="btn btn-ghost btn-sm" id="btnPrev" disabled>◄</button>
+                        <span class="text-sm font-bold d-flex items-center" id="pageIndicator">1 / 1</span>
+                        <button class="btn btn-ghost btn-sm" id="btnNext" disabled>►</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table-finance" id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th style="width:50px;">Rank</th>
+                                <th>Symbol</th>
+                                <th>Name</th>
+                                <th class="text-right">RS Score</th>
+                                <th class="text-right">Total Score</th>
+                                <th class="text-right">Price</th>
+                                <th class="text-right">Change</th>
+                                <th class="text-right">52W Dist</th>
+                                <th>Signals</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts: Root Relative + Cache Busters + Defer -->
+    <script defer src="/js/config.js?v=20260211"></script>
+    <script defer src="/js/common.js?v=20260211"></script>
+    <script defer src="/js/screener.js?v=20260211"></script>
+</body>
+
+</html>

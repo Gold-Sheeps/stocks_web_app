@@ -1,0 +1,12 @@
+[project]
+name = "stocks-market-checker"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "mysql>=0.0.3",
+    "mysql-connector>=2.2.9",
+    "psycopg[binary]>=3.3.2",
+    "yfinance>=1.1.0",
+]

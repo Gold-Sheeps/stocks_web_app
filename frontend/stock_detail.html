@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Detail - Neo-Dark Finance</title>
+    <link rel="stylesheet" href="/css/common.css?v=20260211-neo-01">
+    <style>
+        /* Page Specific Overrides if needed, mostly handled by common.css */
+        .page-header__top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .price-box {
+            text-align: right;
+        }
+
+        .price-box__price {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            line-height: 1;
+        }
+
+        .price-box__change {
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .price-box__meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .alert--hidden {
+            display: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .muted {
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebar-container"></div>
+
+    <main class="main">
+        <div class="container">
+
+            <section class="page-header glass-panel">
+                <div class="page-header__top">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <div id="sdSymbol" class="title">--:----</div>
+                        </div>
+                        <div id="sdName" class="subtitle">Loading...</div>
+                    </div>
+                    <div class="price-box">
+                        <div id="sdPrice" class="price-box__price">-</div>
+                        <div id="sdChange" class="price-box__change">-</div>
+                        <div id="sdYtd" class="price-box__meta">YTD: -</div>
+                    </div>
+                </div>
+
+                <div id="sdReasons" class="chips"></div>
+                <div id="sdAlert" class="alert alert--warning alert--hidden mt-4"></div>
+            </section>
+
+            <nav class="tabs">
+                <button class="tab is-active" data-tab="indicators">Indicators</button>
+                <button class="tab" data-tab="chart">Chart</button>
+                <button class="tab" data-tab="fundamentals">Fundamentals</button>
+                <button class="tab" data-tab="ratios">Ratios</button>
+            </nav>
+
+            <section id="tab-indicators" class="tab-panel is-active">
+                <div class="grid-3">
+                    <div class="glass-panel indicator-card" id="cardTrend">
+                        <div class="panel-header mb-4">
+                            <div class="panel-title">📉 Trend</div>
+                        </div>
+                        <div id="sdTrend" class="kv-list"></div>
+                    </div>
+
+                    <div class="glass-panel indicator-card" id="cardMomentum">
+                        <div class="panel-header mb-4">
+                            <div class="panel-title">⚡ Momentum</div>
+                        </div>
+                        <div id="sdMomentum" class="kv-list"></div>
+                    </div>
+
+                    <div class="glass-panel indicator-card" id="cardRisk">
+                        <div class="panel-header mb-4">
+                            <div class="panel-title">📊 Risk / Volatility</div>
+                        </div>
+                        <div id="sdRisk" class="kv-list"></div>
+                    </div>
+                </div>
+
+                <div class="glass-panel mt-4">
+                    <div class="panel-title mb-4">What’s missing (Phase 5-2/5-3)</div>
+                    <ul id="sdMissing" class="bullets">
+                        <li>Technical: VWAP, OBV, MFI, ADX/DMI, Bollinger Bands, Stochastic, Ichimoku</li>
+                        <li>Fundamentals: Revenue, Net Income, EPS, Cash Flow (CFO/CFI/CFF), CapEx</li>
+                        <li>Ratios: ROE, ROA, Net Margin, Equity Ratio</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="tab-chart" class="tab-panel">
+                <div class="glass-panel">
+                    <div class="panel-title mb-4">Price Chart (lazy)</div>
+                    <div id="sdChartPlaceholder" class="skeleton h-240"></div>
+                    <canvas id="sdPriceChart" class="hidden"></canvas>
+                </div>
+            </section>
+
+            <section id="tab-fundamentals" class="tab-panel">
+                <div class="glass-panel">
+                    <div class="panel-title mb-4">Financials (lazy)</div>
+                    <div class="muted">Not available yet (Phase 5-3: fundamentals_periodic)</div>
+                    <canvas id="sdFundChart" class="hidden"></canvas>
+                </div>
+            </section>
+
+            <section id="tab-ratios" class="tab-panel">
+                <div class="glass-panel">
+                    <div class="panel-title mb-4">Ratios (lazy)</div>
+                    <div class="muted">ROE / ROA / Net Margin etc. will be computed from fundamentals.</div>
+                    <canvas id="sdRatioChart" class="hidden"></canvas>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Scripts (Strict Order) -->
+    <script defer src="/js/config.js?v=20260211-neo-01"></script>
+    <script defer src="/js/common.js?v=20260211-neo-01"></script>
+    <script defer src="/js/stock_detail.js?v=20260211-neo-01"></script>
+</body>
+
+</html>

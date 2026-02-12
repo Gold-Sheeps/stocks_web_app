@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watchlist - Trading System</title>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebar-container"></div>
+
+    <main class="main-content" id="mainContent">
+        <div class="container">
+            <!-- Loading -->
+            <div id="loading" class="loading-overlay" style="display:none;">
+                <div class="spinner"></div>
+            </div>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title">
+                    <span>👁️</span> Watchlist
+                </div>
+                <div class="page-actions" style="width: auto;">
+                    <button class="btn btn-ghost" onclick="loadWatchlist()">Refresh</button>
+                </div>
+            </div>
+
+            <!-- Add Form -->
+            <div class="glass-panel mb-4">
+                <div class="d-flex gap-4 items-center">
+                    <div class="input-group" style="margin:0; flex:1;">
+                        <label>Symbol</label>
+                        <input type="text" id="newSymbol" placeholder="e.g. NVDA, 7203"
+                            onkeypress="handleKeyPress(event)">
+                    </div>
+                    <div class="input-group" style="margin:0; width:150px;">
+                        <label>Status</label>
+                        <select id="newStatus">
+                            <option value="Research">🧪 Research</option>
+                            <option value="Setup">👀 Setup</option>
+                            <option value="Action">🚀 Action</option>
+                        </select>
+                    </div>
+                    <div class="input-group" style="margin:0; width:auto; align-self:flex-end;">
+                        <button class="btn btn-primary" onclick="addToWatchlist()">+ Add Stock</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Section -->
+            <div class="glass-panel mb-4" id="section-Action" style="border-left: 4px solid var(--success);">
+                <div class="panel-header">
+                    <div class="panel-title text-success">
+                        🚀 Action <span class="badge badge-success ml-2" id="count-Action">0</span>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="table-finance">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">Symbol</th>
+                                <th class="text-right" style="width: 90px;">Price</th>
+                                <th class="text-right" style="width: 80px;">Change</th>
+                                <th class="text-right" style="width: 80px;">RS</th>
+                                <th style="width: 250px;">Memo / Thesis</th>
+                                <th>Signals</th>
+                                <th style="width: 120px;">Status</th>
+                                <th style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-Action"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Setup Section -->
+            <div class="glass-panel mb-4" id="section-Setup" style="border-left: 4px solid var(--warning);">
+                <div class="panel-header">
+                    <div class="panel-title text-warning">
+                        👀 Setup <span class="badge badge-warning ml-2" id="count-Setup">0</span>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="table-finance">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">Symbol</th>
+                                <th class="text-right" style="width: 90px;">Price</th>
+                                <th class="text-right" style="width: 80px;">Change</th>
+                                <th class="text-right" style="width: 80px;">RS</th>
+                                <th style="width: 250px;">Memo / Thesis</th>
+                                <th>Signals</th>
+                                <th style="width: 120px;">Status</th>
+                                <th style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-Setup"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Research Section -->
+            <div class="glass-panel" id="section-Research" style="border-left: 4px solid var(--info);">
+                <div class="panel-header">
+                    <div class="panel-title text-info">
+                        🧪 Research <span class="badge badge-neutral ml-2" id="count-Research">0</span>
+                    </div>
+                </div>
+                <!-- Empty state example if needed, but table handles empty fine -->
+                <div class="table-container">
+                    <table class="table-finance">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">Symbol</th>
+                                <th class="text-right" style="width: 90px;">Price</th>
+                                <th class="text-right" style="width: 80px;">Change</th>
+                                <th class="text-right" style="width: 80px;">RS</th>
+                                <th style="width: 250px;">Memo / Thesis</th>
+                                <th>Signals</th>
+                                <th style="width: 120px;">Status</th>
+                                <th style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-Research"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadWatchlist();
+        });
+
+        async function loadWatchlist() {
+            document.getElementById('loading').style.display = 'flex'; // Use flex for centering overlay if needed
+
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/watchlist`);
+                const data = await response.json();
+
+                renderWatchlist(data);
+            } catch (error) {
+                console.error("Error loading watchlist:", error);
+                UI.showToast("Failed to load watchlist", "error");
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function renderWatchlist(items) {
+            // Clear existing
+            ['Action', 'Setup', 'Research'].forEach(status => {
+                document.getElementById(`tbody-${status}`).innerHTML = '';
+                document.getElementById(`count-${status}`).textContent = '0';
+            });
+
+            const counts = { 'Action': 0, 'Setup': 0, 'Research': 0 };
+
+            items.forEach(item => {
+                // Determine target section
+                let status = item.status;
+                if (!['Action', 'Setup', 'Research'].includes(status)) {
+                    status = 'Research'; // Default fallback
+                }
+
+                counts[status]++;
+                const tbody = document.getElementById(`tbody-${status}`);
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = buildRow(item);
+                tbody.appendChild(tr);
+            });
+
+            // Update counts
+            Object.keys(counts).forEach(key => {
+                document.getElementById(`count-${key}`).textContent = counts[key];
+            });
+        }
+
+        function buildRow(item) {
+            // Price Formatting
+            const price = UI.formatNumber(item.current_price);
+            const changeStr = UI.formatPct(item.change_pct);
+
+            // Indicators
+            let signalHtml = '';
+            // Example badges using new classes
+            if (item.buy_zone) signalHtml += '<span class="badge badge-success mr-1">BuyZone</span>';
+            if (item.institution_flag) signalHtml += '<span class="badge badge-accent mr-1">Inst</span>';
+            if (item.pivot) signalHtml += `<span class="badge badge-neutral mr-1">Pv:${item.pivot}</span>`;
+            if (item.rsi) {
+                let rsiBadge = 'badge-neutral';
+                if (item.rsi > 70) rsiBadge = 'badge-danger';
+                if (item.rsi < 30) rsiBadge = 'badge-success';
+                signalHtml += `<span class="badge ${rsiBadge} mr-1">RSI:${Math.round(item.rsi)}</span>`;
+            }
+
+            return `
+                <td><a href="stock_detail.html?symbol=${item.symbol}" class="font-bold text-main" style="text-decoration:none;">${item.symbol}</a></td>
+                <td class="text-right num">${price}</td>
+                <td class="text-right">${changeStr}</td>
+                <td class="text-right num font-bold">${item.rs_score || '-'}</td>
+                <td>
+                    <input type="text" class="input-group" style="margin:0; padding:4px 8px; font-size:0.85rem;" value="${item.memo || ''}" 
+                        onchange="updateItem('${item.symbol}', 'memo', this.value)" placeholder="Write thesis...">
+                </td>
+                <td>${signalHtml}</td>
+                <td>
+                    <select style="padding:2px 8px; font-size:0.8rem;" onchange="updateItem('${item.symbol}', 'status', this.value)">
+                        <option value="Action" ${item.status === 'Action' ? 'selected' : ''}>Action</option>
+                        <option value="Setup" ${item.status === 'Setup' ? 'selected' : ''}>Setup</option>
+                        <option value="Research" ${item.status === 'Research' ? 'selected' : ''}>Research</option>
+                    </select>
+                </td>
+                <td class="text-right">
+                    <button class="btn btn-danger btn-sm" onclick="deleteItem('${item.symbol}')">×</button>
+                </td>
+            `;
+        }
+
+        async function addToWatchlist() {
+            const input = document.getElementById('newSymbol');
+            const statusSelect = document.getElementById('newStatus');
+            let symbol = input.value.trim().toUpperCase();
+            const status = statusSelect.value;
+
+            // Simple logic to add US: prefix if missing and not JP
+            if (symbol && !symbol.includes(':')) {
+                if (symbol.match(/^\d{4}$/)) symbol = 'JP:' + symbol;
+                else symbol = 'US:' + symbol;
+            }
+
+            if (!symbol) {
+                UI.showToast("Please enter a symbol", "warning");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/watchlist`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        symbol: symbol,
+                        status: status,
+                        memo: ''
+                    })
+                });
+
+                if (response.ok) {
+                    input.value = '';
+                    UI.showToast(`Added ${symbol} to ${status}`, "success");
+                    loadWatchlist(); // Reload
+                } else {
+                    const err = await response.json();
+                    UI.showToast(`Failed: ${err.detail || 'Unknown error'}`, "error");
+                }
+            } catch (e) {
+                console.error(e);
+                UI.showToast("Connection Error", "error");
+            }
+        }
+
+        async function updateItem(symbol, field, value) {
+            // Fetch current state to preserve other fields
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/watchlist`);
+                const allItems = await response.json();
+                const item = allItems.find(i => i.symbol === symbol);
+
+                if (!item) return;
+
+                // Update local object
+                if (field === 'status') item.status = value;
+                if (field === 'memo') item.memo = value;
+
+                // Save
+                const saveRes = await fetch(`${CONFIG.API_BASE}/watchlist/${symbol}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        symbol: symbol,
+                        status: item.status,
+                        memo: item.memo,
+                        tags: item.tags,
+                        fair_value_min: item.fair_value_min,
+                        fair_value_max: item.fair_value_max
+                    })
+                });
+
+                if (saveRes.ok) {
+                    UI.showToast("Updated", "success");
+                    if (field === 'status') {
+                        loadWatchlist(); // Move row
+                    }
+                } else {
+                    UI.showToast("Update Failed", "error");
+                }
+
+            } catch (e) {
+                console.error(e);
+                UI.showToast("Connection Error", "error");
+            }
+        }
+
+        async function deleteItem(symbol) {
+            if (!confirm(`Delete ${symbol}?`)) return;
+
+            try {
+                const res = await fetch(`${CONFIG.API_BASE}/watchlist/${symbol}`, {
+                    method: 'DELETE'
+                });
+                if (res.ok) {
+                    UI.showToast(`Deleted ${symbol}`, "info");
+                    loadWatchlist();
+                } else {
+                    UI.showToast("Delete Failed", "error");
+                }
+            } catch (e) {
+                console.error(e);
+                UI.showToast("Connection Error", "error");
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                addToWatchlist();
+            }
+        }
+    </script>
+    <script src="js/common.js"></script>
+</body>
+
+</html>

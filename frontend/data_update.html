@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Update - Trading System</title>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title">
+                    <span>⚡</span> Data Update
+                </div>
+                <div class="text-sm text-muted">
+                    Last Run: <span id="lastStats" class="text-main font-bold">-</span>
+                </div>
+            </div>
+
+            <!-- Update Settings -->
+            <div class="glass-panel mb-6">
+                <div class="panel-header">
+                    <div class="panel-title">Update Settings</div>
+                </div>
+
+                <div class="d-grid gap-6 p-2" style="grid-template-columns: 1fr 2fr;">
+                    <div>
+                        <div class="input-group mb-4">
+                            <label>Update Range</label>
+                            <select id="rangeSelect" class="w-full">
+                                <option value="7">Past 7 Days</option>
+                                <option value="14" selected>Past 14 Days (Recommended)</option>
+                                <option value="30">Past 30 Days</option>
+                                <option value="60">Past 60 Days</option>
+                            </select>
+                        </div>
+
+                        <button id="updateBtn" class="btn btn-primary w-full">
+                            Execute Update
+                        </button>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Target Markets</label>
+                        <div class="d-grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
+                            <label
+                                class="d-flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-white/5 transition">
+                                <input type="checkbox" value="Indices" checked class="accent-primary">
+                                <span>Indices</span>
+                            </label>
+                            <label
+                                class="d-flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-white/5 transition">
+                                <input type="checkbox" value="FX" checked class="accent-primary">
+                                <span>FX Rates</span>
+                            </label>
+                            <label
+                                class="d-flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-white/5 transition">
+                                <input type="checkbox" value="Metal" checked class="accent-primary">
+                                <span>Metals</span>
+                            </label>
+                            <label
+                                class="d-flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-white/5 transition">
+                                <input type="checkbox" value="Sector" class="accent-primary">
+                                <span>Sector Rotation</span>
+                            </label>
+                            <label
+                                class="d-flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-white/5 transition">
+                                <input type="checkbox" value="Stocks" class="accent-primary">
+                                <span>Stocks (Portfolio/Watchlist)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Execution Logs -->
+            <div class="glass-panel">
+                <div class="panel-header">
+                    <div class="panel-title">📝 Execution Logs</div>
+                    <button class="btn btn-ghost btn-sm" onclick="fetchLogs()">Refresh</button>
+                </div>
+                <div id="logContainer" class="font-mono text-sm p-4 overflow-y-auto"
+                    style="max-height: 400px; background: rgba(0,0,0,0.3); border-radius: var(--radius-sm);">
+                    <div class="text-muted">Waiting for execution...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        // Backend Integration
+        async function fetchLogs() {
+            try {
+                const res = await fetch(`${CONFIG.API_BASE}/system/logs?limit=20`);
+                if (!res.ok) return;
+                const logs = await res.json();
+                renderLogs(logs);
+            } catch (e) {
+                console.error("Failed to fetch logs", e);
+            }
+        }
+
+        function renderLogs(logs) {
+            const container = document.getElementById('logContainer');
+            if (logs.length === 0) return;
+
+            container.innerHTML = logs.map(log => {
+                const statusColor = log.status === 'success' ? 'text-success' : (log.status === 'error' ? 'text-danger' : 'text-info');
+                return `
+                <div class="d-flex gap-3 mb-2 border-b border-white/5 pb-2 last:border-0 last:mb-0">
+                    <span class="text-muted w-32 shrink-0">[${new Date(log.created_at).toLocaleString()}]</span>
+                    <span class="${statusColor} w-20 shrink-0 uppercase font-bold text-xs pt-1">${log.status}</span>
+                    <div class="flex-grow">
+                        <div class="text-main">${log.message || ''}</div>
+                        ${log.details ? `<div class="text-xs text-muted mt-1 bg-black/20 p-2 rounded">${typeof log.details === 'string' ? log.details : JSON.stringify(log.details)}</div>` : ''}
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        document.getElementById('updateBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('updateBtn');
+            const range = document.getElementById('rangeSelect').value;
+            const targets = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+
+            if (targets.length === 0) {
+                UI.showToast("Please select at least one target.", "warning");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner w-4 h-4 inline-block mr-2"></span> Updating...';
+
+            // Clear current logs to show fresh start
+            document.getElementById('logContainer').innerHTML = '<div class="text-info">Starting update job...</div>';
+
+            try {
+                const res = await fetch(`${CONFIG.API_BASE}/system/update-data`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        range_days: parseInt(range),
+                        targets: targets
+                    })
+                });
+
+                const result = await res.json();
+
+                if (result.status === 'success') {
+                    // Poll logs immediately
+                    await fetchLogs();
+                    UI.showToast(`Update Complete! Processed: ${result.processed}`, 'success');
+                    document.getElementById('lastStats').textContent = `Success (${result.processed})`;
+                } else {
+                    UI.showToast(`Update Failed: ${result.message}`, 'error');
+                }
+
+            } catch (e) {
+                UI.showToast(`Error: ${e.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Execute Update";
+                fetchLogs(); // Refresh logs
+            }
+        });
+
+        // Initial log fetch
+        fetchLogs();
+        // Poll logs every 5 seconds
+        setInterval(fetchLogs, 5000);
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Trading System</title>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+        <div class="container">
+            <!-- Loading -->
+            <div id="loading" class="loading-overlay">
+                <div class="spinner"></div>
+            </div>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title">
+                    <span>💼</span> Portfolio
+                </div>
+                <div class="page-actions">
+                    <button class="btn btn-primary" onclick="openModal('EQUITY')">＋ Stock</button>
+                    <button class="btn btn-ghost" onclick="openModal('ETF')">＋ ETF</button>
+                    <button class="btn btn-ghost" onclick="openModal('FX')">＋ FX</button>
+                </div>
+            </div>
+
+            <div id="content" style="display:none; opacity:0; transition:opacity 0.5s;">
+                <!-- Performance Grid -->
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--sp-4); margin-bottom: var(--sp-6);">
+                    <div class="glass-panel text-center py-4">
+                        <div class="text-xs text-muted uppercase tracking-wider mb-2">Total Assets</div>
+                        <div class="text-3xl font-bold font-mono" id="totalValue">¥0</div>
+                    </div>
+                    <div class="glass-panel text-center py-4">
+                        <div class="text-xs text-muted uppercase tracking-wider mb-2">Total Cost</div>
+                        <div class="text-xl font-mono text-muted" id="totalCost">¥0</div>
+                    </div>
+                    <div class="glass-panel text-center py-4">
+                        <div class="text-xs text-muted uppercase tracking-wider mb-2">Total P&L</div>
+                        <div class="text-2xl font-bold font-mono" id="totalGainLoss">¥0</div>
+                        <div class="text-sm font-bold mt-1" id="totalGainLossPct">0%</div>
+                    </div>
+                    <div class="glass-panel text-center py-4">
+                        <div class="text-xs text-muted uppercase tracking-wider mb-2">Best Performer</div>
+                        <div class="text-xl font-bold text-accent" id="bestPerformer">-</div>
+                    </div>
+                </div>
+
+                <!-- Holdings Table -->
+                <div class="glass-panel mb-6">
+                    <div class="panel-header">
+                        <div class="panel-title">Holdings</div>
+                    </div>
+                    <div class="table-container">
+                        <table class="table-finance">
+                            <thead>
+                                <tr>
+                                    <th>Symbol</th>
+                                    <th class="text-right">Shares</th>
+                                    <th class="text-right">Avg Cost</th>
+                                    <th class="text-right">Price</th>
+                                    <th class="text-right">Value</th>
+                                    <th class="text-right">P&L</th>
+                                    <th class="text-right">P&L %</th>
+                                    <th class="text-right">Cost Basis</th>
+                                </tr>
+                            </thead>
+                            <tbody id="holdingsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Trades Table -->
+                <div class="glass-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">Trade History</div>
+                    </div>
+                    <div class="table-container">
+                        <table class="table-finance">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Symbol</th>
+                                    <th>Side</th>
+                                    <th class="text-right">Shares</th>
+                                    <th class="text-right">Price</th>
+                                    <th class="text-right">Amount</th>
+                                    <th class="text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tradesBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Modal -->
+    <!-- Transaction Modal -->
+    <div class="modal custom-modal" id="modalOverlay">
+        <div class="modal-dialog glass-panel" style="max-width: 500px; margin: 100px auto; position: relative;">
+            <div class="panel-header">
+                <div class="panel-title" id="modalTitle">Register Trade</div>
+                <button class="btn btn-ghost btn-sm" onclick="closeModal()">×</button>
+            </div>
+
+            <form id="tradeForm" onsubmit="submitTrade(event)" class="p-4">
+                <input type="hidden" id="assetType" name="asset_type">
+
+                <div class="d-grid gap-4 mb-4" style="grid-template-columns: 1fr 1fr;">
+                    <div class="input-group">
+                        <label>Market</label>
+                        <select id="market" name="market" onchange="updateCurrency()">
+                            <option value="US">US Stock</option>
+                            <option value="JP">JP Stock</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Side</label>
+                        <select id="side" name="side">
+                            <option value="BUY">BUY</option>
+                            <option value="SELL">SELL</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group mb-4">
+                    <label>Symbol</label>
+                    <input type="text" id="symbol" name="symbol" list="symbolList" placeholder="e.g. NVDA" required
+                        autocomplete="off">
+                    <datalist id="symbolList"></datalist>
+                </div>
+
+                <div class="input-group mb-4">
+                    <label>Date</label>
+                    <input type="date" id="tradeDate" name="trade_date" required>
+                </div>
+
+                <div class="d-grid gap-4 mb-4" style="grid-template-columns: 1fr 1fr;">
+                    <div class="input-group">
+                        <label>Shares</label>
+                        <input type="number" step="any" id="shares" name="shares" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Price</label>
+                        <input type="number" step="any" id="price" name="price" required>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-4 mb-4" style="grid-template-columns: 1fr 1fr;">
+                    <div class="input-group">
+                        <label>Currency</label>
+                        <input type="text" id="currency" name="currency" value="USD" readonly
+                            style="background:rgba(0,0,0,0.2);">
+                    </div>
+                    <div class="input-group">
+                        <label>FX Rate (to JPY)</label>
+                        <input type="number" step="any" id="fxRate" name="fx_rate_to_jpy" placeholder="150.0">
+                    </div>
+                </div>
+
+                <div class="input-group mb-6">
+                    <label>Memo</label>
+                    <input type="text" id="memo" name="memo">
+                </div>
+
+                <div class="d-flex justify-end gap-2">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        // --- Formatting Utils ---
+        function formatCurrency(value, currency = 'JPY') {
+            if (currency === 'JPY') {
+                return new Intl.NumberFormat('ja-JP', {
+                    style: 'currency',
+                    currency: 'JPY',
+                    minimumFractionDigits: 0
+                }).format(value);
+            } else {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: currency,
+                    minimumFractionDigits: 2
+                }).format(value);
+            }
+        }
+
+        // --- main Logic ---
+        // --- main Logic ---
+        async function loadPortfolio() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/portfolio/`);
+                const data = await response.json();
+
+                // Performance
+                document.getElementById('totalValue').textContent = formatCurrency(data.performance.total_value, 'JPY');
+                document.getElementById('totalCost').textContent = formatCurrency(data.performance.total_cost, 'JPY');
+
+                const totalGain = data.performance.total_gain_loss;
+                const totalGainEl = document.getElementById('totalGainLoss');
+                totalGainEl.textContent = formatCurrency(totalGain, 'JPY');
+                totalGainEl.className = 'text-2xl font-bold font-mono ' + (totalGain >= 0 ? 'text-success' : 'text-danger');
+
+                const gainPct = parseFloat(data.performance.total_gain_loss_pct);
+                const gainPctEl = document.getElementById('totalGainLossPct');
+                gainPctEl.innerHTML = UI.formatPct(gainPct);
+
+                document.getElementById('bestPerformer').textContent = data.performance.best_performer || '-';
+
+                // Holdings
+                const holdingsHtml = data.holdings.map(h => {
+                    const gainClass = parseFloat(h.gain_loss) >= 0 ? 'text-success' : 'text-danger';
+                    const currencySymbol = h.currency === 'USD' ? '$' : '¥';
+                    return `
+                        <tr>
+                            <td>
+                                <div class="font-bold text-main">${h.symbol}</div>
+                                <div class="text-xs text-muted">${h.name || '-'}</div>
+                            </td>
+                            <td class="text-right num">${Utils.formatNumber(h.shares, 2)}</td>
+                            <td class="text-right num text-muted">${currencySymbol}${Utils.formatNumber(h.avg_cost)}</td>
+                            <td class="text-right num font-bold">${currencySymbol}${Utils.formatNumber(h.current_price)}</td>
+                            <td class="text-right num font-bold">${currencySymbol}${Utils.formatNumber(h.market_value)}</td>
+                            <td class="text-right num ${gainClass}">${currencySymbol}${Utils.formatNumber(h.gain_loss)}</td>
+                            <td class="text-right ${gainClass}">${Utils.formatPct(h.gain_loss_pct)}</td>
+                            <td class="text-right num text-muted">${currencySymbol}${Utils.formatNumber(h.cost_basis)}</td>
+                        </tr>
+                    `;
+                }).join('');
+                document.getElementById('holdingsBody').innerHTML = holdingsHtml;
+
+                // Trades
+                const tradesHtml = data.recent_trades.map(t => {
+                    const sideBadge = t.side === 'BUY' ? 'badge-success' : 'badge-danger';
+                    const currencySymbol = t.currency === 'USD' ? '$' : '¥';
+                    return `
+                        <tr>
+                            <td class="text-muted text-sm">${t.trade_date}</td>
+                            <td class="font-bold text-main">${t.symbol}</td>
+                            <td><span class="badge ${sideBadge}">${t.side}</span></td>
+                            <td class="text-right num">${Utils.formatNumber(t.shares)}</td>
+                            <td class="text-right num">${currencySymbol}${Utils.formatNumber(t.price)}</td>
+                            <td class="text-right num">${currencySymbol}${Utils.formatNumber(t.amount)}</td>
+                            <td class="text-right">
+                                <button class="btn btn-ghost btn-sm text-danger" onclick="deleteTrade('${t.trade_id}')">×</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                document.getElementById('tradesBody').innerHTML = tradesHtml;
+
+                document.getElementById('loading').style.display = 'none';
+
+                // Fade in
+                const content = document.getElementById('content');
+                content.style.display = 'block';
+                void content.offsetWidth;
+                content.style.opacity = 1;
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').style.display = 'none';
+                UI.showToast(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        // --- Modal & Form Logic ---
+        async function openModal(assetType) {
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById('assetType').value = assetType;
+            document.getElementById('modalTitle').textContent = `${assetType} 取引登録`;
+
+            // Set default date to today
+            document.getElementById('tradeDate').valueAsDate = new Date();
+
+            // Set market default
+            if (assetType === 'FX') {
+                // For FX, maybe different logic, but using same form
+                document.getElementById('market').value = 'US'; // Example
+            } else if (assetType === 'ETF') {
+                document.getElementById('market').value = 'US';
+            } else {
+                document.getElementById('market').value = 'US';
+            }
+            updateCurrency();
+
+            // Load symbols if not loaded
+            if (!symbolsLoaded) {
+                await loadSymbols();
+            }
+        }
+
+        let symbolsLoaded = false;
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.getElementById('tradeForm').reset();
+        }
+
+        function updateCurrency() {
+            const market = document.getElementById('market').value;
+            const currencyInput = document.getElementById('currency');
+            if (market === 'US') {
+                currencyInput.value = 'USD';
+                document.getElementById('fxRate').placeholder = "150.0";
+            } else {
+                currencyInput.value = 'JPY';
+                document.getElementById('fxRate').placeholder = "1.0";
+                document.getElementById('fxRate').value = 1.0;
+            }
+        }
+
+        async function loadSymbols() {
+            try {
+                const res = await fetch(`${CONFIG.API_BASE}/portfolio/symbols`);
+                const symbols = await res.json();
+                const list = document.getElementById('symbolList');
+                list.innerHTML = '';
+                symbols.forEach(s => {
+                    const option = document.createElement('option');
+                    option.value = s.symbol;
+                    option.label = `${s.name} (${s.market})`;
+                    list.appendChild(option);
+                });
+                symbolsLoaded = true;
+            } catch (e) {
+                console.error("Failed to load symbols", e);
+            }
+        }
+
+        async function submitTrade(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const data = {
+                asset_type: formData.get('asset_type'),
+                market: formData.get('market'),
+                side: formData.get('side'),
+                symbol_key: formData.get('symbol'), // Backend expects symbol_key
+                trade_date: formData.get('trade_date'),
+                shares: parseFloat(formData.get('shares')),
+                price: parseFloat(formData.get('price')),
+                currency: formData.get('currency'),
+                fx_rate_to_jpy: formData.get('fx_rate_to_jpy') ? parseFloat(formData.get('fx_rate_to_jpy')) : 1.0,
+                memo: formData.get('memo')
+            };
+
+            try {
+                const res = await fetch(`${CONFIG.API_BASE}/portfolio/trade`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    closeModal();
+                    loadPortfolio(); // Refresh
+                } else {
+                    const err = await res.json();
+                    alert('Error: ' + err.detail);
+                }
+            } catch (e) {
+                alert('Connection Error');
+            }
+        }
+
+        async function deleteTrade(id) {
+            if (!confirm('本当に削除しますか？')) return;
+
+            try {
+                const res = await fetch(`${CONFIG.API_BASE}/portfolio/trade/${id}`, {
+                    method: 'DELETE'
+                });
+                if (res.ok) {
+                    loadPortfolio();
+                } else {
+                    alert('Failed to delete');
+                }
+            } catch (e) {
+                alert('Error');
+            }
+        }
+
+        // Init
+        loadPortfolio();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>株式市場モニター - Trading System</title>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Loading Overlay -->
+            <div id="loading" class="loading-overlay">
+                <div class="spinner"></div>
+            </div>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title">
+                    <span>📊</span> Market Monitor
+                </div>
+                <div class="text-muted text-sm" id="lastUpdated">Updating...</div>
+            </div>
+
+            <div id="content" style="display:none; opacity:0; transition:opacity 0.5s;">
+                <!-- Top Grid: Indices, FX, Metals -->
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--sp-6);">
+
+                    <!-- Market Indices -->
+                    <div class="glass-panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <span class="badge badge-danger">📉</span> Indices
+                            </div>
+                        </div>
+                        <div class="flex-col gap-2" id="indices"></div>
+                    </div>
+
+                    <!-- FX Rates -->
+                    <div class="glass-panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <span class="badge badge-success">💱</span> Currencies
+                            </div>
+                        </div>
+                        <div class="flex-col gap-2" id="fxRates"></div>
+                    </div>
+
+                    <!-- Metals -->
+                    <div class="glass-panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <span class="badge badge-warning">🥇</span> Commodities
+                            </div>
+                        </div>
+                        <div class="flex-col gap-2" id="metals"></div>
+                    </div>
+                </div>
+
+                <!-- Portfolio Summary -->
+                <div class="glass-panel mt-4">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <span class="badge badge-accent">💼</span> Portfolio Overview
+                        </div>
+                    </div>
+
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--sp-6); align-items: start;">
+                        <!-- Stats -->
+                        <div class="flex-col gap-4">
+                            <div>
+                                <div class="text-muted text-sm">Total Assets</div>
+                                <div class="text-lg font-bold" id="totalValue">¥0</div>
+                            </div>
+                            <div>
+                                <div class="text-muted text-sm">Total Gain/Loss</div>
+                                <div class="d-flex gap-2 items-center">
+                                    <span class="text-lg font-bold" id="gainLoss">¥0</span>
+                                    <span id="gainLossPct">-</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-muted text-sm">YTD Performance</div>
+                                <div class="d-flex gap-2 items-center">
+                                    <span class="text-lg font-bold" id="ytdGainLoss">-</span>
+                                    <span id="ytdGainLossPct">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chart (Placeholder for now) -->
+                        <div class="flex-col items-center">
+                            <div class="text-muted text-sm mb-4">Capital Allocation</div>
+                            <div style="width: 200px; height: 200px;">
+                                <canvas id="portfolioPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Section -->
+                <div class="glass-panel mt-4">
+                    <div class="panel-title mb-4">
+                        <span class="badge badge-neutral">📈</span> Performance History
+                    </div>
+                    <div class="empty-state">
+                        Chart library integration in progress.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/common.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // Pie Chart
+        let pieChart = null;
+
+        function createPieChart() {
+            const ctx = document.getElementById('portfolioPieChart');
+            if (!ctx) return;
+
+            // Dummy Data (Should be fetched)
+            const data = {
+                labels: ['NVDA'],
+                datasets: [{
+                    data: [100],
+                    backgroundColor: ['rgba(99, 102, 241, 0.8)'],
+                    borderColor: ['rgba(255, 255, 255, 0.8)'],
+                    borderWidth: 2
+                }]
+            };
+
+            pieChart = new Chart(ctx, {
+                type: 'pie',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: 'white',
+                                font: { size: 11 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderMarketItem(item) {
+            return `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border);">
+                    <div class="font-bold text-sm">${item.name}</div>
+                    <div class="text-right">
+                        <div class="text-sm font-bold">${UI.formatNumber(item.current_price)}</div>
+                        <div class="text-xs">${UI.formatPct(item.change_pct)}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadMonitorData() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/monitor/`);
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Portfolio
+                document.getElementById('totalValue').textContent = UI.formatCurrency(data.portfolio.total_value_jpy, 'JPY');
+                document.getElementById('gainLoss').textContent = UI.formatCurrency(data.portfolio.total_gain_loss_jpy, 'JPY');
+                document.getElementById('gainLossPct').innerHTML = UI.formatPct(data.portfolio.total_gain_loss_pct);
+
+                if (data.portfolio.ytd_gain_loss_jpy !== null) {
+                    document.getElementById('ytdGainLoss').textContent = UI.formatCurrency(data.portfolio.ytd_gain_loss_jpy, 'JPY');
+                    document.getElementById('ytdGainLossPct').innerHTML = UI.formatPct(data.portfolio.ytd_gain_loss_pct);
+                }
+
+                // Market Indices
+                document.getElementById('indices').innerHTML = data.indices.map(renderMarketItem).join('');
+
+                // FX Rates
+                document.getElementById('fxRates').innerHTML = data.fx_rates.map(renderMarketItem).join('');
+
+                // Metals
+                document.getElementById('metals').innerHTML = data.metals.map(renderMarketItem).join('');
+
+                // Last Updated
+                const date = new Date(data.last_updated);
+                // Custom format: 02/11 10:30
+                const fmtDate = `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                document.getElementById('lastUpdated').textContent = `Updated: ${fmtDate}`;
+
+                // Show content with fade in
+                const loader = document.getElementById('loading');
+                const content = document.getElementById('content');
+                if (loader) loader.style.display = 'none';
+                if (content) {
+                    content.style.display = 'block';
+                    // Trigger reflow
+                    void content.offsetWidth;
+                    content.style.opacity = 1;
+                }
+
+                // Create pie chart
+                if (!pieChart) {
+                    createPieChart();
+                }
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                UI.showToast(`Load Failed: ${error.message}`, 'error');
+                // Don't hide content entirely if refresh fails, just Toast
+                if (document.getElementById('loading')) document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        // Load data on page load
+        // common.js loads sidebar, we load data
+        loadMonitorData();
+
+        // Refresh every 30 seconds
+        setInterval(loadMonitorData, 30000);
+    </script>
+</body>
+
+</html>
