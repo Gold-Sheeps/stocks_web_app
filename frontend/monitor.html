@@ -6,6 +6,388 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>株式市場モニター - Trading System</title>
     <link rel="stylesheet" href="css/common.css">
+    <style>
+        /* Enhanced Monitor Styles (2026 Finance Premium) */
+
+        /* Gradient Background Overlays */
+        .glass-panel {
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.05) 0%,
+                    rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.03),
+                    transparent);
+            transition: left 0.5s;
+        }
+
+        .glass-panel:hover::before {
+            left: 100%;
+        }
+
+        .glass-panel:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Market Row Enhanced */
+        .market-row {
+            position: relative;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            padding: 12px 8px;
+        }
+
+        .market-row:hover {
+            background: rgba(255, 255, 255, 0.03);
+            transform: translateX(4px);
+        }
+
+        .market-row.flash-up {
+            animation: flashGreen 0.6s ease;
+        }
+
+        .market-row.flash-down {
+            animation: flashRed 0.6s ease;
+        }
+
+        @keyframes flashGreen {
+
+            0%,
+            100% {
+                background: transparent;
+            }
+
+            50% {
+                background: rgba(34, 197, 94, 0.1);
+                box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+            }
+        }
+
+        @keyframes flashRed {
+
+            0%,
+            100% {
+                background: transparent;
+            }
+
+            50% {
+                background: rgba(239, 68, 68, 0.1);
+                box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+            }
+        }
+
+        .market-cell-name {
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+            justify-content: start;
+            text-align: left;
+            flex: 1;
+        }
+
+        .market-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: -0.01em;
+        }
+
+        .market-symbol {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            opacity: 0.6;
+            font-family: var(--font-mono);
+            line-height: 1;
+            margin-top: 3px;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+        }
+
+        .market-cell-right {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .market-value {
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.5px;
+            opacity: 1;
+            font-size: 1.05rem;
+            font-weight: 600;
+            font-family: var(--font-mono);
+        }
+
+        .market-value.na {
+            opacity: 0.4;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .market-change {
+            font-size: 0.75rem;
+            margin-top: 2px;
+            font-weight: 600;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Sparkline Container */
+        .sparkline-container {
+            width: 80px;
+            height: 24px;
+            margin-left: 12px;
+            opacity: 0.7;
+        }
+
+        .sparkline {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Badge Styles */
+        .badge-minimal {
+            font-size: 0.5rem;
+            padding: 2px 5px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            opacity: 0.5;
+            margin-left: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .badge-api {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .badge-miss {
+            background: rgba(239, 68, 68, 0.05);
+            border-color: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            opacity: 0.6;
+        }
+
+        /* Live Indicator */
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            color: var(--success);
+            opacity: 0.8;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+        }
+
+        /* Enhanced Colors with Glow */
+        .text-up-dim {
+            color: #86efac;
+            text-shadow: 0 0 8px rgba(134, 239, 172, 0.3);
+        }
+
+        .text-down-dim {
+            color: #fca5a5;
+            text-shadow: 0 0 8px rgba(252, 165, 165, 0.3);
+        }
+
+        /* Panel Header Enhanced */
+        .panel-header {
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .panel-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Disconnected Notice */
+        .disconnected-notice {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 8px 0;
+            text-align: center;
+            opacity: 0.5;
+            font-style: italic;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+
+        /* Portfolio Stats Enhanced */
+        .stat-card {
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            letter-spacing: -0.02em;
+        }
+
+        /* Page Header Enhanced */
+        .page-header {
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Loading Skeleton Enhanced */
+        .skeleton {
+            background: linear-gradient(90deg,
+                    rgba(255, 255, 255, 0.05) 25%,
+                    rgba(255, 255, 255, 0.1) 50%,
+                    rgba(255, 255, 255, 0.05) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+            height: 20px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        /* Responsive Grid */
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: var(--sp-6);
+        }
+
+        @media (max-width: 768px) {
+            .market-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 1.4rem;
+            }
+        }
+
+        /* Fade-in Animation */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Staggered Animation */
+        .stagger-1 {
+            animation-delay: 0.1s;
+        }
+
+        .stagger-2 {
+            animation-delay: 0.2s;
+        }
+
+        .stagger-3 {
+            animation-delay: 0.3s;
+        }
+
+        .stagger-4 {
+            animation-delay: 0.4s;
+        }
+
+        .stagger-5 {
+            animation-delay: 0.5s;
+        }
+    </style>
 </head>
 
 <body>
@@ -15,57 +397,124 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="container">
-            <!-- Loading Overlay -->
-            <div id="loading" class="loading-overlay">
-                <div class="spinner"></div>
-            </div>
-
             <!-- Page Header -->
             <div class="page-header">
                 <div class="page-title">
                     <span>📊</span> Market Monitor
                 </div>
-                <div class="text-muted text-sm" id="lastUpdated">Updating...</div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="live-indicator">
+                        <div class="live-dot"></div>
+                        <span>LIVE</span>
+                    </div>
+                    <div class="text-muted text-sm" id="lastUpdated">Updating...</div>
+                </div>
             </div>
 
-            <div id="content" style="display:none; opacity:0; transition:opacity 0.5s;">
-                <!-- Top Grid: Indices, FX, Metals -->
-                <div
-                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--sp-6);">
+            <div id="content" style="opacity:0; transition:opacity 0.5s ease; display: block;">
+                <!-- Top Grid: Indices, Rates, FX, Commodities, Crypto -->
+                <div class="market-grid">
 
                     <!-- Market Indices -->
-                    <div class="glass-panel">
+                    <div class="glass-panel fade-in stagger-1">
                         <div class="panel-header">
                             <div class="panel-title">
-                                <span class="badge badge-danger">📉</span> Indices
+                                <span class="badge badge-danger">📉</span> Global Equities
                             </div>
                         </div>
-                        <div class="flex-col gap-2" id="indices"></div>
+                        <div class="flex-col" id="indices">
+                            <!-- Skeleton Placeholders -->
+                            <div class="market-row">
+                                <div class="skeleton" style="width:40%"></div>
+                                <div class="skeleton" style="width:30%"></div>
+                            </div>
+                            <div class="market-row">
+                                <div class="skeleton" style="width:50%"></div>
+                                <div class="skeleton" style="width:30%"></div>
+                            </div>
+                            <div class="market-row">
+                                <div class="skeleton" style="width:40%"></div>
+                                <div class="skeleton" style="width:30%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rates & Bonds -->
+                    <div class="glass-panel fade-in stagger-2">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <span class="badge badge-warning">🏛️</span> Rates & Bonds
+                            </div>
+                        </div>
+                        <div class="flex-col" id="rates">
+                            <div class="market-row">
+                                <div class="skeleton" style="width:40%"></div>
+                                <div class="skeleton" style="width:30%"></div>
+                            </div>
+                            <div class="market-row">
+                                <div class="skeleton" style="width:50%"></div>
+                                <div class="skeleton" style="width:30%"></div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- FX Rates -->
-                    <div class="glass-panel">
+                    <div class="glass-panel fade-in stagger-3">
                         <div class="panel-header">
                             <div class="panel-title">
                                 <span class="badge badge-success">💱</span> Currencies
                             </div>
                         </div>
-                        <div class="flex-col gap-2" id="fxRates"></div>
+                        <div class="flex-col" id="fxRates">
+                            <div class="market-row">
+                                <div class="skeleton" style="width:40%"></div>
+                                <div class="skeleton" style="width:30%"></div>
+                            </div>
+                            <div class="market-row">
+                                <div class="skeleton" style="width:50%"></div>
+                                <div class="skeleton" style="width:30%"></div>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Metals -->
-                    <div class="glass-panel">
+                    <!-- Commodities -->
+                    <div class="glass-panel fade-in stagger-4">
                         <div class="panel-header">
                             <div class="panel-title">
                                 <span class="badge badge-warning">🥇</span> Commodities
                             </div>
                         </div>
-                        <div class="flex-col gap-2" id="metals"></div>
+                        <div class="flex-col" id="commodities">
+                            <div class="market-row">
+                                <div class="skeleton" style="width:40%"></div>
+                                <div class="skeleton" style="width:30%"></div>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Crypto -->
+                    <div class="glass-panel fade-in stagger-5">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <span class="badge badge-accent">₿</span> Crypto
+                            </div>
+                        </div>
+                        <div class="flex-col" id="crypto">
+                            <div class="market-row">
+                                <div class="skeleton" style="width:40%"></div>
+                                <div class="skeleton" style="width:30%"></div>
+                            </div>
+                            <div class="market-row">
+                                <div class="skeleton" style="width:50%"></div>
+                                <div class="skeleton" style="width:30%"></div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- Portfolio Summary -->
-                <div class="glass-panel mt-4">
+                <div class="glass-panel mt-4 fade-in" style="animation-delay: 0.6s;">
                     <div class="panel-header">
                         <div class="panel-title">
                             <span class="badge badge-accent">💼</span> Portfolio Overview
@@ -75,28 +524,34 @@
                     <div
                         style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--sp-6); align-items: start;">
                         <!-- Stats -->
-                        <div class="flex-col gap-4">
-                            <div>
-                                <div class="text-muted text-sm">Total Assets</div>
-                                <div class="text-lg font-bold" id="totalValue">¥0</div>
-                            </div>
-                            <div>
-                                <div class="text-muted text-sm">Total Gain/Loss</div>
-                                <div class="d-flex gap-2 items-center">
-                                    <span class="text-lg font-bold" id="gainLoss">¥0</span>
-                                    <span id="gainLossPct">-</span>
+                        <div class="flex-col gap-3">
+                            <div class="stat-card">
+                                <div class="stat-label">Total Assets</div>
+                                <div class="stat-value" id="totalValue">
+                                    <div class="skeleton" style="width:120px"></div>
                                 </div>
                             </div>
-                            <div>
-                                <div class="text-muted text-sm">YTD Performance</div>
+                            <div class="stat-card">
+                                <div class="stat-label">Total Gain/Loss</div>
                                 <div class="d-flex gap-2 items-center">
-                                    <span class="text-lg font-bold" id="ytdGainLoss">-</span>
-                                    <span id="ytdGainLossPct">-</span>
+                                    <span class="stat-value" id="gainLoss">
+                                        <div class="skeleton" style="width:100px"></div>
+                                    </span>
+                                    <span id="gainLossPct"></span>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">YTD Performance</div>
+                                <div class="d-flex gap-2 items-center">
+                                    <span class="stat-value" id="ytdGainLoss">
+                                        <div class="skeleton" style="width:100px"></div>
+                                    </span>
+                                    <span id="ytdGainLossPct"></span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Chart (Placeholder for now) -->
+                        <!-- Chart -->
                         <div class="flex-col items-center">
                             <div class="text-muted text-sm mb-4">Capital Allocation</div>
                             <div style="width: 200px; height: 200px;">
@@ -107,9 +562,11 @@
                 </div>
 
                 <!-- Bottom Section -->
-                <div class="glass-panel mt-4">
-                    <div class="panel-title mb-4">
-                        <span class="badge badge-neutral">📈</span> Performance History
+                <div class="glass-panel mt-4 fade-in" style="animation-delay: 0.7s;">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <span class="badge badge-neutral">📈</span> Performance History
+                        </div>
                     </div>
                     <div class="empty-state">
                         Chart library integration in progress.
@@ -123,6 +580,9 @@
     <script src="js/common.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
+        // Store previous values for animation
+        const previousValues = {};
+
         // Pie Chart
         let pieChart = null;
 
@@ -130,12 +590,13 @@
             const ctx = document.getElementById('portfolioPieChart');
             if (!ctx) return;
 
-            // Dummy Data (Should be fetched)
             const data = {
                 labels: ['NVDA'],
                 datasets: [{
                     data: [100],
-                    backgroundColor: ['rgba(99, 102, 241, 0.8)'],
+                    backgroundColor: [
+                        'rgba(99, 102, 241, 0.8)',
+                    ],
                     borderColor: ['rgba(255, 255, 255, 0.8)'],
                     borderWidth: 2
                 }]
@@ -160,79 +621,297 @@
             });
         }
 
-        function renderMarketItem(item) {
+        // Generate dummy sparkline data
+        function generateSparklineData() {
+            const points = 20;
+            const data = [];
+            let value = 100;
+            for (let i = 0; i < points; i++) {
+                value += (Math.random() - 0.5) * 5;
+                data.push(value);
+            }
+            return data;
+        }
+
+        // Create SVG sparkline
+        function createSparkline(data, color) {
+            if (!data || data.length === 0) return '';
+
+            const width = 80;
+            const height = 24;
+            const padding = 2;
+
+            const max = Math.max(...data);
+            const min = Math.min(...data);
+            const range = max - min || 1;
+
+            const points = data.map((value, index) => {
+                const x = (index / (data.length - 1)) * (width - padding * 2) + padding;
+                const y = height - padding - ((value - min) / range) * (height - padding * 2);
+                return `${x},${y}`;
+            }).join(' ');
+
             return `
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border);">
-                    <div class="font-bold text-sm">${item.name}</div>
-                    <div class="text-right">
-                        <div class="text-sm font-bold">${UI.formatNumber(item.current_price)}</div>
-                        <div class="text-xs">${UI.formatPct(item.change_pct)}</div>
+                <svg class="sparkline" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
+                    <polyline
+                        fill="none"
+                        stroke="${color}"
+                        stroke-width="1.5"
+                        points="${points}"
+                        opacity="0.7"
+                    />
+                </svg>
+            `;
+        }
+
+        // Animate number changes
+        function animateValue(element, start, end, duration = 800) {
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Easing function
+                const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+
+                const current = start + (end - start) * easeOutQuart;
+                element.textContent = UI.formatNumber(current);
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        // Monitor Data Logic
+        const TARGET_INDICES = [
+            { key: 'Dow Jones', symbol: 'US:^DJI' },
+            { key: 'S&P 500', symbol: 'US:^GSPC' },
+            { key: 'NASDAQ', symbol: 'US:^IXIC' },
+            { key: 'Russell 2000', symbol: 'US:^RUT' },
+            { key: 'Nikkei 225', symbol: 'JP:^N225', fallback: true },
+            { key: 'TOPIX', symbol: 'JP:^TPX', fallback: true },
+            { key: 'SOX', symbol: 'US:^SOX', fallback: true },
+            { key: 'VIX', symbol: 'US:^VIX' }
+        ];
+
+        const TARGET_RATES = [
+            { key: 'US 10Y Yield', symbol: 'US:^TNX', fallback: true, format: "rate" },
+            { key: 'US 2Y Yield', symbol: 'US:^IRX', fallback: true, format: "rate" }
+        ];
+
+        const TARGET_FX = [
+            { key: 'USD/JPY', symbol: 'US:USDJPY=X' },
+            { key: 'EUR/USD', symbol: 'US:EURUSD=X' },
+            { key: 'GBP/USD', symbol: 'US:GBPUSD=X' },
+            { key: 'DXY', symbol: 'US:Dx-Y.NYB', fallback: true }
+        ];
+
+        const TARGET_COMMODITIES = [
+            { key: 'Gold', symbol: 'US:GLD' },
+            { key: 'Silver', symbol: 'US:SLV' },
+            { key: 'WTI Crude', symbol: 'US:CL=F', fallback: true }
+        ];
+
+        const TARGET_CRYPTO = [
+            { key: 'Bitcoin', symbol: 'BTC-USD', fallback: true },
+            { key: 'Ethereum', symbol: 'ETH-USD', fallback: true }
+        ];
+
+        function normalize(str) {
+            if (!str) return '';
+            return str.replace(/^(US:|JP:)/i, '').replace(/\s+/g, '').toUpperCase();
+        }
+
+        function renderMarketItem(item, index) {
+            const isMissing = item.current_price === undefined || item.current_price === null;
+            const itemKey = `${item.symbol}_${item.name}`;
+
+            let priceDisplay = "N/A";
+            let changeDisplay = "";
+            let changeClass = "text-flat";
+            let arrow = "";
+            let priceClass = isMissing ? "market-value na" : "market-value";
+            let sparklineHtml = "";
+
+            if (!isMissing) {
+                // Price
+                const currentPrice = parseFloat(item.current_price);
+                priceDisplay = UI.formatNumber(currentPrice);
+                if (item.format === "rate") priceDisplay += "%";
+
+                // Change
+                const change = parseFloat(item.change_pct);
+                if (!isNaN(change)) {
+                    if (change > 0) {
+                        changeDisplay = `${Math.abs(change).toFixed(2)}%`;
+                        changeClass = "text-up-dim";
+                        arrow = "▲";
+                        sparklineHtml = `<div class="sparkline-container">${createSparkline(generateSparklineData(), '#86efac')}</div>`;
+                    } else if (change < 0) {
+                        changeDisplay = `${Math.abs(change).toFixed(2)}%`;
+                        changeClass = "text-down-dim";
+                        arrow = "▼";
+                        sparklineHtml = `<div class="sparkline-container">${createSparkline(generateSparklineData(), '#fca5a5')}</div>`;
+                    } else {
+                        changeDisplay = "0.00%";
+                        arrow = "";
+                        sparklineHtml = `<div class="sparkline-container">${createSparkline(generateSparklineData(), '#666')}</div>`;
+                    }
+                } else {
+                    changeDisplay = "—";
+                }
+            }
+
+            // Badge Logic
+            let statusBadge = "";
+            if (isMissing) {
+                if (item.fallback) {
+                    statusBadge = '<span class="badge-minimal badge-api">API</span>';
+                } else {
+                    statusBadge = '<span class="badge-minimal badge-miss">MISS</span>';
+                }
+            }
+
+            const displaySymbol = (item.symbol || "").replace(/^(US:|JP:)/, '');
+
+            return `
+                <div class="market-row" data-key="${itemKey}">
+                    <div class="market-cell-name">
+                        <div class="market-name">${item.name}</div>
+                        <div class="market-symbol">${displaySymbol}</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        ${sparklineHtml}
+                        <div class="market-cell-right">
+                            <div>
+                                <span class="${priceClass}" data-value="${item.current_price || 0}">${priceDisplay}</span>
+                            </div>
+                            <div style="display:flex; align-items:center;">
+                                ${!isMissing ? `<div class="market-change ${changeClass}">${arrow} ${changeDisplay}</div>` : ''}
+                                ${statusBadge}
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
         }
 
+        function renderGroup(containerId, targets, apiData) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const merged = mergeData(targets, apiData);
+            const allMissing = merged.every(m => m.current_price === null || m.current_price === undefined);
+
+            if (allMissing) {
+                const limited = merged.slice(0, 2);
+                let html = limited.map(renderMarketItem).join('');
+                html += `<div class="disconnected-notice">Source not connected</div>`;
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = merged.map((item, index) => renderMarketItem(item, index)).join('');
+
+                // Add flash animation for changed values
+                merged.forEach(item => {
+                    const itemKey = `${item.symbol}_${item.name}`;
+                    if (previousValues[itemKey] !== undefined && item.current_price !== null) {
+                        const change = item.current_price - previousValues[itemKey];
+                        if (change !== 0) {
+                            const row = container.querySelector(`[data-key="${itemKey}"]`);
+                            if (row) {
+                                row.classList.add(change > 0 ? 'flash-up' : 'flash-down');
+                                setTimeout(() => {
+                                    row.classList.remove('flash-up', 'flash-down');
+                                }, 600);
+                            }
+                        }
+                    }
+                    if (item.current_price !== null) {
+                        previousValues[itemKey] = item.current_price;
+                    }
+                });
+            }
+        }
+
+        function mergeData(targets, apiData) {
+            return targets.map(target => {
+                const tSym = normalize(target.symbol);
+                const tKey = normalize(target.key);
+
+                const found = apiData.find(d => {
+                    const dSym = normalize(d.symbol);
+                    const dKey = normalize(d.name);
+                    return (dSym && dSym === tSym) || (dKey && dKey === tKey);
+                });
+
+                if (found) {
+                    return { ...found, format: target.format };
+                }
+
+                return {
+                    name: target.key,
+                    symbol: target.symbol,
+                    current_price: null,
+                    change_pct: null,
+                    fallback: target.fallback || false,
+                    format: target.format
+                };
+            });
+        }
+
         async function loadMonitorData() {
             try {
                 const response = await fetch(`${CONFIG.API_BASE}/monitor/`);
-
-                if (!response.ok) {
-                    throw new Error(`API Error: ${response.status}`);
-                }
-
+                if (!response.ok) throw new Error(`API Error: ${response.status}`);
                 const data = await response.json();
 
-                // Portfolio
-                document.getElementById('totalValue').textContent = UI.formatCurrency(data.portfolio.total_value_jpy, 'JPY');
-                document.getElementById('gainLoss').textContent = UI.formatCurrency(data.portfolio.total_gain_loss_jpy, 'JPY');
+                // Portfolio with animation
+                const totalValueEl = document.getElementById('totalValue');
+                const gainLossEl = document.getElementById('gainLoss');
+                const ytdGainLossEl = document.getElementById('ytdGainLoss');
+
+                totalValueEl.textContent = UI.formatCurrency(data.portfolio.total_value_jpy, 'JPY');
+                gainLossEl.textContent = UI.formatCurrency(data.portfolio.total_gain_loss_jpy, 'JPY');
                 document.getElementById('gainLossPct').innerHTML = UI.formatPct(data.portfolio.total_gain_loss_pct);
 
                 if (data.portfolio.ytd_gain_loss_jpy !== null) {
-                    document.getElementById('ytdGainLoss').textContent = UI.formatCurrency(data.portfolio.ytd_gain_loss_jpy, 'JPY');
+                    ytdGainLossEl.textContent = UI.formatCurrency(data.portfolio.ytd_gain_loss_jpy, 'JPY');
                     document.getElementById('ytdGainLossPct').innerHTML = UI.formatPct(data.portfolio.ytd_gain_loss_pct);
                 }
 
-                // Market Indices
-                document.getElementById('indices').innerHTML = data.indices.map(renderMarketItem).join('');
-
-                // FX Rates
-                document.getElementById('fxRates').innerHTML = data.fx_rates.map(renderMarketItem).join('');
-
-                // Metals
-                document.getElementById('metals').innerHTML = data.metals.map(renderMarketItem).join('');
+                // Render groups
+                renderGroup('indices', TARGET_INDICES, data.indices);
+                renderGroup('rates', TARGET_RATES, []);
+                renderGroup('fxRates', TARGET_FX, data.fx_rates);
+                renderGroup('commodities', TARGET_COMMODITIES, data.metals);
+                renderGroup('crypto', TARGET_CRYPTO, []);
 
                 // Last Updated
                 const date = new Date(data.last_updated);
-                // Custom format: 02/11 10:30
-                const fmtDate = `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-                document.getElementById('lastUpdated').textContent = `Updated: ${fmtDate}`;
+                if (!isNaN(date.getTime())) {
+                    const fmtDate = `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                    document.getElementById('lastUpdated').textContent = `${fmtDate}`;
+                }
 
-                // Show content with fade in
-                const loader = document.getElementById('loading');
+                // Show content
                 const content = document.getElementById('content');
-                if (loader) loader.style.display = 'none';
                 if (content) {
-                    content.style.display = 'block';
-                    // Trigger reflow
-                    void content.offsetWidth;
                     content.style.opacity = 1;
                 }
 
                 // Create pie chart
-                if (!pieChart) {
-                    createPieChart();
-                }
+                if (!pieChart) createPieChart();
 
             } catch (error) {
                 console.error('Error loading data:', error);
-                UI.showToast(`Load Failed: ${error.message}`, 'error');
-                // Don't hide content entirely if refresh fails, just Toast
-                if (document.getElementById('loading')) document.getElementById('loading').style.display = 'none';
             }
         }
 
         // Load data on page load
-        // common.js loads sidebar, we load data
         loadMonitorData();
 
         // Refresh every 30 seconds

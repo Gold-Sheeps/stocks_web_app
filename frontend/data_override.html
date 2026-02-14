@@ -6,6 +6,519 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Override - Trading System</title>
     <link rel="stylesheet" href="css/common.css">
+    <style>
+        /* Enhanced Data Override Page Styles */
+
+        /* Page Header Enhanced */
+        .page-header {
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 8px;
+            font-weight: 400;
+        }
+
+        /* Category Tabs Enhanced */
+        .category-tabs {
+            display: flex;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 6px;
+            border-radius: var(--radius-md);
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-x: auto;
+        }
+
+        .category-tab {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .category-tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        .category-tab.active {
+            background: linear-gradient(135deg, var(--primary) 0%, rgba(99, 102, 241, 0.8) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            opacity: 0;
+            animation: fadeIn 0.4s ease-in forwards;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scope Selection Panel */
+        .scope-panel {
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.05) 0%,
+                    rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 24px;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+        }
+
+        .scope-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        /* Override Methods Tabs */
+        .method-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .method-tab {
+            flex: 1;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .method-tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .method-tab.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        /* Preview Panel */
+        .preview-panel {
+            background: linear-gradient(135deg,
+                    rgba(245, 158, 11, 0.08) 0%,
+                    rgba(245, 158, 11, 0.02) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-left: 3px solid var(--warning);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .preview-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--warning);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .diff-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .diff-table thead th {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .diff-table tbody td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.85rem;
+        }
+
+        .diff-before {
+            color: var(--danger);
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .diff-after {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        /* AI Impact Panel */
+        .ai-impact-panel {
+            background: linear-gradient(135deg,
+                    rgba(99, 102, 241, 0.08) 0%,
+                    rgba(99, 102, 241, 0.02) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-left: 3px solid var(--primary);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .impact-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .impact-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .impact-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+        }
+
+        .impact-change {
+            font-size: 0.85rem;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        /* Missing Data Alert */
+        .missing-data-alert {
+            background: linear-gradient(135deg,
+                    rgba(239, 68, 68, 0.08) 0%,
+                    rgba(239, 68, 68, 0.02) 100%);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-left: 3px solid var(--danger);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+        }
+
+        .missing-list {
+            list-style: none;
+            padding: 0;
+            margin: 12px 0 0 0;
+        }
+
+        .missing-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+            border-left: 2px solid var(--danger);
+        }
+
+        .missing-item-name {
+            font-weight: 600;
+            font-family: var(--font-mono);
+        }
+
+        .missing-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Input Group Enhanced */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            color: white;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .input-group textarea {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* CSV Upload Area */
+        .csv-upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-md);
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .csv-upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .csv-upload-area.dragover {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        /* Audit Log */
+        .audit-log {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .audit-entry {
+            display: flex;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.85rem;
+        }
+
+        .audit-entry:last-child {
+            border-bottom: none;
+        }
+
+        .audit-timestamp {
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            min-width: 120px;
+        }
+
+        .audit-user {
+            color: var(--primary);
+            font-weight: 600;
+            min-width: 80px;
+        }
+
+        .audit-action {
+            flex: 1;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        /* Validation Badge */
+        .validation-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .validation-badge.success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .validation-badge.error {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .validation-badge.warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        /* Button Enhancements */
+        .btn {
+            transition: all 0.2s ease;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, rgba(99, 102, 241, 0.8) 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, rgba(16, 185, 129, 0.8) 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, rgba(239, 68, 68, 0.8) 100%);
+        }
+
+        /* Glass Panel */
+        .glass-panel {
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.05) 0%,
+                    rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 24px;
+            border-radius: var(--radius-md);
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.4rem;
+            }
+
+            .category-tabs {
+                flex-direction: column;
+            }
+
+            .scope-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .impact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .method-tabs {
+                flex-direction: column;
+            }
+        }
+
+        /* Utilities */
+        .text-success {
+            color: var(--success);
+        }
+
+        .text-danger {
+            color: var(--danger);
+        }
+
+        .text-warning {
+            color: var(--warning);
+        }
+
+        .text-muted {
+            color: var(--text-muted);
+        }
+    </style>
 </head>
 
 <body>
@@ -13,28 +526,677 @@
     <div id="sidebar-container"></div>
 
     <!-- Main Content -->
-    <!-- Main Content -->
     <div class="main-content">
         <div class="container">
             <!-- Page Header -->
             <div class="page-header">
-                <div class="page-title">
-                    <span>🛡️</span> Data Override
+                <div>
+                    <div class="page-title">
+                        <span>🛡️</span> Data Override
+                    </div>
+                    <div class="page-subtitle">
+                        AIが使う前提データを、壊さず・迷わず・証跡付きで直せる場所
+                    </div>
                 </div>
             </div>
 
-            <!-- Empty State -->
-            <div class="glass-panel text-center py-16">
-                <div class="text-6xl mb-6">🚧</div>
-                <h2 class="text-2xl font-bold mb-2">Construction in Progress</h2>
-                <p class="text-muted">This feature is currently under development.</p>
-                <button class="btn btn-ghost mt-6" onclick="history.back()">Go Back</button>
+            <!-- Category Tabs -->
+            <nav class="category-tabs">
+                <button class="category-tab active" data-category="fundamentals">
+                    💼 Fundamentals
+                </button>
+                <button class="category-tab" data-category="market">
+                    📊 Market & Macro
+                </button>
+                <button class="category-tab" data-category="metadata">
+                    🏷️ Metadata
+                </button>
+                <button class="category-tab" data-category="model">
+                    🤖 Model Inputs
+                </button>
+            </nav>
+
+            <!-- Tab: Fundamentals -->
+            <div id="tab-fundamentals" class="tab-content active">
+                <!-- Missing Data Alert -->
+                <div class="missing-data-alert">
+                    <div class="panel-title text-danger">
+                        ⚠️ データ欠損を検出しました
+                    </div>
+                    <ul class="missing-list">
+                        <li class="missing-item">
+                            <span class="missing-item-name">NVDA - EPS (2025 Q4)</span>
+                            <div class="missing-actions">
+                                <button class="btn btn-ghost btn-sm">前の値で埋める</button>
+                                <button class="btn btn-ghost btn-sm">別ソースから取得</button>
+                                <button class="btn btn-primary btn-sm">手動で入力</button>
+                            </div>
+                        </li>
+                        <li class="missing-item">
+                            <span class="missing-item-name">AMD - FCF Margin (2025 Q3)</span>
+                            <div class="missing-actions">
+                                <button class="btn btn-ghost btn-sm">前の値で埋める</button>
+                                <button class="btn btn-ghost btn-sm">別ソースから取得</button>
+                                <button class="btn btn-primary btn-sm">手動で入力</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Scope Selection -->
+                <div class="scope-panel">
+                    <div class="panel-title">🎯 対象の選択</div>
+                    <div class="scope-grid">
+                        <div class="input-group">
+                            <label>銘柄コード</label>
+                            <select id="ticker">
+                                <option value="">銘柄を選択...</option>
+                                <option value="NVDA">NVDA - NVIDIA Corp</option>
+                                <option value="AMD">AMD - Advanced Micro Devices</option>
+                                <option value="INTC">INTC - Intel Corp</option>
+                                <option value="MSFT">MSFT - Microsoft Corp</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>データ項目</label>
+                            <select id="dataField">
+                                <option value="">項目を選択...</option>
+                                <option value="eps">EPS（1株当たり利益）</option>
+                                <option value="sales">売上高</option>
+                                <option value="roe">ROE（自己資本利益率）</option>
+                                <option value="fcf">フリーキャッシュフロー</option>
+                                <option value="margin">純利益率</option>
+                                <option value="debt">負債比率</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>対象期間</label>
+                            <select id="period">
+                                <option value="2025Q4">2025年 第4四半期</option>
+                                <option value="2025Q3">2025年 第3四半期</option>
+                                <option value="2026Q1">2026年 第1四半期（未来）</option>
+                                <option value="ongoing">2026-02-10以降ずっと</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>優先度</label>
+                            <select id="priority">
+                                <option value="high">高（APIより優先）</option>
+                                <option value="normal" selected>通常（APIを優先）</option>
+                                <option value="fallback">フォールバックのみ</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Override Method Tabs -->
+                <div class="method-tabs">
+                    <button class="method-tab active" data-method="manual">
+                        ✏️ 手動で入力
+                    </button>
+                    <button class="method-tab" data-method="csv">
+                        📊 CSVで一括登録
+                    </button>
+                    <button class="method-tab" data-method="source">
+                        🔄 データソースを切替
+                    </button>
+                </div>
+
+                <!-- Step-by-step Guide -->
+                <div class="glass-panel"
+                    style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(99, 102, 241, 0.02) 100%); border-left: 3px solid var(--primary); margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                        <span style="font-size: 1.3rem;">📝</span>
+                        <strong>データ上書きの手順</strong>
+                    </div>
+                    <ol
+                        style="margin: 0; padding-left: 20px; color: var(--text-muted); font-size: 0.9rem; line-height: 1.8;">
+                        <li><strong style="color: white;">対象を選択：</strong> 上の「スコープ選択」で銘柄・データ項目・期間を選んでください</li>
+                        <li><strong style="color: white;">値を入力：</strong> 下の入力欄に新しい値と変更理由を記入してください</li>
+                        <li><strong style="color: white;">影響を確認：</strong> 「プレビューを表示」ボタンでAI予測への影響を確認できます</li>
+                        <li><strong style="color: white;">適用：</strong> 問題なければ「上書きを適用する」ボタンで確定してください</li>
+                    </ol>
+                </div>
+
+                <!-- Method: Manual Input -->
+                <div id="method-manual" class="glass-panel">
+                    <div class="input-group">
+                        <label>新しい値</label>
+                        <input type="number" step="any" id="newValue" placeholder="例: 4.92">
+                    </div>
+                    <div class="input-group" style="margin-top: 16px;">
+                        <label>変更理由（必須）</label>
+                        <textarea id="reason" placeholder="なぜこの値を上書きするのか理由を記入してください。監査ログに記録されます。"></textarea>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-primary" style="width: 100%;">
+                            🔍 プレビューを表示
+                        </button>
+                    </div>
+                </div>
+
+                <!-- AI Impact Analysis -->
+                <div class="ai-impact-panel">
+                    <div class="panel-title">
+                        🤖 AI予測への影響分析
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-card">
+                            <div class="impact-label">上昇確率</div>
+                            <div class="impact-value text-success">62%</div>
+                            <div class="impact-change text-danger">▼ 現在より -7%</div>
+                        </div>
+                        <div class="impact-card">
+                            <div class="impact-label">予測レンジ</div>
+                            <div class="impact-value">$138 - $152</div>
+                            <div class="impact-change text-warning">レンジが +8% 拡大</div>
+                        </div>
+                        <div class="impact-card">
+                            <div class="impact-label">上側バリア</div>
+                            <div class="impact-value text-success">$148.50</div>
+                            <div class="impact-change text-success">▲ +$2.30</div>
+                        </div>
+                        <div class="impact-card">
+                            <div class="impact-label">下側バリア</div>
+                            <div class="impact-value text-danger">$136.20</div>
+                            <div class="impact-change text-danger">▼ -$1.80</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Panel -->
+                <div class="preview-panel">
+                    <div class="preview-header">
+                        <div class="preview-title">
+                            👁️ 変更プレビュー
+                        </div>
+                        <span class="validation-badge success">✓ 検証OK</span>
+                    </div>
+                    <table class="diff-table">
+                        <thead>
+                            <tr>
+                                <th>項目</th>
+                                <th>変更前</th>
+                                <th>変更後</th>
+                                <th>変化</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>NVDA EPS (2025 Q4)</td>
+                                <td class="diff-before">$4.85</td>
+                                <td class="diff-after">$4.92</td>
+                                <td class="text-success">+1.4%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-ghost">
+                        ↩️ 元の値に戻す
+                    </button>
+                    <button class="btn btn-danger">
+                        ✕ キャンセル
+                    </button>
+                    <button class="btn btn-success" style="font-size: 1.05rem; padding: 12px 24px;">
+                        ✓ 上書きを適用する
+                    </button>
+                </div>
             </div>
+
+            <!-- Tab: Market & Macro -->
+            <div id="tab-market" class="tab-content">
+                <div class="glass-panel">
+                    <div class="panel-title">📊 マーケット・マクロ指標の上書き</div>
+                    <p class="text-muted">VIX、DXY、金利、WTI原油、金価格などの上書きができます。</p>
+
+                    <div class="scope-grid" style="margin-top: 20px;">
+                        <div class="input-group">
+                            <label>市場指標</label>
+                            <select>
+                                <option value="">指標を選択...</option>
+                                <option value="VIX">VIX（ボラティリティ指数）</option>
+                                <option value="DXY">DXY（ドル指数）</option>
+                                <option value="US10Y">米国10年債利回り</option>
+                                <option value="WTI">WTI原油</option>
+                                <option value="GOLD">金スポット価格</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>対象日</label>
+                            <input type="date">
+                        </div>
+                        <div class="input-group">
+                            <label>新しい値</label>
+                            <input type="number" step="any" placeholder="例: 18.5">
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-primary" style="width: 100%;">
+                            🔍 プレビューを表示
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Metadata -->
+            <div id="tab-metadata" class="tab-content">
+                <div class="glass-panel">
+                    <div class="panel-title">🏷️ メタデータの上書き</div>
+                    <p class="text-muted">発行株式数、float、セクター分類、通貨、国などの上書きができます。</p>
+
+                    <div class="scope-grid" style="margin-top: 20px;">
+                        <div class="input-group">
+                            <label>銘柄コード</label>
+                            <select>
+                                <option value="NVDA">NVDA</option>
+                                <option value="AMD">AMD</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>項目</label>
+                            <select>
+                                <option value="">項目を選択...</option>
+                                <option value="shares">発行株式数</option>
+                                <option value="float">Float（浮動株）</option>
+                                <option value="sector">セクター</option>
+                                <option value="currency">通貨</option>
+                                <option value="country">国</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>新しい値</label>
+                            <input type="text" placeholder="新しい値を入力">
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-primary" style="width: 100%;">
+                            🔍 プレビューを表示
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Model Inputs -->
+            <div id="tab-model" class="tab-content">
+                <div class="glass-panel">
+                    <div class="panel-title">🤖 モデル入力パラメータの上書き</div>
+                    <p class="text-muted">λ（減衰率）、バリア幅、手数料、スリッページ仮定などAIモデルのパラメータを上書きできます。</p>
+
+                    <div class="scope-grid" style="margin-top: 20px;">
+                        <div class="input-group">
+                            <label>パラメータ</label>
+                            <select>
+                                <option value="">パラメータを選択...</option>
+                                <option value="lambda">λ（減衰係数）</option>
+                                <option value="upper_barrier">上側バリア幅（%）</option>
+                                <option value="lower_barrier">下側バリア幅（%）</option>
+                                <option value="fee">取引手数料（%）</option>
+                                <option value="slippage">スリッページ仮定（bps）</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>現在の値</label>
+                            <input type="text" value="0.95" readonly style="opacity: 0.6; background: rgba(0,0,0,0.3);">
+                        </div>
+                        <div class="input-group">
+                            <label>新しい値</label>
+                            <input type="number" step="any" placeholder="例: 0.92">
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-primary" style="width: 100%;">
+                            🔍 プレビューを表示
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audit Log Panel -->
+            <div class="glass-panel" style="margin-top: 24px;">
+                <div class="panel-title">📜 監査ログ（最近の変更履歴）</div>
+                <div class="audit-log">
+                    <div class="audit-entry">
+                        <div class="audit-timestamp">2026-02-12 14:23</div>
+                        <div class="audit-user">管理者</div>
+                        <div class="audit-action">
+                            上書き: NVDA EPS 2025Q4 → $4.92 (元: $4.85) | 理由: 決算報告書に基づく調整
+                        </div>
+                    </div>
+                    <div class="audit-entry">
+                        <div class="audit-timestamp">2026-02-11 10:15</div>
+                        <div class="audit-user">アナリスト</div>
+                        <div class="audit-action">
+                            上書き: VIX → 18.5 (元: 16.2) | 理由: 市場ボラティリティの急上昇
+                        </div>
+                    </div>
+                    <div class="audit-entry">
+                        <div class="audit-timestamp">2026-02-10 16:42</div>
+                        <div class="audit-user">システム</div>
+                        <div class="audit-action">
+                            ロールバック: AMD FCF Margin 2025Q3 → 元の値に復元
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script src="js/config.js"></script>
     <script src="js/common.js"></script>
+    <script>
+        (function () {
+            // ============================================================
+            // Data Override - API Integration (Phase 1)
+            // ============================================================
+            // 使用: API.get / API.post (common.js), UI.showToast (common.js)
+            // API_BASE: CONFIG.API_BASE (config.js:9)
+            // ============================================================
+
+            let _overrideFields = null;   // フィールド定義キャッシュ
+            let _activeCategory = 'fundamentals'; // 現在選択中のカテゴリ
+
+            document.addEventListener('DOMContentLoaded', async function () {
+
+                // ========== Tab切り替え (既存ロジック維持) ==========
+                const categoryTabs = document.querySelectorAll('.category-tab');
+                const tabContents = document.querySelectorAll('.tab-content');
+
+                categoryTabs.forEach(tab => {
+                    tab.addEventListener('click', function () {
+                        const category = this.getAttribute('data-category');
+                        categoryTabs.forEach(t => t.classList.remove('active'));
+                        tabContents.forEach(c => c.classList.remove('active'));
+                        this.classList.add('active');
+                        const target = document.getElementById('tab-' + category);
+                        if (target) target.classList.add('active');
+
+                        // カテゴリ切替時にフィールドセレクトも更新
+                        _activeCategory = category;
+                        updateFieldSelect(category);
+                    });
+                });
+
+                const methodTabs = document.querySelectorAll('.method-tab');
+                methodTabs.forEach(tab => {
+                    tab.addEventListener('click', function () {
+                        methodTabs.forEach(t => t.classList.remove('active'));
+                        this.classList.add('active');
+                    });
+                });
+
+                // ========== API連携: 初期データ取得 ==========
+                await Promise.all([
+                    loadSymbols(),
+                    loadFields(),
+                    loadAuditLog()
+                ]);
+
+                // ========== ボタン紐付け ==========
+                // 「プレビューを表示」ボタン (btn-primary で "プレビュー" を含むもの)
+                document.querySelectorAll('.btn.btn-primary').forEach(btn => {
+                    if (btn.textContent.includes('プレビュー')) {
+                        btn.addEventListener('click', handlePreview);
+                    }
+                });
+
+                // 「上書きを適用する」ボタン (btn-success で "適用" を含むもの)
+                document.querySelectorAll('.btn.btn-success').forEach(btn => {
+                    if (btn.textContent.includes('適用')) {
+                        btn.addEventListener('click', handleApply);
+                    }
+                });
+
+                // 「キャンセル」ボタン
+                document.querySelectorAll('.btn.btn-danger').forEach(btn => {
+                    if (btn.textContent.includes('キャンセル')) {
+                        btn.addEventListener('click', handleCancel);
+                    }
+                });
+            });
+
+            // ============================================================
+            // 銘柄リスト動的取得 (instruments テーブルから)
+            // ============================================================
+            async function loadSymbols() {
+                try {
+                    const data = await API.get('/override/symbols');
+                    const select = document.getElementById('ticker');
+                    if (!select || !data) return;
+
+                    // 既存の静的 option を動的に置換
+                    select.innerHTML = '<option value="">銘柄を選択...</option>';
+                    data.forEach(function (s) {
+                        const opt = document.createElement('option');
+                        opt.value = s.symbol;
+                        opt.textContent = s.symbol + ' - ' + s.name;
+                        select.appendChild(opt);
+                    });
+                    console.log('[Override] Loaded', data.length, 'symbols');
+                } catch (e) {
+                    console.error('[Override] Failed to load symbols:', e);
+                    // 失敗時は既存の静的リストのまま (graceful degradation)
+                }
+            }
+
+            // ============================================================
+            // フィールド定義取得
+            // ============================================================
+            async function loadFields() {
+                try {
+                    const data = await API.get('/override/fields');
+                    if (!data || !data.categories) return;
+                    _overrideFields = data.categories;
+                    updateFieldSelect(_activeCategory);
+                    console.log('[Override] Fields loaded');
+                } catch (e) {
+                    console.error('[Override] Failed to load fields:', e);
+                }
+            }
+
+            function updateFieldSelect(category) {
+                const select = document.getElementById('dataField');
+                if (!select || !_overrideFields) return;
+                const cat = _overrideFields[category];
+                if (!cat) return;
+
+                select.innerHTML = '<option value="">項目を選択...</option>';
+                cat.fields.forEach(function (f) {
+                    const opt = document.createElement('option');
+                    opt.value = f.name;
+                    opt.textContent = f.label;
+                    select.appendChild(opt);
+                });
+            }
+
+            // ============================================================
+            // 監査ログ取得
+            // ============================================================
+            async function loadAuditLog() {
+                try {
+                    const logs = await API.get('/override/audit', { limit: 20 });
+                    const container = document.querySelector('.audit-log');
+                    if (!container) return;
+
+                    if (!logs || logs.length === 0) {
+                        container.innerHTML =
+                            '<div class="audit-entry"><div class="audit-action" style="color:var(--text-muted);">まだ監査ログはありません</div></div>';
+                        return;
+                    }
+
+                    container.innerHTML = logs.map(function (log) {
+                        return '<div class="audit-entry">' +
+                            '<div class="audit-timestamp">' + (log.timestamp ? log.timestamp.substring(0, 16) : '') + '</div>' +
+                            '<div class="audit-user">' + (log.user || 'system') + '</div>' +
+                            '<div class="audit-action">' +
+                            log.action + ': ' + (log.scope_key || '') + ' ' + (log.field_name || '') + ' ' + (log.period || '') +
+                            (log.new_value ? ' → ' + log.new_value : '') +
+                            (log.reason ? ' | 理由: ' + log.reason : '') +
+                            '</div>' +
+                            '</div>';
+                    }).join('');
+
+                    console.log('[Override] Audit log loaded:', logs.length, 'entries');
+                } catch (e) {
+                    console.error('[Override] Failed to load audit log:', e);
+                }
+            }
+
+            // ============================================================
+            // 入力値の取得ヘルパー
+            // ============================================================
+            function getFormValues() {
+                return {
+                    ticker: (document.getElementById('ticker') || {}).value || '',
+                    field: (document.getElementById('dataField') || {}).value || '',
+                    value: (document.getElementById('newValue') || {}).value || '',
+                    period: (document.getElementById('period') || {}).value || '',
+                    reason: (document.getElementById('reason') || {}).value || '',
+                    priority: (document.getElementById('priority') || {}).value || 'normal',
+                };
+            }
+
+            // ============================================================
+            // プレビュー
+            // ============================================================
+            async function handlePreview() {
+                const f = getFormValues();
+                if (!f.ticker || !f.field || !f.value) {
+                    UI.showToast('銘柄、項目、値を入力してください', 'warning');
+                    return;
+                }
+
+                try {
+                    const result = await API.post('/override/preview', {
+                        scope: 'symbol',
+                        scope_key: f.ticker,
+                        category: _activeCategory,
+                        field_name: f.field,
+                        period: f.period || null,
+                        override_value: f.value,
+                        original_value: null
+                    });
+
+                    // プレビューパネル更新
+                    const tbody = document.querySelector('.preview-panel .diff-table tbody');
+                    if (tbody && result.diff) {
+                        const fieldLabel = getFieldLabel(f.field) || f.field;
+                        tbody.innerHTML =
+                            '<tr>' +
+                            '<td>' + f.ticker + ' ' + fieldLabel + (f.period ? ' (' + f.period + ')' : '') + '</td>' +
+                            '<td class="diff-before">' + (result.diff.before != null ? result.diff.before : 'N/A') + '</td>' +
+                            '<td class="diff-after">' + result.diff.after + '</td>' +
+                            '<td class="' + (result.diff.change_pct > 0 ? 'text-success' : 'text-warning') + '">' +
+                            (result.diff.change_pct != null ? (result.diff.change_pct > 0 ? '+' : '') + result.diff.change_pct + '%' : '-') +
+                            '</td>' +
+                            '</tr>';
+                    }
+
+                    // バッジ更新
+                    const badge = document.querySelector('.preview-panel .validation-badge');
+                    if (badge) {
+                        badge.className = 'validation-badge success';
+                        badge.textContent = '✓ 検証OK';
+                    }
+
+                    // AI影響パネル (Phase 1: モデル未配備表示)
+                    if (result.forecast_impact === null) {
+                        const aiTitle = document.querySelector('.ai-impact-panel .panel-title');
+                        if (aiTitle) {
+                            aiTitle.innerHTML = '🤖 AI予測への影響分析 ' +
+                                '<span class="validation-badge warning" style="margin-left:8px;font-size:0.7rem;">モデル未配備</span>';
+                        }
+                        // ダミー値をクリア
+                        document.querySelectorAll('.ai-impact-panel .impact-value').forEach(function (el) {
+                            el.textContent = '-';
+                            el.className = 'impact-value';
+                        });
+                        document.querySelectorAll('.ai-impact-panel .impact-change').forEach(function (el) {
+                            el.textContent = 'Phase 2で実装';
+                            el.className = 'impact-change';
+                            el.style.fontSize = '0.75rem';
+                        });
+                    }
+
+                    UI.showToast('プレビューを表示しました', 'success');
+                } catch (e) {
+                    UI.showToast('プレビュー失敗: ' + e.message, 'error');
+                }
+            }
+
+            // ============================================================
+            // 適用
+            // ============================================================
+            async function handleApply() {
+                const f = getFormValues();
+                if (!f.ticker || !f.field || !f.value) {
+                    UI.showToast('銘柄、項目、値を入力してください', 'warning');
+                    return;
+                }
+                if (!f.reason || f.reason.trim().length < 3) {
+                    UI.showToast('変更理由を入力してください（3文字以上、必須）', 'warning');
+                    return;
+                }
+
+                try {
+                    const result = await API.post('/override', {
+                        scope: 'symbol',
+                        scope_key: f.ticker,
+                        category: _activeCategory,
+                        field_name: f.field,
+                        period: f.period || null,
+                        override_value: f.value,
+                        priority: f.priority,
+                        reason: f.reason,
+                        created_by: 'admin'
+                    });
+
+                    UI.showToast('Override #' + result.id + ' を登録しました', 'success');
+
+                    // フォームの値リセット
+                    var newVal = document.getElementById('newValue');
+                    if (newVal) newVal.value = '';
+                    var reasonEl = document.getElementById('reason');
+                    if (reasonEl) reasonEl.value = '';
+
+                    // 監査ログ再取得
+                    await loadAuditLog();
+                } catch (e) {
+                    UI.showToast('登録失敗: ' + e.message, 'error');
+                }
+            }
+
+            // ============================================================
+            // キャンセル
+            // ============================================================
+            function handleCancel() {
+                var els = ['newValue', 'reason'];
+                els.forEach(function (id) {
+                    var el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+                UI.showToast('入力をクリアしました', 'info');
+            }
+
+            // ============================================================
+            // ヘルパー: フィールド名 → ラベル
+            // ============================================================
+            function getFieldLabel(fieldName) {
+                if (!_overrideFields) return null;
+                for (var cat in _overrideFields) {
+                    var fields = _overrideFields[cat].fields;
+                    for (var i = 0; i < fields.length; i++) {
+                        if (fields[i].name === fieldName) return fields[i].label;
+                    }
+                }
+                return null;
+            }
+
+        })();
+    </script>
 </body>
 
 </html>

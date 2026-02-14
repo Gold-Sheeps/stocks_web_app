@@ -246,3 +246,47 @@ class StockDetailService:
     def get_signals(self, symbol: str) -> Dict[str, Any]:
         """(Deprecated) Return Signals for specific endpoint"""
         return {"signals": {}}
+
+    def get_price_history_all(self, symbol: str, limit: Optional[int] = None) -> List[PricePoint]:
+        """Fetch all historical OHLCV data from price_daily table"""
+        self.db.connect()
+        try:
+            # Normalize Symbol
+            raw_symbol = symbol.strip().upper()
+            symbol_key = raw_symbol
+            if ':' not in raw_symbol:
+                if raw_symbol.isdigit() and len(raw_symbol) == 4:
+                     symbol_key = f"JP:{raw_symbol}"
+                else:
+                     symbol_key = f"US:{raw_symbol}"
+
+            query = """
+                SELECT trading_date, open, high, low, close, volume
+                FROM price_daily
+                WHERE symbol_key = %s
+                ORDER BY trading_date ASC
+            """
+            
+            if limit:
+                query += f" LIMIT {int(limit)}"
+
+            results = self.db.execute_query(query, (symbol_key,))
+            
+            history = []
+            for row in results:
+                trading_date, open_price, high, low, close, volume = row
+                history.append(PricePoint(
+                    date=trading_date.isoformat() if isinstance(trading_date, (date, datetime)) else str(trading_date),
+                    open=Decimal(str(open_price)) if open_price is not None else Decimal("0"),
+                    high=Decimal(str(high)) if high is not None else Decimal("0"),
+                    low=Decimal(str(low)) if low is not None else Decimal("0"),
+                    close=Decimal(str(close)) if close is not None else Decimal("0"),
+                    volume=int(volume) if volume is not None else 0
+                ))
+            return history
+        except Exception as e:
+            print(f"[StockDetailService] get_price_history_all error: {e}")
+            return []
+        finally:
+            self.db.disconnect()
+

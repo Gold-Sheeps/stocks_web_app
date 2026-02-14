@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 
-from app.routers import monitor, portfolio, rotation, sector, screener, stock_detail, watchlist, system
+from app.routers import monitor, portfolio, rotation, sector, screener, stock_detail, watchlist, system, override
 
 app = FastAPI(
     title="Stock Trading System API",
@@ -30,6 +30,7 @@ app.include_router(rotation.router, prefix=settings.api_v1_prefix)
 app.include_router(sector.router, prefix=settings.api_v1_prefix)
 app.include_router(watchlist.router, prefix=settings.api_v1_prefix)
 app.include_router(system.router, prefix=settings.api_v1_prefix)
+app.include_router(override.router, prefix=settings.api_v1_prefix)
 
 
 

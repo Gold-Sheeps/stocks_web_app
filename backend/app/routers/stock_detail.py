@@ -1,3 +1,4 @@
+from typing import List, Optional
 from fastapi import APIRouter
 from app.services.stock_detail_service import StockDetailService
 from app.models.schemas import StockDetailResponse
@@ -24,3 +25,11 @@ async def get_stock_signals(symbol: str):
     """(Deprecated in Phase 5) Signals are now in summary"""
     service = StockDetailService()
     return service.get_signals(symbol)
+
+
+@router.get("/{symbol}/price")
+async def get_stock_price_history(symbol: str, limit: Optional[int] = None):
+    """Fetch full historical OHLCV data for charts"""
+    service = StockDetailService()
+    return service.get_price_history_all(symbol, limit=limit)
+

@@ -797,10 +797,99 @@ textarea:focus {
     color: var(--text-muted);
 }
 
-.kv-val {
-    font-family: var(--font-mono);
+
+/* --- Monitor UI Improvements --- */
+
+/* Text Colors */
+.text-up {
+    color: var(--success);
+}
+
+.text-down {
+    color: var(--danger);
+}
+
+.text-flat {
+    color: var(--text-muted);
+}
+
+/* Unified Row Design */
+.market-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    /* Explicit padding for "unified" look */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    /* Thin separator */
+    transition: background 0.2s;
+}
+
+.market-row:last-child {
+    border-bottom: none;
+}
+
+.market-row:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.market-name {
     font-weight: 600;
-    font-variant-numeric: tabular-nums;
+    font-size: 0.95rem;
+    /* Slightly larger */
+    color: var(--text-main);
+}
+
+.market-value {
+    font-family: var(--font-mono);
+    /* For numbers */
+    font-weight: 700;
+    font-size: 1.1rem;
+    /* Bold & Large */
+    color: var(--text-main);
+    line-height: 1.2;
+}
+
+.market-change {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    /* Smaller percentage */
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+/* Skeleton Loading */
+.skeleton {
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0.05) 25%,
+            rgba(255, 255, 255, 0.1) 50%,
+            rgba(255, 255, 255, 0.05) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+    height: 1.2em;
+    /* Default text height */
+    width: 100%;
+}
+
+.skeleton-text {
+    width: 60%;
+    height: 1em;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+font-family: var(--font-mono);
+font-weight: 600;
+font-variant-numeric: tabular-nums;
 }
 
 /* Borders */

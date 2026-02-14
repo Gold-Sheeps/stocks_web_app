@@ -1,155 +1,284 @@
-/* js/stock_detail.js - Phase 5-1 Strict Bootstrapping */
+/* js/stock_detail.js - Enhanced Edition */
 
-// 1. Immediate Execution Log
-console.log("[StockDetail] script loaded", location.href);
+// Immediate Execution Log
+console.log("[StockDetail] Script loaded", location.href);
 window.__SD_LOADED__ = true;
 
 class StockDetailApp {
     constructor() {
-        // 2. Immediate Symbol Parsing & Display (Before init/async)
         const params = new URLSearchParams(window.location.search);
-        // Robust param parsing
-        const raw = params.get('symbol') || params.get('symbol_key') || params.get('s') || params.get('ticker');
-
-        console.log("[StockDetail] raw symbol param:", raw);
-
+        const raw = params.get('symbol') || params.get('symbol_key') || params.get('ticker');
         this.symbol = raw ? decodeURIComponent(raw).trim() : null;
 
-        // Immediate DOM Update
+        this.state = {
+            summary: null,
+            chartData: null,
+            chartType: 'line',
+            chartInstance: null,
+            volumeInstance: null,
+            loading: false,
+            fundLoaded: false,
+            ratiosLoaded: false
+        };
+
+        this.API_BASE = window.CONFIG?.API_BASE || 'http://localhost:8000/api/v1';
+
+        // Initialize DOM display
+        this.updateSymbolDisplay();
+    }
+
+    updateSymbolDisplay() {
         const symbolEl = document.getElementById("sdSymbol");
         if (symbolEl) {
             symbolEl.textContent = this.symbol || "--:----";
         }
-
-        this.state = {
-            summary: null,
-            chartLoaded: false,
-            fundLoaded: false
-        };
-
-        // Start Logic with Safe Guard
-        try {
-            this.init();
-        } catch (e) {
-            this.showFatal(`Init Error: ${e.message}`);
-        }
     }
 
     async init() {
-        // 3. CONFIG Validation
         if (!window.CONFIG || !window.CONFIG.API_BASE) {
-            this.showFatal("CONFIG missing: config.js not loaded or API_BASE undefined. Check /js/config.js 200 OK.");
+            this.showFatal("CONFIGが見つかりません。");
             return;
         }
-        console.log("[StockDetail] API_BASE:", window.CONFIG.API_BASE);
-
         if (!this.symbol) {
-            this.showFatal("No symbol provided in URL (e.g. ?symbol=US:NVDA)");
+            this.showFatal("銘柄コードが指定されていません");
             return;
         }
 
-        console.log(`[StockDetail] Init for ${this.symbol}`);
+        if (window.UI) window.UI.showLoading();
 
-        // 4. Initial Summary Load (Fast) using Phase 5-1 Endpoint
         await this.fetchSummary();
-
-        // 5. Setup Tabs
         this.setupTabs();
+        this.setupSearch();
+        this.setupTradePlan();
+        this.loadTradePlan();
+
+        await this.loadChartDataAll();
+        this.initMainChartLine(this.state.chartData);
+        this.initVolumeChart(this.state.chartData);
+        this.setupChartToggle();
+
+        if (window.UI) window.UI.hideLoading();
     }
 
     async fetchSummary() {
+        this.state.loading = true;
         try {
-            // Encode Component is critical for "US:NVDA"
-            const url = `${CONFIG.API_BASE}/stock/${encodeURIComponent(this.symbol)}/summary`;
-            console.log("[StockDetail] fetch:", url);
-
+            const url = `${this.API_BASE}/stock/${encodeURIComponent(this.symbol)}/summary`;
             const res = await fetch(url);
-
-            if (!res.ok) {
-                // Handle 404 cleanly
-                if (res.status === 404) {
-                    this.showFatal(`Stock not found: ${this.symbol}`);
-                    return;
-                }
-                throw new Error(`API Error: ${res.status}`);
-            }
-
+            if (!res.ok) throw new Error(`API Error: ${res.status}`);
             const data = await res.json();
             this.state.summary = data;
-
             this.render(data);
-
         } catch (e) {
-            console.error(e);
-            this.showFatal(`Failed to fetch: ${url}<br>Reason: ${e.message}`);
+            console.error("[StockDetail] Fetch error:", e);
+            this.showFatal(`データの取得に失敗しました: ${e.message}`);
+        } finally {
+            this.state.loading = false;
         }
     }
 
-    render(data) {
-        const info = data.stock_info;
-        const q = data.data_quality;
-        const signals = data.signal_summary;
-        const ind = data.indicators;
+    async loadChartDataAll() {
+        try {
+            const url = `${this.API_BASE}/stock/${encodeURIComponent(this.symbol)}/price`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`API ${res.status}`);
+            const data = await res.json();
+            this.state.chartData = data;
 
-        // Render Name (Proof of Data Load)
-        document.getElementById('sdName').textContent = info.name;
-
-        // --- Price Logic (Strict) ---
-        // Rule: price_valid === false OR close <= 0 -> Show Alert, "-" everywhere
-        const priceEl = document.getElementById('sdPrice');
-        const changeEl = document.getElementById('sdChange');
-        const alertEl = document.getElementById('sdAlert');
-
-        if (!q.price_valid || !info.current_price || info.current_price <= 0) {
-            // INVALID PRICE STATE
-            priceEl.textContent = '-';
-            priceEl.classList.add('text-muted');
-            changeEl.innerHTML = '<span class="badge badge-neutral">NO DATA</span>';
-
-            // Show Alert
-            alertEl.innerHTML = `
-                <div class="alert-title">⚠️ データ欠損 / Data Missing</div>
-                <div class="alert-message">
-                    <p>この銘柄の価格データが取得できていません。(${this.symbol})</p>
-                    <ul class="mt-2 text-sm" style="list-style:disc; padding-left:20px;">
-                        <li>データプロバイダからデータが返却されませんでした。</li>
-                        <li>新規上場、またはティッカー変更の可能性があります。</li>
-                        <li><strong>14日以内の自動再取得</strong>により復旧する可能性があります。</li>
-                    </ul>
-                    <div class="mt-2 text-xs text-muted">API Status: ${q.price_reason || 'Unknown'}</div>
-                </div>
-            `;
-            alertEl.classList.remove('alert--hidden');
-            alertEl.classList.add('alert--warning');
-
-            // Force signals to NO_DATA visually
-            this.renderChips({ overall: 'NO_DATA', reasons: [] });
-            this.renderCardsInvalid();
-
-        } else {
-            // VALID PRICE STATE
-            priceEl.textContent = UI.formatCurrency(info.current_price, info.currency);
-            priceEl.classList.remove('text-muted');
-
-            // Change Pct (Strict: no NaN)
-            if (info.change_pct !== null && !isNaN(info.change_pct)) {
-                changeEl.innerHTML = UI.formatPct(info.change_pct);
+            if (data && data.length > 0) {
+                console.log(`[Chart] rows=${data.length}, range=${data[0].date}..${data[data.length - 1].date}`);
             } else {
-                changeEl.textContent = '-';
+                console.warn("[Chart] No price data returned.");
             }
+        } catch (e) {
+            console.error("[Chart] History load error:", e);
+            this.state.chartData = [];
+        }
+    }
 
-            // YTD
-            const ytdVal = (info.ytd_change_pct !== null && !isNaN(info.ytd_change_pct))
-                ? UI.formatPct(info.ytd_change_pct) : '-';
-            const ytdEl = document.getElementById('sdYtd');
-            if (ytdEl) ytdEl.innerHTML = `YTD: ${ytdVal}`;
+    initMainChartLine(data) {
+        const ctx = document.getElementById('mainPriceChart');
+        if (!ctx || !data || data.length === 0) return;
 
-            // Hide Alert
-            alertEl.classList.add('alert--hidden');
+        if (this.state.chartInstance) this.state.chartInstance.destroy();
 
-            // Render Signals & Cards
-            this.renderChips(signals);
-            this.renderCards(ind, signals);
+        const labels = data.map(d => d.date);
+        const closes = data.map(d => d.close);
+
+        this.state.chartInstance = new window.Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Price',
+                    data: closes,
+                    borderColor: 'rgba(99, 102, 241, 1)',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.1,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { intersect: false, mode: 'index' },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { position: 'left' }
+                },
+                plugins: {
+                    zoom: {
+                        zoom: { wheel: { enabled: true }, mode: 'x' },
+                        pan: { enabled: true, mode: 'x' }
+                    }
+                }
+            }
+        });
+    }
+
+    initMainChartCandle(data) {
+        const ctx = document.getElementById('mainPriceChart');
+        if (!ctx || !data || data.length === 0) return;
+
+        if (!window.financialReady) {
+            console.warn('Financial plugin not ready, falling back to line');
+            this.initMainChartLine(data);
+            return;
+        }
+
+        if (this.state.chartInstance) this.state.chartInstance.destroy();
+
+        const candleData = data.map(d => ({
+            x: d.date,
+            o: d.open,
+            h: d.high,
+            l: d.low,
+            c: d.close
+        }));
+
+        this.state.chartInstance = new window.Chart(ctx, {
+            type: 'candlestick',
+            data: {
+                datasets: [{
+                    label: 'Price',
+                    data: candleData
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { type: 'timeseries' },
+                    y: { position: 'left' }
+                },
+                plugins: {
+                    zoom: {
+                        zoom: { wheel: { enabled: true }, mode: 'x' },
+                        pan: { enabled: true, mode: 'x' }
+                    }
+                }
+            }
+        });
+    }
+
+    initVolumeChart(data) {
+        const ctx = document.getElementById('volumeChart');
+        if (!ctx || !data || data.length === 0) return;
+
+        if (this.state.volumeInstance) this.state.volumeInstance.destroy();
+
+        const labels = data.map(d => d.date);
+        const volumes = data.map(d => d.volume);
+
+        this.state.volumeInstance = new window.Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Volume',
+                    data: volumes,
+                    backgroundColor: 'rgba(99, 102, 241, 0.4)',
+                    borderColor: 'rgba(99, 102, 241, 0.8)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { display: false } },
+                    y: { position: 'left', grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    setupChartToggle() {
+        const btn = document.getElementById('btnToggleChartType');
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+            try {
+                this.state.chartType = (this.state.chartType === 'line') ? 'candlestick' : 'line';
+                console.log('[Chart] Toggling to:', this.state.chartType);
+
+                if (this.state.chartType === 'candlestick') {
+                    this.initMainChartCandle(this.state.chartData);
+                } else {
+                    this.initMainChartLine(this.state.chartData);
+                }
+            } catch (err) {
+                console.error("[Chart] Toggle failed, falling back to line:", err);
+                if (window.UI?.showToast) window.UI.showToast('チャート切替に失敗しました。折れ線に戻します。', 'error');
+                this.state.chartType = 'line';
+                this.initMainChartLine(this.state.chartData);
+            }
+        });
+    }
+
+    render(data) {
+        const info = data.stock_info || {};
+        const quality = data.data_quality || {};
+        const signals = data.signal_summary || {};
+        const indicators = data.indicators || {};
+
+        const nameEl = document.getElementById('sdName');
+        if (nameEl) nameEl.textContent = info.name || 'Unknown';
+
+        if (!quality.price_valid || !info.current_price) {
+            this.renderInvalidState(quality);
+        } else {
+            this.renderValidState(info, signals, indicators);
+        }
+    }
+
+    renderValidState(info, signals, indicators) {
+        const priceEl = document.getElementById('sdPrice');
+        if (priceEl) {
+            priceEl.textContent = window.UI ? window.UI.formatCurrency(info.current_price, info.currency) : `$${info.current_price}`;
+        }
+        const changeEl = document.getElementById('sdChange');
+        if (changeEl) {
+            changeEl.innerHTML = window.UI ? window.UI.formatPct(info.change_pct) : `${info.change_pct}%`;
+        }
+        this.renderChips(signals);
+        this.renderIndicatorCards(indicators, signals);
+        const alertEl = document.getElementById('sdAlert');
+        if (alertEl) alertEl.classList.add('alert--hidden');
+    }
+
+    renderInvalidState(quality) {
+        const priceEl = document.getElementById('sdPrice');
+        if (priceEl) priceEl.textContent = '-';
+        const alertEl = document.getElementById('sdAlert');
+        if (alertEl) {
+            alertEl.innerHTML = `⚠️ データ欠損: ${quality.price_reason || '不明'}`;
+            alertEl.classList.remove('alert--hidden');
         }
     }
 
@@ -157,159 +286,143 @@ class StockDetailApp {
         const container = document.getElementById('sdReasons');
         if (!container) return;
         container.innerHTML = '';
-
-        if (!signals || signals.overall === 'NO_DATA') {
-            container.innerHTML = `<span class="chip chip--neutral">NO_DATA</span>`;
-            return;
-        }
-
-        // 1. Overall Badge
-        const overallParams = this.getStatusParams(signals.overall);
-        container.innerHTML += `<span class="chip ${overallParams.cls}">${signals.overall}</span>`;
-
-        // 2. Reasons
         if (signals.reasons) {
             signals.reasons.forEach(r => {
-                const p = this.getStatusParams(r.status);
-                container.innerHTML += `
-                    <div class="chip ${p.cls}">
-                        <span>${p.icon} ${r.message}</span>
-                    </div>
-                `;
+                const chip = document.createElement('span');
+                chip.className = 'chip';
+                chip.textContent = r.message;
+                container.appendChild(chip);
             });
         }
     }
 
-    renderCards(ind, signals) {
-        // Helpers
-        const kv = (k, v, dec = 2, suf = '') => `
-            <div class="kv-row">
-                <span class="kv-key">${k}</span>
-                <span class="kv-val">${this.fmt(v, dec, suf)}</span>
-            </div>`;
-
-        // Trend
-        const trendReason = signals.reasons.find(r => r.key.includes('trend'));
-        const trendStatus = trendReason ? trendReason.status : 'NEUTRAL';
-        this.setPanelBorder('cardTrend', trendStatus);
-
-        const elTrend = document.getElementById('sdTrend');
-        if (elTrend) {
-            elTrend.innerHTML = `
-                ${kv('SMA 50', ind.ma50)}
-                ${kv('SMA 200', ind.sma200)}
-                ${kv('EMA 21', ind.ema21)}
-                ${kv('Pivot', ind.pivot)}
-            `;
-        }
-
-        // Momentum
-        const momReason = signals.reasons.find(r => r.key.includes('rsi') || r.key.includes('macd'));
-        const momStatus = momReason ? momReason.status : 'NEUTRAL';
-        this.setPanelBorder('cardMomentum', momStatus);
-
-        const elMom = document.getElementById('sdMomentum');
-        if (elMom) {
-            elMom.innerHTML = `
-                ${kv('RSI (14)', ind.rsi, 1)}
-                ${kv('MACD', ind.macd)}
-                ${kv('Signal', ind.signal)}
-                ${kv('Stochastic', null)} <span class="text-xs text-muted">(Phase 5-2)</span>
-            `;
-        }
-
-        // Risk / Volatility
-        const rsReason = signals.reasons.find(r => r.key.includes('rs'));
-        const riskStatus = rsReason ? rsReason.status : 'NEUTRAL';
-        this.setPanelBorder('cardRisk', riskStatus);
-
-        const elRisk = document.getElementById('sdRisk');
-        if (elRisk) {
-            elRisk.innerHTML = `
-                ${kv('ATR (14)', ind.atr14)}
-                ${kv('52W High', ind.high_52w)}
-                ${kv('Dist to High', ind.dist_52w_high_pct, 1, '%')}
-                ${kv('RS Rating', ind.rs_rating, 0, '', true)}
-            `;
-        }
-    }
-
-    renderCardsInvalid() {
-        ['cardTrend', 'cardMomentum', 'cardRisk'].forEach(id => {
-            this.setPanelBorder(id, 'nodata');
-            const el = document.getElementById(id.replace('card', 'sd'));
-            if (el) el.innerHTML = '<div class="muted">No Data</div>';
-        });
-    }
-
-    // --- Helpers ---
-
-    showFatal(msg) {
-        const a = document.getElementById("sdAlert");
-        if (a) {
-            a.innerHTML = `<div class="alert-title">🚫 System Error</div><div>${msg}</div>`;
-            a.classList.remove("alert--hidden");
-            a.classList.add("alert--warning"); // Ensure it looks like warning
-        }
-        console.error("[StockDetail:FATAL]", msg);
-    }
-
-    setPanelBorder(id, status) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.classList.remove('border-success', 'border-danger', 'border-caution', 'border-neutral', 'border-nodata');
-
-        switch (status) {
-            case 'BUY': el.classList.add('border-success'); break;
-            case 'SELL': el.classList.add('border-danger'); break;
-            case 'CAUTION': el.classList.add('border-caution'); break;
-            case 'NO_DATA': el.classList.add('border-nodata'); break;
-            default: el.classList.add('border-neutral');
-        }
-    }
-
-    getStatusParams(status) {
-        switch (status) {
-            case 'BUY': return { cls: 'chip--success', icon: '✅' };
-            case 'SELL': return { cls: 'chip--danger', icon: '🔻' };
-            case 'CAUTION': return { cls: 'chip--caution', icon: '⚠️' };
-            case 'NO_DATA': return { cls: 'chip--neutral', icon: '🌑' };
-            default: return { cls: 'chip--neutral', icon: '🔹' };
-        }
-    }
-
-    fmt(val, dec = 2, suf = '', isInt = false) {
-        if (val === null || val === undefined || isNaN(val)) return '-';
-        if (val === 0) return '-';
-        return UI.formatNumber(val, dec) + suf;
+    renderIndicatorCards(indicators, signals) {
+        const trend = document.getElementById('sdTrend');
+        if (trend) trend.innerHTML = `MA20: ${indicators.ma20 || '-'}, MA50: ${indicators.ma50 || '-'}`;
+        const momentum = document.getElementById('sdMomentum');
+        if (momentum) momentum.innerHTML = `RSI: ${indicators.rsi || '-'}`;
+        const risk = document.getElementById('sdRisk');
+        if (risk) risk.innerHTML = `Beta: ${indicators.beta || '-'}`;
     }
 
     setupTabs() {
-        document.querySelectorAll('.tab').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.tab').forEach(b => b.classList.remove('is-active'));
-                e.target.classList.add('is-active');
-
-                const targetId = e.target.dataset.tab;
-                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('is-active'));
-                const targetPanel = document.getElementById(`tab-${targetId}`);
-                if (targetPanel) targetPanel.classList.add('is-active');
-
-                // Lazy Load
-                if (targetId === 'chart' && !this.state.chartLoaded) {
-                    console.log("[StockDetail] Lazy loading Chart... (Phase 5-2)");
-                    this.state.chartLoaded = true;
-                }
-                if (targetId === 'fundamentals' && !this.state.fundLoaded) {
-                    console.log("[StockDetail] Lazy loading Fundamentals... (Phase 5-3)");
-                    this.state.fundLoaded = true;
+        const tabs = document.querySelectorAll('.tab');
+        const panels = document.querySelectorAll('.tab-panel');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.getAttribute('data-tab');
+                tabs.forEach(t => t.classList.remove('active', 'is-active'));
+                panels.forEach(p => p.classList.remove('active', 'is-active'));
+                tab.classList.add('active', 'is-active');
+                const panel = document.getElementById(`tab-${target}`);
+                if (panel) {
+                    panel.classList.add('active', 'is-active');
+                    this.handleLazyLoad(target);
                 }
             });
         });
     }
+
+    handleLazyLoad(tabName) {
+        if (tabName === 'fundamentals' && !this.state.fundLoaded) {
+            this.state.fundLoaded = true;
+            this.loadFundamentalsData();
+        }
+        if (tabName === 'ratios' && !this.state.ratiosLoaded) {
+            this.state.ratiosLoaded = true;
+            this.loadRatiosData();
+        }
+    }
+
+    loadFundamentalsData() { console.log("Loading fundamentals..."); }
+    loadRatiosData() { console.log("Loading ratios..."); }
+
+    setupSearch() {
+        const input = document.getElementById('sdSearchInput');
+        const btn = document.getElementById('sdSearchGo');
+        if (!input || !btn) return;
+        const handle = () => {
+            const raw = input.value.trim();
+            if (!raw) return;
+            const symbol = raw.includes(':') ? raw.toUpperCase() : 'US:' + raw.toUpperCase();
+            window.location.href = `stock_detail.html?symbol=${encodeURIComponent(symbol)}`;
+        };
+        btn.onclick = handle;
+        input.onkeydown = (e) => { if (e.key === 'Enter') handle(); };
+    }
+
+    setupTradePlan() {
+        const saveBtn = document.getElementById('tpSave');
+        const clearBtn = document.getElementById('tpClear');
+        if (saveBtn) saveBtn.onclick = () => this.saveTradePlan();
+        if (clearBtn) clearBtn.onclick = () => this.clearTradePlan();
+    }
+
+    getSymbolForPlan() { return this.symbol || '--'; }
+
+    loadTradePlan() {
+        const symbol = this.getSymbolForPlan();
+        if (!symbol || symbol === '--') return;
+        const saved = localStorage.getItem(`tradePlan:${symbol}`);
+        if (!saved) return;
+        const plan = JSON.parse(saved);
+        const setVal = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.value = val || '';
+        };
+        setVal('tpEntry', plan.entry);
+        setVal('tpStop', plan.stop);
+        setVal('tpTakeProfit', plan.takeProfit);
+        setVal('tpPositionSize', plan.positionSize);
+        setVal('tpNotes', plan.notes);
+    }
+
+    saveTradePlan() {
+        const symbol = this.getSymbolForPlan();
+        if (!symbol || symbol === '--') return;
+        const plan = {
+            entry: document.getElementById('tpEntry')?.value,
+            stop: document.getElementById('tpStop')?.value,
+            takeProfit: document.getElementById('tpTakeProfit')?.value,
+            positionSize: document.getElementById('tpPositionSize')?.value,
+            notes: document.getElementById('tpNotes')?.value,
+            savedAt: new Date().toISOString()
+        };
+        localStorage.setItem(`tradePlan:${symbol}`, JSON.stringify(plan));
+        if (window.UI) window.UI.showToast('保存しました', 'success');
+    }
+
+    clearTradePlan() {
+        const symbol = this.getSymbolForPlan();
+        localStorage.removeItem(`tradePlan:${symbol}`);
+        const ids = ['tpEntry', 'tpStop', 'tpTakeProfit', 'tpPositionSize', 'tpNotes'];
+        ids.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+        if (window.UI) window.UI.showToast('クリアしました', 'info');
+    }
+
+    showFatal(msg) {
+        console.error("FATAL:", msg);
+        const alertEl = document.getElementById('sdAlert');
+        if (alertEl) {
+            alertEl.textContent = msg;
+            alertEl.classList.remove('alert--hidden');
+        }
+    }
 }
 
-// Start
-window.addEventListener('DOMContentLoaded', () => {
-    window.stockDetailApp = new StockDetailApp();
-});
+window.StockDetailApp = StockDetailApp;
+
+// ---- Hotfix: Trade Panel toggle (minimal, global) ----
+(function registerTradePanelToggle() {
+    window.toggleTradePanel = function () {
+        const body = document.getElementById('tpBody');
+        const toggleBtn = document.getElementById('tpToggle');
+        if (!body || !toggleBtn) return;
+
+        const isOpen = body.classList.toggle('active');
+        toggleBtn.textContent = isOpen ? '閉じる' : '開く';
+    };
+})();

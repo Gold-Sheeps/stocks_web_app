@@ -7,62 +7,825 @@
     <title>Stock Detail - Neo-Dark Finance</title>
     <link rel="stylesheet" href="/css/common.css?v=20260211-neo-01">
     <style>
-        /* Page Specific Overrides if needed, mostly handled by common.css */
+        /* Enhanced Stock Detail Page Styles */
+
+        /* Page Header Enhanced */
+        .page-header {
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.08) 0%,
+                    rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 28px;
+            border-radius: var(--radius-md);
+            transition: all 0.3s ease;
+            margin-bottom: 24px;
+        }
+
+        .page-header:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
         .page-header__top {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
+            gap: 24px;
         }
 
+        /* Title Enhanced */
         .title {
-            font-size: 1.875rem;
+            font-size: 2.2rem;
             font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            letter-spacing: -0.02em;
+            font-family: var(--font-mono);
+            color: var(--primary);
+            text-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
         }
 
         .subtitle {
             color: var(--text-muted);
-            font-size: 0.875rem;
+            font-size: 0.95rem;
+            margin-top: 8px;
+            font-weight: 500;
         }
 
+        /* Price Box Enhanced */
         .price-box {
             text-align: right;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .price-box:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
 
         .price-box__price {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 700;
             font-family: var(--font-mono);
             line-height: 1;
+            letter-spacing: -0.02em;
         }
 
         .price-box__change {
-            font-weight: 600;
-            margin-top: 4px;
+            font-weight: 700;
+            margin-top: 8px;
+            font-size: 1.1rem;
         }
 
         .price-box__meta {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
-            margin-top: 4px;
+            margin-top: 6px;
+            font-family: var(--font-mono);
+        }
+
+        /* Chips (Reasons) Enhanced */
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border: 1px solid;
+            transition: all 0.2s ease;
+        }
+
+        .chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .chip.buy {
+            background: linear-gradient(135deg,
+                    rgba(16, 185, 129, 0.2),
+                    rgba(16, 185, 129, 0.05));
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .chip.watch {
+            background: linear-gradient(135deg,
+                    rgba(245, 158, 11, 0.2),
+                    rgba(245, 158, 11, 0.05));
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .chip.caution {
+            background: linear-gradient(135deg,
+                    rgba(239, 68, 68, 0.2),
+                    rgba(239, 68, 68, 0.05));
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .chip.info {
+            background: linear-gradient(135deg,
+                    rgba(99, 102, 241, 0.2),
+                    rgba(99, 102, 241, 0.05));
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Alert Enhanced */
+        .alert {
+            padding: 16px 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid;
+            margin-top: 16px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert--warning {
+            background: linear-gradient(135deg,
+                    rgba(245, 158, 11, 0.15),
+                    rgba(245, 158, 11, 0.05));
+            border-color: var(--warning);
+            color: var(--warning);
         }
 
         .alert--hidden {
             display: none;
         }
 
+        /* Tabs Enhanced */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 6px;
+            border-radius: var(--radius-md);
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        .tab.is-active {
+            background: linear-gradient(135deg, var(--primary) 0%, rgba(99, 102, 241, 0.8) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Tab Panels */
+        .tab-panel {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .tab-panel.is-active {
+            display: block;
+            opacity: 1;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Indicator Cards Enhanced */
+        .indicator-card {
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.05) 0%,
+                    rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 24px;
+            border-radius: var(--radius-md);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .indicator-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.05),
+                    transparent);
+            transition: left 0.5s;
+        }
+
+        .indicator-card:hover::before {
+            left: 100%;
+        }
+
+        .indicator-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Card Variants */
+        #cardTrend {
+            border-left: 3px solid var(--primary);
+        }
+
+        #cardMomentum {
+            border-left: 3px solid var(--success);
+        }
+
+        #cardRisk {
+            border-left: 3px solid var(--warning);
+        }
+
+        /* Key-Value List Enhanced */
+        .kv-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .kv-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .kv-item:last-child {
+            border-bottom: none;
+        }
+
+        .kv-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+            padding-left: 8px;
+            border-radius: 4px;
+        }
+
+        .kv-key {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .kv-value {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        /* Grid Layouts */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--sp-4);
+        }
+
+        /* Bullets List Enhanced */
+        .bullets {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .bullets li {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-sm);
+            border-left: 3px solid var(--primary);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+
+        .bullets li:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-left-color: var(--success);
+            transform: translateX(4px);
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-placeholder {
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .chart-placeholder-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        /* Fundamentals Table */
+        .fundamentals-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+        }
+
+        .fundamentals-table thead th {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .fundamentals-table thead th.text-right {
+            text-align: right;
+        }
+
+        .fundamentals-table tbody tr {
+            transition: all 0.2s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .fundamentals-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .fundamentals-table tbody td {
+            padding: 14px 16px;
+            font-size: 0.9rem;
+        }
+
+        .fundamentals-table tbody td.text-right {
+            text-align: right;
+            font-family: var(--font-mono);
+            font-weight: 600;
+        }
+
+        /* Ratio Cards */
+        .ratio-card {
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.05) 0%,
+                    rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .ratio-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .ratio-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .ratio-value {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            letter-spacing: -0.02em;
+            line-height: 1;
+        }
+
+        .ratio-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Grid for Ratios */
+        .ratio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--sp-4);
+        }
+
+        /* Skeleton Loader */
+        .skeleton {
+            background: linear-gradient(90deg,
+                    rgba(255, 255, 255, 0.05) 25%,
+                    rgba(255, 255, 255, 0.1) 50%,
+                    rgba(255, 255, 255, 0.05) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: var(--radius-sm);
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .h-240 {
+            height: 240px;
+        }
+
+        /* Muted State */
+        .muted {
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        /* Glass Panel Enhanced */
+        .glass-panel {
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.05) 0%,
+                    rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        /* Panel Header */
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Color Utilities */
+        .text-success {
+            color: var(--success);
+            text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .text-danger {
+            color: var(--danger);
+            text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+        }
+
+        .text-warning {
+            color: var(--warning);
+            text-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+        }
+
+        .text-muted {
+            color: var(--text-muted);
+        }
+
+        /* Utility Classes */
         .hidden {
             display: none !important;
         }
 
-        .muted {
-            color: var(--text-muted);
-            font-style: italic;
+        .mt-4 {
+            margin-top: 16px;
+        }
+
+        .mb-4 {
+            margin-bottom: 16px;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .gap-2 {
+            gap: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header__top {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .price-box {
+                text-align: left;
+                width: 100%;
+            }
+
+            .title {
+                font-size: 1.6rem;
+            }
+
+            .price-box__price {
+                font-size: 2rem;
+            }
+
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .ratio-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Stagger Animation for Cards */
+        .indicator-card:nth-child(1) {
+            animation: fadeIn 0.5s ease-in 0.1s both;
+        }
+
+        .indicator-card:nth-child(2) {
+            animation: fadeIn 0.5s ease-in 0.2s both;
+        }
+
+        .indicator-card:nth-child(3) {
+            animation: fadeIn 0.5s ease-in 0.3s both;
+        }
+
+        /* Main Container */
+        .main {
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Trade Panel Styles */
+        .trade-panel {
+            margin-top: 24px;
+            background: linear-gradient(135deg,
+                    rgba(99, 102, 241, 0.08) 0%,
+                    rgba(99, 102, 241, 0.02) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .trade-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: rgba(99, 102, 241, 0.05);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .trade-panel-header:hover {
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .trade-panel-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .trade-panel-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .trade-panel-toggle:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .trade-panel-body {
+            padding: 24px;
+            display: none;
+        }
+
+        .trade-panel-body.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tp-section {
+            margin-bottom: 24px;
             padding: 20px;
-            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--radius-sm);
+            border-left: 3px solid var(--primary);
+        }
+
+        .tp-section-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+            color: var(--primary);
+        }
+
+        .tp-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tp-row:last-child {
+            border-bottom: none;
+        }
+
+        .tp-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .tp-value {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .tp-input-group {
+            margin-bottom: 16px;
+        }
+
+        .tp-input-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .tp-input-group input,
+        .tp-input-group textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-family: var(--font-mono);
+        }
+
+        .tp-input-group input:focus,
+        .tp-input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .tp-input-group textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: var(--font-sans);
+        }
+
+        .tp-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .tp-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Symbol Search Styles */
+        .symbol-search {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .symbol-search-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            font-family: var(--font-mono);
+            transition: all 0.2s ease;
+        }
+
+        .symbol-search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .symbol-search-input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        @media (max-width: 768px) {
+            .symbol-search {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .symbol-search-input {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -73,87 +836,394 @@
     <main class="main">
         <div class="container">
 
+            <!-- Stock Header -->
             <section class="page-header glass-panel">
                 <div class="page-header__top">
-                    <div>
+                    <div style="flex: 1;">
                         <div class="flex items-center gap-2">
-                            <div id="sdSymbol" class="title">--:----</div>
+                            <div id="sdSymbol" class="title">--</div>
                         </div>
-                        <div id="sdName" class="subtitle">Loading...</div>
+                        <div id="sdName" class="subtitle">--</div>
                     </div>
                     <div class="price-box">
-                        <div id="sdPrice" class="price-box__price">-</div>
-                        <div id="sdChange" class="price-box__change">-</div>
-                        <div id="sdYtd" class="price-box__meta">YTD: -</div>
+                        <div id="sdPrice" class="price-box__price">--</div>
+                        <div id="sdChange" class="price-box__change">--</div>
+                        <div id="sdYtd" class="price-box__meta">YTD: --</div>
                     </div>
                 </div>
 
-                <div id="sdReasons" class="chips"></div>
-                <div id="sdAlert" class="alert alert--warning alert--hidden mt-4"></div>
+                <div id="sdReasons" class="chips">
+                    <!-- Chips will be injected by JS -->
+                </div>
+                <div id="sdAlert" class="alert alert--warning alert--hidden">
+                    <!-- Alerts will be injected by JS -->
+                </div>
+
+                <!-- Symbol Search -->
+                <div class="symbol-search">
+                    <input type="text" id="sdSearchInput" class="symbol-search-input"
+                        placeholder="Search symbol (e.g., NVDA or US:AAPL)" autocomplete="off">
+                    <button class="btn btn-primary btn-sm" id="sdSearchGo">
+                        🔍 Go
+                    </button>
+                </div>
             </section>
 
+            <!-- Navigation Tabs -->
             <nav class="tabs">
-                <button class="tab is-active" data-tab="indicators">Indicators</button>
-                <button class="tab" data-tab="chart">Chart</button>
-                <button class="tab" data-tab="fundamentals">Fundamentals</button>
-                <button class="tab" data-tab="ratios">Ratios</button>
+                <button class="tab is-active" data-tab="indicators">
+                    📊 Indicators
+                </button>
+                <button class="tab" data-tab="chart">
+                    📈 Chart
+                </button>
+                <button class="tab" data-tab="fundamentals">
+                    💼 Fundamentals
+                </button>
+                <button class="tab" data-tab="ratios">
+                    🔢 Ratios
+                </button>
             </nav>
 
+            <!-- Tab: Indicators -->
             <section id="tab-indicators" class="tab-panel is-active">
                 <div class="grid-3">
+                    <!-- Trend Card -->
                     <div class="glass-panel indicator-card" id="cardTrend">
                         <div class="panel-header mb-4">
-                            <div class="panel-title">📉 Trend</div>
+                            <div class="panel-title">📉 Trend Analysis</div>
                         </div>
-                        <div id="sdTrend" class="kv-list"></div>
+                        <div id="sdTrend" class="kv-list">
+                            <!-- JS injected -->
+                            <div style="padding: 20px; text-align: center; color: var(--text-muted);">Loading...</div>
+                        </div>
                     </div>
 
+                    <!-- Momentum Card -->
                     <div class="glass-panel indicator-card" id="cardMomentum">
                         <div class="panel-header mb-4">
                             <div class="panel-title">⚡ Momentum</div>
                         </div>
-                        <div id="sdMomentum" class="kv-list"></div>
+                        <div id="sdMomentum" class="kv-list">
+                            <!-- JS injected -->
+                            <div style="padding: 20px; text-align: center; color: var(--text-muted);">Loading...</div>
+                        </div>
                     </div>
 
+                    <!-- Risk Card -->
                     <div class="glass-panel indicator-card" id="cardRisk">
                         <div class="panel-header mb-4">
-                            <div class="panel-title">📊 Risk / Volatility</div>
+                            <div class="panel-title">📊 Risk & Volatility</div>
                         </div>
-                        <div id="sdRisk" class="kv-list"></div>
+                        <div id="sdRisk" class="kv-list">
+                            <!-- JS injected -->
+                            <div style="padding: 20px; text-align: center; color: var(--text-muted);">Loading...</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="glass-panel mt-4">
-                    <div class="panel-title mb-4">What’s missing (Phase 5-2/5-3)</div>
+                <!-- Missing Features -->
+                <div class="glass-panel mt-4" style="padding: 24px;">
+                    <div class="panel-title mb-4">
+                        🚧 Coming Soon (Phase 5-2/5-3)
+                    </div>
                     <ul id="sdMissing" class="bullets">
-                        <li>Technical: VWAP, OBV, MFI, ADX/DMI, Bollinger Bands, Stochastic, Ichimoku</li>
-                        <li>Fundamentals: Revenue, Net Income, EPS, Cash Flow (CFO/CFI/CFF), CapEx</li>
-                        <li>Ratios: ROE, ROA, Net Margin, Equity Ratio</li>
+                        <li>📈 Technical: VWAP, OBV, MFI, ADX/DMI, Bollinger Bands, Ichimoku Cloud</li>
+                        <li>💰 Fundamentals: Revenue Growth, Net Income, EPS, Cash Flow (CFO/CFI/CFF), CapEx</li>
+                        <li>📊 Ratios: ROE, ROA, Net Margin, Equity Ratio, Debt-to-Equity, P/E Ratio</li>
                     </ul>
                 </div>
             </section>
 
+            <!-- Tab: Chart -->
             <section id="tab-chart" class="tab-panel">
-                <div class="glass-panel">
-                    <div class="panel-title mb-4">Price Chart (lazy)</div>
-                    <div id="sdChartPlaceholder" class="skeleton h-240"></div>
-                    <canvas id="sdPriceChart" class="hidden"></canvas>
+                <div class="glass-panel" style="padding: 24px;">
+                    <div class="panel-title mb-4">📈 Price Chart</div>
+
+                    <!-- Drawing Toolbar -->
+                    <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                        <button class="btn btn-ghost btn-sm" id="btnDrawNone"
+                            style="background: rgba(99, 102, 241, 0.2);">
+                            🖱️ カーソル
+                        </button>
+                        <button class="btn btn-ghost btn-sm" id="btnDrawHLine">
+                            ➖ 水平線
+                        </button>
+                        <button class="btn btn-ghost btn-sm" id="btnDrawTrendLine">
+                            📐 トレンドライン
+                        </button>
+                        <button class="btn btn-ghost btn-sm" id="btnToggleChartType">
+                            🕯️/📈 切替
+                        </button>
+                        <button class="btn btn-ghost btn-sm" id="btnClearLines">
+                            🗑️ 線をクリア
+                        </button>
+                        <div style="flex: 1;"></div>
+                        <button class="btn btn-ghost btn-sm" id="btnResetZoom">
+                            🔍 ズームリセット
+                        </button>
+                    </div>
+
+                    <div class="chart-container" style="position: relative;">
+                        <canvas id="mainPriceChart"></canvas>
+                    </div>
+
+                    <!-- Chart Controls -->
+                    <div style="margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn btn-ghost btn-sm chart-period-btn" data-period="1D">1D</button>
+                        <button class="btn btn-ghost btn-sm chart-period-btn" data-period="5D">5D</button>
+                        <button class="btn btn-ghost btn-sm chart-period-btn" data-period="1M">1M</button>
+                        <button class="btn btn-primary btn-sm chart-period-btn active" data-period="3M">3M</button>
+                        <button class="btn btn-ghost btn-sm chart-period-btn" data-period="6M">6M</button>
+                        <button class="btn btn-ghost btn-sm chart-period-btn" data-period="1Y">1Y</button>
+                        <button class="btn btn-ghost btn-sm chart-period-btn" data-period="5Y">5Y</button>
+                    </div>
+
+                    <!-- Price Chart Container -->
+                    <div
+                        style="background: rgba(0, 0, 0, 0.3); border-radius: 8px; padding: 20px; margin-bottom: 16px;">
+                        <canvas id="priceChart" style="max-height: 400px;"></canvas>
+                    </div>
+
+                    <!-- Volume Chart Container -->
+                    <div style="background: rgba(0, 0, 0, 0.3); border-radius: 8px; padding: 20px;">
+                        <div
+                            style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
+                            📊 出来高 (Volume)
+                        </div>
+                        <canvas id="volumeChart" style="max-height: 150px;"></canvas>
+                    </div>
+                </div>
+
+                <!-- Trade Panel (Collapsible) -->
+                <div class="trade-panel">
+                    <div class="trade-panel-header" onclick="toggleTradePanel()">
+                        <div class="trade-panel-title">🧭 Trade Panel</div>
+                        <button class="trade-panel-toggle" id="tpToggle">開く</button>
+                    </div>
+
+                    <div class="trade-panel-body" id="tpBody">
+                        <!-- A. Forecast / Probabilities (Display Only) -->
+                        <div class="tp-section">
+                            <div class="tp-section-title">📊 Forecast / Probabilities</div>
+                            <div class="tp-row">
+                                <span class="tp-label">予測レンジ</span>
+                                <span class="tp-value" id="tpForecastRange">--</span>
+                            </div>
+                            <div class="tp-row">
+                                <span class="tp-label">上昇確率</span>
+                                <span class="tp-value text-success" id="tpProbUp">--</span>
+                            </div>
+                            <div class="tp-row">
+                                <span class="tp-label">下降確率</span>
+                                <span class="tp-value text-danger" id="tpProbDown">--</span>
+                            </div>
+                            <div class="tp-row">
+                                <span class="tp-label">横ばい確率</span>
+                                <span class="tp-value text-muted" id="tpProbFlat">--</span>
+                            </div>
+                            <div class="tp-row">
+                                <span class="tp-label">信頼度</span>
+                                <span class="tp-value" id="tpConfidence">--</span>
+                            </div>
+                            <div class="tp-row">
+                                <span class="tp-label">主要ドライバー</span>
+                                <span class="tp-value" id="tpDrivers">--</span>
+                            </div>
+                        </div>
+
+                        <!-- B. Events (Display Only) -->
+                        <div class="tp-section">
+                            <div class="tp-section-title">📅 Events</div>
+                            <div class="tp-row">
+                                <span class="tp-label">次のイベント</span>
+                                <span class="tp-value" id="tpNextEvent">--</span>
+                            </div>
+                            <div class="tp-row">
+                                <span class="tp-label">注記</span>
+                                <span class="tp-value" id="tpEventNote">--</span>
+                            </div>
+                        </div>
+
+                        <!-- Pivot Info (Display Only) -->
+                        <div class="tp-section">
+                            <div class="tp-section-title">🎯 Pivot Analysis</div>
+                            <div class="tp-row">
+                                <span class="tp-label">Pivot</span>
+                                <span class="tp-value" id="tpPivot">--</span>
+                            </div>
+                            <div class="tp-row">
+                                <span class="tp-label">Pivot乖離%</span>
+                                <span class="tp-value" id="tpPivotDiffPct">--</span>
+                            </div>
+                            <div class="tp-row">
+                                <span class="tp-label">Buy Range判定</span>
+                                <span class="tp-value" id="tpBuyRange">--</span>
+                            </div>
+                        </div>
+
+                        <!-- C. Position / Risk Plan (Input + Save) -->
+                        <div class="tp-section" style="border-left-color: var(--success);">
+                            <div class="tp-section-title">💼 Position / Risk Plan</div>
+
+                            <div class="tp-input-group">
+                                <label>Entry Price</label>
+                                <input type="number" step="0.01" id="tpEntry" placeholder="例: 142.50">
+                            </div>
+
+                            <div class="tp-input-group">
+                                <label>Stop Loss</label>
+                                <input type="number" step="0.01" id="tpStop" placeholder="例: 138.00">
+                            </div>
+
+                            <div class="tp-input-group">
+                                <label>Take Profit</label>
+                                <input type="number" step="0.01" id="tpTakeProfit" placeholder="例: 150.00">
+                            </div>
+
+                            <div class="tp-input-group">
+                                <label>Position Size</label>
+                                <input type="number" step="1" id="tpPositionSize" placeholder="例: 100">
+                            </div>
+
+                            <div class="tp-input-group">
+                                <label>Notes</label>
+                                <textarea id="tpNotes" placeholder="トレードメモ..."></textarea>
+                            </div>
+
+                            <div class="tp-actions">
+                                <button class="btn btn-success" id="tpSave" onclick="saveTradePlan()">
+                                    ✓ 保存
+                                </button>
+                                <button class="btn btn-ghost" id="tpClear" onclick="clearTradePlan()">
+                                    ✕ クリア
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
+            <!-- Tab: Fundamentals -->
             <section id="tab-fundamentals" class="tab-panel">
-                <div class="glass-panel">
-                    <div class="panel-title mb-4">Financials (lazy)</div>
-                    <div class="muted">Not available yet (Phase 5-3: fundamentals_periodic)</div>
-                    <canvas id="sdFundChart" class="hidden"></canvas>
+                <div class="glass-panel" style="padding: 24px;">
+                    <div class="panel-title mb-4">💼 Financial Statements</div>
+
+                    <table class="fundamentals-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th class="text-right">Q4</th>
+                                <th class="text-right">Q3</th>
+                                <th class="text-right">Q2</th>
+                                <th class="text-right">Q1</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Revenue</td>
+                                <td class="text-right">--</td>
+                                <td class="text-right">--</td>
+                                <td class="text-right">--</td>
+                                <td class="text-right">--</td>
+                            </tr>
+                            <tr>
+                                <td>Net Income</td>
+                                <td class="text-right">--</td>
+                                <td class="text-right">--</td>
+                                <td class="text-right">--</td>
+                                <td class="text-right">--</td>
+                            </tr>
+                            <tr>
+                                <td>EPS (Diluted)</td>
+                                <td class="text-right">--</td>
+                                <td class="text-right">--</td>
+                                <td class="text-right">--</td>
+                                <td class="text-right">--</td>
+                            </tr>
+                            <tr>
+                                <td>Operating Cash Flow</td>
+                                <td class="text-right">--</td>
+                                <td class="text-right">--</td>
+                                <td class="text-right">--</td>
+                                <td class="text-right">--</td>
+                            </tr>
+                            <tr>
+                                <td>Free Cash Flow</td>
+                                <td class="text-right">--</td>
+                                <td class="text-right">--</td>
+                                <td class="text-right">--</td>
+                                <td class="text-right">--</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="muted mt-4">
+                        <small>Note: These are example values for demonstration purposes. Real-time financial data
+                            integration coming in Phase 5-3.</small>
+                    </div>
                 </div>
             </section>
 
+            <!-- Tab: Ratios -->
             <section id="tab-ratios" class="tab-panel">
-                <div class="glass-panel">
-                    <div class="panel-title mb-4">Ratios (lazy)</div>
-                    <div class="muted">ROE / ROA / Net Margin etc. will be computed from fundamentals.</div>
-                    <canvas id="sdRatioChart" class="hidden"></canvas>
+                <div class="glass-panel" style="padding: 24px;">
+                    <div class="panel-title mb-4">🔢 Financial Ratios</div>
+
+                    <div class="ratio-grid">
+                        <div class="ratio-card">
+                            <div class="ratio-label">P/E Ratio</div>
+                            <div class="ratio-value">--</div>
+                            <div class="ratio-subtitle">Forward P/E: --</div>
+                        </div>
+
+                        <div class="ratio-card">
+                            <div class="ratio-label">ROE</div>
+                            <div class="ratio-value">--</div>
+                            <div class="ratio-subtitle">Return on Equity</div>
+                        </div>
+
+                        <div class="ratio-card">
+                            <div class="ratio-label">ROA</div>
+                            <div class="ratio-value">--</div>
+                            <div class="ratio-subtitle">Return on Assets</div>
+                        </div>
+
+                        <div class="ratio-card">
+                            <div class="ratio-label">Net Margin</div>
+                            <div class="ratio-value">--</div>
+                            <div class="ratio-subtitle">Profit Margin</div>
+                        </div>
+
+                        <div class="ratio-card">
+                            <div class="ratio-label">Debt/Equity</div>
+                            <div class="ratio-value">--</div>
+                            <div class="ratio-subtitle">Low Leverage</div>
+                        </div>
+
+                        <div class="ratio-card">
+                            <div class="ratio-label">Current Ratio</div>
+                            <div class="ratio-value">--</div>
+                            <div class="ratio-subtitle">Liquidity</div>
+                        </div>
+
+                        <div class="ratio-card">
+                            <div class="ratio-label">Quick Ratio</div>
+                            <div class="ratio-value">--</div>
+                            <div class="ratio-subtitle">Acid Test</div>
+                        </div>
+
+                        <div class="ratio-card">
+                            <div class="ratio-label">Asset Turnover</div>
+                            <div class="ratio-value">--</div>
+                            <div class="ratio-subtitle">Efficiency</div>
+                        </div>
+                    </div>
+
+                    <div class="muted mt-4">
+                        <small>Note: These are example values for demonstration purposes. Real-time ratio calculations
+                            coming in Phase 5-3.</small>
+                    </div>
                 </div>
             </section>
 
@@ -161,9 +1231,58 @@
     </main>
 
     <!-- Scripts (Strict Order) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@3.3.0/dist/chartjs-chart-financial.min.js"></script>
+
     <script defer src="/js/config.js?v=20260211-neo-01"></script>
     <script defer src="/js/common.js?v=20260211-neo-01"></script>
-    <script defer src="/js/stock_detail.js?v=20260211-neo-01"></script>
+    <script defer src="/js/stock_detail.js?v=20260214"></script>
+
+    <script>
+        // Tab Navigation & App Initialization
+        document.addEventListener('DOMContentLoaded', function () {
+            // Register Chart.js plugins (Minimal & Robust)
+            if (window.Chart) {
+                // zoom
+                const zoom = window.ChartZoom || window['chartjs-plugin-zoom'];
+                if (zoom) Chart.register(zoom);
+
+                // annotation
+                if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
+
+                // financial
+                const fin = window['chartjs-chart-financial'] || window.ChartFinancial;
+                if (fin) {
+                    Chart.register(
+                        fin.CandlestickController,
+                        fin.OhlcController,
+                        fin.FinancialScale,
+                        fin.FinancialLinearScale
+                    );
+                    window.financialReady = true;
+                    console.log('[Chart] Financial plugin registered');
+                } else {
+                    console.warn('[Chart] Financial plugin not found');
+                    window.financialReady = false;
+                }
+            }
+
+            // Initialize App
+            console.log("[StockDetail] Initializing StockDetailApp...");
+            window.app = new StockDetailApp();
+            window.app.init().catch(err => {
+                console.error("[StockDetail] Initialization failed:", err);
+                if (window.app && window.app.showFatal) {
+                    window.app.showFatal(`初期化に失敗しました: ${err.message}`);
+                }
+            });
+        });
+    </script>
+
 </body>
 
 </html>

@@ -60,3 +60,11 @@ def get_system_logs(limit: int = 50):
         return logs
     finally:
         db.disconnect()
+
+from fastapi import Request
+@router.get("/diagnostics/screener")
+def get_screener_diagnostics(request: Request):
+    """スクリーナーの診断情報を取得"""
+    from app.services.screener_service import ScreenerService
+    service = ScreenerService()
+    return service.get_diagnostics(dict(request.query_params))

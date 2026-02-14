@@ -226,20 +226,25 @@ class ScreenerResult(BaseModel):
     """スクリーニング結果の1銘柄"""
     symbol: str
     name: str
-    price: Decimal
-    change_pct: Decimal
+    price: float
+    change_pct: float
     volume: int
-    market_cap: Decimal | None = None
-    rsi: Decimal | None = None
-    total_score: float | None = None
-    ma_cross: str | None = None
+    market_cap: Optional[float] = None
+    rsi: Optional[float] = None
+    total_score: Optional[float] = None
+    rs_score: Optional[int] = None
+    dist_52w_high_pct: Optional[float] = None
+    signals: list[str] = []
+    ma_cross: Optional[str] = None
 
 
 class ScreenerResponse(BaseModel):
-    """Screener画面用レスポンス"""
-    results: list[ScreenerResult]
-    total_count: int
-    filter_applied: dict
+    """Screener画面用レスポンス (Requirement 5)"""
+    items: list[ScreenerResult]
+    total: int
+    page: int
+    limit: int
+    total_pages: int
 
 
 # Rotation Models  
