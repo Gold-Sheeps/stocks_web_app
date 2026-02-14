@@ -1,0 +1,197 @@
+/* frontend/css/monitor.css */
+
+/* --- Monitor Specific Layout --- */
+.market-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--sp-6);
+}
+
+@media (max-width: 768px) {
+    .market-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- Live Indicator --- */
+.live-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--success);
+    font-weight: 600;
+    padding: 4px 8px;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: var(--radius-full);
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* --- Market Rows & Cells --- */
+.market-row {
+    /* common.cssの .market-row を継承しつつ調整 */
+    padding: 12px 0;
+}
+
+.market-cell-name {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0; /* Text truncate fix */
+}
+
+.market-symbol {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    margin-top: 2px;
+}
+
+.market-cell-right {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.market-value {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-main);
+    line-height: 1.2;
+}
+
+.market-value.na {
+    color: var(--text-muted);
+    opacity: 0.5;
+    font-weight: 400;
+}
+
+.market-change {
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* --- Colors with Glow --- */
+.text-up-dim {
+    color: #86efac; /* Light Green */
+    text-shadow: 0 0 10px rgba(134, 239, 172, 0.2);
+}
+
+.text-down-dim {
+    color: #fca5a5; /* Light Red */
+    text-shadow: 0 0 10px rgba(252, 165, 165, 0.2);
+}
+
+/* --- Sparklines --- */
+.sparkline-container {
+    width: 80px;
+    height: 30px;
+    margin-right: 12px;
+    opacity: 0.8;
+}
+
+.sparkline {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+/* --- Flash Animations --- */
+.flash-up {
+    animation: flashGreen 0.8s ease-out;
+}
+
+.flash-down {
+    animation: flashRed 0.8s ease-out;
+}
+
+@keyframes flashGreen {
+    0% { background-color: rgba(16, 185, 129, 0.2); }
+    100% { background-color: transparent; }
+}
+
+@keyframes flashRed {
+    0% { background-color: rgba(239, 68, 68, 0.2); }
+    100% { background-color: transparent; }
+}
+
+/* --- Badges --- */
+.badge-minimal {
+    font-size: 0.6rem;
+    padding: 1px 4px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    margin-left: 6px;
+    text-transform: uppercase;
+}
+
+.badge-api { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); }
+.badge-miss { background: rgba(239, 68, 68, 0.1); color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
+
+/* --- Stats Cards --- */
+.stat-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--sp-4);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-label {
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    color: var(--text-main);
+}
+
+/* --- Disconnected State --- */
+.disconnected-notice {
+    text-align: center;
+    padding: 12px;
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+    font-style: italic;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-sm);
+    margin-top: 8px;
+}
+
+/* --- Animation Stagger --- */
+.fade-in { animation: fadeIn 0.6s ease-out backwards; }
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

@@ -91,8 +91,10 @@ class WatchlistItem(BaseModel):
 class MonitorResponse(BaseModel):
     """Monitor画面用全体レスポンス"""
     indices: List[MarketIndexData]
-    watchlist: List[WatchlistItem]
-    alerts: List[WatchlistItem]
+    rates: List[MarketIndexData] = []
+    crypto: List[MarketIndexData] = []
+    watchlist: List[WatchlistItem] = []
+    alerts: List[WatchlistItem] = []
     portfolio: Optional[PortfolioSummary] = None
     fx_rates: List[MarketIndexData] = []
     metals: List[MarketIndexData] = []
