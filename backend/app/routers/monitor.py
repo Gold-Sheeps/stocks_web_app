@@ -8,11 +8,12 @@ router = APIRouter(prefix="/monitor", tags=["monitor"])
 @router.get("/", response_model=MonitorResponse)
 def get_monitor_data():
     """
-    Monitor画面用のデータを取得
-    - 資産サマリー（取得来/YTD損益）
-    - 市場指数（VIX、ダウ、日経等）
-    - 為替レート
-    - メタル価格
+    Monitor画面用のデータを一括取得
+    - 市場指数
+    - ウォッチリスト（RSI/出来高倍率等を含む）
+    - アラート（±3%以上の変動銘柄）
+    - 資産サマリー（プレースホルダ）
     """
     service = MonitorService()
-    return service.get_monitor_data()
+    # 新しく実装したダッシュボード用メソッドを呼び出す
+    return service.get_dashboard_data()

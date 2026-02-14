@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 
 
@@ -60,15 +60,45 @@ class PortfolioSummary(BaseModel):
     ytd_start_date: Optional[date] = None
 
 
+# ========== Watchlist & Monitor Models ==========
+class WatchlistItem(BaseModel):
+    """ウォッチリスト項目（表示用 & アラート用）"""
+    id: Optional[int] = None
+    symbol: str
+    name: Optional[str] = None
+    market: Optional[str] = None
+    status: Optional[str] = "Research"
+    memo: Optional[str] = None
+    
+    # ライブ/日次データ
+    current_price: Optional[Decimal] = None
+    change_pct: Optional[Decimal] = None
+    volume: Optional[int] = None
+    
+    # テクニカル指標
+    rsi: Optional[Decimal] = None
+    volume_ratio: Optional[Decimal] = None
+    
+    # アラート情報
+    alert_type: Optional[str] = None  # "SURGE", "PLUNGE", None
+    
+    last_updated: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
 class MonitorResponse(BaseModel):
-    """Monitor画面用レスポンス"""
-    portfolio: PortfolioSummary
-    indices: list[MarketIndexData]
-    fx_rates: list[MarketIndexData]
-    metals: list[MarketIndexData]
+    """Monitor画面用全体レスポンス"""
+    indices: List[MarketIndexData]
+    watchlist: List[WatchlistItem]
+    alerts: List[WatchlistItem]
+    portfolio: Optional[PortfolioSummary] = None
+    fx_rates: List[MarketIndexData] = []
+    metals: List[MarketIndexData] = []
 
 
-# Stock Detail Models
+# ========== Stock Detail Models ==========
 class StockInfo(BaseModel):
     symbol: str
     name: str
@@ -144,8 +174,6 @@ class StockDetailResponse(BaseModel):
     indicators: Indicators
     signal_summary: StockSignalSummary
     data_quality: DataQuality
-    # Deprecated fields (kept for backward compatibility if needed, 
-    # but Frontend Phase 5 will ignore them or we can remove if Phase 5-2 handles /price)
     price_history: list[PricePoint] = [] 
 
 
@@ -153,9 +181,9 @@ class StockDetailResponse(BaseModel):
 class TradeCreate(BaseModel):
     """取引作成用モデル"""
     symbol_key: str
-    market: str  # US, JP
-    asset_type: str  # EQUITY, ETF, FX
-    side: str  # BUY or SELL
+    market: str
+    asset_type: str
+    side: str
     trade_date: date
     shares: Decimal
     price: Decimal
@@ -174,7 +202,6 @@ class Trade(TradeCreate):
         from_attributes = True
 
 
-# Portfolio Models
 class Holding(BaseModel):
     """保有銘柄情報"""
     symbol: str
@@ -221,7 +248,16 @@ class PortfolioDetailResponse(BaseModel):
     last_updated: datetime
 
 
-# Screener Models
+# ========== Watchlist Models (CRUD用) ==========
+class WatchlistRequest(BaseModel):
+    """ウォッチリスト登録/更新リクエスト"""
+    symbol: str
+    status: Optional[str] = "Research"
+    memo: Optional[str] = None
+    tags: Optional[list[str]] = []
+
+
+# ========== Screener Models ==========
 class ScreenerResult(BaseModel):
     """スクリーニング結果の1銘柄"""
     symbol: str
@@ -239,7 +275,7 @@ class ScreenerResult(BaseModel):
 
 
 class ScreenerResponse(BaseModel):
-    """Screener画面用レスポンス (Requirement 5)"""
+    """Screener画面用レスポンス"""
     items: list[ScreenerResult]
     total: int
     page: int
@@ -247,13 +283,13 @@ class ScreenerResponse(BaseModel):
     total_pages: int
 
 
-# Rotation Models  
+# ========== Rotation Models ==========
 class SectorPerformance(BaseModel):
     """セクター別パフォーマンス"""
     sector: str
     current_return: Decimal
-    momentum: Decimal  # 勢い（最近のトレンド）
-    relative_strength: Decimal  # 相対的強さ
+    momentum: Decimal
+    relative_strength: Decimal
     rank: int
 
 
@@ -282,60 +318,3 @@ class SectorDetailResponse(BaseModel):
     top_3: list[str]
     chart_data: list[dict]
     constituents: list[dict]
-
-# ========== Watchlist Models ==========
-class WatchlistRequest(BaseModel):
-    """ウォッチリスト登録/更新リクエスト"""
-    symbol: str
-    status: Optional[str] = "Research"  # Research, Setup, Action
-    memo: Optional[str] = None
-    tags: Optional[list[str]] = []
-    fair_value_min: Optional[Decimal] = None
-    fair_value_max: Optional[Decimal] = None
-    alert_config: Optional[dict] = None
-
-
-class WatchlistItem(BaseModel):
-    """ウォッチリスト項目（表示用）"""
-    id: int
-    symbol: str
-    name: str | None = None
-    market: str | None = None
-    status: str
-    memo: str | None = None
-    tags: list[str] = []
-    fair_value_min: Decimal | None = None
-    fair_value_max: Decimal | None = None
-    alert_config: dict | None = None
-    
-    # Live/Daily Data
-    current_price: Decimal | None = None
-    change_pct: Decimal | None = None
-    volume: int | None = None
-    
-    # Technical Indicators
-    rsi: Decimal | None = None
-    macd: Decimal | None = None
-    macd_signal: Decimal | None = None
-    ema21: Decimal | None = None
-    sma50: Decimal | None = None
-    sma200: Decimal | None = None
-    pivot: Decimal | None = None
-    rs_score: int | None = None
-    volume_ratio: Decimal | None = None
-    
-    # Flags/Analysis
-    institution_flag: bool = False
-    buy_zone: bool = False
-    
-    # Entry Info
-    entry_price: Decimal | None = None
-    entry_date: date | None = None
-    change_from_entry: Decimal | None = None
-    change_pct_from_entry: Decimal | None = None
-
-    last_updated: datetime | None = None
-
-    class Config:
-        from_attributes = True
-
