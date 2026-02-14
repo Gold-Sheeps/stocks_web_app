@@ -628,6 +628,9 @@
                     <button class="btn btn-primary" onclick="openModal('EQUITY')">
                         <span style="margin-right: 4px;">+</span> Stock
                     </button>
+                    <button class="btn btn-primary" onclick="openCashModal()">
+                        <span style="margin-right: 4px;">💰</span> Cash
+                    </button>
                     <button class="btn btn-ghost" onclick="openModal('ETF')">
                         <span style="margin-right: 4px;">+</span> ETF
                     </button>
@@ -645,15 +648,19 @@
                         <div class="card-value" id="totalValue">¥0</div>
                     </div>
                     <div class="performance-card fade-in stagger-2">
+                        <div class="card-label">Cash</div>
+                        <div class="card-value card-secondary" id="cashValue">¥0</div>
+                    </div>
+                    <div class="performance-card fade-in stagger-3">
                         <div class="card-label">Total Cost</div>
                         <div class="card-value card-secondary" id="totalCost">¥0</div>
                     </div>
-                    <div class="performance-card fade-in stagger-3" id="pnlCard">
+                    <div class="performance-card fade-in stagger-4" id="pnlCard">
                         <div class="card-label">Total P&L</div>
                         <div class="card-value" id="totalGainLoss">¥0</div>
                         <div class="card-subtitle" id="totalGainLossPct">0%</div>
                     </div>
-                    <div class="performance-card card-best-performer fade-in stagger-4">
+                    <div class="performance-card card-best-performer fade-in stagger-5">
                         <div class="card-label">Best Performer</div>
                         <div class="card-value" id="bestPerformer">-</div>
                     </div>
@@ -678,6 +685,7 @@
                                     <th class="text-right">P&L</th>
                                     <th class="text-right">P&L %</th>
                                     <th class="text-right">Cost Basis</th>
+                                    <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="holdingsBody"></tbody>
@@ -790,9 +798,175 @@
         </div>
     </div>
 
+    <!-- Cash Modal -->
+    <div class="custom-modal" id="cashModal">
+        <div class="modal-dialog glass-panel">
+            <div class="modal-header">
+                <div class="modal-title">💰 現金残高を編集</div>
+                <button class="modal-close" onclick="closeCashModal()">×</button>
+            </div>
+
+            <form id="cashForm" onsubmit="submitCash(event)" style="padding: 24px;">
+                <div class="input-group mb-4">
+                    <label>現金残高（JPY）</label>
+                    <input type="number" step="0.01" id="cashAmount" name="cash_amount" placeholder="例: 1000000"
+                        required>
+                </div>
+
+                <div class="input-group mb-6">
+                    <label>メモ（任意）</label>
+                    <input type="text" id="cashMemo" name="memo" placeholder="入金、出金など...">
+                </div>
+
+                <div class="d-flex justify-end gap-2">
+                    <button type="button" class="btn btn-ghost" onclick="closeCashModal()">キャンセル</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span style="margin-right: 4px;">✓</span> 保存
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Holding Modal -->
+    <div class="custom-modal" id="editHoldingModal">
+        <div class="modal-dialog glass-panel">
+            <div class="modal-header">
+                <div class="modal-title">✏️ Holdingを編集</div>
+                <button class="modal-close" onclick="closeEditHoldingModal()">×</button>
+            </div>
+
+            <form id="editHoldingForm" onsubmit="submitEditHolding(event)" style="padding: 24px;">
+                <input type="hidden" id="editHoldingId">
+
+                <div class="input-group mb-4">
+                    <label>Symbol</label>
+                    <input type="text" id="editSymbol" readonly
+                        style="background: rgba(0,0,0,0.3); cursor: not-allowed;">
+                </div>
+
+                <div class="form-grid-2 mb-4">
+                    <div class="input-group">
+                        <label>Shares</label>
+                        <input type="number" step="any" id="editShares" name="shares" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Average Cost</label>
+                        <input type="number" step="any" id="editAvgCost" name="avg_cost" required>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-end gap-2">
+                    <button type="button" class="btn btn-ghost" onclick="closeEditHoldingModal()">キャンセル</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span style="margin-right: 4px;">✓</span> 更新
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="js/config.js"></script>
     <script src="js/common.js"></script>
     <script>
+        // --- Cash Management ---
+        let currentCash = 0;
+
+        function openCashModal() {
+            document.getElementById('cashAmount').value = currentCash || 0;
+            document.getElementById('cashModal').classList.add('active');
+        }
+
+        function closeCashModal() {
+            document.getElementById('cashModal').classList.remove('active');
+        }
+
+        async function submitCash(event) {
+            event.preventDefault();
+            const amount = parseFloat(document.getElementById('cashAmount').value);
+
+            try {
+                // Save to localStorage (in production, use API)
+                localStorage.setItem('portfolio_cash', amount);
+                currentCash = amount;
+
+                // Update display
+                document.getElementById('cashValue').textContent = formatCurrency(amount, 'JPY');
+
+                // Recalculate total
+                await loadPortfolio();
+
+                closeCashModal();
+
+                if (window.UI && window.UI.showToast) {
+                    window.UI.showToast('現金残高を更新しました', 'success');
+                } else {
+                    alert('現金残高を更新しました');
+                }
+            } catch (error) {
+                console.error('Cash update error:', error);
+                if (window.UI && window.UI.showToast) {
+                    window.UI.showToast('エラーが発生しました', 'error');
+                } else {
+                    alert('エラーが発生しました');
+                }
+            }
+        }
+
+        // --- Edit Holding ---
+        function openEditHoldingModal(holdingId, symbol, shares, avgCost) {
+            document.getElementById('editHoldingId').value = holdingId;
+            document.getElementById('editSymbol').value = symbol;
+            document.getElementById('editShares').value = shares;
+            document.getElementById('editAvgCost').value = avgCost;
+            document.getElementById('editHoldingModal').classList.add('active');
+        }
+
+        function closeEditHoldingModal() {
+            document.getElementById('editHoldingModal').classList.remove('active');
+        }
+
+        async function submitEditHolding(event) {
+            event.preventDefault();
+
+            const holdingId = document.getElementById('editHoldingId').value;
+            const shares = parseFloat(document.getElementById('editShares').value);
+            const avgCost = parseFloat(document.getElementById('editAvgCost').value);
+
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/portfolio/holdings/${holdingId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        shares: shares,
+                        avg_cost: avgCost
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                await loadPortfolio();
+                closeEditHoldingModal();
+
+                if (window.UI && window.UI.showToast) {
+                    window.UI.showToast('Holdingを更新しました', 'success');
+                } else {
+                    alert('Holdingを更新しました');
+                }
+            } catch (error) {
+                console.error('Edit holding error:', error);
+                if (window.UI && window.UI.showToast) {
+                    window.UI.showToast('エラーが発生しました', 'error');
+                } else {
+                    alert('エラーが発生しました');
+                }
+            }
+        }
+
         // --- Formatting Utils ---
         function formatCurrency(value, currency = 'JPY') {
             if (currency === 'JPY') {
@@ -855,6 +1029,15 @@
 
                 document.getElementById('bestPerformer').textContent = data.performance.best_performer || '-';
 
+                // Load cash from localStorage
+                const savedCash = parseFloat(localStorage.getItem('portfolio_cash')) || 0;
+                currentCash = savedCash;
+                document.getElementById('cashValue').textContent = formatCurrency(savedCash, 'JPY');
+
+                // Update total assets to include cash
+                const totalWithCash = data.performance.total_value + savedCash;
+                document.getElementById('totalValue').textContent = formatCurrency(totalWithCash, 'JPY');
+
                 // Holdings
                 const holdingsHtml = data.holdings.map(h => {
                     const gainClass = parseFloat(h.gain_loss) >= 0 ? 'text-success' : 'text-danger';
@@ -872,10 +1055,15 @@
                             <td class="text-right num-cell ${gainClass}">${currencySymbol}${formatNumber(h.gain_loss)}</td>
                             <td class="text-right ${gainClass}">${formatPct(h.gain_loss_pct)}</td>
                             <td class="text-right num-cell text-muted">${currencySymbol}${formatNumber(h.cost_basis)}</td>
+                            <td class="text-center">
+                                <button class="btn btn-ghost btn-sm" onclick="openEditHoldingModal(${h.id}, '${h.symbol}', ${h.shares}, ${h.avg_cost})" title="編集">
+                                    ✏️
+                                </button>
+                            </td>
                         </tr>
                     `;
                 }).join('');
-                document.getElementById('holdingsBody').innerHTML = holdingsHtml || '<tr><td colspan="8" class="text-center text-muted" style="padding: 40px;">No holdings yet</td></tr>';
+                document.getElementById('holdingsBody').innerHTML = holdingsHtml || '<tr><td colspan="9" class="text-center text-muted" style="padding: 40px;">No holdings yet</td></tr>';
 
                 // Trades
                 const tradesHtml = data.recent_trades.map(t => {
