@@ -1,572 +1,326 @@
 from decimal import Decimal
+from typing import List, Optional, Dict
+import psycopg
+from app.core.config import settings
+from app.models.schemas import PortfolioSummary, Holding, Trade
 from datetime import datetime
-from typing import List, Optional
-import yfinance as yf
-from app.db.database import Database
-from app.models.schemas import (
-    Holding,
-    TradeHistory,
-    PortfolioPerformance,
-    PortfolioDetailResponse,
-    TradeCreate,
-    PortfolioSummary,
-)
 
 
 class PortfolioService:
-    """Portfolio画面のビジネスロジック"""
-
     def __init__(self):
-        self.db = Database()
+        self.dsn = f"postgresql://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}"
 
-    def get_portfolio_summary(self) -> PortfolioSummary:
-        """ポートフォリオサマリー（総資産、現金、評価額、損益）を取得"""
-        self.db.connect()
-        try:
-            # 1. Get Latest USD/JPY Rate
-            usd_jpy_rate = self._get_usd_jpy_rate()
-
-            # 2. Calculate Realized P&L and Deposits from Trades
-            # Fetch all relevant trades data
-            # side: BUY, SELL, DEPOSIT, WITHDRAW
-            query_trades = """
-                SELECT side, realized_pnl, total_amount, currency, fx_rate_to_jpy 
-                FROM trades 
-                WHERE realized_pnl IS NOT NULL OR side IN ('DEPOSIT', 'WITHDRAW')
-            """
-            trades = self.db.execute_query(query_trades)
-
-            total_realized_pnl_jpy = Decimal("0")
-            total_deposits_jpy = Decimal("0")
-
-            if trades:
-                for t in trades:
-                    side, pnl, amount, currency, fx_rate = t
-
-                    # Determine FX Rate
-                    rate = Decimal("1.0")
-                    if currency != "JPY":
-                        if fx_rate is not None:
-                            rate = fx_rate
-                        else:
-                            rate = usd_jpy_rate  # Fallback to current
-
-                    # Realized P&L (from SELL/COVER)
-                    if pnl is not None:
-                        total_realized_pnl_jpy += pnl * rate
-
-                    # Deposits/Withdrawals
-                    if side == "DEPOSIT":
-                        val = amount if amount is not None else Decimal("0")
-                        total_deposits_jpy += val * rate
-                    elif side == "WITHDRAW":
-                        val = amount if amount is not None else Decimal("0")
-                        total_deposits_jpy -= val * rate
-
-            # 3. Calculate Market Value and Cost of Holdings
-            # Use JOIN to get latest price efficiently
-            query_holdings = """
-                SELECT h.quantity, h.average_cost, h.currency, h.market, p.close
-                FROM holdings h
-                LEFT JOIN LATERAL (
-                    SELECT close FROM price_daily pd 
-                    WHERE pd.symbol_key = h.symbol_key 
-                    ORDER BY pd.trading_date DESC LIMIT 1
-                ) p ON true
-            """
-            holdings_rows = self.db.execute_query(query_holdings)
-
-            total_market_value_jpy = Decimal("0")
-            total_cost_basis_jpy = Decimal("0")
-
-            if holdings_rows:
-                for row in holdings_rows:
-                    qty, avg_cost, currency, market, current_price = row
-
-                    if qty is None:
-                        qty = Decimal("0")
-                    if avg_cost is None:
-                        avg_cost = Decimal("0")
-                    if current_price is None:
-                        current_price = Decimal("0")  # Fallback
-
-                    # Determine Rate for Holdings (Current Rate)
-                    rate = Decimal("1.0")
-                    if currency == "USD" or market == "US":
-                        rate = usd_jpy_rate
-
-                    # Market Value
-                    total_market_value_jpy += qty * current_price * rate
-
-                    # Cost Basis
-                    total_cost_basis_jpy += qty * avg_cost * rate
-
-            # 4. Calculate Cash
-            # Cash = (Deposits + Realized P&L) - Cost of Holdings
-            cash_balance = (
-                total_deposits_jpy + total_realized_pnl_jpy
-            ) - total_cost_basis_jpy
-
-            # 5. Total Assets
-            total_assets = cash_balance + total_market_value_jpy
-
-            # 6. Total P&L (Total Assets - Total Deposits)
-            total_pl = total_assets - total_deposits_jpy
-
-            total_pl_pct = Decimal("0")
-            if total_deposits_jpy != 0:
-                total_pl_pct = (total_pl / abs(total_deposits_jpy)) * 100
-
-            return PortfolioSummary(
-                total_assets=total_assets,
-                cash_balance=cash_balance,
-                market_value=total_market_value_jpy,
-                total_pl=total_pl,
-                total_pl_pct=total_pl_pct,
-            )
-
-        finally:
-            self.db.disconnect()
-
-    def get_portfolio_detail(self) -> PortfolioDetailResponse:
-        """ポートフォリオ詳細データを取得"""
-        self.db.connect()
-        try:
-            # 1. Get Latest USD/JPY Rate
-            usd_jpy_rate = self._get_usd_jpy_rate()
-
-            # 2. Get Holdings with FX conversion
-            holdings = self._get_holdings(usd_jpy_rate)
-            recent_trades = self._get_recent_trades()
-
-            # Calculate performance summary (values are already in JPY)
-            total_value = sum(h.market_value for h in holdings)
-            total_cost = sum(h.cost_basis for h in holdings)
-            total_gain_loss = sum(h.gain_loss for h in holdings)
-
-            total_gain_loss_pct = Decimal("0")
-            if total_cost != 0:
-                total_gain_loss_pct = (total_gain_loss / abs(total_cost)) * 100
-
-            # Calculate Best Performer
-            best_performer = self._get_best_performer(usd_jpy_rate)
-
-            performance = PortfolioPerformance(
-                total_value=total_value,
-                total_cost=total_cost,
-                total_gain_loss=total_gain_loss,
-                total_gain_loss_pct=total_gain_loss_pct,
-                best_performer=best_performer,
-                worst_performer=None,
-            )
-
-            return PortfolioDetailResponse(
-                performance=performance,
-                holdings=holdings,
-                recent_trades=recent_trades,
-                last_updated=datetime.now(),
-            )
-        finally:
-            self.db.disconnect()
-
-    def add_trade(self, trade: TradeCreate):
-        """取引を追加し、保有状況を更新"""
-        self.db.connect()
-        try:
-            # Extract display symbol from symbol_key for legacy column
-            # Assumes format "MARKET:SYMBOL" (e.g. US:NVDA)
-            display_symbol = trade.symbol_key
-            if ":" in display_symbol:
-                display_symbol = display_symbol.split(":", 1)[1]
-
-            # 1. Insert Trade
-            # symbol_key column is added in Phase 2
-            query_insert = """
-                INSERT INTO trades 
-                (symbol, symbol_key, market, trade_date, side, quantity, price, total_amount, currency, fx_rate_to_jpy, asset_type, memo, realized_pnl)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                RETURNING trade_id
-            """
-
-            total_amount = trade.shares * trade.price
-            realized_pnl = Decimal("0")
-
-            # Get current holding to calculate PnL and new average cost
-            # Use symbol_key for lookup if possible, or fallback
-            current_holding = self._get_holding_db(display_symbol)
-
-            new_quantity = Decimal("0")
-            new_avg_cost = Decimal("0")
-
-            if current_holding:
-                current_qty = current_holding["quantity"]
-                current_avg = current_holding["average_cost"]
-
-                if trade.side == "BUY":
-                    if current_qty >= 0:
-                        # Long + Buy = Add to position (Weighted Avg)
-                        new_quantity = current_qty + trade.shares
-                        new_total_cost = (current_qty * current_avg) + total_amount
-                        new_avg_cost = (
-                            new_total_cost / new_quantity if new_quantity != 0 else 0
-                        )
-                    else:
-                        # Short + Buy = Cover (Realize PnL)
-                        remaining_qty = current_qty + trade.shares
-
-                        if remaining_qty <= 0:
-                            # Still Short or Flat
-                            covered_qty = trade.shares
-                            realized_pnl = (current_avg - trade.price) * covered_qty
-                            new_quantity = remaining_qty
-                            new_avg_cost = current_avg
-                        else:
-                            # Flip to Long
-                            covered_qty = abs(current_qty)
-                            realized_pnl = (current_avg - trade.price) * covered_qty
-                            new_quantity = remaining_qty
-                            new_avg_cost = trade.price
-
-                elif trade.side == "SELL":
-                    if current_qty <= 0:
-                        # Short + Sell = Add to short position
-                        new_quantity = current_qty - trade.shares
-                        current_proceeds = abs(current_qty) * current_avg
-                        new_proceeds = current_proceeds + total_amount
-                        new_avg_cost = (
-                            new_proceeds / abs(new_quantity) if new_quantity != 0 else 0
-                        )
-                    else:
-                        # Long + Sell = Close (Realize PnL)
-                        remaining_qty = current_qty - trade.shares
-
-                        if remaining_qty >= 0:
-                            # Still Long or Flat
-                            sold_qty = trade.shares
-                            realized_pnl = (trade.price - current_avg) * sold_qty
-                            new_quantity = remaining_qty
-                            new_avg_cost = current_avg
-                        else:
-                            # Flip to Short
-                            sold_qty = current_qty
-                            realized_pnl = (trade.price - current_avg) * sold_qty
-                            new_quantity = remaining_qty
-                            new_avg_cost = trade.price
-            else:
-                # No existing holding
-                if trade.side == "BUY":
-                    new_quantity = trade.shares
-                    new_avg_cost = trade.price
-                else:
-                    new_quantity = -trade.shares
-                    new_avg_cost = trade.price
-
-            # Execute Insert
-            self.db.execute_command(
-                query_insert,
-                (
-                    display_symbol,
-                    trade.symbol_key,
-                    trade.market,
-                    trade.trade_date,
-                    trade.side,
-                    trade.shares,
-                    trade.price,
-                    total_amount,
-                    trade.currency,
-                    trade.fx_rate_to_jpy,
-                    trade.asset_type,
-                    trade.memo,
-                    realized_pnl,
-                ),
-            )
-
-            # Insert/Update Holding
-            self._upsert_holding(
-                display_symbol,
-                trade.symbol_key,
-                trade.market,
-                trade.asset_type,
-                new_quantity,
-                new_avg_cost,
-                trade.currency,
-            )
-
-            return True
-
-        except Exception as e:
-            print(f"Error adding trade: {e}")
-            raise e
-        finally:
-            self.db.disconnect()
-
-    def delete_trade(self, trade_id: int):
-        """取引を削除"""
-        self.db.connect()
-        try:
-            query_get = "SELECT symbol, symbol_key FROM trades WHERE trade_id = %s"
-            result = self.db.execute_query(query_get, (trade_id,))
-            if not result:
-                return False
-            symbol, symbol_key = result[0]
-
-            self.db.execute_command(
-                "DELETE FROM trades WHERE trade_id = %s", (trade_id,)
-            )
-
-            # Rebuild holding for this symbol
-            self._rebuild_holding(symbol, symbol_key)
-            return True
-        finally:
-            self.db.disconnect()
-
-    def _get_holding_db(self, symbol):
-        # symbol PK is used for holdings lookups
-        query = "SELECT quantity, average_cost FROM holdings WHERE symbol = %s"
-        result = self.db.execute_query(query, (symbol,))
-        if result:
-            return {"quantity": result[0][0], "average_cost": result[0][1]}
-        return None
-
-    def _upsert_holding(
-        self, symbol, symbol_key, market, asset_type, quantity, avg_cost, currency
-    ):
-        if quantity == 0:
-            query = "DELETE FROM holdings WHERE symbol = %s"
-            self.db.execute_command(query, (symbol,))
-        else:
-            # Update symbol_key as well
-            query = """
-                INSERT INTO holdings (symbol, symbol_key, market, asset_type, quantity, average_cost, currency, updated_at)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, NOW())
-                ON CONFLICT (symbol) DO UPDATE SET
-                    quantity = EXCLUDED.quantity,
-                    average_cost = EXCLUDED.average_cost,
-                    symbol_key = EXCLUDED.symbol_key,
-                    updated_at = NOW()
-            """
-            self.db.execute_command(
-                query,
-                (symbol, symbol_key, market, asset_type, quantity, avg_cost, currency),
-            )
-
-    def _rebuild_holding(self, symbol, symbol_key=None):
-        # Fetch all trades ASC
-        query = "SELECT side, quantity, price, asset_type, market, currency, symbol_key FROM trades WHERE symbol = %s ORDER BY trade_date ASC, created_at ASC"
-        trades = self.db.execute_query(query, (symbol,))
-
-        quantity = Decimal("0")
-        avg_cost = Decimal("0")
-        market = ""
-        asset_type = ""
-        currency = "USD"
-
-        last_symbol_key = symbol_key
-
-        for t in trades:
-            side, shares, price, at, mkt, cur, skey = t
-            market = mkt
-            asset_type = at
-            currency = cur
-            if skey:
-                last_symbol_key = skey
-
-            total_amt = shares * price
-
-            if side == "BUY":
-                if quantity >= 0:
-                    new_qty = quantity + shares
-                    new_total = (quantity * avg_cost) + total_amt
-                    avg_cost = new_total / new_qty if new_qty != 0 else 0
-                    quantity = new_qty
-                else:
-                    remaining = quantity + shares
-                    if remaining <= 0:
-                        quantity = remaining
-                    else:
-                        quantity = remaining
-                        avg_cost = price
-            elif side == "SELL":
-                if quantity <= 0:
-                    new_qty = quantity - shares
-                    new_total = (abs(quantity) * avg_cost) + total_amt
-                    avg_cost = new_total / abs(new_qty) if new_qty != 0 else 0
-                    quantity = new_qty
-                else:
-                    remaining = quantity - shares
-                    if remaining >= 0:
-                        quantity = remaining
-                    else:
-                        quantity = remaining
-                        avg_cost = price
-
-        # If we didn't get symbol_key from trades, try to derive/lookup?
-        # Assuming last_symbol_key is valid if trades exist
-        if not last_symbol_key:
-            # Fallback
-            last_symbol_key = f"{market}:{symbol}" if market else f"US:{symbol}"
-
-        self._upsert_holding(
-            symbol, last_symbol_key, market, asset_type, quantity, avg_cost, currency
-        )
-
-    def _get_holdings(self, fx_rate: Decimal) -> list[Holding]:
-        # Get holdings from DB, including symbol_key
-        query = "SELECT symbol, market, asset_type, quantity, average_cost, currency, symbol_key FROM holdings"
-        rows = self.db.execute_query(query)
-
-        holdings = []
-        if not rows:
-            return []
-
-        for r in rows:
-            symbol, market, asset_type, qty, avg_cost, curr, symbol_key = r
-
-            # Identify Key to use for Price Lookup
-            lookup_key = (
-                symbol_key if symbol_key else symbol
-            )  # Should be symbol_key after migration
-
-            # Get current price
-            current_price = self._get_current_price(lookup_key)
-
-            # Calculate Values in Local Currency
-            market_value_local = qty * current_price
-            cost_basis_local = qty * avg_cost
-            gain_loss_local = market_value_local - cost_basis_local
-
-            # Convert to JPY
-            rate_to_apply = Decimal("1.0")
-            if market == "US" or curr == "USD":
-                rate_to_apply = fx_rate
-
-            market_value_jpy = market_value_local * rate_to_apply
-            cost_basis_jpy = cost_basis_local * rate_to_apply
-            gain_loss_jpy = gain_loss_local * rate_to_apply
-
-            avg_cost_jpy = avg_cost * rate_to_apply
-            current_price_jpy = current_price * rate_to_apply
-
-            gain_loss_pct = Decimal("0")
-            if cost_basis_jpy != 0:
-                gain_loss_pct = (gain_loss_jpy / abs(cost_basis_jpy)) * 100
-
-            # Get Name from Instruments using symbol_key
-            name = symbol
-            if lookup_key:
-                name_res = self.db.execute_query(
-                    "SELECT name FROM instruments WHERE symbol_key = %s", (lookup_key,)
-                )
-                if name_res:
-                    name = name_res[0][0]
-
-            holdings.append(
-                Holding(
-                    symbol=symbol,
-                    name=name,
-                    market=market,
-                    asset_type=asset_type,
-                    shares=qty,
-                    avg_cost=avg_cost_jpy,
-                    current_price=current_price_jpy,
-                    market_value=market_value_jpy,
-                    cost_basis=cost_basis_jpy,
-                    gain_loss=gain_loss_jpy,
-                    gain_loss_pct=gain_loss_pct,
-                    currency="JPY",
-                )
-            )
-
-        return holdings
-
-    def _get_current_price(self, symbol_key):
-        # Latest Close from price_daily using symbol_key
-        query = "SELECT close FROM price_daily WHERE symbol_key = %s ORDER BY trading_date DESC LIMIT 1"
-        res = self.db.execute_query(query, (symbol_key,))
-        if res:
-            return res[0][0]
-        return Decimal("0")
-
-    def _get_recent_trades(self) -> list[TradeHistory]:
-        query = "SELECT trade_id, symbol, side, trade_date, quantity, price, total_amount, currency FROM trades ORDER BY trade_date DESC, created_at DESC LIMIT 50"
-        rows = self.db.execute_query(query)
-        trades = []
-        if rows:
-            for r in rows:
-                trades.append(
-                    TradeHistory(
-                        trade_id=str(r[0]),
-                        symbol=r[1],
-                        side=r[2],
-                        trade_date=str(r[3]),
-                        shares=r[4],
-                        price=r[5],
-                        amount=r[6],
-                        currency=r[7],
-                    )
-                )
-        return trades
+    def _get_db_connection(self):
+        return psycopg.connect(self.dsn)
 
     def _get_usd_jpy_rate(self) -> Decimal:
         """最新のUSD/JPYレートを取得"""
         try:
-            # Try DB first (price_daily for FX:USDJPY=X)
-            # Assuming symbol_key 'FX:USDJPY=X'
-            query = "SELECT close FROM price_daily WHERE symbol_key = %s ORDER BY trading_date DESC LIMIT 1"
-            res = self.db.execute_query(query, ("FX:USDJPY=X",))
-            if res:
-                return res[0][0]
-
-            # Fallback to yfinance if not in DB
-            ticker = yf.Ticker("USDJPY=X")
-            hist = ticker.history(period="1d")
-            if not hist.empty:
-                return Decimal(str(hist["Close"].iloc[-1]))
+            with self._get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        SELECT close FROM price_daily 
+                        WHERE symbol_key = 'US:USDJPY=X' 
+                        ORDER BY trading_date DESC LIMIT 1
+                    """
+                    )
+                    row = cur.fetchone()
+                    if row and row[0]:
+                        return Decimal(str(row[0]))
+                    return Decimal("150.0")
         except Exception as e:
-            print(f"Failed to fetch USDJPY: {e}")
+            print(f"Error getting USD/JPY rate: {e}")
+            return Decimal("150.0")
 
-        return Decimal("150.0")
-
-    def _get_best_performer(self, current_fx_rate: Decimal) -> Optional[str]:
-        current_year = datetime.now().year
-        start_date = f"{current_year}-01-01"
-
-        query = """
-            SELECT symbol, market, realized_pnl, fx_rate_to_jpy, asset_type 
-            FROM trades 
-            WHERE trade_date >= %s AND realized_pnl IS NOT NULL AND realized_pnl != 0
-        """
-        rows = self.db.execute_query(query, (start_date,))
-
-        if not rows:
-            return None
-
-        pnl_by_symbol = {}
-        for r in rows:
-            symbol, market, pnl, fx_captured, asset_type = r
-
-            pnl_val = pnl
-            if market == "US" or asset_type in ("US", "ETF", "FX"):
-                pnl_val = pnl * current_fx_rate
-
-            pnl_by_symbol[symbol] = pnl_by_symbol.get(symbol, Decimal("0")) + pnl_val
-
-        if not pnl_by_symbol:
-            return None
-
-        best = max(pnl_by_symbol.items(), key=lambda x: x[1])
-        if best[1] > 0:
-            return best[0]
-        return None
-
-    def get_all_symbols(self) -> List[dict]:
-        """全銘柄リストを取得（オートコンプリート用）"""
-        self.db.connect()
+    def _get_latest_prices(self) -> Dict[str, Decimal]:
+        """全銘柄の最新価格を取得して辞書で返す"""
+        price_map = {}
         try:
-            query = "SELECT symbol_key, name, market FROM instruments ORDER BY symbol_key ASC"
-            rows = self.db.execute_query(query)
-            if not rows:
-                return []
-            return [{"symbol": r[0], "name": r[1], "market": r[2]} for r in rows]
-        finally:
-            self.db.disconnect()
+            with self._get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        SELECT DISTINCT ON (symbol_key) symbol_key, close 
+                        FROM price_daily 
+                        ORDER BY symbol_key, trading_date DESC
+                    """
+                    )
+                    rows = cur.fetchall()
+                    for r in rows:
+                        if r[0] and r[1] is not None:
+                            price_map[r[0]] = Decimal(str(r[1]))
+        except Exception as e:
+            print(f"Error fetching prices: {e}")
+        return price_map
+
+    def _find_current_price(
+        self, symbol: str, symbol_key: Optional[str], price_map: Dict[str, Decimal]
+    ) -> Decimal:
+        """
+        シンボルマッチングロジック (最重要)
+        holdingsのsymbolとprice_dailyのsymbol_keyを柔軟にマッチングさせる
+        """
+        # 1. symbol_keyで検索 (最も確実)
+        if symbol_key and symbol_key in price_map:
+            return price_map[symbol_key]
+
+        # 2. US:symbol で検索 (米国株の一般的パターン)
+        us_key = f"US:{symbol}"
+        if us_key in price_map:
+            return price_map[us_key]
+
+        # 3. JP:symbol で検索 (日本株の一般的パターン)
+        jp_key = f"JP:{symbol}"
+        if jp_key in price_map:
+            return price_map[jp_key]
+
+        # 4. symbol そのもので検索 (完全一致)
+        if symbol in price_map:
+            return price_map[symbol]
+
+        return Decimal("0")
+
+    def get_portfolio_summary(self) -> PortfolioSummary:
+        """
+        シンプルな積み上げロジックによるポートフォリオサマリー
+        """
+        try:
+            usd_jpy_rate = self._get_usd_jpy_rate()
+            price_map = self._get_latest_prices()
+
+            # --- 1. 現金残高 (Cash) の計算 ---
+            # tradesテーブルから単純に積み上げ
+            cash_balance = Decimal("0")
+            total_deposits = Decimal("0")
+            total_withdrawals = Decimal("0")
+
+            with self._get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        "SELECT side, total_amount, currency, fx_rate_to_jpy FROM trades"
+                    )
+                    trades = cur.fetchall()
+
+                    for t in trades:
+                        side, amount, currency, fx_rate = t
+                        if amount is None:
+                            continue
+
+                        val = Decimal(str(amount))
+
+                        # 円換算
+                        rate = Decimal("1.0")
+                        if currency != "JPY":
+                            rate = (
+                                Decimal(str(fx_rate))
+                                if fx_rate is not None
+                                else usd_jpy_rate
+                            )
+
+                        val_jpy = val * rate
+
+                        if side == "DEPOSIT":
+                            cash_balance += val_jpy
+                            total_deposits += val_jpy
+                        elif side == "WITHDRAW":
+                            cash_balance -= val_jpy
+                            total_withdrawals += val_jpy
+                        elif side == "BUY":
+                            cash_balance -= val_jpy
+                        elif side == "SELL":
+                            cash_balance += val_jpy
+
+            # --- 2. 保有株評価額 (Market Value) の計算 ---
+            total_market_value = Decimal("0")
+
+            with self._get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        "SELECT symbol, symbol_key, quantity, market, currency FROM holdings"
+                    )
+                    holdings = cur.fetchall()
+
+                    for h in holdings:
+                        symbol, symbol_key, quantity, market, currency = h
+                        if not quantity:
+                            continue
+
+                        qty = Decimal(str(quantity))
+
+                        # 現在価格取得 (シンボルマッチング)
+                        current_price = self._find_current_price(
+                            symbol, symbol_key, price_map
+                        )
+
+                        # 円換算レート
+                        rate = Decimal("1.0")
+                        if currency == "USD" or market == "US":
+                            rate = usd_jpy_rate
+
+                        # 評価額加算
+                        total_market_value += qty * current_price * rate
+
+            # --- 3. 総資産 (Total Assets) ---
+            total_assets = cash_balance + total_market_value
+
+            # --- 4. 総損益 (Total P&L) ---
+            # 総資産 - 純入金額
+            net_deposits = total_deposits - total_withdrawals
+            total_pl = total_assets - net_deposits
+
+            total_pl_pct = Decimal("0")
+            if net_deposits != 0:
+                total_pl_pct = (total_pl / abs(net_deposits)) * 100
+
+            return PortfolioSummary(
+                total_assets=total_assets,
+                cash_balance=cash_balance,
+                market_value=total_market_value,
+                total_pl=total_pl,
+                total_pl_pct=total_pl_pct,
+                currency="JPY",
+            )
+
+        except Exception as e:
+            print(f"Error in get_portfolio_summary: {e}")
+            return PortfolioSummary(
+                total_assets=Decimal("0"),
+                cash_balance=Decimal("0"),
+                market_value=Decimal("0"),
+                total_pl=Decimal("0"),
+                total_pl_pct=Decimal("0"),
+                currency="JPY",
+            )
+
+    def get_holdings(self) -> List[Holding]:
+        """
+        保有銘柄一覧 (個別P&L計算)
+        """
+        holdings_list = []
+        try:
+            usd_jpy_rate = self._get_usd_jpy_rate()
+            price_map = self._get_latest_prices()
+
+            with self._get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    # holdingsからデータを取得 (average_costを使用)
+                    cur.execute(
+                        """
+                        SELECT id, symbol, name, quantity, average_cost, market, currency, symbol_key 
+                        FROM holdings
+                        ORDER BY symbol
+                    """
+                    )
+                    rows = cur.fetchall()
+
+                    for row in rows:
+                        (
+                            h_id,
+                            symbol,
+                            name,
+                            quantity,
+                            average_cost,
+                            market,
+                            currency,
+                            symbol_key,
+                        ) = row
+
+                        qty = Decimal(str(quantity)) if quantity else Decimal("0")
+                        avg_cost = (
+                            Decimal(str(average_cost)) if average_cost else Decimal("0")
+                        )
+
+                        # 現在価格 (シンボルマッチング)
+                        current_price = self._find_current_price(
+                            symbol, symbol_key, price_map
+                        )
+
+                        # 円換算レート
+                        rate = Decimal("1.0")
+                        if currency == "USD" or market == "US":
+                            rate = usd_jpy_rate
+
+                        # 日本円換算
+                        current_price_jpy = current_price * rate
+                        avg_cost_jpy = avg_cost * rate
+
+                        # Value (評価額)
+                        value = qty * current_price_jpy
+
+                        # Cost Basis (取得原価総額)
+                        cost_basis = qty * avg_cost_jpy
+
+                        # P&L (損益)
+                        pnl = value - cost_basis
+
+                        # P&L % (損益率)
+                        pnl_pct = Decimal("0")
+                        if cost_basis != 0:
+                            pnl_pct = (pnl / cost_basis) * 100
+
+                        holdings_list.append(
+                            Holding(
+                                id=h_id,
+                                symbol=symbol,
+                                name=name,
+                                quantity=qty,
+                                average_price=avg_cost_jpy,  # 円換算平均単価
+                                current_price=current_price_jpy,  # 円換算現在値
+                                value=value,
+                                pnl=pnl,
+                                pnl_pct=pnl_pct,
+                                market=market,
+                                currency=currency,
+                            )
+                        )
+
+            return holdings_list
+
+        except Exception as e:
+            print(f"Error in get_holdings: {e}")
+            return []
+
+    def get_trades(self) -> List[Trade]:
+        """取引履歴取得"""
+        trades = []
+        try:
+            with self._get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        SELECT id, trade_date, symbol, side, quantity, price, total_amount, status, currency 
+                        FROM trades 
+                        ORDER BY trade_date DESC
+                    """
+                    )
+                    rows = cur.fetchall()
+                    for row in rows:
+                        (
+                            t_id,
+                            date,
+                            symbol,
+                            side,
+                            quantity,
+                            price,
+                            amount,
+                            status,
+                            currency,
+                        ) = row
+                        trades.append(
+                            Trade(
+                                id=t_id,
+                                date=date,
+                                symbol=symbol,
+                                side=side,
+                                quantity=Decimal(str(quantity)) if quantity else None,
+                                price=Decimal(str(price)) if price else None,
+                                total_amount=Decimal(str(amount)) if amount else None,
+                                status=status,
+                                currency=currency,
+                            )
+                        )
+            return trades
+        except Exception as e:
+            print(f"Error fetching trades: {e}")
+            return []
