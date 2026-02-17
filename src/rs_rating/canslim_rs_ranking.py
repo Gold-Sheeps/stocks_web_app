@@ -46,7 +46,7 @@ def _download_close_map(
             break  # 成功したらループを抜ける
 
         except yfinance.exceptions.YFRateLimitError:
-            print(f"⚠️ Rate Limit Hit. Attempt {attempt+1}/{max_retries}.")
+            print(f"[WARN]️ Rate Limit Hit. Attempt {attempt+1}/{max_retries}.")
             if attempt < max_retries - 1:
                 time.sleep(retry_delay)
             else:

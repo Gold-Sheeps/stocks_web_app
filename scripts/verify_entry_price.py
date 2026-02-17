@@ -45,7 +45,7 @@ def test_entry_price():
             if aapl_item.get('entry_price') is not None:
                 print(f"SUCCESS: Entry Price is set: {aapl_item['entry_price']}")
             else:
-                print("FAILURE: Entry Price is None. (Maybe no price data in DB?)")
+                print("FAILURE: Entry Price is None. (Maybe no price data in DB[WARN])")
                 
             if aapl_item.get('entry_date') is not None:
                 print(f"SUCCESS: Entry Date is set: {aapl_item['entry_date']}")

@@ -55,6 +55,8 @@ class PortfolioSummary(BaseModel):
     total_cost_jpy: Decimal
     total_gain_loss_jpy: Decimal
     total_gain_loss_pct: Decimal
+    cash_balance_jpy: Optional[Decimal] = None
+    equity_value_jpy: Optional[Decimal] = None
     ytd_gain_loss_jpy: Optional[Decimal] = None
     ytd_gain_loss_pct: Optional[Decimal] = None
     ytd_start_date: Optional[date] = None
@@ -69,6 +71,10 @@ class WatchlistItem(BaseModel):
     market: Optional[str] = None
     status: Optional[str] = "Research"
     memo: Optional[str] = None
+    tags: Optional[list[str]] = []
+    fair_value_min: Optional[Decimal] = None
+    fair_value_max: Optional[Decimal] = None
+    alert_config: Optional[dict] = None
     
     # ライブ/日次データ
     current_price: Optional[Decimal] = None
@@ -77,10 +83,23 @@ class WatchlistItem(BaseModel):
     
     # テクニカル指標
     rsi: Optional[Decimal] = None
+    macd: Optional[Decimal] = None
+    macd_signal: Optional[Decimal] = None
+    ema21: Optional[Decimal] = None
+    sma50: Optional[Decimal] = None
+    sma200: Optional[Decimal] = None
+    pivot: Optional[Decimal] = None
+    rs_rating: Optional[int] = None
     volume_ratio: Optional[Decimal] = None
+    institution_flag: bool = False
+    buy_zone: bool = False
     
     # アラート情報
     alert_type: Optional[str] = None  # "SURGE", "PLUNGE", None
+    entry_price: Optional[Decimal] = None
+    entry_date: Optional[date] = None
+    change_from_entry: Optional[Decimal] = None
+    change_pct_from_entry: Optional[Decimal] = None
     
     last_updated: Optional[datetime] = None
 
@@ -238,6 +257,7 @@ class PortfolioPerformance(BaseModel):
     total_cost: Decimal
     total_gain_loss: Decimal
     total_gain_loss_pct: Decimal
+    cash_balance: Decimal = Decimal("0")
     best_performer: str | None = None
     worst_performer: str | None = None
 
@@ -257,9 +277,16 @@ class WatchlistRequest(BaseModel):
     status: Optional[str] = "Research"
     memo: Optional[str] = None
     tags: Optional[list[str]] = []
+    fair_value_min: Optional[Decimal] = None
+    fair_value_max: Optional[Decimal] = None
+    alert_config: Optional[dict] = None
 
 
 # ========== Screener Models ==========
+# IMPORTANT:
+# RS naming is fixed to `rs_rating`.
+# Do not change it back to any `rs_score` field name.
+# 禁止: RS Rating を RS Score に修正することを一切禁止。
 class ScreenerResult(BaseModel):
     """スクリーニング結果の1銘柄"""
     symbol: str
@@ -270,8 +297,9 @@ class ScreenerResult(BaseModel):
     market_cap: Optional[float] = None
     rsi: Optional[float] = None
     total_score: Optional[float] = None
-    rs_score: Optional[int] = None
+    rs_rating: Optional[int] = None
     dist_52w_high_pct: Optional[float] = None
+    pivot: Optional[float] = None
     signals: list[str] = []
     ma_cross: Optional[str] = None
 
@@ -308,7 +336,7 @@ class SectorConstituent(BaseModel):
     name: str
     weight: Optional[Decimal] = None
     market_cap: Optional[Decimal] = None
-    rs_score: Optional[int] = None
+    rs_rating: Optional[int] = None
     volume_ratio: Optional[Decimal] = None
     institution_flag: bool = False
 

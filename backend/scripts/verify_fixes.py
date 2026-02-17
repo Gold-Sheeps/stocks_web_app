@@ -27,7 +27,7 @@ def verify_fixes():
         if info.current_price == Decimal("0"):
             print("FAIL: Current Price is 0.00")
         elif info.current_price is None:
-             print("INFO: Current Price is None (Data missing?) - Better than 0.00")
+             print("INFO: Current Price is None (Data missing[WARN]) - Better than 0.00")
         else:
             print("PASS: Current Price is valid")
 

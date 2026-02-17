@@ -86,7 +86,7 @@ class MigrationService:
             "ALTER TABLE sector_rotation ADD COLUMN IF NOT EXISTS etf_symbol_key VARCHAR(50);"
         ]
         
-        # We always run DDL even in dry-run to ensure checks pass? 
+        # We always run DDL even in dry-run to ensure checks pass[WARN] 
         # Requirement says: "4) 反映の順番... DDLで列追加" before Dry-run. 
         # So we assume DDL is allowed or already done. 
         # I will execute them here. If user wants strictly NO DB changes in dry run, this is tricky.
@@ -96,12 +96,12 @@ class MigrationService:
         for q in queries:
             try:
                 # In dry run, we might skip DDL if we strictly want no side effects.
-                # But to test migration logic, columns must exist if we are to Update them? 
+                # But to test migration logic, columns must exist if we are to Update them[WARN] 
                 # SQL UPDATE queries will fail if column doesn't exist.
                 # So logically DDL must exist.
                 if self.dry_run:
                      logger.info(f"[DRY-RUN] Would execute: {q}")
-                     # Verify if columns exist to proceed with Dry-Run logic?
+                     # Verify if columns exist to proceed with Dry-Run logic[WARN]
                      # If columns missing, Dry-Run UPDATEs will fail efficiently.
                      # We'll try to execute DDL only if NOT dry_run OR if we implement a check.
                      # User instruction: "4) 反映の順番 (DDL) -> Dry-run". 
@@ -109,7 +109,7 @@ class MigrationService:
                      # I will run DDL.
                      pass 
                 
-                # Check column existence first to avoid error spam?
+                # Check column existence first to avoid error spam[WARN]
                 # Using execute_command with IF NOT EXISTS is safe.
                 self.db.execute_command(q)
                 
@@ -125,7 +125,7 @@ class MigrationService:
                 # Key maps from "Displayed Symbol" (e.g. NVDA) to details
                 # But wait, instruments.symbol_key is US:NVDA. We might need to look up by 'NVDA'.
                 # We need a map: symbol -> record.
-                # Caveat: 'NVDA' might exist in US and JP? 
+                # Caveat: 'NVDA' might exist in US and JP[WARN] 
                 # Current system seems to treat 'symbol' loosely.
                 # We will map "Suffix/Prefix free" or just use raw symbol_key if we can guess it.
                 
@@ -170,7 +170,7 @@ class MigrationService:
         # Default to US if market invalid/missing
         if not market or market not in ['US', 'JP']:
              market = 'US' # Default rule
-             # Log that we defaulted?
+             # Log that we defaulted[WARN]
              # logger.debug(f"Defaulting {symbol} to market US")
 
         # Construct Key
@@ -234,7 +234,7 @@ class MigrationService:
 
     def _migrate_trades(self):
         logger.info(">>> Step 3b: Migrating Trades")
-        # Trades usually has 'market' column? Check schema inspector output.
+        # Trades usually has 'market' column[WARN] Check schema inspector output.
         # Yes: symbol, market are columns.
         rows = self.db.execute_query("SELECT trade_id, symbol, market FROM trades WHERE symbol_key IS NULL") # Adjust WHERE if needed
         if not rows:
@@ -300,7 +300,7 @@ class MigrationService:
 
         self.conversion_stats["sector_rotation"]["total"] = len(rows)
         
-        # Batch updates? 1000s of rows potentially.
+        # Batch updates[WARN] 1000s of rows potentially.
         # For simplicity and robust handling, loop. Can optimize later if slow (unlikely for <100k rows in local python)
         
         # Optimization: Unique symbols only
@@ -314,14 +314,14 @@ class MigrationService:
         # Now update DB
         # Single bulk update queries would be better.
         # "UPDATE sector_rotation SET etf_symbol_key = 'US:' || symbol WHERE etf_symbol_key IS NULL"
-        # Since we know logic is simple (US prefix), maybe direct SQL is safer/faster?
+        # Since we know logic is simple (US prefix), maybe direct SQL is safer/faster[WARN]
         # But User requested "Strict Logic" in python.
         
         if not self.dry_run:
             for s, key in symbol_key_map.items():
                 try:
                     self.db.execute_command("UPDATE sector_rotation SET etf_symbol_key = %s WHERE symbol = %s", (key, s))
-                    # This updates multiple rows. Count?
+                    # This updates multiple rows. Count[WARN]
                     # We'd have to count how many rows match 's'.
                     # For stats, let's just claim success based on rows count logic approximation.
                 except Exception as e:

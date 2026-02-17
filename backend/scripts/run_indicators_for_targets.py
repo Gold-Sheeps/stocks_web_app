@@ -18,7 +18,7 @@ def run_for_targets():
     rows = db.execute_query("SELECT DISTINCT symbol FROM holdings")
     if rows:
         for r in rows:
-            targets.add(r[0]) # These might be "NVDA" or "US:NVDA" depending on old data, but should be "US:NVDA" now?
+            targets.add(r[0]) # These might be "NVDA" or "US:NVDA" depending on old data, but should be "US:NVDA" now[WARN]
             
     # Watchlist
     rows = db.execute_query("SELECT DISTINCT symbol FROM watchlist")
@@ -28,7 +28,7 @@ def run_for_targets():
             
     print(f"Found {len(targets)} unique target symbols.")
     
-    # Also ensure we have keys. If they are raw symbols, convert them?
+    # Also ensure we have keys. If they are raw symbols, convert them[WARN]
     # Assuming they are valid keys or raw. app services usually convert.
     # IndicatorService expects symbol_key (US:...)
     

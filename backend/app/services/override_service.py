@@ -1,72 +1,62 @@
-"""
+﻿"""
 Override Service (Phase 1)
 CRUD + Audit for data_overrides / override_audit tables.
-
-DB操作は既存の Database クラス (app.db.database) を使用。
-  - execute_query(sql, params)  → SELECT用、fetchall() を返す
-  - execute_command(sql, params) → INSERT/UPDATE/DELETE用、commit して bool 返す
-  - cursor / connection への直接アクセスは RETURNING が必要な場合のみ
-    (indicator_service.py:193 と同じパターン)
 """
 from datetime import date, datetime
 from typing import Optional, List
 from app.db.database import Database
 
 
-# ============================================================
-# Override 可能フィールド定義 (コード内定数)
-# ============================================================
 OVERRIDE_FIELDS = {
     "fundamentals": {
-        "label": "ファンダメンタル",
+        "label": "Fundamentals",
         "fields": [
-            {"name": "eps_diluted_q",      "label": "EPS（希薄化後）",   "type": "number"},
-            {"name": "revenue_q",          "label": "売上高",            "type": "number"},
-            {"name": "net_income_q",       "label": "純利益",            "type": "number"},
-            {"name": "roe_ttm",            "label": "ROE (TTM)",         "type": "number"},
-            {"name": "ocf_q",             "label": "営業CF",            "type": "number"},
-            {"name": "fcf_q",             "label": "フリーCF",          "type": "number"},
-            {"name": "gross_margin_q",     "label": "粗利率",           "type": "number"},
-            {"name": "operating_margin_q", "label": "営業利益率",       "type": "number"},
-            {"name": "shares_float",       "label": "浮動株数",         "type": "number"},
-            {"name": "inst_ownership_pct", "label": "機関保有率(%)",    "type": "number"},
-        ],
+            {"name": "eps_diluted_q", "label": "EPS (Diluted)", "type": "number"},
+            {"name": "revenue_q", "label": "Revenue", "type": "number"},
+            {"name": "net_income_q", "label": "Net Income", "type": "number"},
+            {"name": "roe_ttm", "label": "ROE (TTM)", "type": "number"},
+            {"name": "ocf_q", "label": "Operating CF", "type": "number"},
+            {"name": "fcf_q", "label": "Free CF", "type": "number"},
+            {"name": "gross_margin_q", "label": "Gross Margin", "type": "number"},
+            {"name": "operating_margin_q", "label": "Operating Margin", "type": "number"},
+            {"name": "shares_float", "label": "Shares Float", "type": "number"},
+            {"name": "inst_ownership_pct", "label": "Inst Ownership %", "type": "number"}
+        ]
     },
     "market": {
-        "label": "マーケット・マクロ",
+        "label": "Market & Macro",
         "fields": [
-            {"name": "vix",         "label": "VIX",            "type": "number"},
-            {"name": "dxy",         "label": "ドル指数",        "type": "number"},
-            {"name": "us10y_yield", "label": "米10年債利回り",   "type": "number"},
-            {"name": "wti_crude",   "label": "WTI原油",        "type": "number"},
-            {"name": "gold_spot",   "label": "金スポット",      "type": "number"},
-        ],
+            {"name": "vix", "label": "VIX", "type": "number"},
+            {"name": "dxy", "label": "Dollar Index", "type": "number"},
+            {"name": "us10y_yield", "label": "US10Y Yield", "type": "number"},
+            {"name": "wti_crude", "label": "WTI Crude", "type": "number"},
+            {"name": "gold_spot", "label": "Gold Spot", "type": "number"}
+        ]
     },
     "metadata": {
-        "label": "メタデータ",
+        "label": "Metadata",
         "fields": [
-            {"name": "sector",             "label": "セクター",     "type": "text"},
-            {"name": "industry",           "label": "業種",         "type": "text"},
-            {"name": "country",            "label": "国",           "type": "text"},
-            {"name": "currency",           "label": "通貨",         "type": "text"},
-            {"name": "shares_outstanding", "label": "発行株式数",   "type": "number"},
-        ],
+            {"name": "sector", "label": "Sector", "type": "text"},
+            {"name": "industry", "label": "Industry", "type": "text"},
+            {"name": "country", "label": "Country", "type": "text"},
+            {"name": "currency", "label": "Currency", "type": "text"},
+            {"name": "shares_outstanding", "label": "Shares Outstanding", "type": "number"}
+        ]
     },
     "model": {
-        "label": "モデルパラメータ",
+        "label": "Model Parameters",
         "fields": [
-            {"name": "decay_lambda",      "label": "λ（減衰係数）",       "type": "number"},
-            {"name": "upper_barrier_pct",  "label": "上側バリア幅(%)",     "type": "number"},
-            {"name": "lower_barrier_pct",  "label": "下側バリア幅(%)",     "type": "number"},
-            {"name": "trading_fee_pct",    "label": "取引手数料(%)",       "type": "number"},
-            {"name": "slippage_bps",       "label": "スリッページ(bps)",   "type": "number"},
-        ],
-    },
+            {"name": "decay_lambda", "label": "Lambda (Decay)", "type": "number"},
+            {"name": "upper_barrier_pct", "label": "Upper Barrier %", "type": "number"},
+            {"name": "lower_barrier_pct", "label": "Lower Barrier %", "type": "number"},
+            {"name": "trading_fee_pct", "label": "Trading Fee %", "type": "number"},
+            {"name": "slippage_bps", "label": "Slippage (bps)", "type": "number"}
+        ]
+    }
 }
 
-
 class OverrideService:
-    """Data Override の CRUD + Preview + Audit"""
+    """Data Override 縺ｮ CRUD + Preview + Audit"""
 
     def __init__(self):
         self.db = Database()
@@ -75,17 +65,17 @@ class OverrideService:
     # Fields
     # ------------------------------------------------------------------
     def get_fields(self) -> dict:
-        """Override 可能フィールド定義を返す"""
+        """Override 蜿ｯ閭ｽ繝輔ぅ繝ｼ繝ｫ繝牙ｮ夂ｾｩ繧定ｿ斐☆"""
         return {"categories": OVERRIDE_FIELDS}
 
     # ------------------------------------------------------------------
-    # Symbols (instruments テーブルから取得)
+    # Symbols (instruments 繝・・繝悶Ν縺九ｉ蜿門ｾ・
     # ------------------------------------------------------------------
     def get_symbols(self) -> list:
         """
-        instruments テーブルから銘柄一覧を返す。
-        根拠: stock_detail_service.py:36 → FROM instruments i
-              indicator_service.py:220  → SELECT symbol_key FROM instruments WHERE is_active = true
+        instruments 繝・・繝悶Ν縺九ｉ驫俶氛荳隕ｧ繧定ｿ斐☆縲・
+        譬ｹ諡: stock_detail_service.py:36 竊・FROM instruments i
+              indicator_service.py:220  竊・SELECT symbol_key FROM instruments WHERE is_active = true
         """
         self.db.connect()
         try:
@@ -165,9 +155,9 @@ class OverrideService:
     # ------------------------------------------------------------------
     def create_override(self, data: dict) -> dict:
         """
-        Override を新規登録し、audit ログも同時記録する。
-        RETURNING を使うため cursor を直接操作する。
-        (indicator_service.py:193 と同パターン)
+        Override 繧呈眠隕冗匳骭ｲ縺励∥udit 繝ｭ繧ｰ繧ょ酔譎りｨ倬鹸縺吶ｋ縲・
+        RETURNING 繧剃ｽｿ縺・◆繧・cursor 繧堤峩謗･謫堺ｽ懊☆繧九・
+        (indicator_service.py:193 縺ｨ蜷後ヱ繧ｿ繝ｼ繝ｳ)
         """
         self.db.connect()
         try:
@@ -218,10 +208,10 @@ class OverrideService:
             self.db.disconnect()
 
     # ------------------------------------------------------------------
-    # Preview (Phase 1: diff のみ。forecast_impact は null)
+    # Preview (Phase 1: diff 縺ｮ縺ｿ縲Ｇorecast_impact 縺ｯ null)
     # ------------------------------------------------------------------
     def preview(self, data: dict) -> dict:
-        """保存せず diff 情報だけ返す。Phase 2 で forecast_impact を追加。"""
+        """Return simple diff preview (Phase 1)."""
         before = data.get("original_value")
         after = data.get("override_value")
 
@@ -254,7 +244,7 @@ class OverrideService:
         try:
             action = "activate" if enabled else "deactivate"
 
-            # まず存在確認
+            # 縺ｾ縺壼ｭ伜惠遒ｺ隱・
             check = self.db.execute_query(
                 "SELECT id, override_value FROM data_overrides WHERE id = %s", (override_id,)
             )
@@ -349,3 +339,4 @@ class OverrideService:
             ]
         finally:
             self.db.disconnect()
+

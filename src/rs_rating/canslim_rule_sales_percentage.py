@@ -122,17 +122,17 @@ def check_can_slim_sales(ticker_symbol):
 
     q_financials = ticker.quarterly_financials
     if q_financials is None or q_financials.empty:
-        print("⚠️ 四半期財務データ（quarterly_financials）が取得できませんでした。")
+        print("[WARN]️ 四半期財務データ（quarterly_financials）が取得できませんでした。")
         return
 
     # 期数チェック（参考表示）
     print(f"取得できた四半期数: {len(q_financials.columns)} 期")
     if len(q_financials.columns) < 5:
-        print("⚠️ YoY(+25%)の計算には最低5期必要です（期数不足の可能性あり）。")
+        print("[WARN]️ YoY(+25%)の計算には最低5期必要です（期数不足の可能性あり）。")
         print("   → 期数不足/欠損の場合は『直近3四半期が上向き』で代替判定します。")
 
     if "Total Revenue" not in q_financials.index:
-        print("⚠️ 'Total Revenue' が quarterly_financials に存在しませんでした。")
+        print("[WARN]️ 'Total Revenue' が quarterly_financials に存在しませんでした。")
         return
 
     revenue_data = q_financials.loc["Total Revenue"]

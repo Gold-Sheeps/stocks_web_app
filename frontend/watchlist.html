@@ -666,8 +666,11 @@
                         <thead>
                             <tr>
                                 <th style="width: 100px;">Symbol</th>
-                                <th class="text-right" style="width: 100px;">Price</th>
-                                <th class="text-right" style="width: 90px;">Change</th>
+                                <th style="width: 120px;">登録日</th>
+                                <th class="text-right" style="width: 120px;">登録日株価</th>
+                                <th class="text-right" style="width: 120px;">現在株価</th>
+                                <th class="text-right" style="width: 120px;">差額</th>
+                                <th class="text-right" style="width: 100px;">差額%</th>
                                 <th class="text-right" style="width: 80px;">RS</th>
                                 <th style="width: 280px;">Memo / Thesis</th>
                                 <th>Signals</th>
@@ -693,8 +696,11 @@
                         <thead>
                             <tr>
                                 <th style="width: 100px;">Symbol</th>
-                                <th class="text-right" style="width: 100px;">Price</th>
-                                <th class="text-right" style="width: 90px;">Change</th>
+                                <th style="width: 120px;">登録日</th>
+                                <th class="text-right" style="width: 120px;">登録日株価</th>
+                                <th class="text-right" style="width: 120px;">現在株価</th>
+                                <th class="text-right" style="width: 120px;">差額</th>
+                                <th class="text-right" style="width: 100px;">差額%</th>
                                 <th class="text-right" style="width: 80px;">RS</th>
                                 <th style="width: 280px;">Memo / Thesis</th>
                                 <th>Signals</th>
@@ -720,8 +726,11 @@
                         <thead>
                             <tr>
                                 <th style="width: 100px;">Symbol</th>
-                                <th class="text-right" style="width: 100px;">Price</th>
-                                <th class="text-right" style="width: 90px;">Change</th>
+                                <th style="width: 120px;">登録日</th>
+                                <th class="text-right" style="width: 120px;">登録日株価</th>
+                                <th class="text-right" style="width: 120px;">現在株価</th>
+                                <th class="text-right" style="width: 120px;">差額</th>
+                                <th class="text-right" style="width: 100px;">差額%</th>
                                 <th class="text-right" style="width: 80px;">RS</th>
                                 <th style="width: 280px;">Memo / Thesis</th>
                                 <th>Signals</th>
@@ -796,7 +805,7 @@
                 if (tbody.children.length === 0) {
                     tbody.innerHTML = `
                         <tr>
-                            <td colspan="8" style="padding: 40px;">
+                            <td colspan="11" style="padding: 40px;">
                                 <div class="empty-state">
                                     <div class="empty-state-icon">📭</div>
                                     <div>No stocks in this category yet</div>
@@ -809,17 +818,29 @@
         }
 
         function buildRow(item) {
-            // Price Formatting
-            const price = UI.formatNumber(item.current_price);
-            const changeStr = UI.formatPct(item.change_pct);
+            const registeredDate = UI.formatDate(item.entry_date);
+            const registeredPrice = UI.formatNumber(item.entry_price);
+            const currentPrice = UI.formatNumber(item.current_price);
+
+            let diffDisplay = '-';
+            let diffPctDisplay = '-';
+            if (item.change_from_entry !== null && item.change_from_entry !== undefined &&
+                item.change_pct_from_entry !== null && item.change_pct_from_entry !== undefined) {
+                const changeAbs = Number(item.change_from_entry);
+                const changePct = Number(item.change_pct_from_entry);
+                const sign = changeAbs > 0 ? '+' : '';
+                const cls = changeAbs > 0 ? 'text-success' : (changeAbs < 0 ? 'text-danger' : 'text-muted');
+                diffDisplay = `<span class="${cls}">${sign}${UI.formatNumber(changeAbs)}</span>`;
+                diffPctDisplay = UI.formatPct(changePct);
+            }
 
             // RS Score with color class
             let rsClass = '';
-            let rsDisplay = item.rs_score || '-';
-            if (item.rs_score >= 80) rsClass = 'excellent';
-            else if (item.rs_score >= 60) rsClass = 'good';
-            else if (item.rs_score >= 40) rsClass = 'average';
-            else if (item.rs_score) rsClass = 'poor';
+            let rsDisplay = (item.rs_rating !== null && item.rs_rating !== undefined) ? item.rs_rating : '-';
+            if (item.rs_rating >= 80) rsClass = 'excellent';
+            else if (item.rs_rating >= 60) rsClass = 'good';
+            else if (item.rs_rating >= 40) rsClass = 'average';
+            else if (item.rs_rating !== null && item.rs_rating !== undefined) rsClass = 'poor';
 
             // Indicators with enhanced badges
             let signalHtml = '';
@@ -841,10 +862,13 @@
 
             return `
                 <td>
-                    <a href="stock_detail.html?symbol=${item.symbol}" class="symbol-link">${item.symbol}</a>
+                    <a href="stock_detail.html?symbol=${encodeURIComponent(item.symbol)}" class="symbol-link">${item.symbol}</a>
                 </td>
-                <td class="text-right price-cell">${price}</td>
-                <td class="text-right">${changeStr}</td>
+                <td>${registeredDate}</td>
+                <td class="text-right price-cell">${registeredPrice}</td>
+                <td class="text-right price-cell">${currentPrice}</td>
+                <td class="text-right">${diffDisplay}</td>
+                <td class="text-right">${diffPctDisplay}</td>
                 <td class="text-right rs-score ${rsClass}">${rsDisplay}</td>
                 <td>
                     <input type="text" class="memo-input" value="${item.memo || ''}" 

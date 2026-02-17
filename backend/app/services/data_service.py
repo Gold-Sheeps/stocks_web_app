@@ -8,6 +8,9 @@ import json
 import traceback
 from typing import List, Dict, Optional
 import re
+import subprocess
+import sys
+from pathlib import Path
 
 from app.db.database import Database
 
@@ -47,92 +50,87 @@ class DataService:
             return f"US:{raw_symbol}"
 
     def update_all_data(self, range_days: int = 14, targets: List[str] = None):
-        """データ更新メイン処理"""
+        """Data Update画面から統合バッチ(full_db_refresh.py)を実行"""
+        targets = targets or []
         job_id = f"update_{int(time.time())}"
-        self.log_system_event("Data Update", "RUNNING", f"Started update for {targets} range={range_days}", {"job_id": job_id})
-        
-        success_count = 0
-        failed_symbols = []
-        
-        try:
-            # 1. Determine date range
-            end_date = datetime.now()
-            start_date = end_date - timedelta(days=range_days)
-            
-            # 2. Collect symbols based on targets (Returns RAW symbols for yfinance)
-            symbols_map = self._collect_symbols(targets)
-            
-            # 3. Fetch and Update
-            for category, symbols in symbols_map.items():
-                if not symbols:
-                    continue
-                    
-                print(f"Updating {category}: {len(symbols)} symbols")
-                
-                # Batch process to avoid yfinance rate limits
-                batch_size = 10
-                for i in range(0, len(symbols), batch_size):
-                    batch = symbols[i:i+batch_size]
-                    
-                    try:
-                        # Fetch data (using raw symbols)
-                        data = self._fetch_yfinance_batch(batch, start_date, end_date)
-                        
-                        # Save to DB (convert to unified symbol_key)
-                        for raw_symbol, df in data.items():
-                            if df is not None and not df.empty:
-                                symbol_key = self._get_symbol_key(raw_symbol)
-                                if self._save_price_data(symbol_key, raw_symbol, df):
-                                    success_count += 1
-                                else:
-                                    failed_symbols.append(raw_symbol)
-                            else:
-                                failed_symbols.append(raw_symbol)
-                                
-                        time.sleep(1) # Rate limit friendly
-                        
-                    except Exception as e:
-                        print(f"Batch failed: {e}")
-                        failed_symbols.extend(batch)
-            
-            # 4. Sector Rotation Calculation if requested
-            if targets and "Sector" in targets:
-                self.calculate_sector_rotation()
+        self.log_system_event(
+            "Data Update",
+            "RUNNING",
+            f"Started unified refresh for targets={targets} range={range_days}",
+            {"job_id": job_id, "targets": targets, "range_days": range_days},
+        )
 
-            # 5. Technical Indicators Calculation (Always run for updated stocks?)
-            # Or only if Stocks/Indices/FX/Metal are targeted?
-            # For now, let's run it for `success_count` symbols, but we don't know which ones.
-            # Assuming we want to keep indicators fresh for everything.
-            # Let's import inside method to avoid circular dependency if any.
-            from app.services.indicator_service import IndicatorService
-            indicator_svc = IndicatorService()
-            
-            # Optimization: pass updated symbols list to indicator service?
-            # For now, let's just trigger calculation for updated symbols or all?
-            # `failed_symbols` is known. `symbols_map` has all targets.
-            
-            # Collect all successfully updated raw symbols
-            updated_raw_symbols = []
-            for cat, syms in symbols_map.items():
-                if cat != "Sector": # Sector logic is separate
-                     updated_raw_symbols.extend(syms)
-            
-            # Remove failed
-            updated_raw_symbols = [s for s in updated_raw_symbols if s not in failed_symbols]
-            
-            if updated_raw_symbols:
-                print(f"Propagating indicator updates for {len(updated_raw_symbols)} symbols...")
-                for raw_sym in updated_raw_symbols:
-                    key = self._get_symbol_key(raw_sym)
-                    indicator_svc.calculate_and_save_indicators(key)
-            
-            self.log_system_event("Data Update", "SUCCESS", f"Completed. Success: {success_count}, Failed: {len(failed_symbols)}", {"failed": failed_symbols[:50]})
-            return {"status": "success", "processed": success_count, "failed": len(failed_symbols), "failed_details": failed_symbols}
+        try:
+            repo_root = Path(__file__).resolve().parents[3]
+            script_path = repo_root / "scripts" / "full_db_refresh.py"
+            if not script_path.exists():
+                raise FileNotFoundError(f"Batch script not found: {script_path}")
+
+            # Map UI targets to unified batch skip flags.
+            selected = set(targets)
+            has_etf_like = any(t in selected for t in ["Indices", "FX", "Metal", "Sector"])
+            has_stocks = "Stocks" in selected
+            has_sector = "Sector" in selected
+            has_canslim = "CANSLIM" in selected
+
+            cmd = [
+                sys.executable,
+                str(script_path),
+                "--backfill-days",
+                str(range_days),
+                "--delay",
+                "0.5",
+            ]
+            if not has_etf_like:
+                cmd.append("--skip-etf")
+            if not has_stocks:
+                cmd.append("--skip-individual")
+                cmd.append("--skip-indicators")
+                cmd.append("--skip-rs")
+            if not (has_stocks or has_sector):
+                cmd.append("--skip-fundamentals")
+            if not has_canslim:
+                cmd.append("--skip-canslim")
+
+            proc = subprocess.run(
+                cmd,
+                cwd=str(repo_root),
+                capture_output=True,
+                text=True,
+            )
+
+            stdout = (proc.stdout or "").strip()
+            stderr = (proc.stderr or "").strip()
+            tail_lines = (stdout.splitlines() + stderr.splitlines())[-40:]
+
+            if proc.returncode != 0:
+                details = {
+                    "job_id": job_id,
+                    "returncode": proc.returncode,
+                    "command": cmd,
+                    "output_tail": tail_lines,
+                }
+                self.log_system_event("Data Update", "FAILED", "Unified refresh failed", details)
+                return {
+                    "status": "error",
+                    "message": f"Unified refresh failed (exit={proc.returncode})",
+                    "details": details,
+                }
+
+            details = {
+                "job_id": job_id,
+                "returncode": proc.returncode,
+                "command": cmd,
+                "output_tail": tail_lines,
+            }
+            self.log_system_event("Data Update", "SUCCESS", "Unified refresh completed", details)
+            # Keep legacy response keys for current frontend compatibility.
+            return {"status": "success", "processed": 1, "failed": 0, "details": details}
 
         except Exception as e:
             err_msg = str(e)
             trace = traceback.format_exc()
-            self.log_system_event("Data Update", "FAILED", err_msg, {"trace": trace})
+            self.log_system_event("Data Update", "FAILED", err_msg, {"trace": trace, "job_id": job_id})
             return {"status": "error", "message": err_msg}
 
     def _collect_symbols(self, targets: List[str]) -> Dict[str, List[str]]:

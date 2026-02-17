@@ -266,3 +266,128 @@ python -c "import sys; sys.path.insert(0, 'src'); import postgresql_connect; db 
 ## ライセンス
 
 Private Project
+
+---
+
+## PowerShell Quick Start (Windows)
+
+### 0. Working Directory
+
+```powershell
+cd C:\Users\o_van\Desktop\stocks_web_app
+```
+
+### 1. Stop All Services
+
+```powershell
+.\stop_services.cmd
+```
+
+### 2. Start All Services (Visible Windows)
+
+```powershell
+.\start_services_visible.cmd
+```
+
+This opens 3 separate windows and keeps them visible:
+- `FRONTEND-3000`
+- `BACKEND-8000`
+- `API-8010`
+
+### 3. Health Checks
+
+```powershell
+netstat -ano | findstr :3000
+netstat -ano | findstr :8000
+netstat -ano | findstr :8010
+```
+
+If each port shows `LISTENING`, services are up.
+
+```powershell
+Invoke-WebRequest -UseBasicParsing http://127.0.0.1:3000/screener.html
+Invoke-WebRequest -UseBasicParsing http://127.0.0.1:8000/health
+Invoke-WebRequest -UseBasicParsing http://127.0.0.1:8010/health
+```
+
+Expected: StatusCode `200`.
+
+### 4. Open in Browser
+
+- Screener: `http://127.0.0.1:3000/screener.html`
+- Stock Detail: `http://127.0.0.1:3000/stock_detail.html`
+
+If UI looks stale, run hard reload: `Ctrl+F5`.
+
+### 5. Manual Start (without scripts)
+
+Open 3 PowerShell windows and run:
+
+Window 1 (Frontend):
+```powershell
+cd C:\Users\o_van\Desktop\stocks_web_app\frontend
+C:\Users\o_van\AppData\Local\Programs\Python\Python312\python.exe -m http.server 3000
+```
+
+Window 2 (Backend 8000):
+```powershell
+cd C:\Users\o_van\Desktop\stocks_web_app\backend
+..\ .venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+Window 3 (API 8010):
+```powershell
+cd C:\Users\o_van\Desktop\stocks_web_app\backend
+..\ .venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8010
+```
+
+Note: in the two commands above, use `..\.venv\Scripts\python.exe` (no space).
+
+PowerSHellで以下を実行
+cd C:\Users\o_van\Desktop\stocks_web_app                                                                      
+.\start_services_visible.cmd 
+---
+
+## NVDA Backtest (DB-only)
+
+Run from repository root:
+
+```powershell
+python backend/scripts/run_backtest_nvda.py --asof 2026-02-16 --start 2019-01-01 --end 2026-02-16 --horizon 15 --flat_band 2.0 --calibration sigmoid
+```
+
+Notes:
+- Backtest/prediction features read market data from DB only (`price_daily`).
+- The script runs a DB freshness check (`trade_date <= as_of`) for `US:NVDA`, `US:QQQ`, `US:^SOX`, `US:SMH`.
+- If `max_date` is older than `--asof`, it prints warnings but still runs.
+
+Output:
+- Console summary (accuracy, macro_f1, logloss, brier, ece, interval_coverage).
+- JSON file: `backend/ml_predictor_data/backtest_nvda_YYYYMMDD.json`.
+
+---
+
+## Market Data Refresh (External -> DB, then DB-only Inference)
+
+Update DB incrementally from external source (yfinance):
+
+```powershell
+python backend/scripts/refresh_market_data.py --symbols "US:NVDA,US:QQQ,US:^SOX,US:SMH" --source yfinance
+```
+
+Optional:
+
+```powershell
+python backend/scripts/refresh_market_data.py --symbols "US:NVDA,US:QQQ,US:^SOX,US:SMH" --source yfinance --db-only-check
+python backend/scripts/refresh_market_data.py --symbols "US:NVDA,US:QQQ,US:^SOX,US:SMH" --source yfinance --max-age-days 1
+```
+
+Run backtest (DB-only):
+
+```powershell
+python backend/scripts/run_backtest_nvda.py --asof 2026-02-16 --start 2019-01-01 --end 2026-02-16 --horizon 15 --flat_band 2.0 --calibration sigmoid --db-check
+```
+
+Policy:
+- External API is used only by `backend/scripts/refresh_market_data.py` for ETL/refresh.
+- Prediction/training/backtest (`prediction_service.py`, `run_backtest_nvda.py`) use DB data only.

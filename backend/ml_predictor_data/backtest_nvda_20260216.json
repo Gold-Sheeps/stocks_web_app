@@ -1,0 +1,182 @@
+{
+  "ticker": "US:NVDA",
+  "period": {
+    "start": "2019-01-01",
+    "end": "2026-02-16",
+    "as_of": "2026-02-16"
+  },
+  "metrics": {
+    "accuracy": 0.32522522522522523,
+    "macro_f1": 0.2383121925620805,
+    "logloss": 1.117257140789815,
+    "brier": 0.22640957222585914,
+    "ece": 0.0614578786097328,
+    "interval_target_coverage": 0.8,
+    "interval_q": 24.073411126644547,
+    "interval_width_mean": 34.791422917606596,
+    "interval_coverage": 0.4072072072072072
+  },
+  "diagnostics": {
+    "class_ratio": {
+      "down": 0.32342342342342345,
+      "flat": 0.13243243243243244,
+      "up": 0.5441441441441441
+    },
+    "confusion_matrix": [
+      [
+        293,
+        23,
+        43
+      ],
+      [
+        122,
+        11,
+        14
+      ],
+      [
+        494,
+        53,
+        57
+      ]
+    ],
+    "class_metrics": {
+      "down": {
+        "precision": 0.32233223322332233,
+        "recall": 0.8161559888579387,
+        "f1": 0.46214511041009465
+      },
+      "flat": {
+        "precision": 0.12643678160919541,
+        "recall": 0.07482993197278912,
+        "f1": 0.09401709401709402
+      },
+      "up": {
+        "precision": 0.5,
+        "recall": 0.09437086092715231,
+        "f1": 0.15877437325905291
+      }
+    }
+  },
+  "meta": {
+    "sources": {
+      "prices": "db:price_daily(US:NVDA)",
+      "benchmarks": "db:price_daily(US:QQQ)",
+      "sector": "db:price_daily(US:^SOX)"
+    },
+    "origins": {
+      "prices": "ingested:yfinance",
+      "benchmarks": "ingested:yfinance",
+      "sector": "ingested:yfinance"
+    },
+    "db_freshness": {
+      "db_table": "price_daily",
+      "as_of_date": "2026-02-16",
+      "effective_as_of": "2026-02-13",
+      "is_trading_day": false,
+      "symbols": [
+        "US:NVDA",
+        "US:QQQ",
+        "US:^SOX",
+        "US:SMH"
+      ],
+      "max_date": "2026-02-13",
+      "rows": 15548,
+      "by_symbol": {
+        "US:NVDA": {
+          "max_date": "2026-02-13",
+          "rows": 2516,
+          "status": "OK"
+        },
+        "US:QQQ": {
+          "max_date": "2026-02-13",
+          "rows": 2516,
+          "status": "OK"
+        },
+        "US:^SOX": {
+          "max_date": "2026-02-13",
+          "rows": 8000,
+          "status": "OK"
+        },
+        "US:SMH": {
+          "max_date": "2026-02-13",
+          "rows": 2516,
+          "status": "OK"
+        }
+      },
+      "warnings": []
+    },
+    "as_of_date": "2026-02-16",
+    "effective_as_of": "2026-02-13",
+    "is_trading_day": false,
+    "target_name": "close_future",
+    "target_unit": "price",
+    "run_params": {
+      "as_of": "2026-02-16",
+      "start": "2019-01-01",
+      "end": "2026-02-16",
+      "horizon": 15,
+      "flat_band": 2.0,
+      "model": "xgb_db_only_v1",
+      "calibration": "sigmoid",
+      "feature_set": "v2_ohlcv_ta_relregime_event",
+      "target_coverage": 0.8,
+      "target_interval_coverage": 0.8,
+      "ensemble_seeds": [
+        11,
+        29
+      ]
+    }
+  },
+  "best_flat_band_pct": 3.0,
+  "band_sweep": [
+    {
+      "flat_band_pct": 0.5,
+      "macro_f1": 0.21394876647863223,
+      "logloss": 1.1254480837307903,
+      "ece": 0.11571358597818326,
+      "accuracy": 0.2714285714285714
+    },
+    {
+      "flat_band_pct": 1.0,
+      "macro_f1": 0.2660361210275982,
+      "logloss": 1.119027723456694,
+      "ece": 0.04252865009792668,
+      "accuracy": 0.34285714285714286
+    },
+    {
+      "flat_band_pct": 1.5,
+      "macro_f1": 0.2886484571355543,
+      "logloss": 1.1158388096502596,
+      "ece": 0.04588200213721833,
+      "accuracy": 0.3380952380952381
+    },
+    {
+      "flat_band_pct": 2.0,
+      "macro_f1": 0.3169438436428728,
+      "logloss": 1.1079163462148554,
+      "ece": 0.029960409400310938,
+      "accuracy": 0.37857142857142856
+    },
+    {
+      "flat_band_pct": 3.0,
+      "macro_f1": 0.37821001779811847,
+      "logloss": 1.0916227586108982,
+      "ece": 0.08192322166923924,
+      "accuracy": 0.45476190476190476
+    },
+    {
+      "flat_band_pct": 4.0,
+      "macro_f1": 0.33527773014929285,
+      "logloss": 1.1000764845337663,
+      "ece": 0.06870005582121297,
+      "accuracy": 0.40476190476190477
+    },
+    {
+      "flat_band_pct": 5.0,
+      "macro_f1": 0.34121484975815924,
+      "logloss": 1.11678831549572,
+      "ece": 0.08386282646768076,
+      "accuracy": 0.36904761904761907
+    }
+  ]
+}

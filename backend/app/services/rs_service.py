@@ -79,39 +79,35 @@ class RsService:
             # Take the last row of each symbol
             latest_df = df.groupby("symbol_key").tail(1).copy()
 
-            # Filter out symbols that don't have enough history (at least 252 days preferred, but strict check on close_252)
-            # If close_252 is NaN, we can't calculate the full score.
-            valid_df = latest_df.dropna(
-                subset=["close", "close_63", "close_126", "close_189", "close_252"]
-            ).copy()
+            # Allow symbols with <252 trading days by dynamically re-normalizing
+            # available horizons. Require at least ~3 months (63 bars).
+            valid_df = latest_df.dropna(subset=["close", "close_63"]).copy()
 
             if valid_df.empty:
-                print("No symbols have enough history (252 days) for RS calculation.")
+                print("No symbols have enough history (>=63 trading days) for RS calculation.")
                 return
 
             # Calculate ROC (Rate of Change)
-            # roc_3m = (current - p3) / p3
-            valid_df["roc_3m"] = (valid_df["close"] - valid_df["close_63"]) / valid_df[
-                "close_63"
-            ]
-            valid_df["roc_6m"] = (valid_df["close"] - valid_df["close_126"]) / valid_df[
-                "close_126"
-            ]
-            valid_df["roc_9m"] = (valid_df["close"] - valid_df["close_189"]) / valid_df[
-                "close_189"
-            ]
-            valid_df["roc_12m"] = (
-                valid_df["close"] - valid_df["close_252"]
-            ) / valid_df["close_252"]
+            valid_df["roc_3m"] = (valid_df["close"] - valid_df["close_63"]) / valid_df["close_63"]
+            valid_df["roc_6m"] = (valid_df["close"] - valid_df["close_126"]) / valid_df["close_126"]
+            valid_df["roc_9m"] = (valid_df["close"] - valid_df["close_189"]) / valid_df["close_189"]
+            valid_df["roc_12m"] = (valid_df["close"] - valid_df["close_252"]) / valid_df["close_252"]
 
-            # Calculate Raw Score
-            # Weight: 40% for 3m, 20% for others
-            valid_df["raw_score"] = (
-                (valid_df["roc_3m"] * 0.4)
-                + (valid_df["roc_6m"] * 0.2)
-                + (valid_df["roc_9m"] * 0.2)
-                + (valid_df["roc_12m"] * 0.2)
-            ) * 100
+            # Dynamic weighted raw score:
+            # base weights (3m,6m,9m,12m) = (0.4, 0.2, 0.2, 0.2)
+            # If some horizons are unavailable (NaN), use available ones and
+            # normalize by sum of used weights.
+            w3, w6, w9, w12 = 0.4, 0.2, 0.2, 0.2
+            num = pd.Series(0.0, index=valid_df.index)
+            den = pd.Series(0.0, index=valid_df.index)
+
+            for col, w in (("roc_3m", w3), ("roc_6m", w6), ("roc_9m", w9), ("roc_12m", w12)):
+                mask = valid_df[col].notna()
+                num = num + valid_df[col].fillna(0) * w
+                den = den + mask.astype(float) * w
+
+            valid_df = valid_df[den > 0].copy()
+            valid_df["raw_score"] = (num[den > 0] / den[den > 0]) * 100
 
             # 3. Calculate Percentile Ranking (1-99)
             # rank(pct=True) returns 0.0 to 1.0
@@ -140,11 +136,28 @@ class RsService:
 
             # Batch insert
             with self.db.connection.cursor() as cursor:
-                from psycopg.extras import execute_batch
-
-                # Note: psycopg3 uses executemany, psycopg2 uses extras.execute_batch
-                # Assuming standard DB wrapper usage, we try executemany first
+                # Use executemany with psycopg3 cursor.
                 cursor.executemany(upsert_query, data_to_insert)
+
+                # IMPORTANT:
+                # RS naming is fixed to `rs_rating`.
+                # Do not change it back to any `rs_score` field name.
+                # Keep existing consumers working by mirroring cached RS rating
+                # into indicator_daily.rs_rating for the latest row per symbol.
+                cursor.execute(
+                    """
+                    UPDATE indicator_daily AS ind
+                    SET rs_rating = rr.rating,
+                        calculated_at = CURRENT_TIMESTAMP
+                    FROM rs_ratings AS rr
+                    WHERE ind.symbol_key = rr.symbol_key
+                      AND ind.trading_date = (
+                          SELECT MAX(ind2.trading_date)
+                          FROM indicator_daily AS ind2
+                          WHERE ind2.symbol_key = ind.symbol_key
+                      )
+                    """
+                )
 
             self.db.connection.commit()
             print("--- RS Rating Update Completed Successfully ---")

@@ -72,7 +72,7 @@ def audit_keys():
                 # But check if we have any other prefixes
                 prefix = k.split(':', 1)[0]
                 if prefix not in ['US', 'JP']:
-                    # Force US for unknown prefixes?
+                    # Force US for unknown prefixes[WARN]
                     raw = k.split(':', 1)[1]
                     new_key = f"US:{raw}"
             

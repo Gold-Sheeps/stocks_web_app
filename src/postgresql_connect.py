@@ -43,10 +43,10 @@ class PostgreSQLConnect:
             conninfo = f"host={self.host} port={self.port} dbname={self.database} user={self.user} password={self.password}"
             self.connection = psycopg.connect(conninfo)
             self.cursor = self.connection.cursor()
-            print(f"✓ データベース '{self.database}' に接続成功しました")
+            print(f"[OK] データベース '{self.database}' に接続成功しました")
             return True
         except Exception as e:
-            print(f"✗ 接続エラー: {e}")
+            print(f"[ERR] 接続エラー: {e}")
             return False
     
     def disconnect(self) -> None:
@@ -55,7 +55,7 @@ class PostgreSQLConnect:
             self.cursor.close()
         if self.connection:
             self.connection.close()
-            print("✓ データベースから切断しました")
+            print("[OK] データベースから切断しました")
     
     def execute(self, query: str, params: Optional[Tuple] = None) -> Optional[List[Tuple]]:
         """
@@ -76,7 +76,7 @@ class PostgreSQLConnect:
             results = self.cursor.fetchall()
             return results
         except Exception as e:
-            print(f"✗ クエリ実行エラー: {e}")
+            print(f"[ERR] クエリ実行エラー: {e}")
             return None
     
     def command(self, query: str, params: Optional[Tuple] = None) -> bool:
@@ -96,11 +96,11 @@ class PostgreSQLConnect:
             else:
                 self.cursor.execute(query)
             self.connection.commit()
-            print(f"✓ {self.cursor.rowcount} 行が更新されました")
+            print(f"[OK] {self.cursor.rowcount} 行が更新されました")
             return True
         except Exception as e:
             self.connection.rollback()
-            print(f"✗ 更新エラー: {e}")
+            print(f"[ERR] 更新エラー: {e}")
             return False
     
     def __enter__(self):

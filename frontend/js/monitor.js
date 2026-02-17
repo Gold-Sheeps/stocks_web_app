@@ -44,15 +44,22 @@ function createSparkline(data, color) {
 /**
  * Create/Update Portfolio Pie Chart
  */
-function updatePortfolioChart() {
+function updatePortfolioChart(portfolio) {
     const ctx = document.getElementById('portfolioPieChart');
     if (!ctx) return;
 
-    // Placeholder for actual allocation data
+    const total = Number(portfolio?.total_value_jpy ?? 0);
+    const equityRaw = Number(portfolio?.equity_value_jpy ?? 0);
+    const cashRaw = Number(portfolio?.cash_balance_jpy ?? 0);
+    const equity = Number.isFinite(equityRaw) ? Math.max(equityRaw, 0) : 0;
+    const cash = Number.isFinite(cashRaw) ? Math.max(cashRaw, 0) : 0;
+    const others = Number.isFinite(total) ? Math.max(total - equity - cash, 0) : 0;
+    const chartValues = (equity + cash + others) > 0 ? [equity, cash, others] : [1, 0, 0];
+
     const data = {
         labels: ['Equities', 'Cash', 'Others'],
         datasets: [{
-            data: [75, 20, 5],
+            data: chartValues,
             backgroundColor: [
                 'rgba(99, 102, 241, 0.8)',
                 'rgba(16, 185, 129, 0.8)',
@@ -262,7 +269,7 @@ async function loadMonitorData() {
         document.getElementById('lastUpdated').textContent = date.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
         // Chart
-        updatePortfolioChart();
+        updatePortfolioChart(data.portfolio || null);
 
     } catch (error) {
         console.error('[Monitor] Failed to load data:', error);

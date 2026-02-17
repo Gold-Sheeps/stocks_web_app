@@ -425,6 +425,17 @@ textarea:focus {
     box-shadow: 0 0 0 2px var(--focus-ring);
 }
 
+/* Dropdown readability on dark UI */
+select {
+    color-scheme: dark;
+}
+
+select option,
+select optgroup {
+    background: var(--bg-surface);
+    color: var(--text-main);
+}
+
 /* Tables (Finance Style) */
 .table-container {
     overflow-x: auto;

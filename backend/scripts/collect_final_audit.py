@@ -26,7 +26,7 @@ def collect_final_audit():
     # But let's try the user's list first.
     targets = ['^GSPC', 'USDJPY=X', 'GC=F', 'XLK', 'US:XLK', 'JP:^N225'] 
     # Use unified keys if possible. 
-    # The user input "USDJPY=X", but my system uses "US:USDJPY=X"? Or just "USDJPY=X"?
+    # The user input "USDJPY=X", but my system uses "US:USDJPY=X"[WARN] Or just "USDJPY=X"[WARN]
     # I should check instruments for these.
     
     # Let's clean up the query to handle both raw and prefixed just in case, 

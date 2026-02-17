@@ -33,7 +33,7 @@ def debug_data():
             if p_date != i_date:
                 # Check if indicator exists for price date
                 chk = db.execute_query("SELECT 1 FROM indicator_daily WHERE symbol_key = %s AND trading_date = %s", (t, p_date))
-                print(f"  Ind exists for Price Date? {bool(chk)}")
+                print(f"  Ind exists for Price Date[WARN] {bool(chk)}")
 
     print("\n--- Global RS Score Stats ---")
     stats = db.execute_query("""

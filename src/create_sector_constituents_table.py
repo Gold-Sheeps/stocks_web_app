@@ -45,8 +45,8 @@ try:
     
     conn.commit()
     
-    print("✓ sector_constituentsテーブルを作成しました")
-    print("✓ インデックスを作成しました")
+    print("[OK] sector_constituentsテーブルを作成しました")
+    print("[OK] インデックスを作成しました")
     
     # テーブル構造確認
     cursor.execute("""
@@ -64,10 +64,10 @@ try:
     conn.close()
     
     print("\n" + "=" * 60)
-    print("✓ 完了")
+    print("[OK] 完了")
     print("=" * 60)
     
 except Exception as e:
-    print(f"✗ エラー: {e}")
+    print(f"[ERR] エラー: {e}")
     import traceback
     traceback.print_exc()

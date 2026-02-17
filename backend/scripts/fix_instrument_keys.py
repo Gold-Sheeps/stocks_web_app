@@ -20,7 +20,7 @@ def fix_keys():
         try:
             db.execute_command("ALTER TABLE instruments DROP CONSTRAINT IF EXISTS instruments_market_check")
         except Exception as e:
-            print(f"Constraint drop failed (maybe didn't exist?): {e}")
+            print(f"Constraint drop failed (maybe didn't exist[WARN]): {e}")
 
         # 1. Create New Instruments
 
@@ -84,7 +84,7 @@ def fix_keys():
         """)
 
         # 3. Clean up Old Instruments
-        # Check if any references remain (safety check?)
+        # Check if any references remain (safety check[WARN])
         # For now, rely on previous updates being comprehensive.
         
         print("Deleting Legcay Instruments...")
@@ -94,7 +94,7 @@ def fix_keys():
             db.execute_command("DELETE FROM instruments WHERE symbol_key NOT LIKE '%:%'")
             print("Legacy instruments deleted.")
         except Exception as e:
-            print(f"Could not delete legacy instruments (FK constraint?): {e}")
+            print(f"Could not delete legacy instruments (FK constraint[WARN]): {e}")
 
         print("Key Standardization Complete.")
 

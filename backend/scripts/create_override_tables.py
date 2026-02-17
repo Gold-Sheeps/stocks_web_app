@@ -41,7 +41,7 @@ def create_tables():
                 updated_at      TIMESTAMPTZ DEFAULT NOW()
             );
         """)
-        print("  ✓ data_overrides")
+        print("  [OK] data_overrides")
 
         db.execute_command("""
             CREATE INDEX IF NOT EXISTS idx_ov_scope
@@ -51,7 +51,7 @@ def create_tables():
             CREATE INDEX IF NOT EXISTS idx_ov_enabled
             ON data_overrides(enabled, scope, scope_key);
         """)
-        print("  ✓ indexes")
+        print("  [OK] indexes")
 
         # 2. override_audit
         db.execute_command("""
@@ -66,7 +66,7 @@ def create_tables():
                 performed_at    TIMESTAMPTZ DEFAULT NOW()
             );
         """)
-        print("  ✓ override_audit")
+        print("  [OK] override_audit")
 
         print("Done.")
 

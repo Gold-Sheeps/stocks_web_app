@@ -470,7 +470,7 @@ def main(args):
 
             except yf.exceptions.YFRateLimitError:
                 print(
-                    f"⚠️ Rate Limit Hit on {ticker_symble}. Attempt {attempt+1}/{max_retries}."
+                    f"[WARN]️ Rate Limit Hit on {ticker_symble}. Attempt {attempt+1}/{max_retries}."
                 )
                 if attempt < max_retries - 1:
                     print("   Waiting 5 seconds before retry...")

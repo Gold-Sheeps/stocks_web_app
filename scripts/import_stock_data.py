@@ -34,7 +34,7 @@ def register_instrument(db, symbol, name, market='US', currency='USD'):
         """, (symbol, market, name, currency, True))
         return True
     except Exception as e:
-        print(f"  ⚠️  銘柄登録エラー ({symbol}): {e}")
+        print(f"  [WARN]️  銘柄登録エラー ({symbol}): {e}")
         return False
 
 
@@ -48,7 +48,7 @@ def import_price_data(db, symbol, start_date, end_date):
         hist = ticker.history(start=start_date, end=end_date)
         
         if hist.empty:
-            print(f"  ⚠️  データが見つかりません: {symbol}")
+            print(f"  [WARN]️  データが見つかりません: {symbol}")
             return 0
         
         # データベースに登録

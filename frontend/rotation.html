@@ -505,11 +505,11 @@
             <!-- Page Header -->
             <div class="page-header">
                 <div class="page-title">
-                    <span>🔄</span> Sector Rotation
+                    <span>SR</span> Sector Rotation
                 </div>
                 <div class="page-actions">
                     <button class="btn btn-ghost btn-sm" onclick="loadRotationData()">
-                        <span style="margin-right: 4px;">↻</span> Refresh
+                        <span style="margin-right: 4px;">R</span> Refresh
                     </button>
                 </div>
             </div>
@@ -520,7 +520,7 @@
                 <div class="glass-panel mb-4 fade-in">
                     <div class="panel-header">
                         <div class="panel-title">
-                            <span class="badge badge-primary">📊</span> Sector Performance
+                            <span class="badge badge-primary">SP</span> Sector Performance
                         </div>
                     </div>
                     <div class="sector-grid" id="sectorsGrid">
@@ -532,7 +532,7 @@
                 <div class="glass-panel fade-in" style="animation-delay: 0.2s;">
                     <div class="panel-header">
                         <div class="panel-title">
-                            <span class="badge badge-accent">🎯</span> Rotation Matrix
+                            <span class="badge badge-accent">RM</span> Rotation Matrix
                         </div>
                     </div>
 
@@ -540,7 +540,7 @@
                         <!-- Leading -->
                         <div class="quadrant-panel quadrant-leading">
                             <div class="quadrant-title text-success">
-                                📈 Leading
+                                Leading
                             </div>
                             <div class="quadrant-subtitle">High Return + Strong Momentum</div>
                             <div id="quadLeading" class="d-flex flex-wrap"></div>
@@ -549,7 +549,7 @@
                         <!-- Weakening -->
                         <div class="quadrant-panel quadrant-weakening">
                             <div class="quadrant-title text-warning">
-                                📉 Weakening
+                                Weakening
                             </div>
                             <div class="quadrant-subtitle">High Return + Weak Momentum</div>
                             <div id="quadWeakening" class="d-flex flex-wrap"></div>
@@ -558,7 +558,7 @@
                         <!-- Improving -->
                         <div class="quadrant-panel quadrant-improving">
                             <div class="quadrant-title" style="color:var(--primary);">
-                                🔄 Improving
+                                Improving
                             </div>
                             <div class="quadrant-subtitle">Low Return + Strong Momentum</div>
                             <div id="quadImproving" class="d-flex flex-wrap"></div>
@@ -567,7 +567,7 @@
                         <!-- Lagging -->
                         <div class="quadrant-panel quadrant-lagging">
                             <div class="quadrant-title text-danger">
-                                📊 Lagging
+                                Lagging
                             </div>
                             <div class="quadrant-subtitle">Low Return + Weak Momentum</div>
                             <div id="quadLagging" class="d-flex flex-wrap"></div>
@@ -584,7 +584,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title" id="modalTitle">Sector Top 10</div>
-                <button class="modal-close" onclick="closeModal()">×</button>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body" id="modalBody">
                 <div class="modal-loading">
@@ -622,7 +622,7 @@
 
         async function openSectorModal(sectorName) {
             // Show modal with loading state
-            modalTitle.innerHTML = `<span class="badge badge-primary" style="margin-right: 8px;">📊</span>${sectorName} - Top 10 Stocks`;
+            modalTitle.innerHTML = `<span class="badge badge-primary" style="margin-right: 8px;">TOP</span>${sectorName} - Top 10 Stocks`;
             modalBody.innerHTML = `
                 <div class="modal-loading">
                     <div class="modal-spinner"></div>
@@ -634,7 +634,7 @@
             try {
                 // Encode sector name for URL
                 const encodedSector = encodeURIComponent(sectorName);
-                const response = await fetch(`${CONFIG.API_BASE}/sectors/US/${encodedSector}/top?limit=10`);
+                const response = await fetch(`${CONFIG.API_BASE}/sector/US/${encodedSector}/top?limit=10`);
 
                 if (!response.ok) {
                     throw new Error(`API returned ${response.status}`);
@@ -650,16 +650,24 @@
                                 <th style="width: 60px;">Rank</th>
                                 <th>Symbol</th>
                                 <th>Company Name</th>
-                                <th style="text-align: right;">Price</th>
-                                <th style="text-align: right;">Change %</th>
+                                <th style="text-align: center;">Role</th>
+                                <th style="text-align: right;">RS</th>
+                                <th style="text-align: right;">1Y Return</th>
+                                <th style="text-align: right;">52W Dist</th>
+                                <th style="text-align: right;">EPS</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${data.stocks.map((stock, index) => {
-                    const changeClass = parseFloat(stock.change_pct || 0) >= 0 ? 'positive' : 'negative';
+                    const ret1y = parseFloat(stock.return_1y_pct || 0);
+                    const retClass = ret1y >= 0 ? 'positive' : 'negative';
                     const name = stock.company_name || stock.name || '-';
-                    const price = UI.formatNumber(stock.price || stock.current_price);
-                    const chg = UI.formatNumber(stock.change_pct);
+                    const rs = stock.rs_rating ?? '-';
+                    const role = stock.role || '-';
+                    const dist52 = stock.dist_52w_high_pct;
+                    const eps = stock.eps;
+                    const distText = (dist52 === null || dist52 === undefined) ? '-' : `${UI.formatNumber(dist52)}%`;
+                    const epsText = (eps === null || eps === undefined) ? 'N/A' : UI.formatNumber(eps);
 
                     return `
                                     <tr class="fade-in" style="animation-delay: ${index * 0.05}s;">
@@ -667,12 +675,15 @@
                                         <td><span class="stock-symbol">${stock.symbol}</span></td>
                                         <td>
                                             <div style="font-weight: 500;">${name}</div>
-                                            <div class="stock-name">${stock.sector || ''}</div>
+                                            <div class="stock-name">Price: ${UI.formatNumber(stock.price || stock.current_price)}</div>
                                         </td>
-                                        <td style="text-align: right; font-family: var(--font-mono); font-weight: 600;">${price}</td>
-                                        <td style="text-align: right; font-weight: 700;" class="${changeClass}">
-                                            ${parseFloat(chg) >= 0 ? '▲' : '▼'} ${chg}%
+                                        <td style="text-align: center; font-weight: 700;">${role}</td>
+                                        <td style="text-align: right; font-family: var(--font-mono); font-weight: 700;">${rs}</td>
+                                        <td style="text-align: right; font-weight: 700;" class="${retClass}">
+                                            ${ret1y >= 0 ? '+' : '-'} ${UI.formatNumber(Math.abs(ret1y))}%
                                         </td>
+                                        <td style="text-align: right; font-family: var(--font-mono);">${distText}</td>
+                                        <td style="text-align: right; font-family: var(--font-mono);">${epsText}</td>
                                     </tr>
                                 `;
                 }).join('')}
@@ -686,7 +697,7 @@
                 console.error('Error loading top stocks:', error);
                 modalBody.innerHTML = `
                     <div class="modal-error">
-                        ⚠️ Failed to load top stocks<br>
+                        Failed to load top stocks<br>
                         <small style="color: #9ca3af; font-size: 14px; margin-top: 8px; display: block;">
                             ${error.message}
                         </small>
@@ -748,11 +759,11 @@
                     const mom = parseFloat(s.momentum);
 
                     // Enhanced badge with icon
-                    let icon = '📊';
-                    if (ret >= 2 && mom >= 0.5) icon = '🚀';
-                    else if (ret >= 2 && mom < 0.5) icon = '⚠️';
-                    else if (ret < 2 && mom >= 0.5) icon = '📈';
-                    else icon = '📉';
+                    let icon = 'S';
+                    if (ret >= 2 && mom >= 0.5) icon = 'L';
+                    else if (ret >= 2 && mom < 0.5) icon = 'W';
+                    else if (ret < 2 && mom >= 0.5) icon = 'I';
+                    else icon = 'G';
 
                     const badge = `
                         <span class="matrix-badge fade-in" onclick="openSectorModal('${s.sector}')" style="animation-delay: ${Math.random() * 0.3}s;">
@@ -792,3 +803,4 @@
 </body>
 
 </html>
+

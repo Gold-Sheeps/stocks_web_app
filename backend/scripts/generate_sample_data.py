@@ -36,7 +36,7 @@ def run_top_50():
     print(f"Found {len(unique_symbols)} top symbols by volume.")
     
     service = IndicatorService()
-    # Mock data service fetcher to avoid fetching if data exists? 
+    # Mock data service fetcher to avoid fetching if data exists[WARN] 
     # IndicatorService.calculate_and_save_indicators fetches from price_daily directly.
     # So we just need to run it.
     

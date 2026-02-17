@@ -40,11 +40,11 @@ def read_tickers_simple(csv_path: str, limit: int = None):
                 if limit and len(tickers) >= limit:
                     break
         
-        print(f"✓ Loaded {len(tickers)} tickers from {csv_path}")
+        print(f"[OK] Loaded {len(tickers)} tickers from {csv_path}")
         return tickers
     
     except Exception as e:
-        print(f"✗ Failed to read CSV: {e}")
+        print(f"[ERR] Failed to read CSV: {e}")
         import traceback
         traceback.print_exc()
         return []
@@ -63,7 +63,7 @@ def insert_instrument(db, symbol: str, name: str, market: str, currency: str):
         """, (symbol, market, name, currency))
         return True
     except Exception as e:
-        print(f"  ✗ Failed to insert {symbol}: {e}")
+        print(f"  [ERR] Failed to insert {symbol}: {e}")
         return False
 
 
@@ -154,13 +154,13 @@ def bulk_import(csv_path: str, limit: int = None, delay: float = 2.0):
                 errors.append({'symbol': symbol, 'error': error})
             else:
                 success += 1
-                tqdm.write(f"  ✓ {symbol}: {rows} rows")
+                tqdm.write(f"  [OK] {symbol}: {rows} rows")
             
             time.sleep(delay)
         
         except Exception as e:
             errors.append({'symbol': symbol, 'error': str(e)})
-            tqdm.write(f"  ✗ {symbol}: {e}")
+            tqdm.write(f"  [ERR] {symbol}: {e}")
     
     print("\n" + "=" * 60)
     print("Import Complete")
@@ -196,7 +196,7 @@ if __name__ == "__main__":
         bulk_import(csv_path, limit=args.limit, delay=args.delay)
     else:
         print("[FULL MODE]\n")
-        response = input("This will take ~3 hours. Continue? (yes/no): ")
+        response = input("This will take ~3 hours. Continue[WARN] (yes/no): ")
         if response.lower() == 'yes':
             bulk_import(csv_path, delay=args.delay)
         else:

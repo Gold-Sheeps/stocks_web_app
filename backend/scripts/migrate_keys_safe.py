@@ -42,8 +42,8 @@ def migrate_safe():
         """)
 
         # Children: Join with instruments to get the new key
-        # verify orphan handling: if joined key is null (orphan?) keep old key? 
-        # Audit said 0 orphans. So inner join is safe?
+        # verify orphan handling: if joined key is null (orphan[WARN]) keep old key[WARN] 
+        # Audit said 0 orphans. So inner join is safe[WARN]
         # Let's use UPDATE FROM
         
         # price_daily
@@ -118,11 +118,11 @@ def migrate_safe():
             # Drop backup later (or keep as per instruction "keep old key column")
             # User said: "Old key column reserved (don't delete immediately)"
             
-            # Check if backup already exists?
+            # Check if backup already exists[WARN]
             try:
                 db.execute_command(f"ALTER TABLE {table} RENAME COLUMN {old_col} TO {old_col}_old_backup")
             except Exception:
-                print(f"Could not rename {old_col} to backup (maybe already done?)")
+                print(f"Could not rename {old_col} to backup (maybe already done[WARN])")
                 
             try:
                 db.execute_command(f"ALTER TABLE {table} RENAME COLUMN {new_col} TO {old_col}")
@@ -130,9 +130,9 @@ def migrate_safe():
                 print(f"Error renaming new col in {table}: {e}")
                 raise e
 
-        # Drop constraints on old columns (PK/FK) to allow rename?
-        # Postgres allows renaming columns referenced by constraints, but it might rename the constraint?
-        # Actually, renaming the column usually carries the constraint with it to the new name if we are not careful?
+        # Drop constraints on old columns (PK/FK) to allow rename[WARN]
+        # Postgres allows renaming columns referenced by constraints, but it might rename the constraint[WARN]
+        # Actually, renaming the column usually carries the constraint with it to the new name if we are not careful[WARN]
         # Wait, if I rename `symbol_key` to `symbol_key_old`, the PK is now on `symbol_key_old`.
         # I need to DROP the PK on `symbol_key_old` and ADD it to `symbol_key` (which was `symbol_key_new`).
         
@@ -140,7 +140,7 @@ def migrate_safe():
         print(" Dropping constraints...")
         # Instruments PK
         db.execute_command("ALTER TABLE instruments DROP CONSTRAINT IF EXISTS instruments_pkey CASCADE")
-        # Watchlist FK? (Usually inferred or named)
+        # Watchlist FK[WARN] (Usually inferred or named)
         # We'll just recreate them.
         
         # B. Swaps

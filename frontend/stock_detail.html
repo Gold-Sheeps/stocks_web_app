@@ -381,10 +381,11 @@
 
         /* Fundamentals Table */
         .fundamentals-table {
-            width: 100%;
+            width: max-content;
+            min-width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            margin-top: 20px;
+            margin-top: 8px;
         }
 
         .fundamentals-table thead th {
@@ -397,6 +398,7 @@
             color: var(--text-muted);
             font-weight: 600;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
         }
 
         .fundamentals-table thead th.text-right {
@@ -415,6 +417,7 @@
         .fundamentals-table tbody td {
             padding: 14px 16px;
             font-size: 0.9rem;
+            white-space: nowrap;
         }
 
         .fundamentals-table tbody td.text-right {
@@ -422,6 +425,39 @@
             font-family: var(--font-mono);
             font-weight: 600;
         }
+
+        .fundamentals-scroll {
+            display: block;
+            max-width: 100%;
+            overflow-x: scroll;
+            overflow-y: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-sm);
+            -webkit-overflow-scrolling: touch;
+            cursor: grab;
+            scrollbar-gutter: stable both-edges;
+        }
+
+        .fundamentals-scroll.dragging {
+            cursor: grabbing;
+            user-select: none;
+        }
+
+        .fundamentals-sticky-col {
+            position: sticky;
+            left: 0;
+            z-index: 2;
+            background: rgba(14, 18, 26, 0.95);
+        }
+
+        .fundamentals-table thead .fundamentals-sticky-col {
+            z-index: 3;
+        }
+
+        .fund-col {
+            min-width: 170px;
+        }
+
 
         /* Ratio Cards */
         .ratio-card {
@@ -863,26 +899,16 @@
                 <div class="symbol-search">
                     <input type="text" id="sdSearchInput" class="symbol-search-input"
                         placeholder="Search symbol (e.g., NVDA or US:AAPL)" autocomplete="off">
-                    <button class="btn btn-primary btn-sm" id="sdSearchGo">
-                        🔍 Go
-                    </button>
+                    <button class="btn btn-primary btn-sm" id="sdSearchGo">Go</button>
                 </div>
             </section>
 
             <!-- Navigation Tabs -->
             <nav class="tabs">
-                <button class="tab is-active" data-tab="indicators">
-                    📊 Indicators
-                </button>
-                <button class="tab" data-tab="chart">
-                    📈 Chart
-                </button>
-                <button class="tab" data-tab="fundamentals">
-                    💼 Fundamentals
-                </button>
-                <button class="tab" data-tab="ratios">
-                    🔢 Ratios
-                </button>
+                <button class="tab is-active" data-tab="indicators">Indicators</button>
+                <button class="tab" data-tab="chart">Chart</button>
+                <button class="tab" data-tab="fundamentals">Fundamentals</button>
+                <button class="tab" data-tab="ratios">Ratios</button>
             </nav>
 
             <!-- Tab: Indicators -->
@@ -891,7 +917,7 @@
                     <!-- Trend Card -->
                     <div class="glass-panel indicator-card" id="cardTrend">
                         <div class="panel-header mb-4">
-                            <div class="panel-title">📉 Trend Analysis</div>
+                            <div class="panel-title">Trend Analysis</div>
                         </div>
                         <div id="sdTrend" class="kv-list">
                             <!-- JS injected -->
@@ -902,7 +928,7 @@
                     <!-- Momentum Card -->
                     <div class="glass-panel indicator-card" id="cardMomentum">
                         <div class="panel-header mb-4">
-                            <div class="panel-title">⚡ Momentum</div>
+                            <div class="panel-title">Momentum</div>
                         </div>
                         <div id="sdMomentum" class="kv-list">
                             <!-- JS injected -->
@@ -913,7 +939,7 @@
                     <!-- Risk Card -->
                     <div class="glass-panel indicator-card" id="cardRisk">
                         <div class="panel-header mb-4">
-                            <div class="panel-title">📊 Risk & Volatility</div>
+                            <div class="panel-title">Risk & Volatility</div>
                         </div>
                         <div id="sdRisk" class="kv-list">
                             <!-- JS injected -->
@@ -925,12 +951,12 @@
                 <!-- Missing Features -->
                 <div class="glass-panel mt-4" style="padding: 24px;">
                     <div class="panel-title mb-4">
-                        🚧 Coming Soon (Phase 5-2/5-3)
+                        Coming Soon (Phase 5-2/5-3)
                     </div>
                     <ul id="sdMissing" class="bullets">
-                        <li>📈 Technical: VWAP, OBV, MFI, ADX/DMI, Bollinger Bands, Ichimoku Cloud</li>
-                        <li>💰 Fundamentals: Revenue Growth, Net Income, EPS, Cash Flow (CFO/CFI/CFF), CapEx</li>
-                        <li>📊 Ratios: ROE, ROA, Net Margin, Equity Ratio, Debt-to-Equity, P/E Ratio</li>
+                        <li>Technical: VWAP, OBV, MFI, ADX/DMI, Bollinger Bands, Ichimoku Cloud</li>
+                        <li>Fundamentals: Revenue Growth, Net Income, EPS, Cash Flow (CFO/CFI/CFF), CapEx</li>
+                        <li>Ratios: ROE, ROA, Net Margin, Equity Ratio, Debt-to-Equity, P/E Ratio</li>
                     </ul>
                 </div>
             </section>
@@ -938,29 +964,29 @@
             <!-- Tab: Chart -->
             <section id="tab-chart" class="tab-panel">
                 <div class="glass-panel" style="padding: 24px;">
-                    <div class="panel-title mb-4">📈 Price Chart</div>
+                    <div class="panel-title mb-4">Price Chart</div>
 
                     <!-- Drawing Toolbar -->
                     <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
                         <button class="btn btn-ghost btn-sm" id="btnDrawNone"
                             style="background: rgba(99, 102, 241, 0.2);">
-                            🖱️ カーソル
+                            Cursor
                         </button>
                         <button class="btn btn-ghost btn-sm" id="btnDrawHLine">
-                            ➖ 水平線
+                            Horizontal Line
                         </button>
                         <button class="btn btn-ghost btn-sm" id="btnDrawTrendLine">
-                            📐 トレンドライン
+                            Trend Line
                         </button>
                         <button class="btn btn-ghost btn-sm" id="btnToggleChartType">
-                            🕯️/📈 切替
+                            Toggle Candles/Line
                         </button>
                         <button class="btn btn-ghost btn-sm" id="btnClearLines">
-                            🗑️ 線をクリア
+                            Clear Lines
                         </button>
                         <div style="flex: 1;"></div>
                         <button class="btn btn-ghost btn-sm" id="btnResetZoom">
-                            🔍 ズームリセット
+                            Reset Zoom
                         </button>
                     </div>
 
@@ -970,6 +996,9 @@
 
                     <!-- Chart Controls -->
                     <div style="margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn btn-primary btn-sm tf-btn active" data-tf="1d">Daily</button>
+                        <button class="btn btn-ghost btn-sm tf-btn" data-tf="1w">Weekly</button>
+                        <div style="width: 1px; background: rgba(255,255,255,0.12); margin: 0 4px;"></div>
                         <button class="btn btn-ghost btn-sm chart-period-btn" data-period="1D">1D</button>
                         <button class="btn btn-ghost btn-sm chart-period-btn" data-period="5D">5D</button>
                         <button class="btn btn-ghost btn-sm chart-period-btn" data-period="1M">1M</button>
@@ -980,16 +1009,10 @@
                     </div>
 
                     <!-- Price Chart Container -->
-                    <div
-                        style="background: rgba(0, 0, 0, 0.3); border-radius: 8px; padding: 20px; margin-bottom: 16px;">
-                        <canvas id="priceChart" style="max-height: 400px;"></canvas>
-                    </div>
-
-                    <!-- Volume Chart Container -->
                     <div style="background: rgba(0, 0, 0, 0.3); border-radius: 8px; padding: 20px;">
                         <div
                             style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
-                            📊 出来高 (Volume)
+                            Volume
                         </div>
                         <canvas id="volumeChart" style="max-height: 150px;"></canvas>
                     </div>
@@ -998,105 +1021,105 @@
                 <!-- Trade Panel (Collapsible) -->
                 <div class="trade-panel">
                     <div class="trade-panel-header" onclick="toggleTradePanel()">
-                        <div class="trade-panel-title">🧭 Trade Panel</div>
-                        <button class="trade-panel-toggle" id="tpToggle">開く</button>
+                        <div class="trade-panel-title">Trade Panel</div>
+                        <button class="trade-panel-toggle" id="tpToggle">Open</button>
                     </div>
 
                     <div class="trade-panel-body" id="tpBody">
                         <!-- A. Forecast / Probabilities (Display Only) -->
                         <div class="tp-section">
-                            <div class="tp-section-title">📊 Forecast / Probabilities</div>
+                            <div class="tp-section-title">Forecast / Probabilities</div>
                             <div class="tp-row">
-                                <span class="tp-label">予測レンジ</span>
+                                <span class="tp-label">Forecast Range</span>
                                 <span class="tp-value" id="tpForecastRange">--</span>
                             </div>
                             <div class="tp-row">
-                                <span class="tp-label">上昇確率</span>
+                                <span class="tp-label">Up Probability</span>
                                 <span class="tp-value text-success" id="tpProbUp">--</span>
                             </div>
                             <div class="tp-row">
-                                <span class="tp-label">下降確率</span>
+                                <span class="tp-label">Down Probability</span>
                                 <span class="tp-value text-danger" id="tpProbDown">--</span>
                             </div>
                             <div class="tp-row">
-                                <span class="tp-label">横ばい確率</span>
+                                <span class="tp-label">Flat Probability</span>
                                 <span class="tp-value text-muted" id="tpProbFlat">--</span>
                             </div>
                             <div class="tp-row">
-                                <span class="tp-label">信頼度</span>
+                                <span class="tp-label">Confidence</span>
                                 <span class="tp-value" id="tpConfidence">--</span>
                             </div>
                             <div class="tp-row">
-                                <span class="tp-label">主要ドライバー</span>
+                                <span class="tp-label">Key Drivers</span>
                                 <span class="tp-value" id="tpDrivers">--</span>
                             </div>
                         </div>
 
                         <!-- B. Events (Display Only) -->
                         <div class="tp-section">
-                            <div class="tp-section-title">📅 Events</div>
+                            <div class="tp-section-title">Events</div>
                             <div class="tp-row">
-                                <span class="tp-label">次のイベント</span>
+                                <span class="tp-label">Next Event</span>
                                 <span class="tp-value" id="tpNextEvent">--</span>
                             </div>
                             <div class="tp-row">
-                                <span class="tp-label">注記</span>
+                                <span class="tp-label">Note</span>
                                 <span class="tp-value" id="tpEventNote">--</span>
                             </div>
                         </div>
 
                         <!-- Pivot Info (Display Only) -->
                         <div class="tp-section">
-                            <div class="tp-section-title">🎯 Pivot Analysis</div>
+                            <div class="tp-section-title">Pivot Analysis</div>
                             <div class="tp-row">
                                 <span class="tp-label">Pivot</span>
                                 <span class="tp-value" id="tpPivot">--</span>
                             </div>
                             <div class="tp-row">
-                                <span class="tp-label">Pivot乖離%</span>
+                                <span class="tp-label">Pivot Diff %</span>
                                 <span class="tp-value" id="tpPivotDiffPct">--</span>
                             </div>
                             <div class="tp-row">
-                                <span class="tp-label">Buy Range判定</span>
+                                <span class="tp-label">Buy Range</span>
                                 <span class="tp-value" id="tpBuyRange">--</span>
                             </div>
                         </div>
 
                         <!-- C. Position / Risk Plan (Input + Save) -->
                         <div class="tp-section" style="border-left-color: var(--success);">
-                            <div class="tp-section-title">💼 Position / Risk Plan</div>
+                            <div class="tp-section-title">Position / Risk Plan</div>
 
                             <div class="tp-input-group">
                                 <label>Entry Price</label>
-                                <input type="number" step="0.01" id="tpEntry" placeholder="例: 142.50">
+                                <input type="number" step="0.01" id="tpEntry" placeholder="e.g. 142.50">
                             </div>
 
                             <div class="tp-input-group">
                                 <label>Stop Loss</label>
-                                <input type="number" step="0.01" id="tpStop" placeholder="例: 138.00">
+                                <input type="number" step="0.01" id="tpStop" placeholder="e.g. 138.00">
                             </div>
 
                             <div class="tp-input-group">
                                 <label>Take Profit</label>
-                                <input type="number" step="0.01" id="tpTakeProfit" placeholder="例: 150.00">
+                                <input type="number" step="0.01" id="tpTakeProfit" placeholder="e.g. 150.00">
                             </div>
 
                             <div class="tp-input-group">
                                 <label>Position Size</label>
-                                <input type="number" step="1" id="tpPositionSize" placeholder="例: 100">
+                                <input type="number" step="1" id="tpPositionSize" placeholder="e.g. 100">
                             </div>
 
                             <div class="tp-input-group">
                                 <label>Notes</label>
-                                <textarea id="tpNotes" placeholder="トレードメモ..."></textarea>
+                                <textarea id="tpNotes" placeholder="Trade memo..."></textarea>
                             </div>
 
                             <div class="tp-actions">
                                 <button class="btn btn-success" id="tpSave" onclick="saveTradePlan()">
-                                    ✓ 保存
+                                    Save
                                 </button>
                                 <button class="btn btn-ghost" id="tpClear" onclick="clearTradePlan()">
-                                    ✕ クリア
+                                    Clear
                                 </button>
                             </div>
                         </div>
@@ -1107,122 +1130,84 @@
             <!-- Tab: Fundamentals -->
             <section id="tab-fundamentals" class="tab-panel">
                 <div class="glass-panel" style="padding: 24px;">
-                    <div class="panel-title mb-4">💼 Financial Statements</div>
-
-                    <table class="fundamentals-table">
-                        <thead>
-                            <tr>
-                                <th>Metric</th>
-                                <th class="text-right">Q4</th>
-                                <th class="text-right">Q3</th>
-                                <th class="text-right">Q2</th>
-                                <th class="text-right">Q1</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Revenue</td>
-                                <td class="text-right">--</td>
-                                <td class="text-right">--</td>
-                                <td class="text-right">--</td>
-                                <td class="text-right">--</td>
-                            </tr>
-                            <tr>
-                                <td>Net Income</td>
-                                <td class="text-right">--</td>
-                                <td class="text-right">--</td>
-                                <td class="text-right">--</td>
-                                <td class="text-right">--</td>
-                            </tr>
-                            <tr>
-                                <td>EPS (Diluted)</td>
-                                <td class="text-right">--</td>
-                                <td class="text-right">--</td>
-                                <td class="text-right">--</td>
-                                <td class="text-right">--</td>
-                            </tr>
-                            <tr>
-                                <td>Operating Cash Flow</td>
-                                <td class="text-right">--</td>
-                                <td class="text-right">--</td>
-                                <td class="text-right">--</td>
-                                <td class="text-right">--</td>
-                            </tr>
-                            <tr>
-                                <td>Free Cash Flow</td>
-                                <td class="text-right">--</td>
-                                <td class="text-right">--</td>
-                                <td class="text-right">--</td>
-                                <td class="text-right">--</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="muted mt-4">
-                        <small>Note: These are example values for demonstration purposes. Real-time financial data
-                            integration coming in Phase 5-3.</small>
+                    <div class="panel-title mb-4">Financial Statements</div>
+                    <div class="fundamentals-scroll">
+                        <table class="fundamentals-table" id="fundamentalsTable">
+                            <thead id="fundamentalsHead">
+                                <tr>
+                                    <th class="fundamentals-sticky-col">Metric</th>
+                                    <th class="text-right">Loading...</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fundamentalsBody">
+                                <tr>
+                                    <td class="fundamentals-sticky-col">Revenue</td>
+                                    <td class="text-right">--</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
+
                 </div>
             </section>
 
             <!-- Tab: Ratios -->
             <section id="tab-ratios" class="tab-panel">
                 <div class="glass-panel" style="padding: 24px;">
-                    <div class="panel-title mb-4">🔢 Financial Ratios</div>
+                    <div class="panel-title mb-4">Financial Ratios</div>
 
                     <div class="ratio-grid">
                         <div class="ratio-card">
                             <div class="ratio-label">P/E Ratio</div>
-                            <div class="ratio-value">--</div>
-                            <div class="ratio-subtitle">Forward P/E: --</div>
+                            <div class="ratio-value" id="ratioPe">--</div>
+                            <div class="ratio-subtitle" id="ratioPeSub">Forward P/E: --</div>
                         </div>
 
                         <div class="ratio-card">
                             <div class="ratio-label">ROE</div>
-                            <div class="ratio-value">--</div>
-                            <div class="ratio-subtitle">Return on Equity</div>
+                            <div class="ratio-value" id="ratioRoe">--</div>
+                            <div class="ratio-subtitle" id="ratioRoeSub">Return on Equity</div>
                         </div>
 
                         <div class="ratio-card">
                             <div class="ratio-label">ROA</div>
-                            <div class="ratio-value">--</div>
-                            <div class="ratio-subtitle">Return on Assets</div>
+                            <div class="ratio-value" id="ratioRoa">--</div>
+                            <div class="ratio-subtitle" id="ratioRoaSub">Return on Assets</div>
                         </div>
 
                         <div class="ratio-card">
                             <div class="ratio-label">Net Margin</div>
-                            <div class="ratio-value">--</div>
-                            <div class="ratio-subtitle">Profit Margin</div>
+                            <div class="ratio-value" id="ratioNetMargin">--</div>
+                            <div class="ratio-subtitle" id="ratioNetMarginSub">Profit Margin</div>
                         </div>
 
                         <div class="ratio-card">
                             <div class="ratio-label">Debt/Equity</div>
-                            <div class="ratio-value">--</div>
-                            <div class="ratio-subtitle">Low Leverage</div>
+                            <div class="ratio-value" id="ratioDebtEquity">--</div>
+                            <div class="ratio-subtitle" id="ratioDebtEquitySub">Low Leverage</div>
                         </div>
 
                         <div class="ratio-card">
                             <div class="ratio-label">Current Ratio</div>
-                            <div class="ratio-value">--</div>
-                            <div class="ratio-subtitle">Liquidity</div>
+                            <div class="ratio-value" id="ratioCurrentRatio">--</div>
+                            <div class="ratio-subtitle" id="ratioCurrentRatioSub">Liquidity</div>
                         </div>
 
                         <div class="ratio-card">
                             <div class="ratio-label">Quick Ratio</div>
-                            <div class="ratio-value">--</div>
-                            <div class="ratio-subtitle">Acid Test</div>
+                            <div class="ratio-value" id="ratioQuickRatio">--</div>
+                            <div class="ratio-subtitle" id="ratioQuickRatioSub">Acid Test</div>
                         </div>
 
                         <div class="ratio-card">
                             <div class="ratio-label">Asset Turnover</div>
-                            <div class="ratio-value">--</div>
-                            <div class="ratio-subtitle">Efficiency</div>
+                            <div class="ratio-value" id="ratioAssetTurnover">--</div>
+                            <div class="ratio-subtitle" id="ratioAssetTurnoverSub">Efficiency</div>
                         </div>
                     </div>
 
                     <div class="muted mt-4">
-                        <small>Note: These are example values for demonstration purposes. Real-time ratio calculations
-                            coming in Phase 5-3.</small>
+                        <small>DB-based values are shown where available; otherwise -- is displayed.</small>
                     </div>
                 </div>
             </section>
@@ -1240,7 +1225,7 @@
 
     <script defer src="/js/config.js?v=20260211-neo-01"></script>
     <script defer src="/js/common.js?v=20260211-neo-01"></script>
-    <script defer src="/js/stock_detail.js?v=20260214"></script>
+    <script defer src="/js/stock_detail.js?v=20260216-24"></script>
 
     <script>
         // Tab Navigation & App Initialization
@@ -1248,26 +1233,39 @@
             // Register Chart.js plugins (Minimal & Robust)
             if (window.Chart) {
                 // zoom
-                const zoom = window.ChartZoom || window['chartjs-plugin-zoom'];
-                if (zoom) Chart.register(zoom);
+                try {
+                    const zoom = window.ChartZoom || window['chartjs-plugin-zoom'];
+                    if (zoom) Chart.register(zoom);
+                } catch (e) {
+                    console.warn('[Chart] Zoom plugin registration failed:', e);
+                }
 
                 // annotation
-                if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
+                try {
+                    if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
+                } catch (e) {
+                    console.warn('[Chart] Annotation plugin registration failed:', e);
+                }
 
                 // financial
                 const fin = window['chartjs-chart-financial'] || window.ChartFinancial;
-                if (fin) {
-                    Chart.register(
-                        fin.CandlestickController,
-                        fin.OhlcController,
-                        fin.FinancialScale,
-                        fin.FinancialLinearScale
-                    );
-                    window.financialReady = true;
-                    console.log('[Chart] Financial plugin registered');
-                } else {
-                    console.warn('[Chart] Financial plugin not found');
-                    window.financialReady = false;
+                window.financialReady = false;
+                if (fin && fin.CandlestickController) {
+                    try {
+                        const regs = [
+                            fin.CandlestickController,
+                            fin.OhlcController,
+                            fin.FinancialScale,
+                            fin.FinancialLinearScale
+                        ].filter(Boolean);
+                        if (regs.length > 0) {
+                            Chart.register(...regs);
+                            window.financialReady = true;
+                            console.log('[Chart] Financial plugin registered');
+                        }
+                    } catch (e) {
+                        console.warn('[Chart] Financial plugin registration failed:', e);
+                    }
                 }
             }
 
@@ -1277,7 +1275,7 @@
             window.app.init().catch(err => {
                 console.error("[StockDetail] Initialization failed:", err);
                 if (window.app && window.app.showFatal) {
-                    window.app.showFatal(`初期化に失敗しました: ${err.message}`);
+                    window.app.showFatal(`Initialization failed: ${err.message}`);
                 }
             });
         });
@@ -1286,3 +1284,4 @@
 </body>
 
 </html>
+

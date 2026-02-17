@@ -7,12 +7,36 @@ import sys
 sys.path.insert(0, 'src')
 
 import argparse
+import os
+from pathlib import Path
 from datetime import datetime, timedelta
 from decimal import Decimal
 import time
+
+# yfinance timezone cache path fix (Windows env dependent issues)
+_YF_CACHE_DIR = Path(__file__).resolve().parents[1] / ".cache" / "yfinance"
+_YF_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+os.environ.setdefault("YFINANCE_TZ_CACHE_LOCATION", str(_YF_CACHE_DIR))
+
 import yfinance as yf
+yf.set_tz_cache_location(str(_YF_CACHE_DIR))
 from tqdm import tqdm
 import postgresql_connect
+
+
+def to_yf_symbol(symbol_key: str) -> str:
+    """Convert internal symbol_key (e.g. US:AAPL) to yfinance symbol."""
+    raw = symbol_key.split(":", 1)[1] if ":" in symbol_key else symbol_key
+
+    careted = {"DJI", "GSPC", "IXIC", "RUT", "N225", "VIX", "TNX", "FVX", "IRX"}
+    if raw in careted:
+        return f"^{raw}"
+
+    fx_pairs = {"USDJPY", "EURUSD", "GBPUSD", "GBPJPY"}
+    if raw in fx_pairs:
+        return f"{raw}=X"
+
+    return raw
 
 
 def update_prices(db, symbol: str, start_date: datetime, end_date: datetime):
@@ -29,7 +53,8 @@ def update_prices(db, symbol: str, start_date: datetime, end_date: datetime):
         (挿入件数, エラーメッセージ)
     """
     try:
-        ticker = yf.Ticker(symbol)
+        yf_symbol = to_yf_symbol(symbol)
+        ticker = yf.Ticker(yf_symbol)
         hist = ticker.history(start=start_date, end=end_date, auto_adjust=False)
         
         if hist.empty:
@@ -40,10 +65,11 @@ def update_prices(db, symbol: str, start_date: datetime, end_date: datetime):
             try:
                 db.command("""
                     INSERT INTO price_daily 
-                    (symbol_key, trading_date, open, high, low, close, adj_close, volume, source)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    (symbol_key, symbol_key_old_backup, trading_date, open, high, low, close, adj_close, volume, source)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (symbol_key, trading_date) 
                     DO UPDATE SET
+                        symbol_key_old_backup = EXCLUDED.symbol_key_old_backup,
                         open = EXCLUDED.open,
                         high = EXCLUDED.high,
                         low = EXCLUDED.low,
@@ -52,6 +78,7 @@ def update_prices(db, symbol: str, start_date: datetime, end_date: datetime):
                         volume = EXCLUDED.volume,
                         updated_at = CURRENT_TIMESTAMP
                 """, (
+                    symbol,
                     symbol,
                     date_index.date(),
                     Decimal(str(row['Open'])),
@@ -126,7 +153,7 @@ def daily_update(start_date: datetime = None, end_date: datetime = None, delay: 
             
         except Exception as e:
             errors.append((symbol, str(e)))
-            tqdm.write(f"  ✗ {symbol}: {e}")
+            tqdm.write(f"  [ERR] {symbol}: {e}")
     
     print("\n" + "=" * 60)
     print("Update Complete")
@@ -142,7 +169,7 @@ def daily_update(start_date: datetime = None, end_date: datetime = None, delay: 
             print(f"  {symbol}: {error}")
     
     db.disconnect()
-    print("\n✓ Done!")
+    print("\n[OK] Done!")
 
 
 def main():

@@ -42,6 +42,9 @@ def create_tables():
                 period_end_date DATE NOT NULL,
                 eps DECIMAL,
                 revenue DECIMAL,
+                net_income DECIMAL,
+                operating_cash_flow DECIMAL,
+                free_cash_flow DECIMAL,
                 updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (symbol, period_end_date)
             );
@@ -62,7 +65,7 @@ def create_tables():
         """)
         print("- system_logs created")
         
-        # 4. Ensure foreign keys or indexes if needed?
+        # 4. Ensure foreign keys or indexes if needed[WARN]
         # Instruments symbol is key, but we might not enforce strict FK to avoid update order issues.
         # Indexing for speed
         db.execute_command("CREATE INDEX IF NOT EXISTS idx_sector_rotation_date ON sector_rotation(trading_date);")

@@ -870,10 +870,10 @@
     <script src="js/common.js"></script>
     <script>
         // --- Cash Management ---
-        let currentCash = 0;
+        let currentCash = null;
 
         function openCashModal() {
-            document.getElementById('cashAmount').value = currentCash || 0;
+            document.getElementById('cashAmount').value = Number.isFinite(currentCash) ? currentCash : '';
             document.getElementById('cashModal').classList.add('active');
         }
 
@@ -884,16 +884,56 @@
         async function submitCash(event) {
             event.preventDefault();
             const amount = parseFloat(document.getElementById('cashAmount').value);
+            const memoInput = (document.getElementById('cashMemo')?.value || '').trim();
+            if (!Number.isFinite(amount)) {
+                if (window.UI && window.UI.showToast) {
+                    window.UI.showToast('金額を正しく入力してください', 'warning');
+                } else {
+                    alert('金額を正しく入力してください');
+                }
+                return;
+            }
 
             try {
-                // Save to localStorage (in production, use API)
-                localStorage.setItem('portfolio_cash', amount);
-                currentCash = amount;
+                // Reflect cash change into DB as DEPOSIT/WITHDRAW trade.
+                const delta = amount - currentCash;
+                if (Math.abs(delta) < 0.000001) {
+                    closeCashModal();
+                    if (window.UI && window.UI.showToast) {
+                        window.UI.showToast('変更はありません', 'info');
+                    }
+                    return;
+                }
 
-                // Update display
-                document.getElementById('cashValue').textContent = formatCurrency(amount, 'JPY');
+                const side = delta >= 0 ? 'DEPOSIT' : 'WITHDRAW';
+                const tradeDate = new Date().toISOString().slice(0, 10);
+                const payload = {
+                    symbol_key: 'JP:CASH',
+                    market: 'JP',
+                    asset_type: 'CASH',
+                    side: side,
+                    trade_date: tradeDate,
+                    shares: 1,
+                    price: Math.abs(delta),
+                    currency: 'JPY',
+                    memo: memoInput || `Cash adjustment via modal (${side})`
+                };
 
-                // Recalculate total
+                const res = await fetch(`${CONFIG.API_BASE}/portfolio/trade`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    let detail = '';
+                    try {
+                        const err = await res.json();
+                        detail = err.detail || JSON.stringify(err);
+                    } catch (_) {}
+                    throw new Error(`Cash update failed (${res.status}) ${detail}`);
+                }
+
                 await loadPortfolio();
 
                 closeCashModal();
@@ -1029,14 +1069,10 @@
 
                 document.getElementById('bestPerformer').textContent = data.performance.best_performer || '-';
 
-                // Load cash from localStorage
-                const savedCash = parseFloat(localStorage.getItem('portfolio_cash')) || 0;
-                currentCash = savedCash;
-                document.getElementById('cashValue').textContent = formatCurrency(savedCash, 'JPY');
-
-                // Update total assets to include cash
-                const totalWithCash = data.performance.total_value + savedCash;
-                document.getElementById('totalValue').textContent = formatCurrency(totalWithCash, 'JPY');
+                // Use backend-calculated cash balance (avoid double counting with local cache)
+                const serverCash = parseFloat(data.performance.cash_balance || 0);
+                currentCash = serverCash;
+                document.getElementById('cashValue').textContent = formatCurrency(serverCash, 'JPY');
 
                 // Holdings
                 const holdingsHtml = data.holdings.map(h => {

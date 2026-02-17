@@ -1,4 +1,4 @@
-"""
+﻿"""
 インジケーター計算バッチスクリプト
 全US株のテクニカル指標を計算してDBに格納
 """
@@ -137,6 +137,9 @@ def calculate_indicators_for_symbol(db, symbol: str):
     df['macd_signal'] = macd_signal
     df['macd_hist'] = macd_hist
     
+    # Pivot (Classic): (High + Low + Close) / 3
+    df['pivot'] = (df['high'] + df['low'] + df['close']) / 3.0
+    
     # ボリンジャーバンド（中心線はSMA20と同じなので上下のみ）
     upper_band, lower_band = calculate_bollinger_bands(df['close'])
     
@@ -165,11 +168,12 @@ def calculate_indicators_for_symbol(db, symbol: str):
                     symbol_key, trading_date,
                     sma20, sma50, sma200, ema21, ema50,
                     rsi14, macd, macd_signal, macd_hist,
+                    pivot,
                     high_52w, low_52w, dist_to_52w_high_pct,
                     atr14,
                     calculated_at
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
                 ON CONFLICT (symbol_key, trading_date)
                 DO UPDATE SET
                     sma20 = EXCLUDED.sma20,
@@ -181,6 +185,7 @@ def calculate_indicators_for_symbol(db, symbol: str):
                     macd = EXCLUDED.macd,
                     macd_signal = EXCLUDED.macd_signal,
                     macd_hist = EXCLUDED.macd_hist,
+                    pivot = EXCLUDED.pivot,
                     high_52w = EXCLUDED.high_52w,
                     low_52w = EXCLUDED.low_52w,
                     dist_to_52w_high_pct = EXCLUDED.dist_to_52w_high_pct,
@@ -198,6 +203,7 @@ def calculate_indicators_for_symbol(db, symbol: str):
                 None if pd.isna(row['macd']) else Decimal(str(row['macd'])),
                 None if pd.isna(row['macd_signal']) else Decimal(str(row['macd_signal'])),
                 None if pd.isna(row['macd_hist']) else Decimal(str(row['macd_hist'])),
+                None if pd.isna(row['pivot']) else Decimal(str(row['pivot'])),
                 None if pd.isna(row['high_52w']) else Decimal(str(row['high_52w'])),
                 None if pd.isna(row['low_52w']) else Decimal(str(row['low_52w'])),
                 None if pd.isna(row['dist_to_52w_high_pct']) else Decimal(str(row['dist_to_52w_high_pct'])),
@@ -210,7 +216,7 @@ def calculate_indicators_for_symbol(db, symbol: str):
     return inserted, None
 
 
-def calculate_rs_scores_batch(db):
+def calculate_rs_ratings_batch(db):
     """全銘柄のRS Scoreを計算してDBに保存"""
     print("\n" + "=" * 60)
     print("RS Score Calculation")
@@ -255,18 +261,18 @@ def calculate_rs_scores_batch(db):
     sorted_symbols = sorted(rs_values.items(), key=lambda x: x[1], reverse=True)
     total = len(sorted_symbols)
     
-    rs_scores = {}
+    rs_ratings = {}
     for rank, (symbol, value) in enumerate(sorted_symbols, start=1):
         # 正しいパーセンタイルランク計算: 自分より下の銘柄の割合
         # rank=1 → percentile=99, rank=total → percentile=1
         percentile = int(((total - rank) / (total - 1)) * 98) + 1 if total > 1 else 50
-        rs_scores[symbol] = max(1, min(99, percentile))
+        rs_ratings[symbol] = max(1, min(99, percentile))
     
     # DBに保存
     print(f"[INFO] Saving RS Scores to database...")
     saved = 0
     
-    for symbol, score in tqdm(rs_scores.items(), desc="Saving RS Scores"):
+    for symbol, score in tqdm(rs_ratings.items(), desc="Saving RS Scores"):
         try:
             # 各銘柄の最新取引日を取得
             latest_date_result = db.execute("""
@@ -282,7 +288,7 @@ def calculate_rs_scores_batch(db):
             
             db.command("""
                 UPDATE indicator_daily 
-                SET rs_score = %s,
+                SET rs_rating = %s,
                     calculated_at = CURRENT_TIMESTAMP
                 WHERE symbol_key = %s AND trading_date = %s
             """, (Decimal(str(score)), symbol, latest_date))
@@ -291,9 +297,9 @@ def calculate_rs_scores_batch(db):
             errors.append((symbol, f"RS save error: {e}"))
 
     
-    print(f"\n✓ RS Scores calculated: {len(rs_scores)}")
-    print(f"✓ Saved to DB: {saved}")
-    print(f"✗ Errors: {len(errors)}")
+    print(f"\n[OK] RS Scores calculated: {len(rs_ratings)}")
+    print(f"[OK] Saved to DB: {saved}")
+    print(f"[ERR] Errors: {len(errors)}")
     
     if errors:
         print("\nFirst 10 errors:")
@@ -354,10 +360,10 @@ def main():
             print(f"  {symbol}: {error}")
     
     # RS Score計算
-    calculate_rs_scores_batch(db)
+    calculate_rs_ratings_batch(db)
     
     db.disconnect()
-    print("\n✓ All done!")
+    print("\n[OK] All done!")
 
 
 if __name__ == "__main__":

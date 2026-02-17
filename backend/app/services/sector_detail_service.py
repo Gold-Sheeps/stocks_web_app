@@ -56,6 +56,215 @@ class SectorDetailService:
         except Exception as e:
             print(f"Error getting sector detail: {e}")
             return self._get_dummy_sector_detail(sector_symbol)
+
+    def get_sector_top_stocks(self, sector_name: str, limit: int = 10) -> dict:
+        """Return Top N stocks in a sector with leader/laggard and RS-focused metrics."""
+        sector_to_etf = {
+            'Technology': 'XLK',
+            'Healthcare': 'XLV',
+            'Financials': 'XLF',
+            'Energy': 'XLE',
+            'Consumer Discretionary': 'XLY',
+            'Consumer Staples': 'XLP',
+            'Industrials': 'XLI',
+            'Materials': 'XLB',
+            'Utilities': 'XLU',
+            'Real Estate': 'XLRE',
+            'Communication Services': 'XLC',
+        }
+        etf = sector_to_etf.get(sector_name, sector_name.replace('US:', ''))
+        limit = max(1, min(limit, 50))
+
+        try:
+            conn = self._get_db_connection()
+            cursor = conn.cursor()
+
+            # Resolve members by sector ETF and normalize keys to US: format when needed.
+            cursor.execute(
+                """
+                WITH members AS (
+                    SELECT
+                        sc.constituent_symbol,
+                        CASE
+                            WHEN sc.constituent_symbol LIKE 'US:%%' THEN sc.constituent_symbol
+                            ELSE 'US:' || sc.constituent_symbol
+                        END AS symbol_key_norm,
+                        sc.rank AS sector_rank
+                    FROM sector_constituents sc
+                    WHERE sc.sector_etf_symbol = %s
+                ),
+                latest_price AS (
+                    SELECT DISTINCT ON (p.symbol_key)
+                        p.symbol_key,
+                        p.close AS current_price,
+                        p.trading_date
+                    FROM price_daily p
+                    JOIN members m ON p.symbol_key = m.symbol_key_norm
+                    ORDER BY p.symbol_key, p.trading_date DESC
+                ),
+                prev_price AS (
+                    SELECT symbol_key, close AS prev_price
+                    FROM (
+                        SELECT
+                            p.symbol_key,
+                            p.close,
+                            ROW_NUMBER() OVER (
+                                PARTITION BY p.symbol_key
+                                ORDER BY p.trading_date DESC
+                            ) AS rn
+                        FROM price_daily p
+                        JOIN members m ON p.symbol_key = m.symbol_key_norm
+                    ) ranked
+                    WHERE rn = 2
+                ),
+                price_1y AS (
+                    SELECT DISTINCT ON (p.symbol_key)
+                        p.symbol_key,
+                        p.close AS price_1y
+                    FROM price_daily p
+                    JOIN members m ON p.symbol_key = m.symbol_key_norm
+                    WHERE p.trading_date <= CURRENT_DATE - INTERVAL '365 days'
+                    ORDER BY p.symbol_key, p.trading_date DESC
+                ),
+                latest_ind AS (
+                    SELECT DISTINCT ON (d.symbol_key)
+                        d.symbol_key,
+                        d.rs_rating,
+                        d.high_52w,
+                        d.dist_to_52w_high_pct
+                    FROM indicator_daily d
+                    JOIN members m ON d.symbol_key = m.symbol_key_norm
+                    ORDER BY d.symbol_key, d.trading_date DESC
+                ),
+                latest_fund AS (
+                    SELECT DISTINCT ON (f.symbol)
+                        f.symbol,
+                        f.eps
+                    FROM fundamentals f
+                    ORDER BY f.symbol, f.period_end_date DESC
+                )
+                SELECT
+                    m.symbol_key_norm,
+                    COALESCE(i.name, m.constituent_symbol) AS company_name,
+                    lp.current_price,
+                    CASE
+                        WHEN pp.prev_price IS NOT NULL AND pp.prev_price <> 0
+                        THEN ((lp.current_price - pp.prev_price) / pp.prev_price) * 100
+                        ELSE NULL
+                    END AS change_pct,
+                    CASE
+                        WHEN y.price_1y IS NOT NULL AND y.price_1y <> 0
+                        THEN ((lp.current_price - y.price_1y) / y.price_1y) * 100
+                        ELSE NULL
+                    END AS return_1y_pct,
+                    li.rs_rating,
+                    li.dist_to_52w_high_pct,
+                    li.high_52w,
+                    lf.eps,
+                    m.sector_rank
+                FROM members m
+                LEFT JOIN instruments i ON i.symbol_key = m.symbol_key_norm
+                LEFT JOIN latest_price lp ON lp.symbol_key = m.symbol_key_norm
+                LEFT JOIN prev_price pp ON pp.symbol_key = m.symbol_key_norm
+                LEFT JOIN price_1y y ON y.symbol_key = m.symbol_key_norm
+                LEFT JOIN latest_ind li ON li.symbol_key = m.symbol_key_norm
+                LEFT JOIN latest_fund lf ON lf.symbol = m.constituent_symbol
+                WHERE lp.current_price IS NOT NULL
+                """,
+                (etf,),
+            )
+
+            rows = cursor.fetchall()
+            cursor.close()
+            conn.close()
+
+            if not rows:
+                return {
+                    "sector": sector_name,
+                    "etf": etf,
+                    "stocks": [],
+                    "last_updated": datetime.now().isoformat(),
+                }
+
+            items = []
+            for row in rows:
+                symbol_key = row[0]
+                company_name = row[1]
+                current_price = float(row[2]) if row[2] is not None else None
+                change_pct = float(row[3]) if row[3] is not None else None
+                return_1y_pct = float(row[4]) if row[4] is not None else None
+                rs_rating = int(row[5]) if row[5] is not None else None
+                dist_52w = float(row[6]) if row[6] is not None else None
+                high_52w = float(row[7]) if row[7] is not None else None
+                eps = float(row[8]) if row[8] is not None else None
+                sector_rank = int(row[9]) if row[9] is not None else 999
+
+                # Priority: RS (targeting 90+) and 1Y return, then 52W-high proximity and sector weight rank.
+                rs_component = rs_rating if rs_rating is not None else 0
+                ret_component = return_1y_pct if return_1y_pct is not None else -999
+                high_component = 0
+                if dist_52w is not None:
+                    high_component = max(0.0, 10.0 - abs(dist_52w))
+
+                score = (rs_component * 1.2) + (ret_component * 0.5) + high_component - (sector_rank * 0.1)
+
+                items.append(
+                    {
+                        "symbol": symbol_key,
+                        "company_name": company_name,
+                        "price": current_price,
+                        "change_pct": change_pct,
+                        "return_1y_pct": return_1y_pct,
+                        "rs_rating": rs_rating,
+                        "dist_52w_high_pct": dist_52w,
+                        "high_52w": high_52w,
+                        "eps": eps,
+                        "_score": score,
+                    }
+                )
+
+            items.sort(key=lambda x: x["_score"], reverse=True)
+
+            top = items[:limit]
+            leader_count = max(1, min(3, len(top)))
+            laggard_start = max(0, len(top) - leader_count)
+
+            for idx, item in enumerate(top):
+                if idx < leader_count:
+                    role = "Leader"
+                elif idx >= laggard_start:
+                    role = "Laggard"
+                else:
+                    role = "Neutral"
+
+                near_high = (
+                    item["dist_52w_high_pct"] is not None
+                    and abs(item["dist_52w_high_pct"]) <= 3.0
+                )
+                breakout = (
+                    item["dist_52w_high_pct"] is not None
+                    and item["dist_52w_high_pct"] >= 0
+                )
+                item["role"] = role
+                item["near_high"] = near_high
+                item["new_high_breakout"] = breakout
+                item.pop("_score", None)
+
+            return {
+                "sector": sector_name,
+                "etf": etf,
+                "stocks": top,
+                "last_updated": datetime.now().isoformat(),
+            }
+        except Exception as e:
+            print(f"Error getting sector top stocks: {e}")
+            return {
+                "sector": sector_name,
+                "etf": etf,
+                "stocks": [],
+                "error": str(e),
+                "last_updated": datetime.now().isoformat(),
+            }
     
     def _get_sector_info(self, conn, sector_symbol: str) -> dict:
         """セクター基本情報を取得"""
@@ -256,9 +465,9 @@ class SectorDetailService:
                 stock_return = stock_returns.get(symbol, 0)
                 if spy_return != 0:
                     rs_raw = (stock_return / spy_return) * 50 + 50
-                    rs_score = max(0, min(100, int(rs_raw)))
+                    rs_rating = max(0, min(100, int(rs_raw)))
                 else:
-                    rs_score = 50
+                    rs_rating = 50
                 
                 constituents.append({
                     'rank': rank,
@@ -266,7 +475,7 @@ class SectorDetailService:
                     'name': name,
                     'weight': weight,
                     'market_cap': 0,  # 将来実装
-                    'rs_score': rs_score,
+                    'rs_rating': rs_rating,
                     'volume_ratio': volume_ratio,
                     'institution_flag': False
                 })

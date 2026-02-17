@@ -2,9 +2,17 @@
 市場指数データ取得スクリプト
 yfinanceを使用してダウ、VIX、S&P500などのデータを取得してDBに保存
 """
-import yfinance as yf
+import os
+from pathlib import Path
 from datetime import datetime, timedelta
 import psycopg
+
+# yfinance timezone cache path fix
+_YF_CACHE_DIR = Path(__file__).resolve().parents[1] / ".cache" / "yfinance"
+_YF_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+os.environ.setdefault("YFINANCE_TZ_CACHE_LOCATION", str(_YF_CACHE_DIR))
+import yfinance as yf
+yf.set_tz_cache_location(str(_YF_CACHE_DIR))
 
 
 def get_connection():
@@ -66,9 +74,19 @@ def insert_or_update_instrument(conn, symbol, info):
         else:
             # 新規登録
             cursor.execute("""
-                INSERT INTO instruments (symbol_key, market, name, currency, is_active, created_at, updated_at)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO instruments (
+                    symbol_key,
+                    symbol_key_old_backup,
+                    market,
+                    name,
+                    currency,
+                    is_active,
+                    created_at,
+                    updated_at
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """, (
+                symbol_key,
                 symbol_key,
                 info['market'],
                 info['name'],
@@ -78,10 +96,10 @@ def insert_or_update_instrument(conn, symbol, info):
                 datetime.now()
             ))
             conn.commit()
-            print(f"  ✓ 銘柄 {symbol_key} ({info['name']}) を登録しました")
+            print(f"  [OK] 銘柄 {symbol_key} ({info['name']}) を登録しました")
     
     except Exception as e:
-        print(f"  ✗ エラー: {symbol_key} の登録に失敗 - {e}")
+        print(f"  [ERR] {symbol_key} の登録に失敗 - {e}")
         conn.rollback()
     finally:
         cursor.close()
@@ -104,7 +122,7 @@ def fetch_and_save_price_data(conn, symbol, symbol_key, days=90):
         hist = ticker.history(start=start_date, end=end_date)
         
         if hist.empty:
-            print(f"  ✗ データが取得できませんでした: {symbol}")
+            print(f"  [ERR] データが取得できませんでした: {symbol}")
             return
         
         # データベースに保存
@@ -140,10 +158,10 @@ def fetch_and_save_price_data(conn, symbol, symbol_key, days=90):
                 count += 1
         
         conn.commit()
-        print(f"  ✓ {count}件の価格データを保存しました")
+        print(f"  [OK] {count}件の価格データを保存しました")
         
     except Exception as e:
-        print(f"  ✗ エラー: {symbol} のデータ取得に失敗 - {e}")
+        print(f"  [ERR] {symbol} のデータ取得に失敗 - {e}")
         conn.rollback()
     finally:
         cursor.close()
@@ -158,7 +176,7 @@ def main():
     # DB接続
     conn = get_connection()
     if not conn:
-        print("✗ データベース接続に失敗しました")
+        print("[ERR] データベース接続に失敗しました")
         return
     
     print(f"\n取得対象: {len(MARKET_INDICES)}件の市場指数")
@@ -176,7 +194,7 @@ def main():
     conn.close()
     
     print("\n" + "=" * 60)
-    print("✓ 処理完了")
+    print("[OK] 処理完了")
     print("=" * 60)
 
 

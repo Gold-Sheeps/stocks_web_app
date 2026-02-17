@@ -2,10 +2,19 @@
 セクターETFの構成銘柄Top 20を取得してDBに保存
 yfinanceを使用して各セクターETFの保有銘柄を取得
 """
-import yfinance as yf
+import os
+from pathlib import Path
 from datetime import datetime
+import re
 import psycopg
 import time
+
+# yfinance timezone cache path fix
+_YF_CACHE_DIR = Path(__file__).resolve().parents[1] / ".cache" / "yfinance"
+_YF_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+os.environ.setdefault("YFINANCE_TZ_CACHE_LOCATION", str(_YF_CACHE_DIR))
+import yfinance as yf
+yf.set_tz_cache_location(str(_YF_CACHE_DIR))
 
 
 def get_connection():
@@ -34,32 +43,59 @@ SECTOR_ETFS = {
     'XLC': 'Communication Services',
 }
 
+_SYMBOL_PATTERN = re.compile(r"^[A-Z0-9][A-Z0-9._=\-^]{0,19}$")
+
+
+def _normalize_symbol(raw) -> str | None:
+    """Keep only ticker-like symbols that fit DB constraint (varchar(20))."""
+    if raw is None:
+        return None
+    s = str(raw).strip().upper()
+    if not s or len(s) > 20:
+        return None
+    if " " in s:
+        return None
+    if not _SYMBOL_PATTERN.match(s):
+        return None
+    return s
+
 
 def fetch_etf_holdings(etf_symbol: str, top_n: int = 20):
     """ETFの保有銘柄Top Nを取得"""
     try:
         print(f"  {etf_symbol}のホールディング情報を取得中...")
         ticker = yf.Ticker(etf_symbol)
-        
-        # ホールディング情報取得を試みる
+
+        # yfinanceの現行API: funds_data.top_holdings
         try:
-            holdings = ticker.get_holdings()
+            holdings = getattr(ticker.funds_data, "top_holdings", None)
             if holdings is not None and not holdings.empty:
-                # 上位N件を取得
                 top_holdings = holdings.head(top_n)
                 result = []
                 for idx, row in top_holdings.iterrows():
-                    # Symbolカラムの名前はETFによって異なる可能性がある
-                    symbol = row.get('Symbol') or row.get('symbol') or row.get('Ticker') or idx
-                    weight = row.get('% Assets') or row.get('weight') or 0
-                    
-                    result.append({
-                        'symbol': str(symbol).strip(),
-                        'weight': float(weight) if weight else 0,
-                        'rank': len(result) + 1
-                    })
-                
-                return result
+                    symbol = (
+                        _normalize_symbol(idx)
+                        or _normalize_symbol(row.get("Symbol"))
+                        or _normalize_symbol(row.get("symbol"))
+                        or _normalize_symbol(row.get("Ticker"))
+                    )
+                    if not symbol:
+                        continue
+                    weight = (
+                        row.get("% Assets")
+                        or row.get("Weight")
+                        or row.get("weight")
+                        or 0
+                    )
+                    result.append(
+                        {
+                            "symbol": symbol,
+                            "weight": float(weight) if weight else 0.0,
+                            "rank": len(result) + 1,
+                        }
+                    )
+                if result:
+                    return result
         except Exception as e:
             print(f"    ホールディング情報取得失敗: {e}")
         
@@ -72,7 +108,7 @@ def fetch_etf_holdings(etf_symbol: str, top_n: int = 20):
         return []
         
     except Exception as e:
-        print(f"  ✗ エラー: {etf_symbol} - {e}")
+        print(f"  [ERR] エラー: {etf_symbol} - {e}")
         return []
 
 
@@ -125,7 +161,7 @@ def get_fallback_holdings(etf_symbol: str):
 def save_constituents_to_db(conn, etf_symbol: str, holdings: list):
     """構成銘柄をDBに保存"""
     if not holdings:
-        print(f"  ⚠ {etf_symbol}: データなし、スキップ")
+        print(f"  [WARN] {etf_symbol}: データなし、スキップ")
         return
     
     cursor = conn.cursor()
@@ -154,14 +190,15 @@ def save_constituents_to_db(conn, etf_symbol: str, holdings: list):
                 ))
                 saved_count += 1
             except Exception as e:
-                print(f"    ⚠ {holding['symbol']} 保存失敗: {e}")
+                conn.rollback()
+                print(f"    [WARN] {holding['symbol']} 保存失敗: {e}")
                 continue
         
         conn.commit()
-        print(f"  ✓ {saved_count}銘柄を保存しました")
+        print(f"  [OK] {saved_count}銘柄を保存しました")
         
     except Exception as e:
-        print(f"  ✗ DB保存エラー: {e}")
+        print(f"  [ERR] DB保存エラー: {e}")
         conn.rollback()
     finally:
         cursor.close()
@@ -175,7 +212,7 @@ def main():
     
     conn = get_connection()
     if not conn:
-        print("✗ データベース接続に失敗しました")
+        print("[ERR] データベース接続に失敗しました")
         return
     
     print(f"\n取得対象: {len(SECTOR_ETFS)}セクターETF")
@@ -196,7 +233,7 @@ def main():
     conn.close()
     
     print("\n" + "=" * 60)
-    print("✓ 処理完了")
+    print("[OK] 処理完了")
     print("=" * 60)
 
 

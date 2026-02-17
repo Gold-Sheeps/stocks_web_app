@@ -3,6 +3,7 @@ from datetime import datetime
 from app.models.schemas import (
     MonitorResponse, PortfolioSummary, MarketIndexData
 )
+from app.services.portfolio_service import PortfolioService
 from app.core.config import settings
 import psycopg
 import traceback
@@ -42,77 +43,9 @@ class MonitorService:
         )
     
     def get_portfolio_summary(self) -> PortfolioSummary:
-        """Get portfolio summary based on holdings and latest prices"""
+        """Get portfolio summary using PortfolioService (single source of truth)."""
         try:
-            conn = self._get_db_connection()
-            cursor = conn.cursor()
-            
-            # 1. Get current USD/JPY rate
-            cursor.execute("""
-                SELECT close FROM price_daily 
-                WHERE symbol_key = 'US:USDJPY=X' 
-                ORDER BY trading_date DESC LIMIT 1
-            """)
-            row = cursor.fetchone()
-            usd_jpy = Decimal(str(row[0])) if row and row[0] else Decimal('150.0')
-
-            # 2. Get holdings with latest prices
-            # Join with price_daily to get the most recent price for each holding
-            # Note: handle US: and JP: prefixes when joining
-            cursor.execute("""
-                WITH latest_prices AS (
-                    SELECT DISTINCT ON (symbol_key) symbol_key, close
-                    FROM price_daily
-                    ORDER BY symbol_key, trading_date DESC
-                )
-                SELECT 
-                    h.symbol, h.quantity, h.average_cost, h.currency, h.market,
-                    lp.close as current_price
-                FROM holdings h
-                LEFT JOIN latest_prices lp ON (
-                    lp.symbol_key = h.symbol OR 
-                    lp.symbol_key = 'US:' || h.symbol OR 
-                    lp.symbol_key = 'JP:' || h.symbol
-                )
-            """)
-            
-            holdings = cursor.fetchall()
-            
-            total_value_jpy = Decimal('0')
-            total_cost_jpy = Decimal('0')
-            
-            for h in holdings:
-                symbol, quantity, avg_cost, currency, market, current_price = h
-                
-                qty = Decimal(str(quantity)) if quantity else Decimal('0')
-                cost = Decimal(str(avg_cost)) if avg_cost else Decimal('0')
-                price = Decimal(str(current_price)) if current_price else cost # Fallback to cost if no price
-                
-                # Conversion to JPY
-                if currency == 'USD' or market == 'US':
-                    item_value_jpy = qty * price * usd_jpy
-                    item_cost_jpy = qty * cost * usd_jpy
-                else:
-                    item_value_jpy = qty * price
-                    item_cost_jpy = qty * cost
-                
-                total_value_jpy += item_value_jpy
-                total_cost_jpy += item_cost_jpy
-                
-            total_gain_loss_jpy = total_value_jpy - total_cost_jpy
-            total_gain_loss_pct = (total_gain_loss_jpy / total_cost_jpy * 100) if total_cost_jpy != 0 else Decimal('0')
-            
-            cursor.close()
-            conn.close()
-            
-            return PortfolioSummary(
-                total_value_jpy=total_value_jpy,
-                total_cost_jpy=total_cost_jpy,
-                total_gain_loss_jpy=total_gain_loss_jpy,
-                total_gain_loss_pct=total_gain_loss_pct,
-                ytd_start_date=datetime(datetime.now().year, 1, 1)
-            )
-            
+            return PortfolioService().get_portfolio_summary()
         except Exception as e:
             print(f"Error in get_portfolio_summary: {e}")
             # Fallback to zeros on error
@@ -121,6 +54,8 @@ class MonitorService:
                 total_cost_jpy=Decimal('0'),
                 total_gain_loss_jpy=Decimal('0'),
                 total_gain_loss_pct=Decimal('0'),
+                cash_balance_jpy=Decimal('0'),
+                equity_value_jpy=Decimal('0'),
                 ytd_start_date=datetime(datetime.now().year, 1, 1)
             )
 

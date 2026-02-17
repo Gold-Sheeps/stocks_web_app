@@ -28,8 +28,29 @@ async def get_stock_signals(symbol: str):
 
 
 @router.get("/{symbol}/price")
-async def get_stock_price_history(symbol: str, limit: Optional[int] = None):
+async def get_stock_price_history(
+    symbol: str,
+    limit: Optional[int] = None,
+    timeframe: Optional[str] = "1d",
+):
     """Fetch full historical OHLCV data for charts"""
     service = StockDetailService()
-    return service.get_price_history_all(symbol, limit=limit)
+    return service.get_price_history_all(symbol, limit=limit, timeframe=timeframe)
+
+
+@router.get("/{symbol}/fundamentals")
+async def get_stock_fundamentals(
+    symbol: str,
+    limit: Optional[int] = None,
+):
+    """Fetch fundamentals from DB (latest periods)"""
+    service = StockDetailService()
+    return service.get_fundamentals(symbol, limit=limit)
+
+
+@router.get("/{symbol}/ratios")
+async def get_stock_ratios(symbol: str):
+    """Fetch calculated ratios from DB-backed data"""
+    service = StockDetailService()
+    return service.get_ratios(symbol)
 

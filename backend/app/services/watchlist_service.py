@@ -103,7 +103,7 @@ class WatchlistService:
             ind_query = f"""
                 SELECT DISTINCT ON (symbol_key) 
                     symbol_key, 
-                    rsi14, macd, macd_signal, ema21, sma50, sma200, pivot, rs_score, 
+                    rsi14, macd, macd_signal, ema21, sma50, sma200, pivot, rs_rating, 
                     institution_flag, accum_dist, trading_date
                 FROM indicator_daily
                 WHERE symbol_key IN ({placeholders})
@@ -115,7 +115,7 @@ class WatchlistService:
                 ind_map[row[0]] = {
                     'rsi': row[1], 'macd': row[2], 'macd_signal': row[3], 
                     'ema21': row[4], 'sma50': row[5], 'sma200': row[6], 
-                    'pivot': row[7], 'rs_score': row[8],
+                    'pivot': row[7], 'rs_rating': int(row[8]) if row[8] is not None else None,
                     'institution_flag': row[9], 'accum_dist': row[10],
                     'date': row[11]
                 }
@@ -202,7 +202,7 @@ class WatchlistService:
                     sma50=ind_info.get('sma50'),
                     sma200=ind_info.get('sma200'),
                     pivot=pivot_val,
-                    rs_score=ind_info.get('rs_score'),
+                    rs_rating=ind_info.get('rs_rating'),
                     institution_flag=bool(ind_info.get('institution_flag')) if ind_info.get('institution_flag') is not None else False,
                     buy_zone=is_buy_zone,
                     last_updated=item_data['updated_at'],
@@ -266,7 +266,8 @@ class WatchlistService:
             return True
         except Exception as e:
             print(f"Error adding to watchlist: {e}")
-            self.db.conn.rollback()
+            if getattr(self.db, "connection", None):
+                self.db.connection.rollback()
             return False
         finally:
             self.db.disconnect()
@@ -299,7 +300,8 @@ class WatchlistService:
             return True
         except Exception as e:
             print(f"Error updating watchlist: {e}")
-            self.db.conn.rollback()
+            if getattr(self.db, "connection", None):
+                self.db.connection.rollback()
             return False
         finally:
             self.db.disconnect()
@@ -313,7 +315,8 @@ class WatchlistService:
             return True
         except Exception as e:
             print(f"Error deleting from watchlist: {e}")
-            self.db.conn.rollback()
+            if getattr(self.db, "connection", None):
+                self.db.connection.rollback()
             return False
         finally:
             self.db.disconnect()

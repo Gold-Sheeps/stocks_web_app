@@ -15,7 +15,7 @@
             minPrice: null,
             maxPrice: null,
             minRS: null,
-            minTotalScore: null,
+            minTotalScore: 70,
             searchQuery: ''
         }
     };
@@ -70,7 +70,7 @@
             minPrice: priceMin ? parseFloat(priceMin) : null,
             maxPrice: priceMax ? parseFloat(priceMax) : null,
             minRS: minRS ? parseFloat(minRS) : null,
-            minTotalScore: minScore ? parseFloat(minScore) : null,
+            minTotalScore: minScore ? parseFloat(minScore) : 70,
             searchQuery: search ? search.trim() : ''
         };
     }
@@ -127,10 +127,10 @@
         if (!state.items.length) {
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td colspan="9" style="padding: 40px; text-align: center;">
-                    <div style="font-size: 3rem; opacity: 0.3; margin-bottom: 12px;">📊</div>
+                <td colspan="10" style="padding: 40px; text-align: center;">
+                    <div style="font-size: 3rem; opacity: 0.3; margin-bottom: 12px;">-</div>
                     <div style="color: var(--text-muted); font-size: 0.95rem;">
-                        該当データなし（条件を緩めて再検索してください）
+                        No data found. Change filters and search again.
                     </div>
                 </td>
             `;
@@ -151,11 +151,12 @@
             // Extract data with fallbacks
             const symbol = row.symbol_key ?? row.symbol ?? "-";
             const name = row.name ?? "-";
-            const rs = safeNumber(row.rs_rating ?? row.rs_score, 0);
+            const rs = safeNumber(row.rs_rating, 0);
             const total = safeNumber(row.total_score ?? row.total, 0);
             const price = safeNumber(row.price ?? row.current_price, 0);
+            const pivot = Number(row.pivot);
             const changePct = safeNumber(row.change_pct, 0);
-            const distTo52wHigh = safeNumber(row.dist_to_52w_high_pct, 0);
+            const distTo52wHigh = safeNumber(row.dist_52w_high_pct, 0);
 
             // Format values using UI utilities
             const priceStr = price > 0 ?
@@ -165,6 +166,10 @@
             const chgStr = window.UI ?
                 window.UI.formatPct(changePct) :
                 `${changePct > 0 ? '+' : ''}${changePct.toFixed(2)}%`;
+
+            const pivotStr = Number.isFinite(pivot) && pivot > 0
+                ? (window.UI ? window.UI.formatNumber(pivot, 2) : pivot.toFixed(2))
+                : "-";
 
             const distStr = `${distTo52wHigh.toFixed(2)}%`;
 
@@ -202,6 +207,9 @@
                 </td>
                 <td class="text-right" style="font-family: var(--font-mono); font-weight: 600;">
                     $${priceStr}
+                </td>
+                <td class="text-right" style="font-family: var(--font-mono); font-weight: 600;">
+                    ${pivotStr === "-" ? "-" : `$${pivotStr}`}
                 </td>
                 <td class="text-right">${chgStr}</td>
                 <td class="text-right" style="font-family: var(--font-mono);">${distStr}</td>
@@ -298,8 +306,8 @@
 
         try {
             const url = new URL(`${API_BASE}/screener/scan`);
-            url.searchParams.set("page", String(state.page));
             url.searchParams.set("limit", String(state.limit));
+            url.searchParams.set("offset", String((state.page - 1) * state.limit));
 
             // Add filter parameters
             if (state.filters.minPrice !== null) {
@@ -367,7 +375,7 @@
 
             // Success toast
             if (window.UI) {
-                window.UI.showToast(`${total}件の銘柄が見つかりました`, 'success', 2000);
+                window.UI.showToast(`${total} stocks found`, 'success', 2000);
             }
 
         } catch (e) {
@@ -380,7 +388,7 @@
 
             // Error toast
             if (window.UI) {
-                window.UI.showToast(`エラー: ${e.message}`, 'error');
+                window.UI.showToast(`Error: ${e.message}`, 'error');
             } else {
                 alert(`Error: ${e.message}`);
             }
@@ -402,8 +410,8 @@
         inputs.forEach(id => {
             const el = $(id);
             if (el) {
-                if (el.id === 'rsiFilter') el.value = 'all';
-                else if (el.id === 'minRS') el.value = '85';
+                if (el.id === 'rsiFilter') el.value = '';
+                else if (el.id === 'minRS') el.value = '';
                 else if (el.id === 'minTotalScore') el.value = '70';
                 else el.value = '';
             }
@@ -414,28 +422,29 @@
         fetchScreener();
 
         if (window.UI) {
-            window.UI.showToast('検索条件をリセットしました', 'info');
+            window.UI.showToast('Filters have been reset', 'info');
         }
     }
 
     // Export CSV (Requirement 8: BOM + Timestamp)
     function exportCSV() {
         if (!state.items.length) {
-            if (window.UI) window.UI.showToast('エクスポートするデータがありません', 'warning');
+            if (window.UI) window.UI.showToast('No data to export', 'warning');
             return;
         }
 
-        // Columns per requirement: Rank, Symbol, Name, RS, Total, Price, Change, Dist52W, Signals
-        const headers = ['Rank', 'Symbol', 'Name', 'RS Score', 'Total Score', 'Price', 'Change %', 'Dist 52W High', 'Signals'];
+        // Columns per requirement: Rank, Symbol, Name, RS, Total, Price, Pivot, Change, Dist52W, Signals
+        const headers = ['Rank', 'Symbol', 'Name', 'RS Rating', 'Total Score', 'Price', 'Pivot', 'Change %', 'Dist 52W High', 'Signals'];
         const rows = state.items.map((row, idx) => {
             const rank = (idx + 1) + (state.page - 1) * state.limit;
             return [
                 rank,
                 row.symbol ?? '',
                 row.name ?? '',
-                row.rs_score ?? '',
+                row.rs_rating ?? '',
                 row.total_score ?? '',
                 row.price ?? '',
+                row.pivot ?? '',
                 row.change_pct ? row.change_pct.toFixed(2) : '0.00',
                 row.dist_52w_high_pct ? row.dist_52w_high_pct.toFixed(2) : '0.00',
                 (row.signals || []).join('; ')
@@ -463,7 +472,7 @@
         link.click();
         document.body.removeChild(link);
 
-        if (window.UI) window.UI.showToast(`CSVを保存しました: ${filename}`, 'success');
+        if (window.UI) window.UI.showToast(`CSV saved: ${filename}`, 'success');
     }
 
     // Diagnostics (Requirement 9, 10, 11)
@@ -473,7 +482,7 @@
         if (!modal || !content) return;
 
         modal.style.display = "flex";
-        content.innerHTML = '<div style="padding: 24px; text-align: center;">🏥 診断実行中...</div>';
+        content.innerHTML = '<div style="padding: 24px; text-align: center;">Loading diagnostics...</div>';
 
         try {
             const resp = await fetch(`${API_BASE}/system/diagnostics/screener`);
@@ -486,20 +495,20 @@
             // Contract Check (Requirement 10)
             const cc = data.api_contract_check;
             html += `<div style="margin-bottom: 16px; border-left: 3px solid ${cc.status === 'ok' ? 'var(--success)' : 'var(--warning)'}; padding-left: 12px; background: rgba(255,255,255,0.02); padding-top: 8px; padding-bottom: 8px;">
-                <div style="font-weight:700;">📋 API Contract: ${cc.status.toUpperCase()}</div>
+                <div style="font-weight:700;">API Contract: ${cc.status.toUpperCase()}</div>
                 ${cc.missing_query_params?.length > 0
                     ? `<div class="text-warning">Missing Params: ${cc.missing_query_params.join(', ')}</div>`
-                    : '<div class="text-success">✓ Query parameters verified</div>'}
+                    : '<div class="text-success">[OK] Query parameters verified</div>'}
                 ${cc.missing_response_fields.length > 0
                     ? `<div class="text-warning">Missing Keys: ${cc.missing_response_fields.join(', ')}</div>`
-                    : '<div class="text-success">✓ Response fields verified</div>'}
+                    : '<div class="text-success">[OK] Response fields verified</div>'}
             </div>`;
 
             // Query Logic Check (New)
             const ql = data.query_logic_check;
             if (ql) {
                 html += `<div style="margin-bottom: 16px; border-left: 3px solid ${ql.price_filter_applied_to_latest_close ? 'var(--success)' : 'var(--danger)'}; padding-left: 12px; background: rgba(255,255,255,0.02); padding-top: 8px; padding-bottom: 8px;">
-                    <div style="font-weight:700;">🔍 Query Logic: ${ql.price_filter_applied_to_latest_close ? 'OK' : 'ERROR'}</div>
+                    <div style="font-weight:700;">Query Logic: ${ql.price_filter_applied_to_latest_close ? 'OK' : 'ERROR'}</div>
                     <div>Latest Price Date Used: <span class="text-primary">${ql.latest_price_date_used || 'N/A'}</span></div>
                     ${ql.sample_item_debug ? `
                         <div style="font-size: 0.8rem; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 4px;">
@@ -515,10 +524,10 @@
             // DB Integrity (Requirement 9)
             const dbi = data.db_integrity_check;
             html += `<div style="margin-bottom: 16px; border-left: 3px solid ${dbi.status === 'error' ? 'var(--danger)' : 'var(--primary)'}; padding-left: 12px; background: rgba(255,255,255,0.02); padding-top: 8px; padding-bottom: 8px;">
-                <div style="font-weight:700;">🗄️ Database Integrity: ${dbi.status.toUpperCase()}</div>
+                <div style="font-weight:700;">Database Integrity: ${dbi.status.toUpperCase()}</div>
                 ${dbi.missing_columns?.length > 0
                     ? `<div class="text-danger" style="margin: 4px 0;">Missing Columns: ${dbi.missing_columns.join(', ')}</div>`
-                    : '<div class="text-success">✓ Columns verified via information_schema</div>'}
+                    : '<div class="text-success">[OK] Columns verified via information_schema</div>'}
                 <div style="font-size: 0.8rem; margin-top: 8px; color: var(--text-muted);">
                     ${Object.entries(dbi.tables || {}).map(([t, v]) => `${t}: ${v.rows.toLocaleString()} rows`).join(' | ')}
                 </div>
@@ -527,7 +536,7 @@
             // Freshness
             const df = data.data_freshness_check;
             html += `<div style="border-left: 3px solid var(--primary); padding-left: 12px; background: rgba(255,255,255,0.02); padding-top: 8px; padding-bottom: 8px;">
-                <div style="font-weight:700;">⏱️ Data Freshness</div>
+                <div style="font-weight:700;">Data Freshness</div>
                 <div style="font-size: 0.8rem;">
                     ${Object.entries(df.latest_dates || {}).map(([t, d]) => `<div>${t}: ${d || 'N/A'} (<span class="${df.staleness_days[t] > 4 ? 'text-warning' : ''}">${df.staleness_days[t]}d ago</span>)</div>`).join('')}
                 </div>
@@ -535,7 +544,7 @@
 
             content.innerHTML = html;
         } catch (err) {
-            content.innerHTML = `<div class="text-danger" style="padding: 20px;">診断に失敗しました: ${err.message}</div>`;
+            content.innerHTML = `<div class="text-danger" style="padding: 20px;">Failed to load diagnostics: ${err.message}</div>`;
         }
     }
 

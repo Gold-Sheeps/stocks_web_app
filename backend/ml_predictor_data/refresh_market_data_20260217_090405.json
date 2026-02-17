@@ -1,0 +1,116 @@
+{
+  "run_at": "2026-02-17T09:03:50",
+  "source": "yfinance",
+  "db_only_check": false,
+  "start": null,
+  "end": "2026-02-17",
+  "symbols": [
+    {
+      "symbol_key": "US:NVDA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2516,
+        "max_date": "2026-02-13"
+      },
+      "db_after": {
+        "rows": 2516,
+        "max_date": "2026-02-13"
+      },
+      "fetch": {
+        "from": "2026-02-14",
+        "to": "2026-02-17",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "Fetch failed for US:NVDA: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:QQQ",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2516,
+        "max_date": "2026-02-13"
+      },
+      "db_after": {
+        "rows": 2516,
+        "max_date": "2026-02-13"
+      },
+      "fetch": {
+        "from": "2026-02-14",
+        "to": "2026-02-17",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "Fetch failed for US:QQQ: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:^SOX",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 8000,
+        "max_date": "2026-02-13"
+      },
+      "db_after": {
+        "rows": 8000,
+        "max_date": "2026-02-13"
+      },
+      "fetch": {
+        "from": "2026-02-14",
+        "to": "2026-02-17",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "Fetch failed for US:^SOX: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:SMH",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2516,
+        "max_date": "2026-02-13"
+      },
+      "db_after": {
+        "rows": 2516,
+        "max_date": "2026-02-13"
+      },
+      "fetch": {
+        "from": "2026-02-14",
+        "to": "2026-02-17",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "Fetch failed for US:SMH: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    }
+  ],
+  "totals": {
+    "symbols": 4,
+    "failed": 4,
+    "fetched_rows": 0,
+    "inserted": 0,
+    "updated": 0
+  }
+}

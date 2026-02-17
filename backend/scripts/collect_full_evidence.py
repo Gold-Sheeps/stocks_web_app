@@ -118,7 +118,7 @@ def collect_full_evidence():
     # Relaxed criteria for demonstration
     limit = 10
     # Use min_rs=0 to verify data existence regardless of current performance
-    url_screener = f"{base_url}/screener/scan?limit={limit}&min_rs=0&min_total_score=0"
+    url_screener = f"{base_url}/screener/scan[WARN]limit={limit}&min_rs=0&min_total_score=0"
     print(f"\n[C. Screener Multi-hit Proof: GET {url_screener}]")
     try:
         res = requests.get(url_screener)

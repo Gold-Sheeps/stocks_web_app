@@ -101,7 +101,7 @@ def collect_evidence():
         print(f"Request failed: {e}")
 
     # Screener
-    url_screener = f"{base_url}/screener/scan?limit=5&min_rs=60&min_total_score=0" 
+    url_screener = f"{base_url}/screener/scan[WARN]limit=5&min_rs=60&min_total_score=0" 
     print(f"\n[GET {url_screener}]")
     try:
         res = requests.get(url_screener)

@@ -553,6 +553,10 @@
                                 <input type="checkbox" value="Stocks">
                                 <span>📈 Stocks (Portfolio/Watchlist)</span>
                             </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="CANSLIM">
+                                <span>🧠 CANSLIM Analysis</span>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -603,8 +607,16 @@
                 return;
             }
 
-            container.innerHTML = logs.map(log => {
-                const statusClass = log.status === 'success' ? 'success' : (log.status === 'error' ? 'error' : 'info');
+            // Always show newest first regardless of backend ordering.
+            const sortedLogs = [...logs].sort((a, b) => {
+                const ta = new Date(a.created_at).getTime();
+                const tb = new Date(b.created_at).getTime();
+                return tb - ta;
+            });
+
+            container.innerHTML = sortedLogs.map(log => {
+                const status = String(log.status || '').toLowerCase();
+                const statusClass = status === 'success' ? 'success' : (status === 'failed' || status === 'error' ? 'error' : 'info');
                 const timestamp = new Date(log.created_at).toLocaleString('ja-JP', {
                     month: '2-digit',
                     day: '2-digit',
@@ -616,7 +628,7 @@
                 return `
                     <div class="log-entry">
                         <div class="log-timestamp">[${timestamp}]</div>
-                        <div class="log-status ${statusClass}">${log.status}</div>
+                        <div class="log-status ${statusClass}">${status.toUpperCase()}</div>
                         <div class="log-message">
                             <div class="log-message-text">${log.message || ''}</div>
                             ${log.details ? `<div class="log-details">${typeof log.details === 'string' ? log.details : JSON.stringify(log.details, null, 2)}</div>` : ''}
@@ -625,8 +637,8 @@
                 `;
             }).join('');
 
-            // Auto-scroll to bottom
-            container.scrollTop = container.scrollHeight;
+            // Keep viewport at top so newest entries are visible.
+            container.scrollTop = 0;
         }
 
         document.getElementById('updateBtn').addEventListener('click', async () => {
@@ -673,8 +685,7 @@
                 const result = await res.json();
 
                 if (result.status === 'success') {
-                    // Poll logs immediately
-                    await fetchLogs();
+                    
                     UI.showToast(`✓ Update Complete! Processed: ${result.processed}`, 'success');
                     document.getElementById('lastStats').textContent = `Success (${result.processed})`;
                 } else {
@@ -694,8 +705,8 @@
 
         // Initial log fetch
         fetchLogs();
-        // Poll logs every 5 seconds
-        setInterval(fetchLogs, 5000);
+        // Poll logs every 5 minutes
+        setInterval(fetchLogs, 300000);
 
     </script>
 </body>

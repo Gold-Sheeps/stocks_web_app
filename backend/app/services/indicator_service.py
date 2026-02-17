@@ -1,4 +1,4 @@
-
+﻿
 import pandas as pd
 import numpy as np
 from datetime import datetime
@@ -101,7 +101,7 @@ class IndicatorService:
             # Using simple 1-year change * 2 + 3-month change * 1
             # Let's use 12-month change (252 days)
             # Requires 252 days data
-            df['rs_score'] = 0.0
+            df['rs_rating'] = 0.0
             
             # Change % over N days
             # Fillna with 0
@@ -110,8 +110,8 @@ class IndicatorService:
             ret_63 = close.pct_change(periods=63).fillna(0)
 
             # Weighting: 2 parts 3-mo, 1 part 6-mo, 1 part 12-mo
-            df['rs_score'] = (ret_63 * 0.4) + (ret_126 * 0.3) + (ret_252 * 0.3)
-            # Normalize? No, recalculate_rs_rank normalizes it.
+            df['rs_rating'] = (ret_63 * 0.4) + (ret_126 * 0.3) + (ret_252 * 0.3)
+            # Normalize[WARN] No, recalculate_rs_rank normalizes it.
 
             # 3. Save to DB (Loop/Batch)
             # We only need to save records that changed or are new.
@@ -120,10 +120,10 @@ class IndicatorService:
             # Assuming we run this for ALL history initially, passing days_back=9999
             
             # Filter to save range
-            # Limit to last N days to save time on upserts?
+            # Limit to last N days to save time on upserts[WARN]
             # User might want full history for charts.
             
-            # Let's verify existing data? No, simpler to upsert.
+            # Let's verify existing data[WARN] No, simpler to upsert.
             
             # Prepare Query
             upsert_query = """
@@ -132,7 +132,7 @@ class IndicatorService:
                     sma5, sma20, sma50, sma200, 
                     rsi14, macd, macd_signal, macd_hist, 
                     atr14, high_52w, dist_to_52w_high_pct, 
-                    ema21, pivot, rs_score, updated_at
+                    ema21, pivot, rs_rating, updated_at
                 ) VALUES (
                     %s, %s, 
                     %s, %s, %s, %s, 
@@ -154,17 +154,17 @@ class IndicatorService:
                     dist_to_52w_high_pct = EXCLUDED.dist_to_52w_high_pct,
                     ema21 = EXCLUDED.ema21,
                     pivot = EXCLUDED.pivot,
-                    rs_score = EXCLUDED.rs_score,
+                    rs_rating = EXCLUDED.rs_rating,
                     updated_at = CURRENT_TIMESTAMP
             """
 
             # Iterate and Upsert
-            # Use only rows with valid data?
+            # Use only rows with valid data[WARN]
             # Rolling window starts with NaNs.
             # slice dataframe
             
             # Batch Execution via raw cursor
-            # Optimization: Use executemany? Database class doesn't expose it directly but cursor does.
+            # Optimization: Use executemany[WARN] Database class doesn't expose it directly but cursor does.
             # FIX: Handle Inf values and possible pipeline errors by falling back to loop or cleaning data strictly.
             
             # Clean data
@@ -184,7 +184,7 @@ class IndicatorService:
                    clean_val('sma5'), clean_val('sma20'), clean_val('sma50'), clean_val('sma200'),
                    clean_val('rsi14'), clean_val('macd'), clean_val('macd_signal'), clean_val('macd_hist'),
                    clean_val('atr14'), clean_val('high_52w'), clean_val('dist_to_52w_high_pct'),
-                   clean_val('ema21'), clean_val('pivot'), clean_val('rs_score')
+                   clean_val('ema21'), clean_val('pivot'), clean_val('rs_rating')
                 ))
 
             if cleaned_data:
