@@ -1,0 +1,988 @@
+{
+  "ticker": "US:EURUSD=X",
+  "period": {
+    "start": "2006-02-20",
+    "end": "2026-02-18",
+    "as_of": "2026-02-18"
+  },
+  "metrics": {
+    "accuracy": 0.7696969696969697,
+    "macro_f1": 0.4349315068493151,
+    "logloss": 0.09606576839924065,
+    "brier": 0.022090648627512165,
+    "ece": 0.03278578086139951,
+    "win_rate_at_best": 0.0,
+    "coverage_at_best": 0.22666666666666666,
+    "n_trades_at_best": 187,
+    "avg_return_at_best": -0.002641690820816927,
+    "median_return_at_best": -0.005531153408166678,
+    "precision_at_p70": 0.0,
+    "coverage_at_p70": 0.014545454545454545,
+    "n_trades_at_p70": 12,
+    "avg_return_at_p70": -0.012545236430140577,
+    "interval_target_coverage": 0.8,
+    "interval_q": null,
+    "interval_width_mean": null,
+    "interval_coverage": null,
+    "bias": 0.0,
+    "bias_abs": 0.0
+  },
+  "diagnostics": {
+    "class_ratio": null,
+    "confusion_matrix": [
+      [
+        635,
+        187
+      ],
+      [
+        3,
+        0
+      ]
+    ],
+    "confusion_2x2": [
+      [
+        635,
+        187
+      ],
+      [
+        3,
+        0
+      ]
+    ],
+    "class_metrics": {
+      "no_trade": {
+        "precision": 0.9952978056426333,
+        "recall": 0.7725060827250608,
+        "f1": 0.8698630136986302
+      },
+      "buy": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "trading_metrics": {
+      "trade_count": 187,
+      "action_counts": {
+        "buy": 187,
+        "hold": 638
+      }
+    },
+    "label_distribution": {
+      "negative_0": 0.9963636363636363,
+      "positive_1": 0.0036363636363636364
+    },
+    "prediction_distribution": {
+      "buy_1": 0.22666666666666666,
+      "no_trade_0": 0.7733333333333333
+    },
+    "threshold_selection": {
+      "best": {
+        "t_buy": 0.01,
+        "win_rate": 0.0,
+        "coverage": 0.22666666666666666,
+        "n_trades": 187,
+        "avg_return": -0.002641690820816927,
+        "median_return": -0.005531153408166678,
+        "confusion_2x2": [
+          [
+            635,
+            187
+          ],
+          [
+            3,
+            0
+          ]
+        ]
+      },
+      "candidates": [
+        {
+          "t_buy": 0.01,
+          "win_rate": 0.0,
+          "coverage": 0.22666666666666666,
+          "n_trades": 187,
+          "avg_return": -0.002641690820816927,
+          "median_return": -0.005531153408166678,
+          "confusion_2x2": [
+            [
+              635,
+              187
+            ],
+            [
+              3,
+              0
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.0141,
+          "win_rate": 0.0,
+          "coverage": 0.2,
+          "n_trades": 165,
+          "avg_return": -0.002700209406584783,
+          "median_return": -0.005681409564904705,
+          "confusion_2x2": [
+            [
+              657,
+              165
+            ],
+            [
+              3,
+              0
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.0232,
+          "win_rate": 0.0,
+          "coverage": 0.1503030303030303,
+          "n_trades": 124,
+          "avg_return": -0.0032046782826095515,
+          "median_return": -0.007364051696275298,
+          "confusion_2x2": [
+            [
+              698,
+              124
+            ],
+            [
+              3,
+              0
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.0552,
+          "win_rate": 0.0,
+          "coverage": 0.1006060606060606,
+          "n_trades": 83,
+          "avg_return": -0.005558664131661841,
+          "median_return": -0.010796330871012283,
+          "confusion_2x2": [
+            [
+              739,
+              83
+            ],
+            [
+              3,
+              0
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.1293,
+          "win_rate": 0.0,
+          "coverage": 0.05090909090909091,
+          "n_trades": 42,
+          "avg_return": -0.005059086192037009,
+          "median_return": -0.009929392193051723,
+          "confusion_2x2": [
+            [
+              780,
+              42
+            ],
+            [
+              3,
+              0
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.3857,
+          "win_rate": 0.0,
+          "coverage": 0.03151515151515152,
+          "n_trades": 26,
+          "avg_return": -0.005868665375673419,
+          "median_return": -0.008957639127408934,
+          "confusion_2x2": [
+            [
+              796,
+              26
+            ],
+            [
+              3,
+              0
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.8475,
+          "win_rate": 0.0,
+          "coverage": 0.01090909090909091,
+          "n_trades": 9,
+          "avg_return": -0.017584439301303698,
+          "median_return": -0.011734984923804204,
+          "confusion_2x2": [
+            [
+              813,
+              9
+            ],
+            [
+              3,
+              0
+            ]
+          ]
+        }
+      ],
+      "fallback_unconstrained": false,
+      "constraints": {
+        "min_coverage": 0.05,
+        "min_trades": 50
+      }
+    },
+    "fixed_threshold_metrics": {
+      "0.7": {
+        "precision": 0.0,
+        "coverage": 0.014545454545454545,
+        "n_trades": 12,
+        "avg_return": -0.012545236430140577,
+        "confusion_matrix": [
+          [
+            810,
+            12
+          ],
+          [
+            3,
+            0
+          ]
+        ]
+      }
+    },
+    "prob_up5_summary": {
+      "min": 1e-06,
+      "max": 0.9992550611495972,
+      "p50": 0.002667268575969359,
+      "p90": 0.05521426732922512,
+      "p95": 0.1292832542831234,
+      "p99": 0.847470564842224,
+      "mean": 0.03642214449776314,
+      "std": 0.13093253532299548
+    },
+    "prob_calibration_audit": {
+      "reliability_bins": [
+        {
+          "bin_lo": 0.0,
+          "bin_hi": 0.1,
+          "count": 762,
+          "pred_mean": 0.007582270127167418,
+          "actual_rate": 0.003937007874015748,
+          "gap_actual_minus_pred": -0.0036452622531516704
+        },
+        {
+          "bin_lo": 0.1,
+          "bin_hi": 0.2,
+          "count": 27,
+          "pred_mean": 0.13013026084855564,
+          "actual_rate": 0.0,
+          "gap_actual_minus_pred": -0.13013026084855564
+        },
+        {
+          "bin_lo": 0.2,
+          "bin_hi": 0.30000000000000004,
+          "count": 10,
+          "pred_mean": 0.2534711793065071,
+          "actual_rate": 0.0,
+          "gap_actual_minus_pred": -0.2534711793065071
+        },
+        {
+          "bin_lo": 0.30000000000000004,
+          "bin_hi": 0.4,
+          "count": 3,
+          "pred_mean": 0.38645970821380615,
+          "actual_rate": 0.0,
+          "gap_actual_minus_pred": -0.38645970821380615
+        },
+        {
+          "bin_lo": 0.4,
+          "bin_hi": 0.5,
+          "count": 4,
+          "pred_mean": 0.4514227360486984,
+          "actual_rate": 0.0,
+          "gap_actual_minus_pred": -0.4514227360486984
+        },
+        {
+          "bin_lo": 0.5,
+          "bin_hi": 0.6000000000000001,
+          "count": 2,
+          "pred_mean": 0.5884142518043518,
+          "actual_rate": 0.0,
+          "gap_actual_minus_pred": -0.5884142518043518
+        },
+        {
+          "bin_lo": 0.6000000000000001,
+          "bin_hi": 0.7000000000000001,
+          "count": 5,
+          "pred_mean": 0.6506420135498047,
+          "actual_rate": 0.0,
+          "gap_actual_minus_pred": -0.6506420135498047
+        },
+        {
+          "bin_lo": 0.7000000000000001,
+          "bin_hi": 0.8,
+          "count": 2,
+          "pred_mean": 0.792382001876831,
+          "actual_rate": 0.0,
+          "gap_actual_minus_pred": -0.792382001876831
+        },
+        {
+          "bin_lo": 0.8,
+          "bin_hi": 0.9,
+          "count": 4,
+          "pred_mean": 0.8619738519191742,
+          "actual_rate": 0.0,
+          "gap_actual_minus_pred": -0.8619738519191742
+        },
+        {
+          "bin_lo": 0.9,
+          "bin_hi": 1.0,
+          "count": 6,
+          "pred_mean": 0.9657637476921082,
+          "actual_rate": 0.0,
+          "gap_actual_minus_pred": -0.9657637476921082
+        }
+      ],
+      "high_confidence_miss": {
+        "threshold": 0.7,
+        "count": 12,
+        "base_count": 12,
+        "rate": 1.0,
+        "top_misses": [
+          {
+            "date": "2008-09-17 00:00:00",
+            "probability": 0.9992550611495972,
+            "realized_return": -0.02184381324586515,
+            "actual": 0
+          },
+          {
+            "date": "2008-09-22 00:00:00",
+            "probability": 0.9946796298027037,
+            "realized_return": -0.08725331170586648,
+            "actual": 0
+          },
+          {
+            "date": "2008-09-18 00:00:00",
+            "probability": 0.9914599657058715,
+            "realized_return": -0.034743096819293995,
+            "actual": 0
+          },
+          {
+            "date": "2012-07-06 00:00:00",
+            "probability": 0.9837747812271118,
+            "realized_return": -0.009280180761781831,
+            "actual": 0
+          },
+          {
+            "date": "2008-09-16 00:00:00",
+            "probability": 0.9196689128875731,
+            "realized_return": -0.002759108595684512,
+            "actual": 0
+          },
+          {
+            "date": "2015-04-14 00:00:00",
+            "probability": 0.9057441353797911,
+            "realized_return": 0.02884706327437825,
+            "actual": 0
+          },
+          {
+            "date": "2008-09-19 00:00:00",
+            "probability": 0.8953647613525392,
+            "realized_return": -0.04390345401581353,
+            "actual": 0
+          },
+          {
+            "date": "2015-04-13 00:00:00",
+            "probability": 0.8608368635177612,
+            "realized_return": 0.024410933081998154,
+            "actual": 0
+          },
+          {
+            "date": "2012-07-09 00:00:00",
+            "probability": 0.8489693403244019,
+            "realized_return": -0.011734984923804204,
+            "actual": 0
+          },
+          {
+            "date": "2015-04-10 00:00:00",
+            "probability": 0.8427244424819945,
+            "realized_return": 0.013684506514199946,
+            "actual": 0
+          },
+          {
+            "date": "2010-06-15 00:00:00",
+            "probability": 0.7974518537521362,
+            "realized_return": -0.010796330871012283,
+            "actual": 0
+          },
+          {
+            "date": "2010-06-14 00:00:00",
+            "probability": 0.7873121500015259,
+            "realized_return": 0.004828940906858703,
+            "actual": 0
+          }
+        ]
+      },
+      "low_confidence_miss": {
+        "threshold": 0.3,
+        "count": 3,
+        "base_count": 799,
+        "rate": 0.0037546933667083854,
+        "top_misses": [
+          {
+            "date": "2015-08-11 00:00:00",
+            "probability": 0.0020601801212626844,
+            "realized_return": 0.051375147499319374,
+            "actual": 1
+          },
+          {
+            "date": "2022-11-03 00:00:00",
+            "probability": 0.0021827239582169673,
+            "realized_return": 0.059201141226818965,
+            "actual": 1
+          },
+          {
+            "date": "2022-11-04 00:00:00",
+            "probability": 0.0021988711401545926,
+            "realized_return": 0.06276923076923091,
+            "actual": 1
+          }
+        ]
+      }
+    }
+  },
+  "meta": {
+    "sources": {
+      "prices": "db:price_daily(US:EURUSD=X)",
+      "benchmarks": "db:price_daily(US:QQQ)",
+      "relative": "db:price_daily(US:QQQ)"
+    },
+    "origins": {
+      "prices": "ingested:yfinance",
+      "benchmarks": "ingested:yfinance",
+      "relative": "ingested:yfinance"
+    },
+    "used_feature_columns": [
+      "ret_1",
+      "ret_5",
+      "ret_10",
+      "ret_20",
+      "vol_20",
+      "atr14",
+      "atr14_pct",
+      "sma20_dist",
+      "sma50_dist",
+      "sma200_dist",
+      "ema21_dist",
+      "rsi14",
+      "macd",
+      "macd_signal",
+      "macd_hist",
+      "bb_pos",
+      "vol_chg_1",
+      "vol_ratio_20",
+      "qqq_vol_20",
+      "qqq_trend_50",
+      "regime_missing_flag",
+      "ret_rel_qqq_1",
+      "ret_rel_qqq_5",
+      "relative_missing_flag",
+      "ret_rel_semi_1",
+      "ret_rel_semi_5",
+      "sector_missing_flag",
+      "days_from_prev_earnings",
+      "days_to_next_earnings"
+    ],
+    "n_features": 29,
+    "feature_hash": "846a3dd7a14517206d7fbf40be3bae10b741d5c5d2833e56dcdffb6e3c070946",
+    "config_hash": "e840e717935be2a08411924faa50a91c9e67f82764571ab70115c1dfb54c4d9e",
+    "db_freshness": {
+      "db_table": "price_daily",
+      "as_of_date": "2026-02-18",
+      "effective_as_of": "2026-02-18",
+      "required_start": "2021-02-18",
+      "lookback": "5y",
+      "horizon": 10,
+      "is_trading_day": true,
+      "symbols": [
+        "US:EURUSD=X",
+        "US:QQQ",
+        "US:SPY"
+      ],
+      "max_date": "2026-02-18",
+      "rows": 15246,
+      "missing_symbols": [],
+      "missing_ranges": {},
+      "by_symbol": {
+        "US:EURUSD=X": {
+          "min_date": "2006-02-20",
+          "max_date": "2026-02-18",
+          "rows": 5186,
+          "status": "OK",
+          "missing_ranges": []
+        },
+        "US:QQQ": {
+          "min_date": "2006-02-21",
+          "max_date": "2026-02-18",
+          "rows": 5030,
+          "status": "OK",
+          "missing_ranges": []
+        },
+        "US:SPY": {
+          "min_date": "2006-02-21",
+          "max_date": "2026-02-18",
+          "rows": 5030,
+          "status": "OK",
+          "missing_ranges": []
+        }
+      },
+      "warnings": []
+    },
+    "as_of_date": "2026-02-18",
+    "effective_as_of": "2026-02-18",
+    "is_trading_day": true,
+    "target_name": "return_up5_binary",
+    "target_unit": "fraction",
+    "target_transform": "future_return_fraction",
+    "target_scale_factor": 1.0,
+    "run_params": {
+      "as_of": "2026-02-18",
+      "start": "2006-02-20",
+      "end": "2026-02-18",
+      "horizon": 10,
+      "horizon_trading_days": 10,
+      "effective_as_of": "2026-02-18",
+      "flat_band": 2.0,
+      "flat_band_applied": 2.0,
+      "model": "xgb_db_only_v1",
+      "calibration": "sigmoid",
+      "feature_set": "v2_ohlcv_ta_relregime_event",
+      "feature_version": "v2_ohlcv_ta_relregime_event",
+      "regime_symbols": [
+        "US:QQQ",
+        "US:SPY"
+      ],
+      "relative_symbols": [
+        "US:QQQ"
+      ],
+      "sector_symbols": [],
+      "feature_hash": "846a3dd7a14517206d7fbf40be3bae10b741d5c5d2833e56dcdffb6e3c070946",
+      "config_hash": "e840e717935be2a08411924faa50a91c9e67f82764571ab70115c1dfb54c4d9e",
+      "target_coverage": 0.8,
+      "target_interval_coverage": 0.8,
+      "lookback": "5y",
+      "preflight_only": false,
+      "fast": false,
+      "max_folds": null,
+      "fold_step": null,
+      "train_window": null,
+      "band_sweep_enabled": true,
+      "use_ensemble": true,
+      "ensemble_seeds": [
+        11,
+        29
+      ],
+      "purge_days": 10,
+      "embargo_mode": "pct",
+      "embargo_days": 52,
+      "embargo_pct": 0.01,
+      "folds_used": 55,
+      "target_transform": "future_return_fraction",
+      "target_scale_factor": 1.0,
+      "prob_mode": "meta",
+      "temp_scale": "on",
+      "class_weight_mode": "off",
+      "class_weight": null,
+      "threshold_mode": "argmax",
+      "t_down": null,
+      "t_up": null,
+      "threshold_search_enabled": true,
+      "down_recall_min": 0.1,
+      "pred_down_min_pct": 0.05,
+      "thresholds_applied": {
+        "t_buy": 0.01
+      },
+      "meta_band_mode": "fixed",
+      "meta_band_q": 0.65,
+      "meta_band_min_pct": 0.5,
+      "meta_band_max_pct": 10.0,
+      "label_mode": "up5_2w",
+      "target_return": 0.05,
+      "t_buy_grid": [
+        0.01,
+        0.0141,
+        0.0232,
+        0.0552,
+        0.1293,
+        0.3857,
+        0.8475
+      ],
+      "fixed_thresholds": [
+        0.7
+      ],
+      "min_coverage": 0.05,
+      "min_trades": 50,
+      "tbm_vol_span": 20,
+      "tbm_k": 1.5,
+      "temperature_best_T": 1.0345454545454544
+    },
+    "validation": {
+      "purge_days": 10,
+      "embargo_mode": "pct",
+      "embargo_days": 52,
+      "embargo_pct": 0.01,
+      "folds_used": 55
+    },
+    "meta_metrics": {
+      "prob_mode": "binary_up5",
+      "label_mode": "up5_2w",
+      "target_return": 0.05,
+      "horizon_trading_days": 10,
+      "warnings": [
+        "fold_start=280: binary fallback (single class in train)",
+        "fold_start=370: binary fallback (single class in train)",
+        "fold_start=460: binary fallback (single class in train)",
+        "fold_start=550: binary fallback (single class in train)"
+      ]
+    },
+    "temperature_scaling": {
+      "enabled": true,
+      "best_T": 1.0345454545454544,
+      "search_grid": [
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.95,
+        1.0,
+        1.05,
+        1.1,
+        1.15,
+        1.2,
+        1.25,
+        1.3,
+        1.35,
+        1.4,
+        1.45,
+        1.5,
+        1.55,
+        1.6,
+        1.65,
+        1.7,
+        1.75,
+        1.8,
+        1.85,
+        1.9,
+        1.95,
+        2.0,
+        2.05,
+        2.1,
+        2.15,
+        2.2,
+        2.25,
+        2.3,
+        2.35,
+        2.4,
+        2.45,
+        2.5,
+        2.55,
+        2.6,
+        2.65,
+        2.7,
+        2.75,
+        2.8,
+        2.85,
+        2.9,
+        2.95,
+        3.0
+      ]
+    },
+    "interval_target_mismatch_warn": false,
+    "threshold_selection": {
+      "best": {
+        "t_buy": 0.01,
+        "win_rate": 0.0,
+        "coverage": 0.22666666666666666,
+        "n_trades": 187,
+        "avg_return": -0.002641690820816927,
+        "median_return": -0.005531153408166678,
+        "confusion_2x2": [
+          [
+            635,
+            187
+          ],
+          [
+            3,
+            0
+          ]
+        ]
+      },
+      "candidates": [
+        {
+          "t_buy": 0.01,
+          "win_rate": 0.0,
+          "coverage": 0.22666666666666666,
+          "n_trades": 187,
+          "avg_return": -0.002641690820816927,
+          "median_return": -0.005531153408166678,
+          "confusion_2x2": [
+            [
+              635,
+              187
+            ],
+            [
+              3,
+              0
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.0141,
+          "win_rate": 0.0,
+          "coverage": 0.2,
+          "n_trades": 165,
+          "avg_return": -0.002700209406584783,
+          "median_return": -0.005681409564904705,
+          "confusion_2x2": [
+            [
+              657,
+              165
+            ],
+            [
+              3,
+              0
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.0232,
+          "win_rate": 0.0,
+          "coverage": 0.1503030303030303,
+          "n_trades": 124,
+          "avg_return": -0.0032046782826095515,
+          "median_return": -0.007364051696275298,
+          "confusion_2x2": [
+            [
+              698,
+              124
+            ],
+            [
+              3,
+              0
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.0552,
+          "win_rate": 0.0,
+          "coverage": 0.1006060606060606,
+          "n_trades": 83,
+          "avg_return": -0.005558664131661841,
+          "median_return": -0.010796330871012283,
+          "confusion_2x2": [
+            [
+              739,
+              83
+            ],
+            [
+              3,
+              0
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.1293,
+          "win_rate": 0.0,
+          "coverage": 0.05090909090909091,
+          "n_trades": 42,
+          "avg_return": -0.005059086192037009,
+          "median_return": -0.009929392193051723,
+          "confusion_2x2": [
+            [
+              780,
+              42
+            ],
+            [
+              3,
+              0
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.3857,
+          "win_rate": 0.0,
+          "coverage": 0.03151515151515152,
+          "n_trades": 26,
+          "avg_return": -0.005868665375673419,
+          "median_return": -0.008957639127408934,
+          "confusion_2x2": [
+            [
+              796,
+              26
+            ],
+            [
+              3,
+              0
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.8475,
+          "win_rate": 0.0,
+          "coverage": 0.01090909090909091,
+          "n_trades": 9,
+          "avg_return": -0.017584439301303698,
+          "median_return": -0.011734984923804204,
+          "confusion_2x2": [
+            [
+              813,
+              9
+            ],
+            [
+              3,
+              0
+            ]
+          ]
+        }
+      ],
+      "fallback_unconstrained": false,
+      "constraints": {
+        "min_coverage": 0.05,
+        "min_trades": 50
+      }
+    },
+    "warnings": [
+      "fold_start=280: binary fallback (single class in train)",
+      "fold_start=370: binary fallback (single class in train)",
+      "fold_start=460: binary fallback (single class in train)",
+      "fold_start=550: binary fallback (single class in train)"
+    ]
+  },
+  "meta_metrics": {
+    "prob_mode": "binary_up5",
+    "label_mode": "up5_2w",
+    "target_return": 0.05,
+    "horizon_trading_days": 10,
+    "warnings": [
+      "fold_start=280: binary fallback (single class in train)",
+      "fold_start=370: binary fallback (single class in train)",
+      "fold_start=460: binary fallback (single class in train)",
+      "fold_start=550: binary fallback (single class in train)"
+    ]
+  },
+  "temperature_scaling": {
+    "enabled": true,
+    "best_T": 1.0345454545454544,
+    "search_grid": [
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7,
+      0.75,
+      0.8,
+      0.85,
+      0.9,
+      0.95,
+      1.0,
+      1.05,
+      1.1,
+      1.15,
+      1.2,
+      1.25,
+      1.3,
+      1.35,
+      1.4,
+      1.45,
+      1.5,
+      1.55,
+      1.6,
+      1.65,
+      1.7,
+      1.75,
+      1.8,
+      1.85,
+      1.9,
+      1.95,
+      2.0,
+      2.05,
+      2.1,
+      2.15,
+      2.2,
+      2.25,
+      2.3,
+      2.35,
+      2.4,
+      2.45,
+      2.5,
+      2.55,
+      2.6,
+      2.65,
+      2.7,
+      2.75,
+      2.8,
+      2.85,
+      2.9,
+      2.95,
+      3.0
+    ]
+  },
+  "prob_calibration": {
+    "temp_scale_mode": "global"
+  },
+  "baselines": {},
+  "interval_audit": {
+    "target_name": "return_up5_binary",
+    "target_unit": "fraction",
+    "target_transform": "future_return_fraction",
+    "target_scale_factor": 1.0,
+    "target_y_source": "target_return_pct_h",
+    "target_mismatch_warn": false,
+    "sample": []
+  },
+  "best_flat_band_pct": 2.0,
+  "band_sweep": [
+    {
+      "flat_band_pct": 0.5,
+      "macro_f1": 0.287870354112051,
+      "logloss": 1.1020406626931163,
+      "ece": 0.06147036231690761,
+      "accuracy": 0.3180327868852459
+    },
+    {
+      "flat_band_pct": 1.0,
+      "macro_f1": 0.29093666353940323,
+      "logloss": 1.102040866472581,
+      "ece": 0.06363291815103599,
+      "accuracy": 0.33114754098360655
+    },
+    {
+      "flat_band_pct": 1.5,
+      "macro_f1": 0.27849605633308355,
+      "logloss": 1.0923367003365096,
+      "ece": 0.027849811584330465,
+      "accuracy": 0.39672131147540984
+    },
+    {
+      "flat_band_pct": 2.0,
+      "macro_f1": 0.31521926109523696,
+      "logloss": 1.0480311112770082,
+      "ece": 0.08882663203767657,
+      "accuracy": 0.5049180327868853
+    },
+    {
+      "flat_band_pct": 3.0,
+      "error": "Invalid classes inferred from unique values of `y`.  Expected: [0 1], got [1 2]"
+    },
+    {
+      "flat_band_pct": 4.0,
+      "error": "Invalid classes inferred from unique values of `y`.  Expected: [0 1], got [1 2]"
+    },
+    {
+      "flat_band_pct": 5.0,
+      "error": "Invalid classes inferred from unique values of `y`.  Expected: [0], got [1]"
+    }
+  ]
+}

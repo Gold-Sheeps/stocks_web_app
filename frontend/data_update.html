@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 
 <head>
@@ -497,7 +497,7 @@
             <!-- Page Header -->
             <div class="page-header">
                 <div class="page-title">
-                    <span>⚡</span> Data Update
+                    <span>笞｡</span> Data Update
                 </div>
                 <div class="last-run-info">
                     <span class="last-run-label">Last Run:</span>
@@ -509,7 +509,7 @@
             <div class="settings-panel fade-in stagger-1">
                 <div class="panel-header">
                     <div class="panel-title">
-                        <span class="badge badge-primary">⚙️</span> Update Settings
+                        <span class="badge badge-primary">Settings</span> Update Settings
                     </div>
                 </div>
 
@@ -518,15 +518,15 @@
                         <div class="input-group mb-4">
                             <label>Update Range</label>
                             <select id="rangeSelect" class="w-full">
-                                <option value="7">📅 Past 7 Days</option>
-                                <option value="14" selected>📅 Past 14 Days (Recommended)</option>
-                                <option value="30">📅 Past 30 Days</option>
-                                <option value="60">📅 Past 60 Days</option>
+                                <option value="7">套 Past 7 Days</option>
+                                <option value="14" selected>套 Past 14 Days (Recommended)</option>
+                                <option value="30">套 Past 30 Days</option>
+                                <option value="60">套 Past 60 Days</option>
                             </select>
                         </div>
 
                         <button id="updateBtn" class="execute-btn">
-                            <span style="margin-right: 8px;">▶</span> Execute Update
+                            <span style="margin-right: 8px;">笆ｶ</span> Execute Update
                         </button>
                     </div>
 
@@ -535,27 +535,31 @@
                         <div class="checkbox-grid">
                             <label class="checkbox-label">
                                 <input type="checkbox" value="Indices" checked>
-                                <span>📊 Indices</span>
+                                <span>投 Indices</span>
                             </label>
                             <label class="checkbox-label">
                                 <input type="checkbox" value="FX" checked>
-                                <span>💱 FX Rates</span>
+                                <span>蝶 FX Rates</span>
                             </label>
                             <label class="checkbox-label">
                                 <input type="checkbox" value="Metal" checked>
-                                <span>🥇 Metals</span>
+                                <span>Metals</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="Crypto" checked>
+                                <span>Crypto</span>
                             </label>
                             <label class="checkbox-label">
                                 <input type="checkbox" value="Sector">
-                                <span>🔄 Sector Rotation</span>
+                                <span>Sector Rotation</span>
                             </label>
                             <label class="checkbox-label">
                                 <input type="checkbox" value="Stocks">
-                                <span>📈 Stocks (Portfolio/Watchlist)</span>
+                                <span>嶋 Stocks (Portfolio/Watchlist)</span>
                             </label>
                             <label class="checkbox-label">
                                 <input type="checkbox" value="CANSLIM">
-                                <span>🧠 CANSLIM Analysis</span>
+                                <span>ｧ CANSLIM Analysis</span>
                             </label>
                         </div>
                     </div>
@@ -565,14 +569,14 @@
             <!-- Execution Logs -->
             <div class="logs-panel fade-in stagger-2">
                 <div class="panel-header">
-                    <div class="panel-title">📝 Execution Logs</div>
+                    <div class="panel-title">統 Execution Logs</div>
                     <button class="btn btn-ghost btn-sm" onclick="fetchLogs()">
-                        <span style="margin-right: 4px;">↻</span> Refresh
+                        <span style="margin-right: 4px;">竊ｻ</span> Refresh
                     </button>
                 </div>
                 <div id="logContainer" class="log-container">
                     <div class="log-empty">
-                        <div class="log-empty-icon">📋</div>
+                        <div class="log-empty-icon">搭</div>
                         <div>Waiting for execution...</div>
                     </div>
                 </div>
@@ -600,7 +604,7 @@
             if (logs.length === 0) {
                 container.innerHTML = `
                     <div class="log-empty">
-                        <div class="log-empty-icon">📋</div>
+                        <div class="log-empty-icon">搭</div>
                         <div>No logs available yet</div>
                     </div>
                 `;
@@ -686,19 +690,19 @@
 
                 if (result.status === 'success') {
                     
-                    UI.showToast(`✓ Update Complete! Processed: ${result.processed}`, 'success');
+                    UI.showToast(`Update Complete! Processed: ${result.processed}`, 'success');
                     document.getElementById('lastStats').textContent = `Success (${result.processed})`;
                 } else {
-                    UI.showToast(`⚠️ Update Failed: ${result.message}`, 'error');
+                    UI.showToast(`Update Failed: ${result.message}`, 'error');
                     document.getElementById('lastStats').textContent = 'Failed';
                 }
 
             } catch (e) {
-                UI.showToast(`❌ Error: ${e.message}`, 'error');
+                UI.showToast(`Error: ${e.message}`, 'error');
                 document.getElementById('lastStats').textContent = 'Error';
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<span style="margin-right: 8px;">▶</span> Execute Update';
+                btn.innerHTML = '<span style="margin-right: 8px;">笆ｶ</span> Execute Update';
                 fetchLogs(); // Refresh logs
             }
         });

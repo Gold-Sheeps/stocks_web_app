@@ -1,0 +1,492 @@
+{
+  "period": {
+    "start": "2006-01-01",
+    "end": "2026-02-19",
+    "asof": "2026-02-19"
+  },
+  "metrics": {
+    "precision_at_p70": 0.0,
+    "coverage_at_p70": 0.0,
+    "n_trades_at_p70": 0,
+    "avg_return_at_p70": 0.0,
+    "folds_used": 0
+  },
+  "diagnostics": {
+    "fixed_threshold_metrics": {
+      "0.7": {
+        "precision": 0.0,
+        "coverage": 0.0,
+        "n_trades": 0,
+        "avg_return": 0.0,
+        "confusion_matrix": [
+          [
+            36336,
+            0
+          ],
+          [
+            8853,
+            0
+          ]
+        ]
+      }
+    },
+    "confidence_bins": [
+      {
+        "bin": "[0.5,0.6)",
+        "lo": 0.5,
+        "hi": 0.6,
+        "n": 996,
+        "win_rate": 0.45481927710843373,
+        "avg_return": 0.026767832877970677
+      },
+      {
+        "bin": "[0.6,0.7)",
+        "lo": 0.6,
+        "hi": 0.7,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      },
+      {
+        "bin": "[0.7,0.8)",
+        "lo": 0.7,
+        "hi": 0.8,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      },
+      {
+        "bin": "[0.8,0.9)",
+        "lo": 0.8,
+        "hi": 0.9,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      },
+      {
+        "bin": "[0.9,1.0]",
+        "lo": 0.9,
+        "hi": 1.0,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      }
+    ],
+    "prob_calibration_audit": {
+      "high_confidence_miss": {
+        "threshold": 0.7,
+        "count": 0,
+        "top_misses": []
+      },
+      "low_confidence_miss": {
+        "threshold": 0.7,
+        "count": 8853,
+        "top_misses": [
+          {
+            "date": "2006-09-13",
+            "ticker": "US:MSFT",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.05619707467282531,
+            "actual": 1
+          },
+          {
+            "date": "2006-09-13",
+            "ticker": "US:MSFT",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.05619707467282531,
+            "actual": 1
+          },
+          {
+            "date": "2006-09-13",
+            "ticker": "US:MSFT",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.05619707467282531,
+            "actual": 1
+          },
+          {
+            "date": "2007-09-25",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.08116326759930326,
+            "actual": 1
+          },
+          {
+            "date": "2007-09-25",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.08116326759930326,
+            "actual": 1
+          },
+          {
+            "date": "2007-09-25",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.08116326759930326,
+            "actual": 1
+          },
+          {
+            "date": "2007-09-27",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.09603779829175373,
+            "actual": 1
+          },
+          {
+            "date": "2007-09-27",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.09603779829175373,
+            "actual": 1
+          },
+          {
+            "date": "2007-09-27",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.09603779829175373,
+            "actual": 1
+          },
+          {
+            "date": "2007-09-28",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.12361315591121368,
+            "actual": 1
+          },
+          {
+            "date": "2007-09-28",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.12361315591121368,
+            "actual": 1
+          },
+          {
+            "date": "2007-09-28",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.12361315591121368,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-01",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.06447939746060927,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-01",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.06447939746060927,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-01",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.06447939746060927,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-02",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.054087689067585654,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-02",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.054087689067585654,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-02",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.054087689067585654,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-03",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.08469322823654979,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-03",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.08469322823654979,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-03",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.08469322823654979,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-04",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.10464313812093697,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-04",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.10464313812093697,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-04",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.10464313812093697,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-05",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.08528127753748471,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-05",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.08528127753748471,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-05",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.08528127753748471,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-08",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.06746286658189016,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-08",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.06746286658189016,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-08",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.06746286658189016,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-09",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.0984936569903021,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-09",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.0984936569903021,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-09",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.0984936569903021,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-10",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.08063691662832916,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-10",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.08063691662832916,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-10",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.08063691662832916,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-11",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.07477386030734445,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-11",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.07477386030734445,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-11",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.07477386030734445,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-12",
+            "ticker": "US:MSFT",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.1610871726881007,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-12",
+            "ticker": "US:MSFT",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.1610871726881007,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-12",
+            "ticker": "US:MSFT",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.1610871726881007,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-12",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.05837988301453878,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-12",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.05837988301453878,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-12",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.05837988301453878,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-15",
+            "ticker": "US:MSFT",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.1507989347536618,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-15",
+            "ticker": "US:MSFT",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.1507989347536618,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-15",
+            "ticker": "US:MSFT",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.1507989347536618,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-15",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.0953326073087901,
+            "actual": 1
+          },
+          {
+            "date": "2007-10-15",
+            "ticker": "US:GOOGL",
+            "probability": 0.19828815977175462,
+            "realized_return": 0.0953326073087901,
+            "actual": 1
+          }
+        ]
+      }
+    }
+  },
+  "meta": {
+    "run_params": {
+      "label_mode": "up5_2w",
+      "horizon": 10,
+      "target_return": 0.05,
+      "fixed_thresholds": [
+        0.7
+      ],
+      "feature_set": "v2_ohlcv_ta_relregime_event",
+      "tickers_file": "backend/ml_predictor_data/pooled_smoke_tickers.txt",
+      "n_tickers": 12,
+      "train_tickers": [
+        "US:AMZN",
+        "US:META",
+        "US:INTC",
+        "US:CSCO",
+        "US:QCOM",
+        "US:ORCL",
+        "US:IBM",
+        "US:ADBE",
+        "US:CRM"
+      ],
+      "holdout_tickers": [
+        "US:AAPL",
+        "US:MSFT",
+        "US:GOOGL"
+      ]
+    }
+  },
+  "per_ticker": [
+    {
+      "ticker": "US:AAPL",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0
+    },
+    {
+      "ticker": "US:GOOGL",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0
+    },
+    {
+      "ticker": "US:MSFT",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0
+    }
+  ],
+  "artifact_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\pooled_smoke_holdout_20260221_artifact.pkl"
+}

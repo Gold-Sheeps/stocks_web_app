@@ -68,7 +68,7 @@ class DataService:
 
             # Map UI targets to unified batch skip flags.
             selected = set(targets)
-            has_etf_like = any(t in selected for t in ["Indices", "FX", "Metal", "Sector"])
+            has_etf_like = any(t in selected for t in ["Indices", "FX", "Metal", "Crypto", "Sector"])
             has_stocks = "Stocks" in selected
             has_sector = "Sector" in selected
             has_canslim = "CANSLIM" in selected

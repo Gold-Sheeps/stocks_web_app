@@ -1,0 +1,50 @@
+{
+  "generated_at": "2026-02-17T22:06:07",
+  "inputs": {
+    "symbols": "US:NVDA",
+    "asof_list": "2026-02-16",
+    "start": "2019-01-01",
+    "end": "2026-02-16",
+    "horizon": 15,
+    "flat_band": 2.0,
+    "calibration": "sigmoid",
+    "db_check": true,
+    "fast": true,
+    "tbm_vol_span": 20,
+    "tbm_k": 1.5
+  },
+  "fixed": {
+    "path": "backend\\ml_predictor_data\\validation_suite_fixed_20260217_220537.json",
+    "summary": {
+      "passed": false,
+      "win_rate": 1.0,
+      "avg_meta_off_logloss": 0.9154044299574937,
+      "avg_prior_logloss": 1.0657114098688292,
+      "avg_logloss_delta": -0.15030697991133546,
+      "extreme_fold_ratio": 0.25,
+      "side_fallback_fold_ratio": 0.0,
+      "condition_a": true,
+      "condition_b": true,
+      "condition_c1": false,
+      "condition_c2": true
+    },
+    "return_code": 1
+  },
+  "tbm": {
+    "path": "backend\\ml_predictor_data\\validation_suite_tbm_20260217_220537.json",
+    "summary": {
+      "passed": false,
+      "win_rate": 0.0,
+      "avg_meta_off_logloss": 0.9779343932444376,
+      "avg_prior_logloss": 0.819604212035894,
+      "avg_logloss_delta": 0.1583301812085437,
+      "extreme_fold_ratio": 0.25,
+      "side_fallback_fold_ratio": 0.0,
+      "condition_a": false,
+      "condition_b": false,
+      "condition_c1": false,
+      "condition_c2": true
+    },
+    "return_code": 1
+  }
+}

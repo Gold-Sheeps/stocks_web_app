@@ -1,0 +1,51 @@
+{
+  "config": {
+    "ticker": "US:NVDA",
+    "asof": "2026-02-16",
+    "start": "2019-01-01",
+    "end": "2026-02-16",
+    "horizon": 15,
+    "flat_band": 2.0,
+    "calibration": "sigmoid",
+    "prob_mode": "meta",
+    "label_mode": "tbm",
+    "tbm_k": 3.5,
+    "tbm_vol_span": 10,
+    "fast": true,
+    "db_check": true,
+    "auto_fill_missing": false
+  },
+  "off": {
+    "mode": "off",
+    "json_path": "backend\\ml_predictor_data\\backtest_nvda_20260216_off.json",
+    "logloss": 1.183909012618685,
+    "brier": 0.23713572737367106,
+    "prior_logloss": 1.2764801767170135,
+    "prior_brier": 0.24757429318932847,
+    "beats_prior_logloss": true,
+    "beats_prior_brier": true,
+    "extreme_rate_before_temp_mean": null,
+    "extreme_rate_after_temp_mean": null,
+    "folds_with_temp_stats": 0
+  },
+  "fold": {
+    "mode": "fold",
+    "json_path": "backend\\ml_predictor_data\\backtest_nvda_20260216_fold.json",
+    "logloss": 1.2496380801426006,
+    "brier": 0.24081413624081466,
+    "prior_logloss": 1.2764801767170135,
+    "prior_brier": 0.24757429318932847,
+    "beats_prior_logloss": true,
+    "beats_prior_brier": true,
+    "extreme_rate_before_temp_mean": 0.0,
+    "extreme_rate_after_temp_mean": 0.0,
+    "folds_with_temp_stats": 8
+  },
+  "comparison": {
+    "delta_logloss_fold_minus_off": 0.0657290675239155,
+    "delta_brier_fold_minus_off": 0.003678408867143601,
+    "fold_improves_logloss": false,
+    "fold_improves_brier": false,
+    "extreme_rate_non_increase_in_fold": true
+  }
+}

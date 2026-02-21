@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Any, Dict, List, Optional, Tuple
+import hashlib
+import json
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -70,6 +72,15 @@ class PredictionService:
         horizon_trading_days: int = 15,
         calibration: str = "sigmoid",
         target_interval_coverage: float = 0.80,
+        feature_version: str = "v2_ohlcv_ta_relregime_event",
+        class_weight_mode: str = "off",
+        class_weight: Optional[Dict[str, float]] = None,
+        threshold_mode: str = "argmax",
+        t_down: Optional[float] = None,
+        t_up: Optional[float] = None,
+        regime_symbols: Optional[List[str]] = None,
+        relative_symbols: Optional[List[str]] = None,
+        sector_symbols: Optional[List[str]] = None,
         sample_csv_path: Optional[str] = None,
     ) -> Dict[str, Any]:
         self._reset_data_context()
@@ -78,13 +89,30 @@ class PredictionService:
             horizon_trading_days=horizon_trading_days,
             calibration=calibration,
             target_interval_coverage=target_interval_coverage,
+            feature_version=feature_version,
         )
         as_of = datetime.strptime(as_of_date, "%Y-%m-%d").date()
         _ = sample_csv_path  # DB-only mode: keep API compatibility, ignore sample path.
         raw = self._load_prices(ticker, as_of=as_of)
-        feat = self._build_feature_frame(ticker, raw, as_of=as_of)
+        feat = self._build_feature_frame(
+            ticker,
+            raw,
+            as_of=as_of,
+            regime_symbols=regime_symbols,
+            relative_symbols=relative_symbols,
+            sector_symbols=sector_symbols,
+        )
         prepared = self._prepare_dataset(feat, as_of, cfg)
-        return self._fit_predict(prepared, cfg, as_of)
+        return self._fit_predict(
+            prepared,
+            cfg,
+            as_of,
+            class_weight_mode=class_weight_mode,
+            class_weight=class_weight,
+            threshold_mode=threshold_mode,
+            t_down=t_down,
+            t_up=t_up,
+        )
 
     def backtest(
         self,
@@ -94,8 +122,43 @@ class PredictionService:
         horizon_trading_days: int = 15,
         calibration: str = "sigmoid",
         target_interval_coverage: float = 0.80,
+        feature_version: str = "v2_ohlcv_ta_relregime_event",
         sample_csv_path: Optional[str] = None,
         include_band_sweep: bool = True,
+        max_folds: Optional[int] = None,
+        fold_step: Optional[int] = None,
+        train_window: Optional[int] = None,
+        use_ensemble: bool = True,
+        purge_days: Optional[int] = None,
+        embargo_mode: str = "pct",
+        embargo_days: int = 5,
+        embargo_pct: float = 0.01,
+        prob_mode: str = "meta",
+        temp_scale: Union[bool, str] = True,
+        meta_band_mode: str = "fixed",
+        meta_band_q: float = 0.65,
+        meta_band_min_pct: float = 0.5,
+        meta_band_max_pct: float = 10.0,
+        label_mode: str = "fixed",
+        target_return: float = 0.05,
+        tbm_vol_span: int = 20,
+        tbm_k: float = 1.5,
+        class_weight_mode: str = "off",
+        class_weight: Optional[Dict[str, float]] = None,
+        threshold_mode: str = "argmax",
+        t_down: Optional[float] = None,
+        t_up: Optional[float] = None,
+        threshold_search: bool = False,
+        down_recall_min: float = 0.10,
+        pred_down_min_pct: float = 0.05,
+        threshold_grid: Optional[Dict[str, List[float]]] = None,
+        t_buy_grid: Optional[List[float]] = None,
+        fixed_thresholds: Optional[List[float]] = None,
+        min_coverage: float = 0.05,
+        min_trades: int = 50,
+        regime_symbols: Optional[List[str]] = None,
+        relative_symbols: Optional[List[str]] = None,
+        sector_symbols: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         self._reset_data_context()
         cfg = PredictorConfig(
@@ -103,16 +166,58 @@ class PredictionService:
             horizon_trading_days=horizon_trading_days,
             calibration=calibration,
             target_interval_coverage=target_interval_coverage,
+            feature_version=feature_version,
         )
         as_of = datetime.strptime(as_of_date, "%Y-%m-%d").date()
         _ = sample_csv_path  # DB-only mode: keep API compatibility, ignore sample path.
         raw = self._load_prices(ticker, as_of=as_of)
-        feat = self._build_feature_frame(ticker, raw, as_of=as_of)
+        feat = self._build_feature_frame(
+            ticker,
+            raw,
+            as_of=as_of,
+            regime_symbols=regime_symbols,
+            relative_symbols=relative_symbols,
+            sector_symbols=sector_symbols,
+        )
         prepared = self._prepare_dataset(feat, as_of, cfg)
-        bt = self._walk_forward_backtest(prepared, cfg)
+        bt = self._walk_forward_backtest(
+            prepared,
+            cfg,
+            max_folds=max_folds,
+            fold_step=fold_step,
+            train_window=train_window,
+            use_ensemble=use_ensemble,
+            purge_days=purge_days,
+            embargo_mode=embargo_mode,
+            embargo_days=embargo_days,
+            embargo_pct=embargo_pct,
+            prob_mode=prob_mode,
+            temp_scale=temp_scale,
+            meta_band_mode=meta_band_mode,
+            meta_band_q=meta_band_q,
+            meta_band_min_pct=meta_band_min_pct,
+            meta_band_max_pct=meta_band_max_pct,
+            label_mode=label_mode,
+            target_return=target_return,
+            tbm_vol_span=tbm_vol_span,
+            tbm_k=tbm_k,
+            class_weight_mode=class_weight_mode,
+            class_weight=class_weight,
+            threshold_mode=threshold_mode,
+            t_down=t_down,
+            t_up=t_up,
+            threshold_search=threshold_search,
+            down_recall_min=down_recall_min,
+            pred_down_min_pct=pred_down_min_pct,
+            threshold_grid=threshold_grid,
+            t_buy_grid=t_buy_grid,
+            fixed_thresholds=fixed_thresholds,
+            min_coverage=min_coverage,
+            min_trades=min_trades,
+        )
         out: Dict[str, Any] = {
             "backtest": bt,
-            "meta": self._build_meta(cfg, prepared["train_range"], as_of),
+            "meta": self._build_meta(cfg, prepared["train_range"], as_of, prepared["feature_cols"]),
         }
         if include_band_sweep:
             sweep = self._band_sweep(feat, as_of, cfg, [0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0])
@@ -209,7 +314,15 @@ class PredictionService:
             "by_symbol": self._db_freshness_by_symbol,
         }
 
-    def _build_meta(self, cfg: PredictorConfig, train_range: List[str], as_of: date) -> Dict[str, Any]:
+    def _build_meta(
+        self,
+        cfg: PredictorConfig,
+        train_range: List[str],
+        as_of: date,
+        used_feature_columns: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        used_cols = list(used_feature_columns or [])
+        feature_hash = hashlib.sha256(json.dumps(used_cols, ensure_ascii=False).encode("utf-8")).hexdigest()
         return {
             "model_type": "xgboost",
             "model_version": self._model_version,
@@ -217,6 +330,9 @@ class PredictionService:
             "train_range": train_range,
             "feature_version": cfg.feature_version,
             "feature_set_used": cfg.feature_version,
+            "used_feature_columns": used_cols,
+            "n_features": int(len(used_cols)),
+            "feature_hash": feature_hash,
             "as_of_date": as_of.isoformat(),
             "sources": self._meta_sources,
             "origins": self._meta_origins,
@@ -248,8 +364,19 @@ class PredictionService:
         return out
 
     # ----------------------------- features -----------------------------
-    def _build_feature_frame(self, ticker: str, price_df: pd.DataFrame, as_of: date) -> pd.DataFrame:
+    def _build_feature_frame(
+        self,
+        ticker: str,
+        price_df: pd.DataFrame,
+        as_of: date,
+        regime_symbols: Optional[List[str]] = None,
+        relative_symbols: Optional[List[str]] = None,
+        sector_symbols: Optional[List[str]] = None,
+    ) -> pd.DataFrame:
         df = price_df.copy()
+        regime_list = self._normalize_symbol_list(regime_symbols, ["US:QQQ"])
+        relative_list = self._normalize_symbol_list(relative_symbols, ["US:QQQ"])
+        sector_list = self._normalize_symbol_list(sector_symbols, [])
 
         close = df["Close"]
         high = df["High"]
@@ -299,48 +426,154 @@ class PredictionService:
         df["vol_chg_1"] = vol.pct_change(1)
         df["vol_ratio_20"] = vol / vol.rolling(20).mean()
 
-        # Relative / regime features (DB-only: QQQ + ^SOX/SMH fallback)
-        qqq_df, qqq_symbol, qqq_fresh = self._fetch_benchmark("QQQ", as_of, min_rows=180)
-        if qqq_df is None or qqq_df.empty:
-            raise RuntimeError(
-                "Benchmark data missing in DB: US:QQQ. "
-                "Run `python backend/scripts/refresh_market_data.py --symbols "
-                "\"US:QQQ\" --source yfinance` then retry."
-            )
-        self._db_freshness_by_symbol[qqq_symbol] = qqq_fresh
-        qqq_ret1 = qqq_df["Close"].pct_change(1).reindex(df.index)
-        qqq_ret5 = qqq_df["Close"].pct_change(5).reindex(df.index)
-        qqq_vol20 = qqq_df["Close"].pct_change().rolling(20).std().reindex(df.index) * np.sqrt(252)
-        qqq_sma50 = qqq_df["Close"].rolling(50).mean().reindex(df.index)
-        df["ret_rel_qqq_1"] = df["ret_1"] - qqq_ret1
-        df["ret_rel_qqq_5"] = df["ret_5"] - qqq_ret5
-        df["qqq_vol_20"] = qqq_vol20
-        df["qqq_trend_50"] = qqq_df["Close"].reindex(df.index) / qqq_sma50 - 1.0
-        self._meta_sources["benchmarks"] = f"db:price_daily({qqq_symbol})"
-        self._meta_origins["benchmarks"] = "ingested:yfinance"
+        # Relative / regime features (reference symbols are configurable and missing-safe).
+        reg_df, reg_symbol, reg_fresh = self._fetch_first_available(regime_list, as_of, min_rows=180)
+        rel_df, rel_symbol, rel_fresh = self._fetch_first_available(relative_list, as_of, min_rows=180)
+        sec_df, sec_symbol, sec_fresh = self._fetch_first_available(sector_list, as_of, min_rows=180)
 
-        semi_df, semi_symbol, semi_fresh = self._fetch_benchmark("^SOX", as_of, min_rows=180)
-        if semi_df is None or semi_df.empty:
-            semi_df, semi_symbol, semi_fresh = self._fetch_benchmark("SMH", as_of, min_rows=180)
-        if semi_df is None or semi_df.empty:
-            raise RuntimeError(
-                "Benchmark data missing in DB: US:^SOX (or US:SMH). "
-                "Run `python backend/scripts/refresh_market_data.py --symbols "
-                "\"US:^SOX,US:SMH\" --source yfinance` then retry."
-            )
-        self._db_freshness_by_symbol[semi_symbol] = semi_fresh
-        semi_ret1 = semi_df["Close"].pct_change(1).reindex(df.index)
-        semi_ret5 = semi_df["Close"].pct_change(5).reindex(df.index)
-        df["ret_rel_semi_1"] = df["ret_1"] - semi_ret1
-        df["ret_rel_semi_5"] = df["ret_5"] - semi_ret5
-        self._meta_sources["sector"] = f"db:price_daily({semi_symbol})"
-        self._meta_origins["sector"] = "ingested:yfinance"
+        if reg_df is not None and reg_symbol is not None and reg_fresh is not None:
+            self._db_freshness_by_symbol[reg_symbol] = reg_fresh
+            reg_vol20 = reg_df["Close"].pct_change().rolling(20).std().reindex(df.index) * np.sqrt(252)
+            reg_sma50 = reg_df["Close"].rolling(50).mean().reindex(df.index)
+            df["qqq_vol_20"] = reg_vol20
+            df["qqq_trend_50"] = reg_df["Close"].reindex(df.index) / reg_sma50 - 1.0
+            df["regime_missing_flag"] = 0.0
+            self._meta_sources["benchmarks"] = f"db:price_daily({reg_symbol})"
+            self._meta_origins["benchmarks"] = "ingested:yfinance"
+        else:
+            df["qqq_vol_20"] = np.nan
+            df["qqq_trend_50"] = np.nan
+            df["regime_missing_flag"] = 1.0
+
+        if rel_df is not None and rel_symbol is not None and rel_fresh is not None:
+            self._db_freshness_by_symbol[rel_symbol] = rel_fresh
+            rel_ret1 = rel_df["Close"].pct_change(1).reindex(df.index)
+            rel_ret5 = rel_df["Close"].pct_change(5).reindex(df.index)
+            df["ret_rel_qqq_1"] = df["ret_1"] - rel_ret1
+            df["ret_rel_qqq_5"] = df["ret_5"] - rel_ret5
+            df["relative_missing_flag"] = 0.0
+            self._meta_sources["relative"] = f"db:price_daily({rel_symbol})"
+            self._meta_origins["relative"] = "ingested:yfinance"
+        else:
+            df["ret_rel_qqq_1"] = np.nan
+            df["ret_rel_qqq_5"] = np.nan
+            df["relative_missing_flag"] = 1.0
+
+        if sec_df is not None and sec_symbol is not None and sec_fresh is not None:
+            self._db_freshness_by_symbol[sec_symbol] = sec_fresh
+            sec_ret1 = sec_df["Close"].pct_change(1).reindex(df.index)
+            sec_ret5 = sec_df["Close"].pct_change(5).reindex(df.index)
+            df["ret_rel_semi_1"] = df["ret_1"] - sec_ret1
+            df["ret_rel_semi_5"] = df["ret_5"] - sec_ret5
+            df["sector_missing_flag"] = 0.0
+            self._meta_sources["sector"] = f"db:price_daily({sec_symbol})"
+            self._meta_origins["sector"] = "ingested:yfinance"
+        else:
+            df["ret_rel_semi_1"] = np.nan
+            df["ret_rel_semi_5"] = np.nan
+            df["sector_missing_flag"] = 1.0
 
         # DB-only mode: no live earnings calendar fetch.
         df["days_from_prev_earnings"] = np.nan
         df["days_to_next_earnings"] = np.nan
+        # v3 candidate features: fundamentals + fundflow/orderflow proxies.
+        fund_df = self._load_fundamentals(ticker, as_of)
+        if fund_df is not None and not fund_df.empty:
+            fund = fund_df[["period_end_date", "eps"]].dropna(subset=["period_end_date"]).copy()
+            fund["fund_date"] = pd.to_datetime(fund["period_end_date"]).dt.tz_localize(None)
+            fund = fund.sort_values("fund_date")
+            base = pd.DataFrame({"Date": df.index}).sort_values("Date")
+            merged = pd.merge_asof(
+                base,
+                fund[["fund_date", "eps"]],
+                left_on="Date",
+                right_on="fund_date",
+                direction="backward",
+            )
+            # "days_since_earnings" uses latest known reporting date in DB as a leak-safe proxy.
+            df["days_since_earnings"] = (
+                pd.to_datetime(df.index) - pd.to_datetime(merged["fund_date"]).to_numpy()
+            ) / np.timedelta64(1, "D")
+        else:
+            df["days_since_earnings"] = np.nan
+        df["eps_surprise"] = np.nan
+        df["guidance_surprise"] = np.nan
+        df["estimate_revision_1w"] = np.nan
+        df["estimate_revision_4w"] = np.nan
+        df["eps_surprise_missing"] = df["eps_surprise"].isna().astype(float)
+        df["guidance_surprise_missing"] = df["guidance_surprise"].isna().astype(float)
+        df["estimate_revision_1w_missing"] = df["estimate_revision_1w"].isna().astype(float)
+        df["estimate_revision_4w_missing"] = df["estimate_revision_4w"].isna().astype(float)
+
+        vol_ma20 = vol.rolling(20).mean()
+        vol_ma50 = vol.rolling(50).mean()
+        df["relative_volume"] = vol_ma20 / vol_ma50.replace(0.0, np.nan)
+        up_vol = np.where(close.diff() > 0.0, vol, 0.0)
+        down_vol = np.where(close.diff() < 0.0, vol, 0.0)
+        up_sum = pd.Series(up_vol, index=df.index).rolling(10).sum()
+        down_sum = pd.Series(down_vol, index=df.index).rolling(10).sum()
+        df["up_down_volume_ratio"] = up_sum / down_sum.replace(0.0, np.nan)
+        dist_day = ((close < close.shift(1)) & (vol > vol.shift(1))).astype(float)
+        df["distribution_day_count_25d"] = dist_day.rolling(25).sum()
+        vwap20 = (close * vol).rolling(20).sum() / vol.rolling(20).sum().replace(0.0, np.nan)
+        df["vwap_deviation"] = close / vwap20 - 1.0
+        rolling_high_20_prev = high.rolling(20).max().shift(1)
+        broke_out_prev = close.shift(1) > rolling_high_20_prev
+        failed_now = close < close.shift(1)
+        df["failed_breakout_flag"] = (broke_out_prev & failed_now).astype(float)
 
         return df
+
+    def _load_fundamentals(self, ticker: str, as_of: date) -> Optional[pd.DataFrame]:
+        symbol_raw = self._raw_symbol(ticker)
+        db = Database()
+        try:
+            if not db.connect():
+                return None
+            q = """
+                SELECT period_end_date, eps
+                FROM fundamentals
+                WHERE symbol = %s AND period_end_date <= %s
+                ORDER BY period_end_date
+            """
+            rows = db.execute_query(q, (symbol_raw, as_of))
+            if not rows:
+                return None
+            out = pd.DataFrame(rows, columns=["period_end_date", "eps"])
+            self._meta_sources["fundamentals"] = f"db:fundamentals({symbol_raw})"
+            self._meta_origins["fundamentals"] = "ingested:db"
+            return out
+        except Exception:
+            return None
+        finally:
+            db.disconnect()
+
+    def _feature_columns_for_version(self, feature_cols_all: List[str], version: str) -> List[str]:
+        v = str(version or "v2_ohlcv_ta_relregime_event")
+        v3_extra = {
+            "days_since_earnings",
+            "eps_surprise",
+            "guidance_surprise",
+            "estimate_revision_1w",
+            "estimate_revision_4w",
+            "eps_surprise_missing",
+            "guidance_surprise_missing",
+            "estimate_revision_1w_missing",
+            "estimate_revision_4w_missing",
+            "relative_volume",
+            "up_down_volume_ratio",
+            "distribution_day_count_25d",
+            "vwap_deviation",
+            "failed_breakout_flag",
+        }
+        if v == "v3_ohlcv_ta_relregime_event_fundflow":
+            return list(feature_cols_all)
+        if v == "v2_ohlcv_ta_relregime_event":
+            return [c for c in feature_cols_all if c not in v3_extra]
+        raise ValueError(
+            f"Unsupported feature_version={v}. "
+            "Use v2_ohlcv_ta_relregime_event or v3_ohlcv_ta_relregime_event_fundflow."
+        )
 
     def _fetch_benchmark(
         self, ticker: str, as_of: date, min_rows: int = 180
@@ -350,6 +583,31 @@ class PredictionService:
         if not self._is_db_data_sufficient(db_df, min_rows=min_rows):
             return None, symbol_key, freshness
         return db_df, symbol_key, freshness
+
+    def _normalize_symbol_list(self, symbols: Optional[List[str]], default: List[str]) -> List[str]:
+        src = symbols if symbols is not None else default
+        out: List[str] = []
+        for s in src:
+            t = str(s).strip().upper()
+            if not t:
+                continue
+            if ":" not in t:
+                t = f"US:{t}"
+            if t not in out:
+                out.append(t)
+        return out
+
+    def _fetch_first_available(
+        self,
+        symbols: List[str],
+        as_of: date,
+        min_rows: int = 180,
+    ) -> Tuple[Optional[pd.DataFrame], Optional[str], Optional[Dict[str, Any]]]:
+        for sym in symbols:
+            df, symbol_key, fresh = self._fetch_benchmark(sym, as_of, min_rows=min_rows)
+            if df is not None and not df.empty:
+                return df, symbol_key, fresh
+        return None, None, None
 
     def _prepare_dataset(self, df: pd.DataFrame, as_of: date, cfg: PredictorConfig) -> Dict[str, Any]:
         out = df.copy().sort_index()
@@ -370,7 +628,7 @@ class PredictionService:
             & out["target_class"].notna()
         )
 
-        feature_cols = [
+        feature_cols_all = [
             c for c in out.columns
             if c
             not in [
@@ -378,6 +636,7 @@ class PredictionService:
                 "target_close_h", "target_return_pct_h", "target_class", "future_date_h",
             ]
         ]
+        feature_cols = self._feature_columns_for_version(feature_cols_all, cfg.feature_version)
 
         # Robust missing handling:
         # - all-NaN feature -> 0.0
@@ -390,7 +649,10 @@ class PredictionService:
                 med = float(s.median()) if pd.notna(s.median()) else 0.0
                 out[c] = s.ffill().fillna(med)
 
-        model_df = out.loc[train_mask, feature_cols + ["target_class", "target_close_h"]].dropna()
+        model_df = out.loc[
+            train_mask,
+            feature_cols + ["target_class", "target_close_h", "target_return_pct_h", "Close"],
+        ].dropna()
         if len(model_df) < cfg.min_train_rows:
             raise RuntimeError(
                 f"Not enough rows for training: {len(model_df)} < {cfg.min_train_rows}"
@@ -411,7 +673,17 @@ class PredictionService:
         }
 
     # ----------------------------- modeling -----------------------------
-    def _fit_predict(self, prepared: Dict[str, Any], cfg: PredictorConfig, as_of: date) -> Dict[str, Any]:
+    def _fit_predict(
+        self,
+        prepared: Dict[str, Any],
+        cfg: PredictorConfig,
+        as_of: date,
+        class_weight_mode: str = "off",
+        class_weight: Optional[Dict[str, float]] = None,
+        threshold_mode: str = "argmax",
+        t_down: Optional[float] = None,
+        t_up: Optional[float] = None,
+    ) -> Dict[str, Any]:
         model_df = prepared["model_df"]
         feature_cols = prepared["feature_cols"]
         pred_row = prepared["pred_row"]
@@ -432,7 +704,11 @@ class PredictionService:
         y_train_reg, y_cal_reg = y_reg[:split], y_reg[split:]
 
         cv = self._sk_tscv(n_splits=3)
-        sample_weight = self._class_sample_weight(y_cls)
+        class_weight_effective = self._resolve_class_weight_map(class_weight_mode, class_weight, y_cls)
+        if class_weight_effective is None:
+            sample_weight = self._class_sample_weight(y_cls)
+        else:
+            sample_weight = self._sample_weight_from_class_map(y_cls, class_weight_effective)
         models = []
         for seed in (11, 29, 47):
             clf = self._xgb.XGBClassifier(
@@ -453,6 +729,16 @@ class PredictionService:
 
         x_pred = pred_row[feature_cols].to_numpy(dtype=float).reshape(1, -1)
         proba = np.mean([m.predict_proba(x_pred)[0] for m in models], axis=0)
+        threshold_mode_used = str(threshold_mode or "argmax").lower()
+        if threshold_mode_used not in ("argmax", "threshold"):
+            threshold_mode_used = "argmax"
+        thresholds_applied = None
+        predicted_class = int(np.argmax(proba))
+        if threshold_mode_used == "threshold":
+            td = float(t_down) if t_down is not None else 0.35
+            tu = float(t_up) if t_up is not None else 0.45
+            predicted_class = int(self._predict_classes_threshold(np.asarray([proba], dtype=float), td, tu)[0])
+            thresholds_applied = {"t_down": td, "t_up": tu}
 
         # Price point + conformal-style interval via calibration residual quantiles.
         reg = self._xgb.XGBRegressor(
@@ -482,6 +768,7 @@ class PredictionService:
 
         probs_float = {"down": float(proba[0] * 100), "flat": float(proba[1] * 100), "up": float(proba[2] * 100)}
         probs_int = self._round_to_100(probs_float)
+        action_policy = self._derive_action_policy(probs_int)
 
         return {
             "probs": {
@@ -489,6 +776,9 @@ class PredictionService:
                 "down": probs_int["down"],
                 "flat": probs_int["flat"],
             },
+            "action": action_policy["action"],
+            "confidence": action_policy["confidence"],
+            "margin": action_policy["margin"],
             "price_forecast": {
                 "point": round(point, 4),
                 "p10": round(p10, 4),
@@ -496,47 +786,307 @@ class PredictionService:
                 "p90": round(p90, 4),
             },
             "meta": {
-                **self._build_meta(cfg, prepared["train_range"], as_of),
+                **self._build_meta(cfg, prepared["train_range"], as_of, prepared["feature_cols"]),
                 "target_name": "close_future",
                 "target_unit": "price",
                 "interval_target_coverage": cfg.target_interval_coverage,
                 "interval_q": float(q_abs),
+                "threshold_mode": threshold_mode_used,
+                "thresholds_applied": thresholds_applied,
+                "predicted_class": int(predicted_class),
+                "class_weight_mode": str(class_weight_mode or "off").lower(),
+                "class_weight": (
+                    None if class_weight_effective is None
+                    else {
+                        "down": float(class_weight_effective[0]),
+                        "flat": float(class_weight_effective[1]),
+                        "up": float(class_weight_effective[2]),
+                    }
+                ),
             },
         }
 
-    def _walk_forward_backtest(self, prepared: Dict[str, Any], cfg: PredictorConfig) -> Dict[str, Any]:
+    def _derive_action_policy(self, probs_int: Dict[str, int]) -> Dict[str, Any]:
+        p_up = int(probs_int.get("up", 0))
+        p_down = int(probs_int.get("down", 0))
+        p_flat = int(probs_int.get("flat", 0))
+
+        vals = sorted([p_up, p_down, p_flat], reverse=True)
+        confidence = int(vals[0]) if vals else 0
+        margin = int(vals[0] - vals[1]) if len(vals) >= 2 else 0
+
+        # No-trade zone safety valve.
+        c_min = 45
+        delta_min = 6
+        theta_buy = 8
+        theta_sell = 8
+        if confidence < c_min or margin < delta_min:
+            action = "HOLD"
+        elif (p_up - p_down) >= theta_buy:
+            action = "BUY"
+        elif (p_down - p_up) >= theta_sell:
+            action = "SELL"
+        else:
+            action = "HOLD"
+
+        return {
+            "action": action,
+            "confidence": confidence,
+            "margin": margin,
+        }
+
+    def _derive_action_from_probs(
+        self,
+        p_up: float,
+        p_down: float,
+        p_flat: float,
+        c_min: float = 0.45,
+        delta_min: float = 0.06,
+        theta_buy: float = 0.08,
+        theta_sell: float = 0.08,
+    ) -> int:
+        pvals = np.array([float(p_up), float(p_down), float(p_flat)], dtype=float)
+        pvals = np.clip(pvals, 0.0, 1.0)
+        confidence = float(np.max(pvals))
+        sorted_vals = np.sort(pvals)
+        margin = float(sorted_vals[-1] - sorted_vals[-2]) if len(sorted_vals) >= 2 else 0.0
+        if confidence < c_min or margin < delta_min:
+            return 0
+        if (p_up - p_down) >= theta_buy:
+            return 1
+        if (p_down - p_up) >= theta_sell:
+            return -1
+        return 0
+
+    def _compute_trading_metrics(self, actions: List[int], step_returns: List[float]) -> Dict[str, Any]:
+        acts = np.asarray(actions, dtype=int)
+        rets = np.asarray(step_returns, dtype=float)
+        trade_mask = acts != 0
+        traded = rets[trade_mask]
+        trade_count = int(np.sum(trade_mask))
+        hit_rate = float(np.mean(traded > 0.0)) if trade_count > 0 else 0.0
+        avg_return = float(np.mean(traded)) if trade_count > 0 else 0.0
+
+        gross_profit = float(np.sum(traded[traded > 0.0])) if trade_count > 0 else 0.0
+        gross_loss = float(np.sum(np.abs(traded[traded < 0.0]))) if trade_count > 0 else 0.0
+        if gross_loss > 0.0:
+            profit_factor = float(gross_profit / gross_loss)
+        elif gross_profit > 0.0:
+            profit_factor = float("inf")
+        else:
+            profit_factor = 0.0
+
+        equity = np.cumprod(1.0 + rets) if len(rets) > 0 else np.array([1.0], dtype=float)
+        peak = np.maximum.accumulate(equity)
+        drawdown = (equity / np.where(peak > 0.0, peak, 1.0)) - 1.0
+        max_drawdown = float(np.min(drawdown)) if len(drawdown) > 0 else 0.0
+
+        return {
+            "trade_count": trade_count,
+            "hit_rate": hit_rate,
+            "avg_return": avg_return,
+            "max_drawdown": max_drawdown,
+            "profit_factor": profit_factor,
+            "action_counts": {
+                "buy": int(np.sum(acts == 1)),
+                "sell": int(np.sum(acts == -1)),
+                "hold": int(np.sum(acts == 0)),
+            },
+            "cost_model": {
+                "fee_bps_per_side": 5.0,
+                "slippage_bps_per_side": 5.0,
+                "round_trip_cost": 0.0020,
+            },
+        }
+
+    def _walk_forward_backtest(
+        self,
+        prepared: Dict[str, Any],
+        cfg: PredictorConfig,
+        max_folds: Optional[int] = None,
+        fold_step: Optional[int] = None,
+        train_window: Optional[int] = None,
+        use_ensemble: bool = True,
+        purge_days: Optional[int] = None,
+        embargo_mode: str = "pct",
+        embargo_days: int = 5,
+        embargo_pct: float = 0.01,
+        prob_mode: str = "meta",
+        temp_scale: Union[bool, str] = True,
+        meta_band_mode: str = "fixed",
+        meta_band_q: float = 0.65,
+        meta_band_min_pct: float = 0.5,
+        meta_band_max_pct: float = 10.0,
+        label_mode: str = "fixed",
+        target_return: float = 0.05,
+        tbm_vol_span: int = 20,
+        tbm_k: float = 1.5,
+        class_weight_mode: str = "off",
+        class_weight: Optional[Dict[str, float]] = None,
+        threshold_mode: str = "argmax",
+        t_down: Optional[float] = None,
+        t_up: Optional[float] = None,
+        threshold_search: bool = False,
+        down_recall_min: float = 0.10,
+        pred_down_min_pct: float = 0.05,
+        threshold_grid: Optional[Dict[str, List[float]]] = None,
+        t_buy_grid: Optional[List[float]] = None,
+        fixed_thresholds: Optional[List[float]] = None,
+        min_coverage: float = 0.05,
+        min_trades: int = 50,
+    ) -> Dict[str, Any]:
         model_df = prepared["model_df"]
+        full_df = prepared["full_df"]
         feature_cols = prepared["feature_cols"]
         acc = self._sk_metrics["accuracy_score"]
         f1 = self._sk_metrics["f1_score"]
         ll = self._sk_metrics["log_loss"]
+        target_transform = "raw_price"
+        target_scale_factor = 1.0
+        return_abs_med = float(
+            np.nanmedian(np.abs(full_df.get("target_return_pct_h", pd.Series(dtype=float)).to_numpy(dtype=float)))
+        ) if "target_return_pct_h" in full_df.columns else None
 
         X_all = model_df[feature_cols].to_numpy(dtype=float)
         y_cls_all = model_df["target_class"].astype(int).to_numpy()
         y_reg_all = model_df["target_close_h"].to_numpy(dtype=float)
+        close_all = model_df["Close"].to_numpy(dtype=float)
+        y_ret_all = (
+            full_df.loc[model_df.index, "target_return_pct_h"].to_numpy(dtype=float)
+            if "target_return_pct_h" in full_df.columns
+            else np.zeros(len(model_df), dtype=float)
+        )
 
         min_train = max(cfg.min_train_rows, 280)
-        step = 30
+        step = int(fold_step) if fold_step is not None and int(fold_step) > 0 else 30
         test_window = 15
 
         y_true: List[int] = []
         y_pred: List[int] = []
         prob_rows: List[np.ndarray] = []
+        trade_actions: List[int] = []
+        trade_step_returns: List[float] = []
         cover_flags: List[int] = []
         q_values: List[float] = []
         width_values: List[float] = []
         interval_clip_count = 0
         interval_total = 0
+        prior_prob_rows: List[np.ndarray] = []
+        mom_prob_rows: List[np.ndarray] = []
+        prior_pred: List[int] = []
+        mom_pred: List[int] = []
+        last_fold_interval_audit: List[Dict[str, Any]] = []
+        bias_values: List[float] = []
+        bias_abs_values: List[float] = []
+        temp_values: List[float] = []
+        p_trade_values: List[float] = []
+        side_samples_train = 0
+        side_samples_calib = 0
+        side_samples_test = 0
+        meta_warnings: List[str] = []
+        fold_stats: List[Dict[str, Any]] = []
+        meta_rate_train_values: List[float] = []
+        meta_rate_calib_values: List[float] = []
+        meta_rate_test_values: List[float] = []
+        extreme_meta_rate_folds = 0
+        band_mode_used = str(meta_band_mode or "fixed").lower()
+        if band_mode_used not in ("fixed", "quantile"):
+            band_mode_used = "fixed"
+        label_mode_used = str(label_mode or "fixed").lower()
+        if label_mode_used not in ("fixed", "tbm", "up5_2w"):
+            label_mode_used = "fixed"
+        if label_mode_used == "up5_2w":
+            return self._walk_forward_backtest_up5(
+                model_df=model_df,
+                full_df=full_df,
+                feature_cols=feature_cols,
+                cfg=cfg,
+                max_folds=max_folds,
+                fold_step=fold_step,
+                train_window=train_window,
+                use_ensemble=use_ensemble,
+                purge_days=purge_days,
+                embargo_mode=embargo_mode,
+                embargo_days=embargo_days,
+                embargo_pct=embargo_pct,
+                temp_scale=temp_scale,
+                calibration=cfg.calibration,
+                target_return=float(target_return),
+                threshold_search=bool(threshold_search),
+                t_buy_grid=t_buy_grid,
+                fixed_thresholds=fixed_thresholds,
+                min_coverage=float(min_coverage),
+                min_trades=int(min_trades),
+            )
+        meta_label_definition = "tbm_non_flat" if label_mode_used == "tbm" else "abs_return_gt_band"
+        tbm_span = max(5, int(tbm_vol_span))
+        tbm_k_used = float(max(0.1, tbm_k))
+        band_q = float(meta_band_q)
+        band_q = min(max(band_q, 0.01), 0.99)
+        band_min = float(meta_band_min_pct)
+        band_max = float(meta_band_max_pct)
+        if band_min > band_max:
+            band_min, band_max = band_max, band_min
+        temp_scale_mode = self._resolve_temp_scale_mode(temp_scale)
+        temp_grid = [round(x, 2) for x in np.arange(0.5, 3.01, 0.05)]
+        class_weight_mode_used = str(class_weight_mode or "off").lower()
+        class_weight_effective = self._resolve_class_weight_map(
+            class_weight_mode_used,
+            class_weight,
+            y_cls_all,
+        )
+        threshold_mode_used = str(threshold_mode or "argmax").lower()
+        if threshold_mode_used not in ("argmax", "threshold"):
+            threshold_mode_used = "argmax"
+        threshold_warnings: List[str] = []
+        threshold_selection: Dict[str, Any] = {"best": None, "candidates": []}
+        thresholds_applied: Optional[Dict[str, float]] = None
+        warned_fold_direct = False
 
         n = len(model_df)
+        purge_n = int(cfg.horizon_trading_days if purge_days is None else max(0, int(purge_days)))
+        if str(embargo_mode).lower() == "days":
+            embargo_n = max(0, int(embargo_days))
+            embargo_mode_used = "days"
+        else:
+            embargo_mode_used = "pct"
+            embargo_n = max(0, int(np.ceil(n * float(max(0.0, embargo_pct)))))
+            if embargo_n == 0:
+                embargo_n = 1
+
+        fold_count = 0
+        next_eligible_start = min_train
+        seeds = (11, 29) if use_ensemble else (11,)
         for start in range(min_train, n - test_window, step):
+            if start < next_eligible_start:
+                continue
+            if max_folds is not None and fold_count >= int(max_folds):
+                break
             end = min(start + test_window, n)
-            X_train = X_all[:start]
-            y_train_cls = y_cls_all[:start]
-            y_train_reg = y_reg_all[:start]
+            train_end = max(0, start - purge_n)
+            if train_end <= 120:
+                continue
+            train_from = 0
+            if train_window is not None and int(train_window) > 0:
+                train_from = max(0, train_end - int(train_window))
+            X_train = X_all[train_from:train_end]
+            y_train_reg = y_reg_all[train_from:train_end]
             X_test = X_all[start:end]
-            y_test_cls = y_cls_all[start:end]
             y_test_close = y_reg_all[start:end]
+            tbm_vol_frac = None
+            if label_mode_used == "tbm":
+                tbm_vol_frac = self._tbm_fold_vol_frac(close_all[train_from:train_end], tbm_span)
+                y_cls_fold_all = self._tbm_labels_with_scalar_vol(
+                    close_all,
+                    cfg.horizon_trading_days,
+                    tbm_vol_frac,
+                    tbm_k_used,
+                )
+                y_train_cls = y_cls_fold_all[train_from:train_end]
+                y_test_cls = y_cls_fold_all[start:end]
+            else:
+                y_train_cls = y_cls_all[train_from:train_end]
+                y_test_cls = y_cls_all[start:end]
 
             split = int(len(X_train) * 0.8)
             split = min(max(split, 120), len(X_train) - 30)
@@ -546,32 +1096,395 @@ class PredictionService:
             X_t, X_c = X_train[:split], X_train[split:]
             y_t, y_c = y_train_cls[:split], y_train_cls[split:]
             y_t_reg, y_c_reg = y_train_reg[:split], y_train_reg[split:]
+            y_ret_train = y_ret_all[train_from:train_end]
+            y_ret_t = y_ret_train[:split]
+            y_ret_c = y_ret_train[split:]
+            y_ret_test = y_ret_all[start:end]
 
-            sw = self._class_sample_weight(y_train_cls)
-            cv = self._sk_tscv(n_splits=2)
-            models = []
-            for seed in (11, 29):
-                clf = self._xgb.XGBClassifier(
-                    objective="multi:softprob",
-                    num_class=3,
-                    n_estimators=180,
-                    max_depth=4,
-                    learning_rate=0.045,
-                    subsample=0.9,
-                    colsample_bytree=0.9,
-                    eval_metric="mlogloss",
-                    tree_method="hist",
-                    random_state=seed,
+            p_cal_raw: Optional[np.ndarray] = None
+            p_test_raw: Optional[np.ndarray] = None
+            mode_used = str(prob_mode or "meta").lower()
+            fold_temp_stats: Dict[str, Any] = {}
+
+            if mode_used == "direct":
+                present_classes = np.array(sorted(list(set(y_t.tolist()))), dtype=int)
+                if len(present_classes) < 2:
+                    p_const = np.zeros((len(X_test), 3), dtype=float)
+                    p_const[:, int(present_classes[0])] = 1.0
+                    p_test_raw = p_const
+                    p_cal_raw = np.tile(p_const[0], (len(X_c), 1))
+                    meta_warnings.append(
+                        f"fold_start={start}: direct fallback (single class in train={present_classes.tolist()})"
+                    )
+                else:
+                    class_to_idx = {int(c): i for i, c in enumerate(present_classes.tolist())}
+                    y_t_mapped = np.array([class_to_idx[int(v)] for v in y_t], dtype=int)
+                    if class_weight_effective is None:
+                        sw = self._class_sample_weight(y_t_mapped)
+                    else:
+                        sw = self._sample_weight_from_class_map(y_t, class_weight_effective)
+                    p_cal_full_list: List[np.ndarray] = []
+                    p_test_full_list: List[np.ndarray] = []
+                    for seed in seeds:
+                        clf = self._xgb.XGBClassifier(
+                            objective="multi:softprob",
+                            num_class=int(len(present_classes)),
+                            n_estimators=180,
+                            max_depth=4,
+                            learning_rate=0.045,
+                            subsample=0.9,
+                            colsample_bytree=0.9,
+                            eval_metric="mlogloss",
+                            tree_method="hist",
+                            random_state=seed,
+                        )
+                        clf.fit(X_t, y_t_mapped, sample_weight=sw)
+                        p_cal_small = clf.predict_proba(X_c)
+                        p_test_small = clf.predict_proba(X_test)
+                        p_cal_full = np.full((len(X_c), 3), 1e-6, dtype=float)
+                        p_test_full = np.full((len(X_test), 3), 1e-6, dtype=float)
+                        for j, c in enumerate(present_classes.tolist()):
+                            p_cal_full[:, int(c)] = p_cal_small[:, j]
+                            p_test_full[:, int(c)] = p_test_small[:, j]
+                        p_cal_full_list.append(self._safe_probs(p_cal_full))
+                        p_test_full_list.append(self._safe_probs(p_test_full))
+
+                    p_cal_raw = np.mean(p_cal_full_list, axis=0)
+                    p_test_raw = np.mean(p_test_full_list, axis=0)
+                    mc_calib = self._fit_multiclass_ovr_calibrator(p_cal_raw, y_c, cfg.calibration)
+                    p_cal_raw = mc_calib(p_cal_raw)
+                    p_test_raw = mc_calib(p_test_raw)
+            else:
+                band_used_pct = float(cfg.flat_band_pct)
+                if label_mode_used == "tbm":
+                    y_meta_t = (y_t != 1).astype(int)
+                    y_meta_c = (y_c != 1).astype(int)
+                    y_meta_train = (y_train_cls != 1).astype(int)
+                    y_meta_test = (y_test_cls != 1).astype(int)
+                else:
+                    if band_mode_used == "quantile":
+                        band_used_pct = float(np.nanquantile(np.abs(y_ret_t), band_q))
+                        band_used_pct = float(np.clip(band_used_pct, band_min, band_max))
+                    y_meta_t = (np.abs(y_ret_t) > band_used_pct).astype(int)
+                    y_meta_c = (np.abs(y_ret_c) > band_used_pct).astype(int)
+                    y_meta_train = (np.abs(y_ret_train) > band_used_pct).astype(int)
+                    y_meta_test = (np.abs(y_ret_test) > band_used_pct).astype(int)
+                meta_rate_train = float(np.mean(y_meta_train)) if len(y_meta_train) else 0.0
+                meta_rate_calib = float(np.mean(y_meta_c)) if len(y_meta_c) else 0.0
+                meta_rate_test = float(np.mean(y_meta_test)) if len(y_meta_test) else 0.0
+                meta_rate_train_values.append(meta_rate_train)
+                meta_rate_calib_values.append(meta_rate_calib)
+                meta_rate_test_values.append(meta_rate_test)
+                if (
+                    meta_rate_train < 0.01 or meta_rate_train > 0.99
+                    or meta_rate_calib < 0.01 or meta_rate_calib > 0.99
+                    or meta_rate_test < 0.01 or meta_rate_test > 0.99
+                ):
+                    extreme_meta_rate_folds += 1
+                    meta_warnings.append(
+                        "fold_start={s}: extreme_meta_pos_rate train={tr:.4f} calib={ca:.4f} test={te:.4f}".format(
+                            s=start, tr=meta_rate_train, ca=meta_rate_calib, te=meta_rate_test
+                        )
+                    )
+
+                if class_weight_effective is None:
+                    sw_meta = self._binary_sample_weight(y_meta_t)
+                else:
+                    flat_w = float(class_weight_effective[1])
+                    event_w = float((class_weight_effective[0] + class_weight_effective[2]) / 2.0)
+                    sw_meta = np.where(y_meta_t == 1, event_w, flat_w).astype(float)
+                meta_raw_cal_list: List[np.ndarray] = []
+                meta_raw_test_list: List[np.ndarray] = []
+                for seed in seeds:
+                    pos_meta = int(np.sum(y_meta_t == 1))
+                    neg_meta = int(np.sum(y_meta_t == 0))
+                    spw_meta = float(neg_meta / max(1, pos_meta))
+                    clf_meta = self._xgb.XGBClassifier(
+                        objective="binary:logistic",
+                        n_estimators=180,
+                        max_depth=4,
+                        learning_rate=0.045,
+                        subsample=0.9,
+                        colsample_bytree=0.9,
+                        eval_metric="logloss",
+                        tree_method="hist",
+                        random_state=seed,
+                        scale_pos_weight=spw_meta,
+                    )
+                    clf_meta.fit(X_t, y_meta_t, sample_weight=sw_meta[: len(y_meta_t)])
+                    meta_raw_cal_list.append(clf_meta.predict_proba(X_c)[:, 1])
+                    meta_raw_test_list.append(clf_meta.predict_proba(X_test)[:, 1])
+                meta_raw_cal = np.mean(meta_raw_cal_list, axis=0)
+                meta_raw_test = np.mean(meta_raw_test_list, axis=0)
+                meta_calibrator = self._fit_binary_calibrator(meta_raw_cal, y_meta_c, cfg.calibration)
+                p_trade_cal = meta_calibrator(meta_raw_cal)
+                p_trade_test = meta_calibrator(meta_raw_test)
+
+                event_train_mask = y_meta_t == 1
+                event_cal_mask = y_meta_c == 1
+                side_samples_train_fold = int(np.sum(event_train_mask))
+                side_samples_calib_fold = int(np.sum(event_cal_mask))
+                side_samples_test_fold = int(np.sum(y_meta_test))
+                side_samples_train += side_samples_train_fold
+                side_samples_calib += side_samples_calib_fold
+                side_samples_test += side_samples_test_fold
+                p_up_cond_cal: np.ndarray
+                p_up_cond_test: np.ndarray
+                side_fallback_used = False
+
+                if side_samples_train_fold < 60:
+                    p_prior = 0.5
+                    msg = f"fold_start={start}: side_model fallback (too few samples={side_samples_train_fold})"
+                    meta_warnings.append(msg)
+                    p_up_cond_cal = np.full(len(X_c), p_prior, dtype=float)
+                    p_up_cond_test = np.full(len(X_test), p_prior, dtype=float)
+                    side_fallback_used = True
+                else:
+                    if label_mode_used == "tbm":
+                        y_side_train = (y_t[event_train_mask] == 2).astype(int)
+                        y_side_cal = (y_c[event_cal_mask] == 2).astype(int) if side_samples_calib_fold > 0 else np.array([])
+                    else:
+                        y_side_train = (y_ret_t[event_train_mask] > 0.0).astype(int)
+                        y_side_cal = (y_ret_c[event_cal_mask] > 0.0).astype(int) if side_samples_calib_fold > 0 else np.array([])
+                    if len(np.unique(y_side_train)) < 2 or side_samples_calib_fold < 30 or len(np.unique(y_side_cal)) < 2:
+                        p_prior = float(np.mean(y_side_train)) if len(y_side_train) else 0.5
+                        msg = f"fold_start={start}: side_model fallback (side train/calib not enough class balance)"
+                        meta_warnings.append(msg)
+                        p_up_cond_cal = np.full(len(X_c), p_prior, dtype=float)
+                        p_up_cond_test = np.full(len(X_test), p_prior, dtype=float)
+                        side_fallback_used = True
+                    else:
+                        if class_weight_effective is None:
+                            sw_side = self._binary_sample_weight(y_side_train)
+                        else:
+                            sw_side = np.where(
+                                y_side_train == 1,
+                                float(class_weight_effective[2]),
+                                float(class_weight_effective[0]),
+                            ).astype(float)
+                        side_raw_cal_list: List[np.ndarray] = []
+                        side_raw_test_list: List[np.ndarray] = []
+                        for seed in seeds:
+                            pos_side = int(np.sum(y_side_train == 1))
+                            neg_side = int(np.sum(y_side_train == 0))
+                            spw_side = float(neg_side / max(1, pos_side))
+                            clf_side = self._xgb.XGBClassifier(
+                                objective="binary:logistic",
+                                n_estimators=180,
+                                max_depth=4,
+                                learning_rate=0.045,
+                                subsample=0.9,
+                                colsample_bytree=0.9,
+                                eval_metric="logloss",
+                                tree_method="hist",
+                                random_state=seed,
+                                scale_pos_weight=spw_side,
+                            )
+                            clf_side.fit(
+                                X_t[event_train_mask],
+                                y_side_train,
+                                sample_weight=sw_side,
+                            )
+                            side_raw_cal_list.append(clf_side.predict_proba(X_c)[:, 1])
+                            side_raw_test_list.append(clf_side.predict_proba(X_test)[:, 1])
+                        side_raw_cal = np.mean(side_raw_cal_list, axis=0)
+                        side_raw_test = np.mean(side_raw_test_list, axis=0)
+                        side_calibrator = self._fit_binary_calibrator(
+                            side_raw_cal[event_cal_mask],
+                            y_side_cal,
+                            cfg.calibration,
+                        )
+                        p_up_cond_cal = side_calibrator(side_raw_cal)
+                        p_up_cond_test = side_calibrator(side_raw_test)
+
+                p_cal_raw = self._compose_meta_probs(p_trade_cal, p_up_cond_cal)
+                p_test_raw = self._compose_meta_probs(p_trade_test, p_up_cond_test)
+                if temp_scale_mode == "fold":
+                    p_trade_test_before = np.asarray(p_trade_test, dtype=float).copy()
+                    t_trade = self._search_temperature_binary(p_trade_cal, y_meta_c, temp_grid)
+                    p_trade_cal = self._temperature_scale_binary(p_trade_cal, t_trade)
+                    p_trade_test = self._temperature_scale_binary(p_trade_test, t_trade)
+
+                    t_side = 1.0
+                    if side_samples_calib_fold > 0 and np.any(event_cal_mask):
+                        if label_mode_used == "tbm":
+                            y_side_cal_eval = (y_c[event_cal_mask] == 2).astype(int)
+                        else:
+                            y_side_cal_eval = (y_ret_c[event_cal_mask] > 0.0).astype(int)
+                        p_side_cal_eval = p_up_cond_cal[event_cal_mask]
+                        if len(y_side_cal_eval) > 0 and len(np.unique(y_side_cal_eval)) >= 2:
+                            t_side = self._search_temperature_binary(p_side_cal_eval, y_side_cal_eval, temp_grid)
+                    p_up_cond_cal = self._temperature_scale_binary(p_up_cond_cal, t_side)
+                    p_up_cond_test = self._temperature_scale_binary(p_up_cond_test, t_side)
+
+                    p_cal_after = self._compose_meta_probs(p_trade_cal, p_up_cond_cal)
+                    p_test_after = self._compose_meta_probs(p_trade_test, p_up_cond_test)
+                    extreme_before = self._extreme_rate(p_test_raw)
+                    extreme_after = self._extreme_rate(p_test_after)
+                    ll_before = float(ll(y_c, self._safe_probs(p_cal_raw), labels=[0, 1, 2]))
+                    ll_after = float(ll(y_c, self._safe_probs(p_cal_after), labels=[0, 1, 2]))
+                    br_before = float(self._multiclass_brier(y_c, self._safe_probs(p_cal_raw)))
+                    br_after = float(self._multiclass_brier(y_c, self._safe_probs(p_cal_after)))
+                    temp_applied = bool((ll_after <= ll_before) and (br_after <= br_before))
+                    fallback_reason = None if temp_applied else "worse_logloss_or_brier_on_calib"
+                    if not temp_applied:
+                        p_cal_after = self._safe_probs(p_cal_raw)
+                        p_test_after = self._safe_probs(p_test_raw)
+                    fold_temp_stats = {
+                        "temp_T_trade": float(t_trade),
+                        "temp_T_side": float(t_side),
+                        "extreme_rate_before_temp": float(extreme_before),
+                        "extreme_rate_after_temp": float(extreme_after),
+                        "logloss_calib_before_temp": ll_before,
+                        "logloss_calib_after_temp": ll_after,
+                        "brier_calib_before_temp": br_before,
+                        "brier_calib_after_temp": br_after,
+                        "temp_applied": temp_applied,
+                        "temp_fallback_reason": fallback_reason,
+                        "p_trade_mean_before_temp": float(np.mean(p_trade_test_before)) if len(p_trade_test_before) else 0.0,
+                        "p_trade_std_before_temp": float(np.std(p_trade_test_before)) if len(p_trade_test_before) else 0.0,
+                    }
+                    # recompute after-temp distribution stats for diagnostic visibility
+                    p_trade_after_test = 1.0 - p_test_after[:, 1]
+                    fold_temp_stats["p_trade_mean_after_temp"] = float(np.mean(p_trade_after_test))
+                    fold_temp_stats["p_trade_std_after_temp"] = float(np.std(p_trade_after_test))
+                    print(
+                        "[FOLD TEMP] start={s} T_trade={tt:.2f} T_side={ts:.2f} "
+                        "extreme(before/after)={eb:.4f}/{ea:.4f} p_trade_std(before/after)={sb:.4f}/{sa:.4f}".format(
+                            s=start,
+                            tt=float(t_trade),
+                            ts=float(t_side),
+                            eb=float(extreme_before),
+                            ea=float(extreme_after),
+                            sb=float(fold_temp_stats["p_trade_std_before_temp"]),
+                            sa=float(fold_temp_stats["p_trade_std_after_temp"]),
+                        )
+                    )
+                    p_cal_raw = p_cal_after
+                    p_test_raw = p_test_after
+                fold_stats.append(
+                    {
+                        "fold_id": int(fold_count + 1),
+                        "n_train": int(len(X_train)),
+                        "n_calib": int(len(X_c)),
+                        "n_test": int(len(X_test)),
+                        "label_mode": label_mode_used,
+                        "tbm_vol_frac": float(tbm_vol_frac) if tbm_vol_frac is not None else None,
+                        "tbm_barrier_pct": float(100.0 * tbm_k_used * tbm_vol_frac) if tbm_vol_frac is not None else None,
+                        "class_ratio_train": self._class_ratio(y_train_cls),
+                        "class_ratio_calib": self._class_ratio(y_c),
+                        "class_ratio_test": self._class_ratio(y_test_cls),
+                        "flat_ratio_train": float(np.mean(y_train_cls == 1)),
+                        "flat_ratio_calib": float(np.mean(y_c == 1)),
+                        "flat_ratio_test": float(np.mean(y_test_cls == 1)),
+                        "meta_pos_rate_train": meta_rate_train,
+                        "meta_pos_rate_calib": meta_rate_calib,
+                        "meta_pos_rate_test": meta_rate_test,
+                        "meta_flat_complement_ok": bool(
+                            abs(meta_rate_train - (1.0 - float(np.mean(y_train_cls == 1)))) <= 1e-6
+                            and abs(meta_rate_calib - (1.0 - float(np.mean(y_c == 1)))) <= 1e-6
+                            and abs(meta_rate_test - (1.0 - float(np.mean(y_test_cls == 1)))) <= 1e-6
+                        ),
+                        "meta_flat_complement_error": {
+                            "train": float(abs(meta_rate_train - (1.0 - float(np.mean(y_train_cls == 1))))),
+                            "calib": float(abs(meta_rate_calib - (1.0 - float(np.mean(y_c == 1))))),
+                            "test": float(abs(meta_rate_test - (1.0 - float(np.mean(y_test_cls == 1))))),
+                        },
+                        "band_used_pct": float(band_used_pct),
+                        "side_samples_train": side_samples_train_fold,
+                        "side_samples_calib": side_samples_calib_fold,
+                        "side_samples_test": side_samples_test_fold,
+                        "side_fallback_used": bool(side_fallback_used),
+                        "p_trade_mean_test": float(np.mean(p_trade_test)) if len(p_trade_test) else 0.0,
+                        "p_trade_std_test": float(np.std(p_trade_test)) if len(p_trade_test) else 0.0,
+                    }
                 )
-                calib = self._sk_calib(estimator=clf, method=cfg.calibration, cv=cv)
-                calib.fit(X_train, y_train_cls, sample_weight=sw)
-                models.append(calib)
+                if fold_temp_stats:
+                    fold_stats[-1].update(fold_temp_stats)
 
-            p = np.mean([m.predict_proba(X_test) for m in models], axis=0)
-            yhat = np.argmax(p, axis=1)
+            p_cal_raw = self._safe_probs(p_cal_raw)
+            p_test_raw = self._safe_probs(p_test_raw)
+            if temp_scale_mode == "global":
+                best_t = self._search_temperature(p_cal_raw, y_c, temp_grid)
+                p_cal_t = self._temperature_scale(p_cal_raw, best_t)
+                p_test_t = self._temperature_scale(p_test_raw, best_t)
+                ll_before = float(ll(y_c, p_cal_raw, labels=[0, 1, 2]))
+                ll_after = float(ll(y_c, p_cal_t, labels=[0, 1, 2]))
+                br_before = float(self._multiclass_brier(y_c, p_cal_raw))
+                br_after = float(self._multiclass_brier(y_c, p_cal_t))
+                if ll_after <= ll_before and br_after <= br_before:
+                    p = p_test_t
+                    global_temp_applied = True
+                    global_temp_reason = None
+                else:
+                    p = p_test_raw
+                    best_t = 1.0
+                    global_temp_applied = False
+                    global_temp_reason = "worse_logloss_or_brier_on_calib"
+            elif temp_scale_mode == "fold":
+                if mode_used == "meta":
+                    best_t = 1.0
+                    p = self._safe_probs(p_test_raw)
+                    global_temp_applied = True
+                    global_temp_reason = None
+                else:
+                    if not warned_fold_direct:
+                        meta_warnings.append(
+                            "temp_scale=fold currently applies to meta mode only; direct mode falls back to off."
+                        )
+                        warned_fold_direct = True
+                    best_t = 1.0
+                    p = self._safe_probs(p_test_raw)
+                    global_temp_applied = False
+                    global_temp_reason = "fold_mode_direct_not_supported"
+            else:
+                best_t = 1.0
+                p = self._safe_probs(p_test_raw)
+                global_temp_applied = True
+                global_temp_reason = None
+            temp_values.extend([float(best_t)] * len(X_test))
+            p_trade_values.extend((1.0 - p[:, 1]).astype(float).tolist())
+            if fold_stats:
+                fold_stats[-1]["global_temp_applied"] = bool(global_temp_applied)
+                fold_stats[-1]["global_temp_fallback_reason"] = global_temp_reason
+            for i in range(len(X_test)):
+                p_down_i = float(p[i, 0])
+                p_flat_i = float(p[i, 1])
+                p_up_i = float(p[i, 2])
+                action_i = self._derive_action_from_probs(
+                    p_up_i, p_down_i, p_flat_i, c_min=0.45, delta_min=0.06, theta_buy=0.08, theta_sell=0.08
+                )
+                trade_actions.append(int(action_i))
+                ret_pct = float(y_ret_test[i]) if i < len(y_ret_test) else 0.0
+                gross_ret = (ret_pct / 100.0) * float(action_i)
+                total_cost = 0.0020 if action_i != 0 else 0.0
+                trade_step_returns.append(float(gross_ret - total_cost))
             y_true.extend(y_test_cls.tolist())
-            y_pred.extend(yhat.tolist())
             prob_rows.extend([r for r in p])
+
+            prior_probs = np.bincount(y_train_cls, minlength=3).astype(float)
+            prior_probs = np.clip(prior_probs / max(1.0, float(np.sum(prior_probs))), 1e-9, 1.0)
+            prior_probs = prior_probs / np.sum(prior_probs)
+            prior_batch = np.tile(prior_probs, (len(X_test), 1))
+            prior_prob_rows.extend([r for r in prior_batch])
+            prior_cls = int(np.argmax(prior_probs))
+            prior_pred.extend([prior_cls] * len(X_test))
+
+            mom_feature = "ret_5" if "ret_5" in feature_cols else ("ret_1" if "ret_1" in feature_cols else None)
+            mom_batch: List[np.ndarray] = []
+            mom_cls_batch: List[int] = []
+            for i in range(len(X_test)):
+                if mom_feature is None:
+                    cls = 1
+                else:
+                    ret_pct = float(model_df.iloc[start + i][mom_feature]) * 100.0
+                    cls = int(self._label_class(ret_pct, cfg.flat_band_pct))
+                v = np.zeros(3, dtype=float)
+                v[cls] = 1.0
+                mom_batch.append(v)
+                mom_cls_batch.append(cls)
+            mom_prob_rows.extend(mom_batch)
+            mom_pred.extend(mom_cls_batch)
 
             reg = self._xgb.XGBRegressor(
                 objective="reg:squarederror",
@@ -585,9 +1498,14 @@ class PredictionService:
             )
             reg.fit(X_t, y_t_reg)
             c_pred = reg.predict(X_c)
-            resid = np.abs(y_c_reg - c_pred)
+            bias = float(np.mean(y_c_reg - c_pred))
+            bias_abs = float(np.mean(np.abs(y_c_reg - c_pred)))
+            bias_values.extend([bias] * len(X_test))
+            bias_abs_values.extend([bias_abs] * len(X_test))
+            c_pred_adj = c_pred + bias
+            resid = np.abs(y_c_reg - c_pred_adj)
             q_abs = self._split_conformal_q(resid, cfg.target_interval_coverage)
-            t_pred = reg.predict(X_test)
+            t_pred = reg.predict(X_test) + bias
             low_raw = t_pred - q_abs
             high_raw = t_pred + q_abs
             low = np.maximum(0.0, low_raw)
@@ -598,13 +1516,95 @@ class PredictionService:
             width_values.extend((high - low).astype(float).tolist())
             cov = ((y_test_close >= low) & (y_test_close <= high)).astype(int)
             cover_flags.extend(cov.tolist())
+            fold_audit: List[Dict[str, Any]] = []
+            for i in range(len(X_test)):
+                row_idx = start + i
+                dt = model_df.index[row_idx]
+                dt_text = str(dt.date()) if hasattr(dt, "date") else str(dt)
+                fold_audit.append(
+                    {
+                        "date": dt_text,
+                        "t_index": int(row_idx),
+                        "y_true": float(y_test_close[i]),
+                        "y_pred": float(t_pred[i]),
+                        "y_true_raw": float(y_test_close[i] * target_scale_factor),
+                        "y_pred_raw": float(t_pred[i] * target_scale_factor),
+                        "q": float(q_abs),
+                        "lower": float(low[i]),
+                        "upper": float(high[i]),
+                        "raw_close_t": float(full_df.loc[dt, "Close"]) if dt in full_df.index else None,
+                        "raw_close_future": float(y_test_close[i] * target_scale_factor),
+                        "covered": int(cov[i]),
+                        "target_name": "close_future",
+                        "target_unit": "price",
+                        "target_transform": target_transform,
+                        "target_scale_factor": float(target_scale_factor),
+                        "bias": float(bias),
+                        "bias_abs": float(bias_abs),
+                    }
+                )
+            last_fold_interval_audit = fold_audit
+            fold_count += 1
+            next_eligible_start = end + embargo_n
 
         if len(y_true) == 0:
             raise RuntimeError("Backtest failed: no valid walk-forward folds.")
 
         probs = np.vstack(prob_rows)
         y_true_arr = np.array(y_true, dtype=int)
-        y_pred_arr = np.array(y_pred, dtype=int)
+        if threshold_mode_used == "argmax":
+            y_pred_arr = np.argmax(probs, axis=1).astype(int)
+            thresholds_applied = None
+        else:
+            td_values = self._default_threshold_down_grid()
+            tu_values = self._default_threshold_up_grid()
+            if threshold_grid is not None:
+                td_values = [float(v) for v in threshold_grid.get("down", td_values)]
+                tu_values = [float(v) for v in threshold_grid.get("up", tu_values)]
+            search_used = bool(threshold_search or t_down is None or t_up is None)
+            if search_used:
+                candidates = self._threshold_candidates(
+                    y_true_arr=y_true_arr,
+                    probs=probs,
+                    t_down_values=td_values,
+                    t_up_values=tu_values,
+                )
+                selected = self._select_threshold_candidate(
+                    candidates=candidates,
+                    down_recall_min=float(down_recall_min),
+                    pred_down_min_pct=float(pred_down_min_pct),
+                )
+                best = selected["best"]
+                ranked_pool = selected["ranked"]
+                if selected["fallback_unconstrained"]:
+                    threshold_warnings.append(
+                        "threshold_search: no candidates satisfy constraints; fallback to unconstrained best."
+                    )
+                thresholds_applied = {"t_down": float(best["t_down"]), "t_up": float(best["t_up"])}
+                threshold_selection = {
+                    "best": best,
+                    "candidates": ranked_pool[:10],
+                    "constraints": {
+                        "down_recall_min": float(down_recall_min),
+                        "pred_down_min_pct": float(pred_down_min_pct),
+                        "satisfied_count": int(selected["satisfied_count"]),
+                        "searched_count": int(len(candidates)),
+                    },
+                }
+            else:
+                thresholds_applied = {"t_down": float(t_down), "t_up": float(t_up)}
+                threshold_selection = {
+                    "best": {
+                        "t_down": float(t_down),
+                        "t_up": float(t_up),
+                    },
+                    "candidates": [],
+                }
+            y_pred_arr = self._predict_classes_threshold(
+                probs,
+                float(thresholds_applied["t_down"]),
+                float(thresholds_applied["t_up"]),
+            )
 
         brier = self._multiclass_brier(y_true_arr, probs)
         ece = self._ece_multiclass(y_true_arr, probs, n_bins=10)
@@ -615,30 +1615,944 @@ class PredictionService:
         cm = self._sk_metrics["confusion_matrix"](y_true_arr, y_pred_arr, labels=[0, 1, 2]).tolist()
         pr, rc, f1_cls, _ = self._sk_metrics["prfs"](y_true_arr, y_pred_arr, labels=[0, 1, 2], zero_division=0)
         cls_ratio = self._class_ratio(y_true_arr)
+        prior_probs_arr = np.vstack(prior_prob_rows)
+        mom_probs_arr = np.vstack(mom_prob_rows)
+        mom_probs_arr = np.clip(mom_probs_arr, 1e-6, 1.0)
+        mom_probs_arr = mom_probs_arr / np.sum(mom_probs_arr, axis=1, keepdims=True)
+        prior_pred_arr = np.array(prior_pred, dtype=int)
+        mom_pred_arr = np.array(mom_pred, dtype=int)
+        interval_target_name = "close_future"
+        interval_target_unit = "price"
+        interval_y_source = "target_close_h"
+        target_mismatch = not (
+            interval_target_name == "close_future"
+            and interval_target_unit == "price"
+            and interval_y_source == "target_close_h"
+        )
+        if target_mismatch:
+            print(
+                "[WARN] Interval coverage target mismatch detected: "
+                f"name={interval_target_name} unit={interval_target_unit} y_source={interval_y_source}"
+            )
+        if extreme_meta_rate_folds > 0:
+            meta_warnings.append(
+                f"extreme_meta_label_rate_folds={extreme_meta_rate_folds}/{max(1, fold_count)} "
+                "(meta_label_rate outside [1%,99%])"
+            )
+        if return_abs_med is not None and return_abs_med < 0.2:
+            meta_warnings.append(
+                f"target_return_pct_h median abs is very small ({return_abs_med:.4f}); "
+                "check return unit consistency (pct vs fraction)."
+            )
 
+        model_logloss = float(ll(y_true_arr, probs, labels=[0, 1, 2]))
+        prior_logloss = float(ll(y_true_arr, prior_probs_arr, labels=[0, 1, 2]))
+        mom_logloss = float(ll(y_true_arr, mom_probs_arr, labels=[0, 1, 2]))
+        prior_brier = float(self._multiclass_brier(y_true_arr, prior_probs_arr))
+        mom_brier = float(self._multiclass_brier(y_true_arr, mom_probs_arr))
+        class_ratio_after_meta = self._class_ratio(y_true_arr)
+        trading_metrics = self._compute_trading_metrics(trade_actions, trade_step_returns)
         return {
             "accuracy": float(acc(y_true_arr, y_pred_arr)),
             "macro_f1": float(f1(y_true_arr, y_pred_arr, average="macro")),
-            "logloss": float(ll(y_true_arr, probs, labels=[0, 1, 2])),
+            "logloss": model_logloss,
             "brier": float(brier),
             "ece": float(ece),
             "interval_target_coverage": float(cfg.target_interval_coverage),
             "interval_q": interval_q_mean,
             "interval_width_mean": interval_width_mean,
             "interval_coverage": float(coverage),
-            "interval_target_name": "close_future",
-            "interval_target_unit": "price",
+            "interval_target_name": interval_target_name,
+            "interval_target_unit": interval_target_unit,
+            "target_transform": target_transform,
+            "target_scale_factor": float(target_scale_factor),
             "interval_clip_ratio": clip_ratio,
+            "interval_target_mismatch_warn": bool(target_mismatch),
+            "interval_target_y_source": interval_y_source,
+            "interval_audit_sample": last_fold_interval_audit[:50],
+            "bias": float(np.mean(np.array(bias_values, dtype=float))) if bias_values else 0.0,
+            "bias_abs": float(np.mean(np.array(bias_abs_values, dtype=float))) if bias_abs_values else 0.0,
             "class_ratio": cls_ratio,
+            "class_ratio_after_meta": class_ratio_after_meta,
             "confusion_matrix": cm,
             "class_metrics": {
                 "down": {"precision": float(pr[0]), "recall": float(rc[0]), "f1": float(f1_cls[0])},
                 "flat": {"precision": float(pr[1]), "recall": float(rc[1]), "f1": float(f1_cls[1])},
                 "up": {"precision": float(pr[2]), "recall": float(rc[2]), "f1": float(f1_cls[2])},
             },
+            "trading_metrics": trading_metrics,
+            "meta_metrics": {
+                "prob_mode": mode_used if mode_used in ("direct", "meta") else "meta",
+                "label_mode": label_mode_used,
+                "meta_label_definition": meta_label_definition,
+                "tbm_policy": {"vol_span": int(tbm_span), "k": float(tbm_k_used)},
+                "return_unit": "pct",
+                "band_unit": "pct",
+                "flat_band_pct": float(cfg.flat_band_pct),
+                "meta_band_mode": band_mode_used,
+                "meta_band_policy": {
+                    "q_target": float(band_q),
+                    "band_min_pct": float(band_min),
+                    "band_max_pct": float(band_max),
+                },
+                "target_return_abs_median_pct": return_abs_med,
+                "meta_label_rate_train": float(np.mean(np.array(meta_rate_train_values, dtype=float))) if meta_rate_train_values else None,
+                "meta_label_rate_calib": float(np.mean(np.array(meta_rate_calib_values, dtype=float))) if meta_rate_calib_values else None,
+                "meta_label_rate_test": float(np.mean(np.array(meta_rate_test_values, dtype=float))) if meta_rate_test_values else None,
+                "p_trade_mean": float(np.mean(np.array(p_trade_values, dtype=float))) if p_trade_values else 0.0,
+                "p_trade_std": float(np.std(np.array(p_trade_values, dtype=float))) if p_trade_values else 0.0,
+                "side_samples_train": int(side_samples_train),
+                "side_samples_calib": int(side_samples_calib),
+                "side_samples_test": int(side_samples_test),
+                "fold_stats": fold_stats,
+                "warnings": meta_warnings,
+            },
+            "threshold_selection": threshold_selection,
+            "warnings": threshold_warnings,
+            "thresholds_applied": thresholds_applied,
+            "threshold_mode": threshold_mode_used,
+            "class_weight_mode": class_weight_mode_used,
+            "class_weight": (
+                None if class_weight_effective is None
+                else {
+                    "down": float(class_weight_effective[0]),
+                    "flat": float(class_weight_effective[1]),
+                    "up": float(class_weight_effective[2]),
+                }
+            ),
+            "prob_calibration": {
+                "ece_bins": self._reliability_bins_multiclass(y_true_arr, probs, n_bins=10),
+                "reliability_bins_pmax_033_100": self._reliability_bins_multiclass(
+                    y_true_arr, probs, n_bins=10, conf_min=0.33, conf_max=1.0
+                ),
+                "temp_scale_mode": temp_scale_mode,
+            },
+            "temperature_scaling": {
+                "enabled": bool(temp_scale_mode != "off"),
+                "best_T": float(np.mean(np.array(temp_values, dtype=float))) if temp_values else 1.0,
+                "search_grid": temp_grid if temp_scale_mode != "off" else [1.0],
+            },
+            "validation": {
+                "purge_days": int(purge_n),
+                "embargo_mode": embargo_mode_used,
+                "embargo_days": int(embargo_n),
+                "embargo_pct": float(embargo_pct),
+                "folds_used": int(fold_count),
+            },
+            "baselines": {
+                "baseline_prior": {
+                    "accuracy": float(acc(y_true_arr, prior_pred_arr)),
+                    "macro_f1": float(f1(y_true_arr, prior_pred_arr, average="macro")),
+                    "logloss": prior_logloss,
+                    "brier": prior_brier,
+                },
+                "baseline_momentum": {
+                    "accuracy": float(acc(y_true_arr, mom_pred_arr)),
+                    "macro_f1": float(f1(y_true_arr, mom_pred_arr, average="macro")),
+                    "logloss": mom_logloss,
+                    "brier": mom_brier,
+                },
+                "model_vs_baseline": {
+                    "beats_prior_logloss": bool(model_logloss < prior_logloss),
+                    "beats_prior_brier": bool(float(brier) < prior_brier),
+                    "beats_momentum_logloss": bool(model_logloss < mom_logloss),
+                    "beats_momentum_brier": bool(float(brier) < mom_brier),
+                },
+            },
+        }
+
+    def _walk_forward_backtest_up5(
+        self,
+        model_df: pd.DataFrame,
+        full_df: pd.DataFrame,
+        feature_cols: List[str],
+        cfg: PredictorConfig,
+        max_folds: Optional[int],
+        fold_step: Optional[int],
+        train_window: Optional[int],
+        use_ensemble: bool,
+        purge_days: Optional[int],
+        embargo_mode: str,
+        embargo_days: int,
+        embargo_pct: float,
+        temp_scale: Union[bool, str],
+        calibration: str,
+        target_return: float,
+        threshold_search: bool,
+        t_buy_grid: Optional[List[float]],
+        fixed_thresholds: Optional[List[float]],
+        min_coverage: float,
+        min_trades: int,
+    ) -> Dict[str, Any]:
+        acc = self._sk_metrics["accuracy_score"]
+        f1 = self._sk_metrics["f1_score"]
+        ll = self._sk_metrics["log_loss"]
+        cm_func = self._sk_metrics["confusion_matrix"]
+
+        X_all = model_df[feature_cols].to_numpy(dtype=float)
+        y_ret_frac_all = (
+            full_df.loc[model_df.index, "target_return_pct_h"].to_numpy(dtype=float) / 100.0
+            if "target_return_pct_h" in full_df.columns
+            else np.zeros(len(model_df), dtype=float)
+        )
+        y_bin_all = (y_ret_frac_all >= float(target_return)).astype(int)
+
+        min_train = max(cfg.min_train_rows, 280)
+        step = int(fold_step) if fold_step is not None and int(fold_step) > 0 else 30
+        test_window = 15
+        temp_scale_mode = self._resolve_temp_scale_mode(temp_scale)
+        temp_grid = [round(x, 2) for x in np.arange(0.5, 3.01, 0.05)]
+
+        y_true: List[int] = []
+        prob_up_rows: List[float] = []
+        realized_returns: List[float] = []
+        eval_dates: List[str] = []
+        temp_values: List[float] = []
+        warnings: List[str] = []
+        fold_count = 0
+        n = len(model_df)
+        purge_n = int(cfg.horizon_trading_days if purge_days is None else max(0, int(purge_days)))
+        if str(embargo_mode).lower() == "days":
+            embargo_n = max(0, int(embargo_days))
+            embargo_mode_used = "days"
+        else:
+            embargo_mode_used = "pct"
+            embargo_n = max(0, int(np.ceil(n * float(max(0.0, embargo_pct)))))
+            if embargo_n == 0:
+                embargo_n = 1
+
+        next_eligible_start = min_train
+        seeds = (11, 29) if use_ensemble else (11,)
+
+        for start in range(min_train, n - test_window, step):
+            if start < next_eligible_start:
+                continue
+            if max_folds is not None and fold_count >= int(max_folds):
+                break
+            end = min(start + test_window, n)
+            train_end = max(0, start - purge_n)
+            if train_end <= 120:
+                continue
+            train_from = 0
+            if train_window is not None and int(train_window) > 0:
+                train_from = max(0, train_end - int(train_window))
+
+            X_train = X_all[train_from:train_end]
+            X_test = X_all[start:end]
+            y_train = y_bin_all[train_from:train_end]
+            y_test = y_bin_all[start:end]
+            y_ret_test = y_ret_frac_all[start:end]
+
+            split = int(len(X_train) * 0.8)
+            split = min(max(split, 120), len(X_train) - 30)
+            if split <= 100:
+                continue
+
+            X_t, X_c = X_train[:split], X_train[split:]
+            y_t, y_c = y_train[:split], y_train[split:]
+
+            if len(np.unique(y_t)) < 2:
+                p_prior = float(np.mean(y_t)) if len(y_t) else 0.0
+                p_cal = np.full(len(X_c), p_prior, dtype=float)
+                p_test = np.full(len(X_test), p_prior, dtype=float)
+                warnings.append(f"fold_start={start}: binary fallback (single class in train)")
+            else:
+                sw = self._binary_sample_weight(y_t)
+                p_cal_raw_list: List[np.ndarray] = []
+                p_test_raw_list: List[np.ndarray] = []
+                for seed in seeds:
+                    pos = int(np.sum(y_t == 1))
+                    neg = int(np.sum(y_t == 0))
+                    spw = float(neg / max(1, pos))
+                    clf = self._xgb.XGBClassifier(
+                        objective="binary:logistic",
+                        n_estimators=180,
+                        max_depth=4,
+                        learning_rate=0.045,
+                        subsample=0.9,
+                        colsample_bytree=0.9,
+                        eval_metric="logloss",
+                        tree_method="hist",
+                        random_state=seed,
+                        scale_pos_weight=spw,
+                    )
+                    clf.fit(X_t, y_t, sample_weight=sw)
+                    p_cal_raw_list.append(clf.predict_proba(X_c)[:, 1])
+                    p_test_raw_list.append(clf.predict_proba(X_test)[:, 1])
+                p_cal_raw = np.mean(p_cal_raw_list, axis=0)
+                p_test_raw = np.mean(p_test_raw_list, axis=0)
+                cal_fn = self._fit_binary_calibrator(p_cal_raw, y_c, calibration)
+                p_cal = cal_fn(p_cal_raw)
+                p_test = cal_fn(p_test_raw)
+
+            best_t = 1.0
+            if temp_scale_mode != "off":
+                t_cur = self._search_temperature_binary(p_cal, y_c, temp_grid)
+                p_cal_t = self._temperature_scale_binary(p_cal, t_cur)
+                p_test_t = self._temperature_scale_binary(p_test, t_cur)
+                try:
+                    ll_before = float(ll(y_c, np.vstack([1.0 - p_cal, p_cal]).T, labels=[0, 1]))
+                    ll_after = float(ll(y_c, np.vstack([1.0 - p_cal_t, p_cal_t]).T, labels=[0, 1]))
+                    if ll_after <= ll_before:
+                        p_test = p_test_t
+                        best_t = float(t_cur)
+                except Exception:
+                    best_t = 1.0
+            temp_values.extend([float(best_t)] * len(X_test))
+
+            y_true.extend(y_test.tolist())
+            prob_up_rows.extend(np.asarray(p_test, dtype=float).tolist())
+            realized_returns.extend(np.asarray(y_ret_test, dtype=float).tolist())
+            eval_dates.extend([str(d) for d in model_df.index[start:end].tolist()])
+            fold_count += 1
+            next_eligible_start = end + embargo_n
+
+        if len(y_true) == 0:
+            raise RuntimeError("Backtest failed: no valid walk-forward folds.")
+
+        y_true_arr = np.asarray(y_true, dtype=int)
+        prob_up_arr = np.clip(np.asarray(prob_up_rows, dtype=float), 1e-6, 1.0 - 1e-6)
+        realized_arr = np.asarray(realized_returns, dtype=float)
+
+        if t_buy_grid:
+            t_vals = [float(v) for v in t_buy_grid]
+        else:
+            t_vals = self._auto_t_buy_grid_from_probs(prob_up_arr)
+        candidates = self._threshold_candidates_up5(y_true_arr, prob_up_arr, realized_arr, t_vals)
+        fixed_metrics = self._eval_fixed_thresholds_up5(
+            probs=prob_up_arr,
+            y_true=y_true_arr,
+            future_returns=realized_arr,
+            thresholds=fixed_thresholds,
+        )
+        p70 = next((m for m in fixed_metrics if abs(float(m.get("t_buy", -1.0)) - 0.7) < 1e-12), None)
+        if candidates and all(int(c.get("n_trades", 0)) == 0 for c in candidates):
+            warnings.append("no_trade_all_thresholds: prob_up5_max < min_grid")
+        if threshold_search:
+            selected = self._select_threshold_candidate_up5(
+                candidates=candidates,
+                min_coverage=float(min_coverage),
+                min_trades=int(min_trades),
+            )
+            best = selected["best"]
+            fallback_unconstrained = bool(selected["fallback_unconstrained"])
+        else:
+            chosen = t_vals[0] if t_vals else 0.5
+            best = next((c for c in candidates if abs(float(c["t_buy"]) - float(chosen)) < 1e-12), candidates[0])
+            fallback_unconstrained = False
+
+        t_buy_best = float(best["t_buy"])
+        y_pred_arr = (prob_up_arr >= t_buy_best).astype(int)
+        cm = cm_func(y_true_arr, y_pred_arr, labels=[0, 1]).tolist()
+        tn, fp = int(cm[0][0]), int(cm[0][1])
+        fn, tp = int(cm[1][0]), int(cm[1][1])
+        n_trades = int(np.sum(y_pred_arr == 1))
+        coverage = float(n_trades / max(1, len(y_pred_arr)))
+        win_rate = float(tp / max(1, tp + fp))
+        buy_returns = realized_arr[y_pred_arr == 1]
+        avg_return = float(np.mean(buy_returns)) if len(buy_returns) else 0.0
+        median_return = float(np.median(buy_returns)) if len(buy_returns) else 0.0
+        prob_summary = {
+            "min": float(np.min(prob_up_arr)),
+            "max": float(np.max(prob_up_arr)),
+            "p50": float(np.quantile(prob_up_arr, 0.50)),
+            "p90": float(np.quantile(prob_up_arr, 0.90)),
+            "p95": float(np.quantile(prob_up_arr, 0.95)),
+            "p99": float(np.quantile(prob_up_arr, 0.99)),
+            "mean": float(np.mean(prob_up_arr)),
+            "std": float(np.std(prob_up_arr)),
+        }
+        prob_calibration_audit = self._prob_calibration_audit_binary(y_true_arr, prob_up_arr, hi=0.8, lo=0.2)
+        prob_calibration_audit = self._prob_calibration_audit_binary(
+            y_true_arr,
+            prob_up_arr,
+            hi=0.7,
+            lo=0.3,
+            dates=eval_dates,
+            future_returns=realized_arr,
+            top_n=50,
+        )
+
+        p2 = np.vstack([1.0 - prob_up_arr, prob_up_arr]).T
+        brier = float(np.mean((prob_up_arr - y_true_arr) ** 2))
+        ece = self._ece_binary(y_true_arr, prob_up_arr, n_bins=10)
+
+        label_dist = {
+            "negative_0": float(np.mean(y_true_arr == 0)),
+            "positive_1": float(np.mean(y_true_arr == 1)),
+        }
+        pred_dist = {
+            "buy_1": coverage,
+            "no_trade_0": float(1.0 - coverage),
+        }
+
+        return {
+            "accuracy": float(acc(y_true_arr, y_pred_arr)),
+            "macro_f1": float(f1(y_true_arr, y_pred_arr, average="macro")),
+            "logloss": float(ll(y_true_arr, p2, labels=[0, 1])),
+            "brier": brier,
+            "ece": float(ece),
+            "interval_target_coverage": float(cfg.target_interval_coverage),
+            "interval_q": None,
+            "interval_width_mean": None,
+            "interval_coverage": None,
+            "interval_target_name": "return_up5_binary",
+            "interval_target_unit": "fraction",
+            "target_transform": "future_return_fraction",
+            "target_scale_factor": 1.0,
+            "interval_clip_ratio": None,
+            "interval_target_mismatch_warn": False,
+            "interval_target_y_source": "target_return_pct_h",
+            "interval_audit_sample": [],
+            "bias": 0.0,
+            "bias_abs": 0.0,
+            "class_ratio": None,
+            "class_ratio_after_meta": None,
+            "confusion_matrix": cm,
+            "class_metrics": {
+                "no_trade": {
+                    "precision": float(tn / max(1, tn + fn)),
+                    "recall": float(tn / max(1, tn + fp)),
+                    "f1": float((2.0 * tn) / max(1, (2 * tn + fp + fn))),
+                },
+                "buy": {
+                    "precision": win_rate,
+                    "recall": float(tp / max(1, tp + fn)),
+                    "f1": float((2.0 * tp) / max(1, (2 * tp + fp + fn))),
+                },
+            },
+            "trading_metrics": {
+                "trade_count": n_trades,
+                "action_counts": {"buy": n_trades, "hold": int(len(y_pred_arr) - n_trades)},
+            },
+            "meta_metrics": {
+                "prob_mode": "binary_up5",
+                "label_mode": "up5_2w",
+                "target_return": float(target_return),
+                "horizon_trading_days": int(cfg.horizon_trading_days),
+                "warnings": warnings,
+            },
+            "threshold_selection": {
+                "best": best,
+                "candidates": candidates,
+                "fallback_unconstrained": fallback_unconstrained,
+                "constraints": {
+                    "min_coverage": float(min_coverage),
+                    "min_trades": int(min_trades),
+                },
+            },
+            "fixed_threshold_metrics": fixed_metrics,
+            "warnings": warnings,
+            "thresholds_applied": {"t_buy": t_buy_best},
+            "threshold_mode": "buy_threshold",
+            "class_weight_mode": "off",
+            "class_weight": None,
+            "prob_calibration": {
+                "temp_scale_mode": temp_scale_mode,
+            },
+            "temperature_scaling": {
+                "enabled": bool(temp_scale_mode != "off"),
+                "best_T": float(np.mean(np.asarray(temp_values, dtype=float))) if temp_values else 1.0,
+                "search_grid": temp_grid if temp_scale_mode != "off" else [1.0],
+            },
+            "validation": {
+                "purge_days": int(purge_n),
+                "embargo_mode": embargo_mode_used,
+                "embargo_days": int(embargo_n),
+                "embargo_pct": float(embargo_pct),
+                "folds_used": int(fold_count),
+            },
+            "baselines": {},
+            "label_distribution": label_dist,
+            "prediction_distribution": pred_dist,
+            "prob_up5_summary": prob_summary,
+            "prob_calibration_audit": prob_calibration_audit,
+            "win_rate_at_best": win_rate,
+            "coverage_at_best": coverage,
+            "n_trades_at_best": n_trades,
+            "avg_return_at_best": avg_return,
+            "median_return_at_best": median_return,
+            "precision_at_p70": (
+                p70.get("precision", p70.get("win_rate")) if isinstance(p70, dict) else None
+            ),
+            "coverage_at_p70": p70.get("coverage") if isinstance(p70, dict) else None,
+            "n_trades_at_p70": p70.get("n_trades") if isinstance(p70, dict) else None,
+            "avg_return_at_p70": p70.get("avg_return") if isinstance(p70, dict) else None,
+        }
+
+    def _default_t_buy_grid(self) -> List[float]:
+        return [round(x, 2) for x in np.arange(0.50, 0.96, 0.05)]
+
+    def _auto_t_buy_grid_from_probs(self, probs: np.ndarray) -> List[float]:
+        p = np.asarray(probs, dtype=float).reshape(-1)
+        if p.size == 0:
+            return self._default_t_buy_grid()
+        q_levels = [0.50, 0.60, 0.70, 0.80, 0.85, 0.90, 0.95, 0.97, 0.99]
+        vals = [float(np.quantile(p, q)) for q in q_levels]
+        vals = [float(np.clip(v, 0.01, 0.99)) for v in vals]
+        uniq = sorted({round(v, 4) for v in vals})
+        return uniq if uniq else self._default_t_buy_grid()
+
+    def _threshold_candidates_up5(
+        self,
+        y_true_arr: np.ndarray,
+        prob_up_arr: np.ndarray,
+        realized_returns: np.ndarray,
+        t_buy_values: List[float],
+    ) -> List[Dict[str, Any]]:
+        cm_func = self._sk_metrics["confusion_matrix"]
+        out: List[Dict[str, Any]] = []
+        n = len(y_true_arr)
+        for t_buy in t_buy_values:
+            yhat = (prob_up_arr >= float(t_buy)).astype(int)
+            cm = cm_func(y_true_arr, yhat, labels=[0, 1]).tolist()
+            tn, fp = int(cm[0][0]), int(cm[0][1])
+            fn, tp = int(cm[1][0]), int(cm[1][1])
+            n_trades = int(np.sum(yhat == 1))
+            coverage = float(n_trades / max(1, n))
+            win_rate = float(tp / max(1, tp + fp))
+            buy_ret = realized_returns[yhat == 1]
+            avg_return = float(np.mean(buy_ret)) if len(buy_ret) else 0.0
+            median_return = float(np.median(buy_ret)) if len(buy_ret) else 0.0
+            out.append(
+                {
+                    "t_buy": float(t_buy),
+                    "win_rate": win_rate,
+                    "coverage": coverage,
+                    "n_trades": n_trades,
+                    "avg_return": avg_return,
+                    "median_return": median_return,
+                    "confusion_2x2": cm,
+                }
+            )
+        return out
+
+    def _eval_fixed_thresholds_up5(
+        self,
+        probs: np.ndarray,
+        y_true: np.ndarray,
+        future_returns: np.ndarray,
+        thresholds: Optional[List[float]] = None,
+    ) -> List[Dict[str, Any]]:
+        cm_func = self._sk_metrics["confusion_matrix"]
+        p = np.clip(np.asarray(probs, dtype=float).reshape(-1), 1e-6, 1.0 - 1e-6)
+        y = np.asarray(y_true, dtype=int).reshape(-1)
+        r = np.asarray(future_returns, dtype=float).reshape(-1)
+        n = int(len(y))
+        if not (len(p) == len(y) == len(r)):
+            raise ValueError("fixed-threshold evaluation input lengths must match.")
+
+        raw = [0.5, 0.6, 0.7, 0.75, 0.8] if thresholds is None else [float(v) for v in thresholds]
+        raw.append(0.7)
+        t_vals = sorted({float(np.clip(v, 0.0, 1.0)) for v in raw})
+
+        out: List[Dict[str, Any]] = []
+        for t_buy in t_vals:
+            buy_mask = p >= float(t_buy)
+            yhat = buy_mask.astype(int)
+            n_trades = int(np.sum(buy_mask))
+            coverage = float(n_trades / max(1, n))
+            cm = cm_func(y, yhat, labels=[0, 1]).tolist()
+            if n_trades > 0:
+                precision = float(np.mean(y[buy_mask] == 1))
+                avg_return = float(np.mean(r[buy_mask]))
+            else:
+                precision = 0.0
+                avg_return = 0.0
+            out.append(
+                {
+                    "t_buy": float(t_buy),
+                    "n_trades": n_trades,
+                    "coverage": coverage,
+                    "precision": precision,
+                    "win_rate": precision,
+                    "avg_return": avg_return,
+                    "confusion_matrix": cm,
+                    "n_samples": n,
+                }
+            )
+        return out
+
+    def _reliability_bins_binary(
+        self,
+        y_true: np.ndarray,
+        p_pos: np.ndarray,
+        n_bins: int = 10,
+    ) -> List[Dict[str, Any]]:
+        y = np.asarray(y_true, dtype=int).reshape(-1)
+        p = np.clip(np.asarray(p_pos, dtype=float).reshape(-1), 1e-6, 1.0 - 1e-6)
+        bins = np.linspace(0.0, 1.0, n_bins + 1)
+        rows: List[Dict[str, Any]] = []
+        for i in range(n_bins):
+            lo, hi = float(bins[i]), float(bins[i + 1])
+            if i < n_bins - 1:
+                mask = (p >= lo) & (p < hi)
+            else:
+                mask = (p >= lo) & (p <= hi)
+            cnt = int(np.sum(mask))
+            if cnt == 0:
+                rows.append(
+                    {
+                        "bin_lo": lo,
+                        "bin_hi": hi,
+                        "count": 0,
+                        "pred_mean": None,
+                        "actual_rate": None,
+                        "gap_actual_minus_pred": None,
+                    }
+                )
+                continue
+            pred_mean = float(np.mean(p[mask]))
+            actual_rate = float(np.mean(y[mask] == 1))
+            rows.append(
+                {
+                    "bin_lo": lo,
+                    "bin_hi": hi,
+                    "count": cnt,
+                    "pred_mean": pred_mean,
+                    "actual_rate": actual_rate,
+                    "gap_actual_minus_pred": float(actual_rate - pred_mean),
+                }
+            )
+        return rows
+
+    def _prob_calibration_audit_binary(
+        self,
+        y_true: np.ndarray,
+        p_pos: np.ndarray,
+        hi: float = 0.8,
+        lo: float = 0.2,
+        dates: Optional[List[str]] = None,
+        future_returns: Optional[np.ndarray] = None,
+        top_n: int = 50,
+    ) -> Dict[str, Any]:
+        y = np.asarray(y_true, dtype=int).reshape(-1)
+        p = np.clip(np.asarray(p_pos, dtype=float).reshape(-1), 1e-6, 1.0 - 1e-6)
+        rets = np.asarray(future_returns, dtype=float).reshape(-1) if future_returns is not None else np.zeros_like(p)
+        dts = list(dates or [])
+        if len(dts) != len(p):
+            dts = [None] * len(p)
+        hi_mask = p >= float(hi)
+        lo_mask = p <= float(lo)
+        high_conf_miss_count = int(np.sum(hi_mask & (y == 0)))
+        low_conf_miss_count = int(np.sum(lo_mask & (y == 1)))
+
+        high_items: List[Dict[str, Any]] = []
+        for i in np.where(hi_mask & (y == 0))[0].tolist():
+            high_items.append(
+                {
+                    "date": dts[i],
+                    "probability": float(p[i]),
+                    "realized_return": float(rets[i]),
+                    "actual": int(y[i]),
+                }
+            )
+        high_items.sort(key=lambda x: x["probability"], reverse=True)
+        low_items: List[Dict[str, Any]] = []
+        for i in np.where(lo_mask & (y == 1))[0].tolist():
+            low_items.append(
+                {
+                    "date": dts[i],
+                    "probability": float(p[i]),
+                    "realized_return": float(rets[i]),
+                    "actual": int(y[i]),
+                }
+            )
+        low_items.sort(key=lambda x: x["probability"])
+
+        return {
+            "reliability_bins": self._reliability_bins_binary(y, p, n_bins=10),
+            "high_confidence_miss": {
+                "threshold": float(hi),
+                "count": high_conf_miss_count,
+                "base_count": int(np.sum(hi_mask)),
+                "rate": float(high_conf_miss_count / max(1, int(np.sum(hi_mask)))),
+                "top_misses": high_items[: int(max(0, top_n))],
+            },
+            "low_confidence_miss": {
+                "threshold": float(lo),
+                "count": low_conf_miss_count,
+                "base_count": int(np.sum(lo_mask)),
+                "rate": float(low_conf_miss_count / max(1, int(np.sum(lo_mask)))),
+                "top_misses": low_items[: int(max(0, top_n))],
+            },
+        }
+
+    def _select_threshold_candidate_up5(
+        self,
+        candidates: List[Dict[str, Any]],
+        min_coverage: float,
+        min_trades: int,
+    ) -> Dict[str, Any]:
+        feasible = [
+            c for c in candidates
+            if float(c.get("coverage", 0.0)) >= float(min_coverage)
+            and int(c.get("n_trades", 0)) >= int(min_trades)
+        ]
+        ranked_pool = feasible if feasible else candidates
+        ranked_pool = sorted(
+            ranked_pool,
+            key=lambda c: (
+                -float(c.get("win_rate", 0.0)),
+                -int(c.get("n_trades", 0)),
+                -float(c.get("coverage", 0.0)),
+            ),
+        )
+        return {
+            "best": ranked_pool[0],
+            "ranked": ranked_pool,
+            "fallback_unconstrained": len(feasible) == 0,
+            "satisfied_count": len(feasible),
         }
 
     # ----------------------------- utils -----------------------------
+    def _resolve_class_weight_map(
+        self,
+        mode: str,
+        class_weight: Optional[Dict[str, float]],
+        y_ref: np.ndarray,
+    ) -> Optional[Dict[int, float]]:
+        m = str(mode or "off").lower()
+        if m == "off":
+            return None
+        if m == "custom":
+            if not class_weight:
+                return None
+            return {
+                0: float(class_weight.get("down", 1.0)),
+                1: float(class_weight.get("flat", 1.0)),
+                2: float(class_weight.get("up", 1.0)),
+            }
+        if m == "balanced":
+            y = np.asarray(y_ref, dtype=int)
+            vals, counts = np.unique(y, return_counts=True)
+            w = {int(v): float(len(y) / (len(vals) * c)) for v, c in zip(vals, counts)}
+            return {0: float(w.get(0, 1.0)), 1: float(w.get(1, 1.0)), 2: float(w.get(2, 1.0))}
+        return None
+
+    def _sample_weight_from_class_map(self, y: np.ndarray, class_map: Dict[int, float]) -> np.ndarray:
+        yy = np.asarray(y, dtype=int)
+        return np.array([float(class_map.get(int(v), 1.0)) for v in yy], dtype=float)
+
+    def _predict_classes_threshold(self, probs: np.ndarray, t_down: float, t_up: float) -> np.ndarray:
+        p = np.asarray(probs, dtype=float)
+        down = p[:, 0]
+        up = p[:, 2]
+        out = np.full(len(p), 1, dtype=int)
+        out[up >= float(t_up)] = 2
+        out[down >= float(t_down)] = 0
+        return out
+
+    def _default_threshold_down_grid(self) -> List[float]:
+        return [0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50]
+
+    def _default_threshold_up_grid(self) -> List[float]:
+        return [0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65]
+
+    def _threshold_candidates(
+        self,
+        y_true_arr: np.ndarray,
+        probs: np.ndarray,
+        t_down_values: List[float],
+        t_up_values: List[float],
+    ) -> List[Dict[str, Any]]:
+        f1 = self._sk_metrics["f1_score"]
+        cm_func = self._sk_metrics["confusion_matrix"]
+        out: List[Dict[str, Any]] = []
+        for td in t_down_values:
+            for tu in t_up_values:
+                yhat = self._predict_classes_threshold(probs, float(td), float(tu))
+                cm = cm_func(y_true_arr, yhat, labels=[0, 1, 2]).tolist()
+                down_denom = float(sum(cm[0]))
+                down_recall = float(cm[0][0] / down_denom) if down_denom > 0.0 else 0.0
+                pred_down_pct = float(np.mean(yhat == 0))
+                out.append(
+                    {
+                        "t_down": float(td),
+                        "t_up": float(tu),
+                        "macro_f1": float(f1(y_true_arr, yhat, average="macro")),
+                        "down_recall": down_recall,
+                        "pred_down_pct": pred_down_pct,
+                        "confusion_matrix": cm,
+                    }
+                )
+        return out
+
+    def _select_threshold_candidate(
+        self,
+        candidates: List[Dict[str, Any]],
+        down_recall_min: float,
+        pred_down_min_pct: float,
+    ) -> Dict[str, Any]:
+        feasible = [
+            c for c in candidates
+            if float(c.get("down_recall", 0.0)) >= float(down_recall_min)
+            and float(c.get("pred_down_pct", 0.0)) >= float(pred_down_min_pct)
+        ]
+        ranked_pool = feasible if feasible else candidates
+        ranked_pool = sorted(
+            ranked_pool,
+            key=lambda c: (
+                -float(c.get("macro_f1", 0.0)),
+                -float(c.get("down_recall", 0.0)),
+                abs(float(c.get("pred_down_pct", 0.0)) - 0.20),
+            ),
+        )
+        return {
+            "best": ranked_pool[0],
+            "ranked": ranked_pool,
+            "fallback_unconstrained": len(feasible) == 0,
+            "satisfied_count": len(feasible),
+        }
+
+    def _binary_sample_weight(self, y: np.ndarray) -> np.ndarray:
+        vals, counts = np.unique(y, return_counts=True)
+        w = {int(v): float(len(y) / (len(vals) * c)) for v, c in zip(vals, counts)}
+        return np.array([w[int(v)] for v in y], dtype=float)
+
+    def _safe_probs(self, probs: np.ndarray, eps: float = 1e-6) -> np.ndarray:
+        p = np.asarray(probs, dtype=float)
+        p = np.clip(p, eps, 1.0 - eps)
+        row_sum = np.sum(p, axis=1, keepdims=True)
+        row_sum[row_sum <= 0.0] = 1.0
+        return p / row_sum
+
+    def _fit_binary_calibrator(
+        self,
+        p_cal: np.ndarray,
+        y_cal: np.ndarray,
+        method: str,
+    ) -> Callable[[np.ndarray], np.ndarray]:
+        p_arr = np.asarray(p_cal, dtype=float).reshape(-1)
+        y_arr = np.asarray(y_cal, dtype=int).reshape(-1)
+        if len(p_arr) == 0 or len(y_arr) == 0 or len(np.unique(y_arr)) < 2:
+            return lambda p: np.clip(np.asarray(p, dtype=float), 1e-6, 1.0 - 1e-6)
+        if str(method).lower() == "isotonic":
+            from sklearn.isotonic import IsotonicRegression  # type: ignore
+
+            iso = IsotonicRegression(out_of_bounds="clip")
+            iso.fit(p_arr, y_arr)
+            return lambda p: np.clip(
+                np.asarray(iso.predict(np.asarray(p, dtype=float).reshape(-1)), dtype=float),
+                1e-6,
+                1.0 - 1e-6,
+            )
+        from sklearn.linear_model import LogisticRegression  # type: ignore
+
+        lr = LogisticRegression(solver="lbfgs", max_iter=200)
+        lr.fit(p_arr.reshape(-1, 1), y_arr)
+        return lambda p: np.clip(
+            np.asarray(
+                lr.predict_proba(np.asarray(p, dtype=float).reshape(-1, 1))[:, 1],
+                dtype=float,
+            ),
+            1e-6,
+            1.0 - 1e-6,
+        )
+
+    def _fit_multiclass_ovr_calibrator(
+        self,
+        p_cal: np.ndarray,
+        y_cal: np.ndarray,
+        method: str,
+    ) -> Callable[[np.ndarray], np.ndarray]:
+        p_ref = self._safe_probs(p_cal)
+        y_ref = np.asarray(y_cal, dtype=int).reshape(-1)
+        cal_fns: List[Callable[[np.ndarray], np.ndarray]] = []
+        for cls in [0, 1, 2]:
+            y_bin = (y_ref == cls).astype(int)
+            cal_fns.append(self._fit_binary_calibrator(p_ref[:, cls], y_bin, method))
+
+        def _apply(p_in: np.ndarray) -> np.ndarray:
+            p_arr = self._safe_probs(p_in)
+            out = np.zeros_like(p_arr, dtype=float)
+            for cls in [0, 1, 2]:
+                out[:, cls] = cal_fns[cls](p_arr[:, cls])
+            return self._safe_probs(out)
+
+        return _apply
+
+    def _compose_meta_probs(self, p_trade: np.ndarray, p_up_cond: np.ndarray) -> np.ndarray:
+        pt = np.asarray(p_trade, dtype=float).reshape(-1)
+        pu = np.asarray(p_up_cond, dtype=float).reshape(-1)
+        pt = np.clip(pt, 1e-6, 1.0 - 1e-6)
+        pu = np.clip(pu, 1e-6, 1.0 - 1e-6)
+        p_up = pt * pu
+        p_down = pt * (1.0 - pu)
+        p_flat = 1.0 - pt
+        out = np.vstack([p_down, p_flat, p_up]).T
+        return self._safe_probs(out)
+
+    def _temperature_scale(self, probs: np.ndarray, temperature: float) -> np.ndarray:
+        p = self._safe_probs(probs)
+        t = float(max(1e-6, temperature))
+        logits = np.log(np.clip(p, 1e-12, 1.0)) / t
+        logits = logits - np.max(logits, axis=1, keepdims=True)
+        ex = np.exp(logits)
+        return self._safe_probs(ex / np.sum(ex, axis=1, keepdims=True))
+
+    def _temperature_scale_binary(self, probs: np.ndarray, temperature: float) -> np.ndarray:
+        p = np.asarray(probs, dtype=float).reshape(-1)
+        p = np.clip(p, 1e-6, 1.0 - 1e-6)
+        t = float(max(1e-6, temperature))
+        z = np.log(p / (1.0 - p))
+        z_t = z / t
+        out = 1.0 / (1.0 + np.exp(-z_t))
+        return np.clip(out, 1e-6, 1.0 - 1e-6)
+
+    def _search_temperature(self, probs_cal: np.ndarray, y_cal: np.ndarray, grid: List[float]) -> float:
+        if probs_cal is None or len(probs_cal) == 0 or y_cal is None or len(y_cal) == 0:
+            return 1.0
+        ll = self._sk_metrics["log_loss"]
+        best_t = 1.0
+        best_loss = float("inf")
+        for t in grid:
+            p_t = self._temperature_scale(probs_cal, float(t))
+            try:
+                cur = float(ll(y_cal, p_t, labels=[0, 1, 2]))
+            except Exception:
+                continue
+            if cur < best_loss:
+                best_loss = cur
+                best_t = float(t)
+        return best_t
+
+    def _search_temperature_binary(self, probs_cal: np.ndarray, y_cal: np.ndarray, grid: List[float]) -> float:
+        p_arr = np.asarray(probs_cal, dtype=float).reshape(-1)
+        y_arr = np.asarray(y_cal, dtype=int).reshape(-1)
+        if len(p_arr) == 0 or len(y_arr) == 0 or len(np.unique(y_arr)) < 2:
+            return 1.0
+        ll = self._sk_metrics["log_loss"]
+        best_t = 1.0
+        best_loss = float("inf")
+        for t in grid:
+            p_t = self._temperature_scale_binary(p_arr, float(t))
+            try:
+                cur = float(ll(y_arr, np.vstack([1.0 - p_t, p_t]).T, labels=[0, 1]))
+            except Exception:
+                continue
+            if cur < best_loss:
+                best_loss = cur
+                best_t = float(t)
+        return best_t
+
+    def _resolve_temp_scale_mode(self, temp_scale: Union[bool, str]) -> str:
+        if isinstance(temp_scale, bool):
+            return "global" if temp_scale else "off"
+        mode = str(temp_scale or "off").strip().lower()
+        if mode == "on":
+            return "global"
+        if mode in ("off", "global", "fold"):
+            return mode
+        return "off"
+
+    def _extreme_rate(self, probs: np.ndarray, lo: float = 0.01, hi: float = 0.99) -> float:
+        p = self._safe_probs(probs)
+        if len(p) == 0:
+            return 0.0
+        extreme = (np.max(p, axis=1) >= hi) | (np.min(p, axis=1) <= lo)
+        return float(np.mean(extreme.astype(float)))
+
     def _label_class(self, ret_pct: float, band: float) -> int:
         # 0=down, 1=flat, 2=up
         if ret_pct >= band:
@@ -646,6 +2560,23 @@ class PredictionService:
         if ret_pct <= -band:
             return 0
         return 1
+
+    def _up5_labels_from_close(self, close: np.ndarray, horizon: int, target_return: float) -> np.ndarray:
+        c = np.asarray(close, dtype=float).reshape(-1)
+        h = max(1, int(horizon))
+        trg = float(target_return)
+        n = len(c)
+        out = np.full(n, np.nan, dtype=float)
+        if n <= h:
+            return out
+        for i in range(n - h):
+            base = c[i]
+            fut = c[i + h]
+            if not np.isfinite(base) or not np.isfinite(fut) or base == 0.0:
+                continue
+            ret = (fut / base) - 1.0
+            out[i] = 1.0 if ret >= trg else 0.0
+        return out
 
     def _class_sample_weight(self, y: np.ndarray) -> np.ndarray:
         vals, counts = np.unique(y, return_counts=True)
@@ -659,6 +2590,100 @@ class PredictionService:
             "flat": float(np.sum(y == 1) / n),
             "up": float(np.sum(y == 2) / n),
         }
+
+    def _tbm_fold_vol_frac(self, close_train: np.ndarray, span: int) -> float:
+        arr = np.asarray(close_train, dtype=float)
+        if arr.size < 10:
+            return 0.01
+        ret = pd.Series(arr).pct_change().dropna()
+        if ret.empty:
+            return 0.01
+        vol = ret.ewm(span=max(5, int(span)), adjust=False).std().dropna()
+        if vol.empty:
+            return 0.01
+        out = float(np.nanmedian(vol.to_numpy(dtype=float)))
+        if not np.isfinite(out):
+            return 0.01
+        return float(np.clip(out, 1e-4, 0.20))
+
+    def _tbm_labels_with_scalar_vol(
+        self,
+        close_all: np.ndarray,
+        horizon: int,
+        vol_frac: float,
+        k: float,
+    ) -> np.ndarray:
+        c = np.asarray(close_all, dtype=float)
+        n = len(c)
+        h = max(1, int(horizon))
+        vf = float(max(1e-6, vol_frac))
+        kk = float(max(0.1, k))
+        labels = np.ones(n, dtype=int)  # 0=down,1=flat(time-out),2=up
+        for i in range(n):
+            end = min(n, i + h + 1)
+            if i + 1 >= end:
+                labels[i] = 1
+                continue
+            c0 = c[i]
+            up_b = c0 * (1.0 + kk * vf)
+            dn_b = c0 * (1.0 - kk * vf)
+            hit = 1
+            for px in c[i + 1 : end]:
+                if px >= up_b:
+                    hit = 2
+                    break
+                if px <= dn_b:
+                    hit = 0
+                    break
+            labels[i] = hit
+        return labels
+
+    def _reliability_bins_multiclass(
+        self,
+        y_true: np.ndarray,
+        probs: np.ndarray,
+        n_bins: int = 10,
+        conf_min: float = 0.0,
+        conf_max: float = 1.0,
+    ) -> List[Dict[str, Any]]:
+        conf = np.max(probs, axis=1)
+        pred = np.argmax(probs, axis=1)
+        lo_edge = float(max(0.0, min(1.0, conf_min)))
+        hi_edge = float(max(lo_edge, min(1.0, conf_max)))
+        bins = np.linspace(lo_edge, hi_edge, n_bins + 1)
+        rows: List[Dict[str, Any]] = []
+        for i in range(n_bins):
+            lo, hi = float(bins[i]), float(bins[i + 1])
+            if i < n_bins - 1:
+                mask = (conf >= lo) & (conf < hi)
+            else:
+                mask = (conf >= lo) & (conf <= hi)
+            cnt = int(np.sum(mask))
+            if cnt == 0:
+                rows.append(
+                    {
+                        "bin_lo": lo,
+                        "bin_hi": hi,
+                        "count": 0,
+                        "pred_mean": None,
+                        "actual_rate": None,
+                        "confidence_mean": None,
+                        "accuracy_mean": None,
+                    }
+                )
+                continue
+            rows.append(
+                {
+                    "bin_lo": lo,
+                    "bin_hi": hi,
+                    "count": cnt,
+                    "pred_mean": float(np.mean(conf[mask])),
+                    "actual_rate": float(np.mean(pred[mask] == y_true[mask])),
+                    "confidence_mean": float(np.mean(conf[mask])),
+                    "accuracy_mean": float(np.mean(pred[mask] == y_true[mask])),
+                }
+            )
+        return rows
 
     def _band_sweep(
         self,
@@ -817,18 +2842,15 @@ class PredictionService:
         keys = ["up", "down", "flat"]
         vals = np.array([probs_pct[k] for k in keys], dtype=float)
         vals = np.clip(vals, 0.0, 100.0)
-
-        floors = np.floor(vals).astype(int)
-        remainder = int(100 - floors.sum())
-        fracs = vals - floors
-        order = np.argsort(-fracs)
-        out = floors.copy()
-        for i in range(max(0, remainder)):
-            out[order[i % len(order)]] += 1
-
-        if out.sum() != 100:
-            diff = 100 - int(out.sum())
-            out[np.argmax(out)] += diff
+        out = np.floor(vals + 0.5).astype(int)  # round half-up
+        out = np.clip(out, 0, 100)
+        diff = 100 - int(out.sum())
+        if diff != 0:
+            out[int(np.argmax(out))] += diff
+            out = np.clip(out, 0, 100)
+            if int(out.sum()) != 100:
+                out[int(np.argmax(out))] += 100 - int(out.sum())
+                out = np.clip(out, 0, 100)
 
         return {k: int(v) for k, v in zip(keys, out)}
 
@@ -870,4 +2892,22 @@ class PredictionService:
             conf_bin = np.mean(conf[mask])
             w = np.mean(mask)
             ece += w * abs(acc_bin - conf_bin)
+        return float(ece)
+
+    def _ece_binary(self, y_true: np.ndarray, p_pos: np.ndarray, n_bins: int = 10) -> float:
+        y = np.asarray(y_true, dtype=int).reshape(-1)
+        p = np.clip(np.asarray(p_pos, dtype=float).reshape(-1), 1e-6, 1.0 - 1e-6)
+        bins = np.linspace(0.0, 1.0, n_bins + 1)
+        ece = 0.0
+        for i in range(n_bins):
+            lo, hi = bins[i], bins[i + 1]
+            if i < n_bins - 1:
+                mask = (p >= lo) & (p < hi)
+            else:
+                mask = (p >= lo) & (p <= hi)
+            if not np.any(mask):
+                continue
+            acc_bin = float(np.mean(y[mask] == 1))
+            conf_bin = float(np.mean(p[mask]))
+            ece += float(np.mean(mask)) * abs(acc_bin - conf_bin)
         return float(ece)

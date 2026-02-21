@@ -1,0 +1,5016 @@
+{
+  "run_at": "2026-02-19T08:24:26",
+  "source": "yfinance",
+  "db_only_check": false,
+  "start": "2006-02-19",
+  "end": "2026-02-19",
+  "symbols": [
+    {
+      "symbol_key": "JP:^N225",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 7,
+        "max_date": "2026-02-13"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-20, 15620.5801, 15661.8496, 15389.5801, 15437.9297, 15437.9297, 128800000, yfinance, 2026-02-19 08:24:28.980541, JP:^N225)を含みます"
+    },
+    {
+      "symbol_key": "US:000001_SS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 0,
+        "max_date": null
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "Fetch failed for US:000001_SS: HTTP Error 404: Not Found"
+    },
+    {
+      "symbol_key": "US:A",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 24.9857, 25.2933, 24.9785, 25.1359, 21.0041, 4502119, yfinance, 2026-02-19 08:24:34.511147, US:A)を含みます"
+    },
+    {
+      "symbol_key": "US:AA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 73.3636, 74.0845, 72.2342, 72.5706, 58.2092, 2011153, yfinance, 2026-02-19 08:24:34.898945, US:AA)を含みます"
+    },
+    {
+      "symbol_key": "US:AAL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 32.5000, 33.6500, 31.3000, 32.5000, 30.6391, 772700, yfinance, 2026-02-19 08:24:35.158762, US:AAL)を含みます"
+    },
+    {
+      "symbol_key": "US:AAMI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2014-10-09, 14.0000, 14.5000, 13.2500, 13.9500, 12.8160, 9086800, yfinance, 2026-02-19 08:24:35.474094, US:AAMI)を含みます"
+    },
+    {
+      "symbol_key": "US:AAOI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2013-09-26, 10.0000, 10.0900, 9.3700, 9.9600, 9.9600, 946000, yfinance, 2026-02-19 08:24:35.754568, US:AAOI)を含みます"
+    },
+    {
+      "symbol_key": "US:AAON",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 2.7509, 2.7747, 2.7338, 2.7681, 2.2786, 1339538, yfinance, 2026-02-19 08:24:36.103531, US:AAON)を含みます"
+    },
+    {
+      "symbol_key": "US:AAP",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 41.7500, 41.8500, 40.4200, 40.4500, 33.9244, 1595400, yfinance, 2026-02-19 08:24:36.510785, US:AAP)を含みます"
+    },
+    {
+      "symbol_key": "US:AAPB",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 883,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2022-08-10, 25.8100, 26.1600, 25.7300, 26.1010, 21.0831, 8700, yfinance, 2026-02-19 08:24:36.693852, US:AAPB)を含みます"
+    },
+    {
+      "symbol_key": "US:AAPD",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 883,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2022-08-10, 24.6000, 24.7300, 24.3630, 24.3630, 21.7004, 20300, yfinance, 2026-02-19 08:24:36.809763, US:AAPD)を含みます"
+    },
+    {
+      "symbol_key": "US:AAPL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 2.5211, 2.5286, 2.4529, 2.4671, 2.0698, 779606800, yfinance, 2026-02-19 08:24:37.093808, US:AAPL)を含みます"
+    },
+    {
+      "symbol_key": "US:AAPU",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 884,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2022-08-09, 24.8300, 25.1100, 24.8300, 24.9700, 19.2662, 3400, yfinance, 2026-02-19 08:24:37.209927, US:AAPU)を含みます"
+    },
+    {
+      "symbol_key": "US:AARD",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 253,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2025-02-13, 15.1800, 15.1800, 11.5500, 14.3100, 14.3100, 1711000, yfinance, 2026-02-19 08:24:37.303279, US:AARD)を含みます"
+    },
+    {
+      "symbol_key": "US:ABAT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2510,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2016-02-24, 5.2500, 5.2500, 5.2500, 5.2500, 5.2500, 200, yfinance, 2026-02-19 08:24:37.448302, US:ABAT)を含みます"
+    },
+    {
+      "symbol_key": "US:ABBV",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2013-01-02, 34.9200, 35.4000, 34.1000, 35.1200, 20.7316, 13767900, yfinance, 2026-02-19 08:24:37.620591, US:ABBV)を含みます"
+    },
+    {
+      "symbol_key": "US:ABCB",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 21.0188, 21.1550, 20.6395, 20.6881, 16.3190, 17273, yfinance, 2026-02-19 08:24:37.899879, US:ABCB)を含みます"
+    },
+    {
+      "symbol_key": "US:ABCL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1300,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2020-12-11, 61.0000, 71.9100, 48.9800, 58.9000, 58.9000, 9249200, yfinance, 2026-02-19 08:24:38.022996, US:ABCL)を含みます"
+    },
+    {
+      "symbol_key": "US:ABEO",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 1250.0000, 1500.0000, 1250.0000, 1437.5000, 1437.5000, 13, yfinance, 2026-02-19 08:24:38.312122, US:ABEO)を含みます"
+    },
+    {
+      "symbol_key": "US:ABG",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 19.6000, 19.8000, 19.2500, 19.8000, 17.8701, 133100, yfinance, 2026-02-19 08:24:38.674777, US:ABG)を含みます"
+    },
+    {
+      "symbol_key": "US:ABM",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 18.8700, 18.9700, 18.6500, 18.7100, 12.0339, 160400, yfinance, 2026-02-19 08:24:38.967937, US:ABM)を含みます"
+    },
+    {
+      "symbol_key": "US:ABNB",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1301,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2020-12-10, 146.0000, 165.0000, 141.2500, 144.7100, 144.7100, 70447500, yfinance, 2026-02-19 08:24:39.088918, US:ABNB)を含みます"
+    },
+    {
+      "symbol_key": "US:ABOS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1162,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-07-01, 26.0000, 26.9800, 18.9000, 20.1000, 20.1000, 2246700, yfinance, 2026-02-19 08:24:39.206745, US:ABOS)を含みます"
+    },
+    {
+      "symbol_key": "US:ABP",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 989,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2022-03-09, 297.6000, 297.6000, 297.0000, 297.0000, 297.0000, 53, yfinance, 2026-02-19 08:24:39.318764, US:ABP)を含みます"
+    },
+    {
+      "symbol_key": "US:ABSI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1148,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-07-22, 21.0000, 22.8940, 20.8800, 21.5900, 21.5900, 2545400, yfinance, 2026-02-19 08:24:39.433723, US:ABSI)を含みます"
+    },
+    {
+      "symbol_key": "US:ABT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 21.2311, 21.2599, 20.8857, 21.1064, 13.3566, 8231138, yfinance, 2026-02-19 08:24:39.719026, US:ABT)を含みます"
+    },
+    {
+      "symbol_key": "US:ABTC",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2005,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2018-02-26, 19200.0000, 19240.0000, 19200.0000, 19240.0000, 19240.0000, 21, yfinance, 2026-02-19 08:24:39.919583, US:ABTC)を含みます"
+    },
+    {
+      "symbol_key": "US:ABTS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2014-04-10, 30.0000, 32.0000, 30.0000, 32.0000, 32.0000, 700, yfinance, 2026-02-19 08:24:40.076013, US:ABTS)を含みます"
+    },
+    {
+      "symbol_key": "US:ABUS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2007-07-26, 6.3000, 6.3500, 6.3000, 6.3000, 6.3000, 140, yfinance, 2026-02-19 08:24:40.304558, US:ABUS)を含みます"
+    },
+    {
+      "symbol_key": "US:ABVC",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 1831260.7500, 1831260.7500, 1831260.7500, 1831260.7500, 1831260.7500, 0, yfinance, 2026-02-19 08:24:40.488097, US:ABVC)を含みます"
+    },
+    {
+      "symbol_key": "US:ABVE",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 408,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2024-07-02, 4.0700, 4.0700, 3.1600, 3.7300, 3.7300, 211400, yfinance, 2026-02-19 08:24:40.586854, US:ABVE)を含みます"
+    },
+    {
+      "symbol_key": "US:ABX",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1363,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2020-09-14, 9.8000, 9.8000, 9.7100, 9.7100, 9.4206, 7400, yfinance, 2026-02-19 08:24:40.768838, US:ABX)を含みます"
+    },
+    {
+      "symbol_key": "US:ACA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1829,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2018-11-05, 28.3900, 30.0700, 28.0700, 29.1300, 28.3746, 1963500, yfinance, 2026-02-19 08:24:40.915949, US:ACA)を含みます"
+    },
+    {
+      "symbol_key": "US:ACAD",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 15.0900, 15.1500, 14.4500, 14.8300, 14.8300, 246100, yfinance, 2026-02-19 08:24:41.207158, US:ACAD)を含みます"
+    },
+    {
+      "symbol_key": "US:ACB",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2014-07-15, 75.7956, 81.2343, 69.5468, 69.5468, 69.5468, 1664, yfinance, 2026-02-19 08:24:41.356164, US:ACB)を含みます"
+    },
+    {
+      "symbol_key": "US:ACCL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 83,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2025-10-17, 4.0500, 4.4500, 4.0000, 4.0500, 4.0500, 2581700, yfinance, 2026-02-19 08:24:41.449344, US:ACCL)を含みます"
+    },
+    {
+      "symbol_key": "US:ACCO",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 23.7000, 23.7800, 23.3500, 23.3500, 16.2878, 107600, yfinance, 2026-02-19 08:24:41.705799, US:ACCO)を含みます"
+    },
+    {
+      "symbol_key": "US:ACCS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2008-01-23, 7.4000, 7.4000, 7.4000, 7.4000, 6.5615, 0, yfinance, 2026-02-19 08:24:42.022068, US:ACCS)を含みます"
+    },
+    {
+      "symbol_key": "US:ACDC",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 943,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2022-05-13, 17.6000, 18.9500, 17.6000, 18.1100, 18.1100, 6325600, yfinance, 2026-02-19 08:24:42.194872, US:ACDC)を含みます"
+    },
+    {
+      "symbol_key": "US:ACEL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2131,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2017-08-24, 9.8000, 9.8000, 9.8000, 9.8000, 9.8000, 400, yfinance, 2026-02-19 08:24:42.388644, US:ACEL)を含みます"
+    },
+    {
+      "symbol_key": "US:ACET",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2025,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2018-01-26, 2085.4399, 2296.0000, 1815.5200, 1890.5601, 1890.5601, 21223, yfinance, 2026-02-19 08:24:42.518981, US:ACET)を含みます"
+    },
+    {
+      "symbol_key": "US:ACFN",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 30.0800, 31.2000, 29.6000, 30.4000, 29.3376, 1031, yfinance, 2026-02-19 08:24:42.712932, US:ACFN)を含みます"
+    },
+    {
+      "symbol_key": "US:ACGL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 6.2222, 6.3244, 6.2056, 6.2633, 5.9558, 3969900, yfinance, 2026-02-19 08:24:43.014859, US:ACGL)を含みます"
+    },
+    {
+      "symbol_key": "US:ACH",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 21.0000, 21.0000, 20.5333, 20.6133, 14.1421, 309450, yfinance, 2026-02-19 08:24:43.299826, US:ACH)を含みます"
+    },
+    {
+      "symbol_key": "US:ACHC",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 7.7600, 8.0000, 7.7600, 8.0000, 8.0000, 16825, yfinance, 2026-02-19 08:24:43.65504, US:ACHC)を含みます"
+    },
+    {
+      "symbol_key": "US:ACHR",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1295,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2020-12-18, 10.1500, 10.1500, 9.9600, 9.9700, 9.9700, 54500, yfinance, 2026-02-19 08:24:43.837188, US:ACHR)を含みます"
+    },
+    {
+      "symbol_key": "US:ACHV",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 201960.0000, 207108.0000, 198396.0000, 202356.0000, 202356.0000, 4, yfinance, 2026-02-19 08:24:44.144034, US:ACHV)を含みます"
+    },
+    {
+      "symbol_key": "US:ACI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1417,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2020-06-26, 15.5000, 16.5000, 15.3100, 15.4500, 10.1892, 37289500, yfinance, 2026-02-19 08:24:44.272136, US:ACI)を含みます"
+    },
+    {
+      "symbol_key": "US:ACIC",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2007-11-07, 7.2500, 7.2500, 7.1500, 7.1500, 4.9389, 437500, yfinance, 2026-02-19 08:24:44.59269, US:ACIC)を含みます"
+    },
+    {
+      "symbol_key": "US:ACIU",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2362,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2016-09-23, 14.1100, 16.8000, 14.1100, 15.6600, 15.6600, 3775900, yfinance, 2026-02-19 08:24:44.851191, US:ACIU)を含みます"
+    },
+    {
+      "symbol_key": "US:ACIW",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 10.3000, 10.3000, 9.9067, 9.9167, 9.9167, 748500, yfinance, 2026-02-19 08:24:45.090135, US:ACIW)を含みます"
+    },
+    {
+      "symbol_key": "US:ACLS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 30.6000, 30.8400, 29.3200, 29.7200, 29.7200, 268575, yfinance, 2026-02-19 08:24:45.448069, US:ACLS)を含みます"
+    },
+    {
+      "symbol_key": "US:ACLX",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1011,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2022-02-04, 19.0000, 19.0000, 15.7930, 16.8000, 16.8000, 1093100, yfinance, 2026-02-19 08:24:45.561382, US:ACLX)を含みます"
+    },
+    {
+      "symbol_key": "US:ACM",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2007-05-10, 21.1000, 21.9900, 20.6000, 21.1000, 20.2918, 20007900, yfinance, 2026-02-19 08:24:45.880966, US:ACM)を含みます"
+    },
+    {
+      "symbol_key": "US:ACMR",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2082,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2017-11-02, 1.8667, 1.8667, 1.8667, 1.8667, 1.8667, 300, yfinance, 2026-02-19 08:24:46.015781, US:ACMR)を含みます"
+    },
+    {
+      "symbol_key": "US:ACN",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 32.5500, 32.6700, 32.2500, 32.3400, 22.8783, 1564100, yfinance, 2026-02-19 08:24:46.265182, US:ACN)を含みます"
+    },
+    {
+      "symbol_key": "US:ACNB",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 18.1406, 18.3673, 18.1406, 18.1406, 8.2331, 4190, yfinance, 2026-02-19 08:24:46.554747, US:ACNB)を含みます"
+    },
+    {
+      "symbol_key": "US:ACNT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 12.5300, 12.9500, 12.5300, 12.8000, 10.0269, 4000, yfinance, 2026-02-19 08:24:46.816779, US:ACNT)を含みます"
+    },
+    {
+      "symbol_key": "US:ACON",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 958,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2022-04-22, 419688.0000, 476128.8125, 312595.1875, 393638.4063, 393638.4063, 12, yfinance, 2026-02-19 08:24:46.926192, US:ACON)を含みます"
+    },
+    {
+      "symbol_key": "US:ACRS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2015-10-06, 11.0000, 11.0000, 11.0000, 11.0000, 11.0000, 0, yfinance, 2026-02-19 08:24:47.062663, US:ACRS)を含みます"
+    },
+    {
+      "symbol_key": "US:ACRV",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 815,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2022-11-15, 13.3500, 17.0900, 12.7080, 16.6400, 16.6400, 528000, yfinance, 2026-02-19 08:24:47.1737, US:ACRV)を含みます"
+    },
+    {
+      "symbol_key": "US:ACT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1109,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-09-16, 20.0000, 21.3490, 19.5100, 20.4900, 16.5927, 3415200, yfinance, 2026-02-19 08:24:47.296756, US:ACT)を含みます"
+    },
+    {
+      "symbol_key": "US:ACTG",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 7.9000, 7.9500, 7.8600, 7.9400, 7.1730, 76900, yfinance, 2026-02-19 08:24:47.536173, US:ACTG)を含みます"
+    },
+    {
+      "symbol_key": "US:ACTU",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 379,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2024-08-13, 9.8800, 9.8800, 7.5000, 8.6100, 8.6100, 91800, yfinance, 2026-02-19 08:24:47.638324, US:ACTU)を含みます"
+    },
+    {
+      "symbol_key": "US:ACU",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 12.8300, 12.8300, 12.7000, 12.8200, 8.6944, 4000, yfinance, 2026-02-19 08:24:47.873226, US:ACU)を含みます"
+    },
+    {
+      "symbol_key": "US:ACVA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1231,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-03-24, 32.0000, 34.5000, 29.0000, 31.2500, 31.2500, 11332700, yfinance, 2026-02-19 08:24:48.059932, US:ACVA)を含みます"
+    },
+    {
+      "symbol_key": "US:ACWI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2008-03-28, 50.1000, 50.1000, 50.1000, 50.1000, 35.6690, 200, yfinance, 2026-02-19 08:24:48.307347, US:ACWI)を含みます"
+    },
+    {
+      "symbol_key": "US:ACXP",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1166,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-06-25, 119.0000, 174.8000, 112.0000, 157.8000, 157.8000, 730775, yfinance, 2026-02-19 08:24:48.425238, US:ACXP)を含みます"
+    },
+    {
+      "symbol_key": "US:AD",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 53.7000, 54.0300, 53.2400, 53.5800, 26.5988, 35100, yfinance, 2026-02-19 08:24:48.629227, US:AD)を含みます"
+    },
+    {
+      "symbol_key": "US:ADAG",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1261,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-02-09, 20.4000, 31.0000, 20.2100, 29.9900, 29.9900, 5135300, yfinance, 2026-02-19 08:24:48.81122, US:ADAG)を含みます"
+    },
+    {
+      "symbol_key": "US:ADBE",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 37.7100, 38.3600, 37.5200, 38.1000, 38.1000, 4945800, yfinance, 2026-02-19 08:24:49.207367, US:ADBE)を含みます"
+    },
+    {
+      "symbol_key": "US:ADCT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1445,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2020-05-18, 30.0000, 30.9900, 29.7300, 30.0000, 30.0000, 819800, yfinance, 2026-02-19 08:24:49.329868, US:ADCT)を含みます"
+    },
+    {
+      "symbol_key": "US:ADEA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 14.2948, 14.2948, 13.8085, 13.9431, 6.5769, 894983, yfinance, 2026-02-19 08:24:49.716946, US:ADEA)を含みます"
+    },
+    {
+      "symbol_key": "US:ADGM",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 387,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2024-08-01, 8.0000, 9.0500, 6.4400, 9.0500, 9.0500, 127600, yfinance, 2026-02-19 08:24:49.815109, US:ADGM)を含みます"
+    },
+    {
+      "symbol_key": "US:ADI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 38.7900, 39.0000, 37.6000, 37.8800, 23.5911, 3446300, yfinance, 2026-02-19 08:24:50.165447, US:ADI)を含みます"
+    },
+    {
+      "symbol_key": "US:ADIL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1899,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2018-07-27, 2500.0000, 2750.0000, 2468.7500, 2531.2500, 2531.2500, 457, yfinance, 2026-02-19 08:24:50.359869, US:ADIL)を含みます"
+    },
+    {
+      "symbol_key": "US:ADM",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 30.3000, 31.3200, 30.1900, 31.1900, 19.1412, 6584500, yfinance, 2026-02-19 08:24:50.723809, US:ADM)を含みます"
+    },
+    {
+      "symbol_key": "US:ADMA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2013-10-17, 7.0000, 8.9100, 7.0000, 8.5500, 8.5500, 0, yfinance, 2026-02-19 08:24:50.875511, US:ADMA)を含みます"
+    },
+    {
+      "symbol_key": "US:ADNT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2346,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2016-10-17, 50.6000, 54.0000, 48.1200, 49.3500, 48.1566, 2547900, yfinance, 2026-02-19 08:24:51.030125, US:ADNT)を含みます"
+    },
+    {
+      "symbol_key": "US:ADP",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 35.5610, 35.6324, 35.2120, 35.2596, 21.7978, 2793091, yfinance, 2026-02-19 08:24:51.335323, US:ADP)を含みます"
+    },
+    {
+      "symbol_key": "US:ADPT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1669,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2019-06-27, 39.0100, 40.6200, 36.2100, 40.3000, 40.3000, 11245600, yfinance, 2026-02-19 08:24:51.526753, US:ADPT)を含みます"
+    },
+    {
+      "symbol_key": "US:ADSK",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 36.3000, 36.5200, 35.6500, 36.1700, 36.1700, 1747500, yfinance, 2026-02-19 08:24:51.78384, US:ADSK)を含みます"
+    },
+    {
+      "symbol_key": "US:ADT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2030,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2018-01-19, 12.6500, 12.9700, 12.0000, 12.3900, 9.6268, 68187400, yfinance, 2026-02-19 08:24:51.924131, US:ADT)を含みます"
+    },
+    {
+      "symbol_key": "US:ADTN",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 28.4600, 28.6600, 27.6400, 27.8800, 19.8610, 641300, yfinance, 2026-02-19 08:24:52.162998, US:ADTN)を含みます"
+    },
+    {
+      "symbol_key": "US:ADTX",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 821,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "numericフィールドのオーバーフロー\nDETAIL:  精度12、位取り4を持つフィールドは、10^8より小さな絶対値に丸められます。"
+    },
+    {
+      "symbol_key": "US:ADUS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2009-10-28, 9.4000, 9.5000, 8.3700, 8.4900, 8.4900, 2471500, yfinance, 2026-02-19 08:24:52.517908, US:ADUS)を含みます"
+    },
+    {
+      "symbol_key": "US:ADV",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1539,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2020-01-02, 10.4000, 10.4000, 10.4000, 10.4000, 10.4000, 0, yfinance, 2026-02-19 08:24:52.709416, US:ADV)を含みます"
+    },
+    {
+      "symbol_key": "US:ADVB",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 239,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2025-03-06, 4.0000, 4.1000, 3.6000, 3.6500, 3.6500, 525400, yfinance, 2026-02-19 08:24:52.810004, US:ADVB)を含みます"
+    },
+    {
+      "symbol_key": "US:ADXN",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1511,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2020-02-12, 226.4000, 226.4000, 226.0000, 226.0000, 226.0000, 50, yfinance, 2026-02-19 08:24:53.007761, US:ADXN)を含みます"
+    },
+    {
+      "symbol_key": "US:AEBI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 158,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2025-07-02, 32.9400, 33.0000, 10.1000, 11.1800, 11.1314, 3923200, yfinance, 2026-02-19 08:24:53.107046, US:AEBI)を含みます"
+    },
+    {
+      "symbol_key": "US:AEE",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 50.1900, 50.7100, 50.0900, 50.5400, 22.5188, 689000, yfinance, 2026-02-19 08:24:53.366779, US:AEE)を含みます"
+    },
+    {
+      "symbol_key": "US:AEG",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 16.4400, 16.4700, 16.2300, 16.2900, 7.3830, 251800, yfinance, 2026-02-19 08:24:53.626384, US:AEG)を含みます"
+    },
+    {
+      "symbol_key": "US:AEHL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2007-12-17, 86400.0000, 86400.0000, 86400.0000, 86400.0000, 77311.9453, 8, yfinance, 2026-02-19 08:24:53.857946, US:AEHL)を含みます"
+    },
+    {
+      "symbol_key": "US:AEHR",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 4.1200, 4.1200, 3.8600, 4.0400, 4.0400, 1800, yfinance, 2026-02-19 08:24:54.158934, US:AEHR)を含みます"
+    },
+    {
+      "symbol_key": "US:AEI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1311,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2020-11-25, 140.0000, 140.0000, 122.0000, 122.0000, 122.0000, 49915, yfinance, 2026-02-19 08:24:54.279392, US:AEI)を含みます"
+    },
+    {
+      "symbol_key": "US:AEIS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 15.3400, 16.0800, 15.3400, 16.0000, 15.6924, 651500, yfinance, 2026-02-19 08:24:54.615022, US:AEIS)を含みます"
+    },
+    {
+      "symbol_key": "US:AEM",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 26.7200, 27.0400, 25.7400, 26.3600, 20.0827, 1570200, yfinance, 2026-02-19 08:24:54.884373, US:AEM)を含みます"
+    },
+    {
+      "symbol_key": "US:AEMD",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 222000.0000, 234000.0000, 198000.0000, 228000.0000, 228000.0000, 1, yfinance, 2026-02-19 08:24:55.072095, US:AEMD)を含みます"
+    },
+    {
+      "symbol_key": "US:AENT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1231,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-03-24, 10.8000, 10.8000, 9.7500, 9.7500, 9.7500, 14300, yfinance, 2026-02-19 08:24:55.255491, US:AENT)を含みます"
+    },
+    {
+      "symbol_key": "US:AEO",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 17.2333, 17.2600, 16.6000, 16.8267, 8.8854, 2931600, yfinance, 2026-02-19 08:24:55.541934, US:AEO)を含みます"
+    },
+    {
+      "symbol_key": "US:AEP",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 36.5200, 36.6400, 36.1100, 36.1600, 16.4995, 1363300, yfinance, 2026-02-19 08:24:55.935431, US:AEP)を含みます"
+    },
+    {
+      "symbol_key": "US:AER",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-11-21, 25.0000, 25.1000, 23.0000, 23.0200, 22.6634, 16006200, yfinance, 2026-02-19 08:24:56.24193, US:AER)を含みます"
+    },
+    {
+      "symbol_key": "US:AERO",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 69,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2025-11-06, 19.1600, 20.5300, 19.1100, 20.3500, 20.3500, 4944200, yfinance, 2026-02-19 08:24:56.338222, US:AERO)を含みます"
+    },
+    {
+      "symbol_key": "US:AES",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 17.6900, 17.8300, 17.4700, 17.4900, 11.1627, 1333800, yfinance, 2026-02-19 08:24:56.611258, US:AES)を含みます"
+    },
+    {
+      "symbol_key": "US:AESI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 738,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2023-03-09, 17.5000, 17.8600, 15.7700, 16.9500, 14.8250, 6072600, yfinance, 2026-02-19 08:24:56.79356, US:AESI)を含みます"
+    },
+    {
+      "symbol_key": "US:AEVA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1501,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2020-02-27, 48.0000, 49.4000, 48.0000, 49.2500, 49.2500, 176540, yfinance, 2026-02-19 08:24:57.004718, US:AEVA)を含みます"
+    },
+    {
+      "symbol_key": "US:AEXA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 98,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2025-09-26, 10.6000, 10.9300, 10.5300, 10.6100, 10.6100, 12125300, yfinance, 2026-02-19 08:24:57.104589, US:AEXA)を含みます"
+    },
+    {
+      "symbol_key": "US:AEYE",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2013-04-26, 12.7500, 75.0000, 12.7500, 28.0000, 28.0000, 388, yfinance, 2026-02-19 08:24:57.376739, US:AEYE)を含みます"
+    },
+    {
+      "symbol_key": "US:AFBI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2213,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2017-04-28, 12.9581, 14.7461, 12.7152, 14.6689, 13.5626, 1449419, yfinance, 2026-02-19 08:24:57.512045, US:AFBI)を含みます"
+    },
+    {
+      "symbol_key": "US:AFG",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 26.4800, 26.5800, 26.2333, 26.5800, 10.0804, 723450, yfinance, 2026-02-19 08:24:57.808702, US:AFG)を含みます"
+    },
+    {
+      "symbol_key": "US:AFK",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2008-07-14, 41.3200, 41.4000, 41.3200, 41.4000, 26.3116, 4000, yfinance, 2026-02-19 08:24:58.119671, US:AFK)を含みます"
+    },
+    {
+      "symbol_key": "US:AFL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 23.5000, 23.5550, 23.2200, 23.2850, 14.6348, 3093000, yfinance, 2026-02-19 08:24:58.588427, US:AFL)を含みます"
+    },
+    {
+      "symbol_key": "US:AFRI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1263,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-02-05, 10.2500, 10.2500, 10.1400, 10.2000, 10.2000, 26400, yfinance, 2026-02-19 08:24:58.702414, US:AFRI)を含みます"
+    },
+    {
+      "symbol_key": "US:AFRM",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1279,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-01-13, 90.9000, 103.0000, 90.0100, 96.3650, 96.3650, 25159000, yfinance, 2026-02-19 08:24:58.87986, US:AFRM)を含みます"
+    },
+    {
+      "symbol_key": "US:AFRU",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 106,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2025-09-16, 24.0580, 25.5100, 24.0490, 25.5100, 25.5100, 2000, yfinance, 2026-02-19 08:24:59.109612, US:AFRU)を含みます"
+    },
+    {
+      "symbol_key": "US:AFYA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1654,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2019-07-19, 23.5000, 24.3000, 22.0000, 23.8450, 23.5389, 7332400, yfinance, 2026-02-19 08:24:59.311165, US:AFYA)を含みます"
+    },
+    {
+      "symbol_key": "US:AG",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-11-28, 3.9000, 3.9000, 3.7300, 3.9000, 3.8507, 19800, yfinance, 2026-02-19 08:24:59.552543, US:AG)を含みます"
+    },
+    {
+      "symbol_key": "US:AGAE",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2088,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2017-10-25, 9.6300, 9.6300, 9.5700, 9.5800, 9.5800, 665300, yfinance, 2026-02-19 08:24:59.813164, US:AGAE)を含みます"
+    },
+    {
+      "symbol_key": "US:AGCC",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 80,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2025-10-22, 3.8200, 8.2500, 3.6600, 6.0500, 6.0500, 2125600, yfinance, 2026-02-19 08:24:59.91014, US:AGCC)を含みます"
+    },
+    {
+      "symbol_key": "US:AGCO",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 19.3000, 19.4100, 18.6900, 19.0400, 14.8931, 1420800, yfinance, 2026-02-19 08:25:00.194433, US:AGCO)を含みます"
+    },
+    {
+      "symbol_key": "US:AGEN",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 810.2061, 847.8901, 794.8970, 800.7851, 800.7851, 4699, yfinance, 2026-02-19 08:25:00.447081, US:AGEN)を含みます"
+    },
+    {
+      "symbol_key": "US:AGG",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 100.2700, 100.2900, 99.8800, 99.9000, 53.4534, 276700, yfinance, 2026-02-19 08:25:00.696445, US:AGG)を含みます"
+    },
+    {
+      "symbol_key": "US:AGGY",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2015-07-09, 49.9500, 49.9800, 49.9100, 49.9100, 35.3684, 4000, yfinance, 2026-02-19 08:25:00.932593, US:AGGY)を含みます"
+    },
+    {
+      "symbol_key": "US:AGH",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 254,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2025-02-12, 4.3700, 4.4800, 3.7200, 3.8800, 3.8800, 2345800, yfinance, 2026-02-19 08:25:01.03103, US:AGH)を含みます"
+    },
+    {
+      "symbol_key": "US:AGI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 7.7600, 7.7600, 7.7400, 7.7600, 6.8040, 2100, yfinance, 2026-02-19 08:25:01.264895, US:AGI)を含みます"
+    },
+    {
+      "symbol_key": "US:AGIG",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 412.5000, 412.5000, 412.5000, 412.5000, 396.7591, 10, yfinance, 2026-02-19 08:25:01.579539, US:AGIG)を含みます"
+    },
+    {
+      "symbol_key": "US:AGIO",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2013-07-24, 29.0000, 32.0000, 27.1600, 31.2800, 31.2800, 6203200, yfinance, 2026-02-19 08:25:01.783524, US:AGIO)を含みます"
+    },
+    {
+      "symbol_key": "US:AGIX",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 397,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2024-07-18, 25.3600, 28.1000, 24.6300, 24.8000, 24.4154, 53000, yfinance, 2026-02-19 08:25:01.884654, US:AGIX)を含みます"
+    },
+    {
+      "symbol_key": "US:AGL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1216,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-04-15, 28.2500, 31.6900, 26.5000, 31.0000, 31.0000, 14524200, yfinance, 2026-02-19 08:25:02.004716, US:AGL)を含みます"
+    },
+    {
+      "symbol_key": "US:AGM",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 31.1200, 31.1200, 29.9000, 30.1900, 17.8415, 25700, yfinance, 2026-02-19 08:25:02.26005, US:AGM)を含みます"
+    },
+    {
+      "symbol_key": "US:AGMH",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1969,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2018-04-18, 287.5000, 375.0000, 250.5000, 315.0000, 315.0000, 5836, yfinance, 2026-02-19 08:25:02.401086, US:AGMH)を含みます"
+    },
+    {
+      "symbol_key": "US:AGO",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 26.3700, 26.3700, 25.9900, 26.0400, 19.0216, 132000, yfinance, 2026-02-19 08:25:02.950501, US:AGO)を含みます"
+    },
+    {
+      "symbol_key": "US:AGPU",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2010-05-03, 1968750.0000, 1968750.0000, 1968750.0000, 1968750.0000, 1968750.0000, 0, yfinance, 2026-02-19 08:25:03.233551, US:AGPU)を含みます"
+    },
+    {
+      "symbol_key": "US:AGRO",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2011-01-28, 10.7500, 12.1100, 10.7500, 12.0000, 10.6756, 8782300, yfinance, 2026-02-19 08:25:03.526057, US:AGRO)を含みます"
+    },
+    {
+      "symbol_key": "US:AGRZ",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 95,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2025-10-01, 4.0500, 4.5000, 2.8100, 3.1200, 3.1200, 1317000, yfinance, 2026-02-19 08:25:03.62216, US:AGRZ)を含みます"
+    },
+    {
+      "symbol_key": "US:AGX",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 2.2500, 2.2500, 2.0000, 2.0000, 1.3403, 1300, yfinance, 2026-02-19 08:25:03.95203, US:AGX)を含みます"
+    },
+    {
+      "symbol_key": "US:AGYS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 15.3100, 15.3500, 15.0000, 15.2200, 14.6038, 227200, yfinance, 2026-02-19 08:25:04.240117, US:AGYS)を含みます"
+    },
+    {
+      "symbol_key": "US:AHCO",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1939,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2018-05-31, 9.7000, 9.7000, 9.7000, 9.7000, 9.7000, 0, yfinance, 2026-02-19 08:25:04.371496, US:AHCO)を含みます"
+    },
+    {
+      "symbol_key": "US:AHL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 195,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2025-05-08, 33.2500, 34.0000, 31.6600, 32.5000, 32.5000, 6576600, yfinance, 2026-02-19 08:25:04.469435, US:AHL)を含みます"
+    },
+    {
+      "symbol_key": "US:AHMA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 81,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2025-10-21, 4.0000, 5.4000, 4.0000, 4.6500, 4.6500, 2931800, yfinance, 2026-02-19 08:25:04.563222, US:AHMA)を含みます"
+    },
+    {
+      "symbol_key": "US:AI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1302,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2020-12-09, 100.0000, 115.0000, 90.0300, 92.4900, 92.4900, 24805600, yfinance, 2026-02-19 08:25:04.744199, US:AI)を含みます"
+    },
+    {
+      "symbol_key": "US:AIFF",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 21.3000, 21.3000, 21.3000, 21.3000, 21.3000, 0, yfinance, 2026-02-19 08:25:04.965282, US:AIFF)を含みます"
+    },
+    {
+      "symbol_key": "US:AIFU",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2007-11-01, 507.0000, 510.0000, 451.6000, 478.0000, 369.4095, 163235, yfinance, 2026-02-19 08:25:05.161218, US:AIFU)を含みます"
+    },
+    {
+      "symbol_key": "US:AIG",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 1347.2000, 1348.0000, 1336.4000, 1345.2000, 811.4726, 245690, yfinance, 2026-02-19 08:25:05.545178, US:AIG)を含みます"
+    },
+    {
+      "symbol_key": "US:AII",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 195,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2025-05-08, 18.5000, 19.4500, 16.7000, 16.9000, 16.9000, 3693300, yfinance, 2026-02-19 08:25:05.641475, US:AII)を含みます"
+    },
+    {
+      "symbol_key": "US:AIIO",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1485,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2020-03-20, 9.3500, 9.3500, 9.3500, 9.3500, 9.3500, 5000, yfinance, 2026-02-19 08:25:05.826148, US:AIIO)を含みます"
+    },
+    {
+      "symbol_key": "US:AIMD",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1282,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-01-08, 81.3750, 81.3750, 57.3750, 57.3750, 57.3750, 102, yfinance, 2026-02-19 08:25:05.950575, US:AIMD)を含みます"
+    },
+    {
+      "symbol_key": "US:AIN",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 35.9300, 35.9300, 35.2200, 35.8700, 25.5751, 182400, yfinance, 2026-02-19 08:25:06.215651, US:AIN)を含みます"
+    },
+    {
+      "symbol_key": "US:AIOT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 20.0000, 20.5000, 19.4000, 19.8000, 19.8000, 162400, yfinance, 2026-02-19 08:25:06.533689, US:AIOT)を含みます"
+    },
+    {
+      "symbol_key": "US:AIP",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1080,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-10-27, 16.5100, 19.7500, 15.1000, 18.2000, 18.2000, 1860100, yfinance, 2026-02-19 08:25:06.647596, US:AIP)を含みます"
+    },
+    {
+      "symbol_key": "US:AIPI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 427,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2024-06-04, 50.4800, 50.6800, 50.3850, 50.6700, 28.9672, 5800, yfinance, 2026-02-19 08:25:06.76264, US:AIPI)を含みます"
+    },
+    {
+      "symbol_key": "US:AIQ",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1949,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2018-05-16, 15.0400, 15.0600, 15.0100, 15.0360, 14.6085, 6200, yfinance, 2026-02-19 08:25:07.035702, US:AIQ)を含みます"
+    },
+    {
+      "symbol_key": "US:AIR",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 26.0000, 26.1000, 25.2400, 26.0900, 23.4904, 495000, yfinance, 2026-02-19 08:25:07.368209, US:AIR)を含みます"
+    },
+    {
+      "symbol_key": "US:AIRG",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2391,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2016-08-12, 8.0000, 8.3700, 7.3610, 8.0000, 8.0000, 848700, yfinance, 2026-02-19 08:25:07.513414, US:AIRG)を含みます"
+    },
+    {
+      "symbol_key": "US:AIRI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 2200.0000, 2600.0000, 2200.0000, 2400.0000, 2029.7695, 12, yfinance, 2026-02-19 08:25:07.768156, US:AIRI)を含みます"
+    },
+    {
+      "symbol_key": "US:AIRJ",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1014,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2022-02-01, 9.8900, 9.8900, 9.8900, 9.8900, 9.8900, 200, yfinance, 2026-02-19 08:25:07.881725, US:AIRJ)を含みます"
+    },
+    {
+      "symbol_key": "US:AIRO",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 170,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2025-06-13, 12.9000, 39.0700, 12.9000, 24.0000, 24.0000, 14713400, yfinance, 2026-02-19 08:25:07.97864, US:AIRO)を含みます"
+    },
+    {
+      "symbol_key": "US:AIRR",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2014-03-11, 20.0100, 20.0100, 19.6900, 19.6900, 19.1757, 1300, yfinance, 2026-02-19 08:25:08.158752, US:AIRR)を含みます"
+    },
+    {
+      "symbol_key": "US:AIRS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1078,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-10-29, 12.8400, 18.0400, 12.8400, 15.8900, 15.2313, 5548500, yfinance, 2026-02-19 08:25:08.276111, US:AIRS)を含みます"
+    },
+    {
+      "symbol_key": "US:AIRT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 7.9067, 7.9067, 7.7600, 7.7600, 6.1516, 66750, yfinance, 2026-02-19 08:25:08.482782, US:AIRT)を含みます"
+    },
+    {
+      "symbol_key": "US:AISP",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1199,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-05-10, 9.9100, 9.9100, 9.8000, 9.8000, 9.8000, 17700, yfinance, 2026-02-19 08:25:08.593641, US:AISP)を含みます"
+    },
+    {
+      "symbol_key": "US:AIT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 28.6667, 28.8800, 27.9067, 28.4667, 19.4969, 213150, yfinance, 2026-02-19 08:25:08.865715, US:AIT)を含みます"
+    },
+    {
+      "symbol_key": "US:AIXC",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2015-06-23, 625000.0000, 625000.0000, 625000.0000, 625000.0000, 625000.0000, 0, yfinance, 2026-02-19 08:25:09.086538, US:AIXC)を含みます"
+    },
+    {
+      "symbol_key": "US:AIZ",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 44.7700, 45.0000, 44.2600, 44.4500, 30.8744, 627400, yfinance, 2026-02-19 08:25:09.373469, US:AIZ)を含みます"
+    },
+    {
+      "symbol_key": "US:AJG",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 29.6500, 29.7400, 29.5100, 29.7400, 16.3485, 688200, yfinance, 2026-02-19 08:25:09.785816, US:AJG)を含みます"
+    },
+    {
+      "symbol_key": "US:AKA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1105,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-09-22, 114.0000, 130.5600, 111.6000, 119.8800, 119.8800, 620708, yfinance, 2026-02-19 08:25:09.895674, US:AKA)を含みます"
+    },
+    {
+      "symbol_key": "US:AKAM",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 26.9900, 27.0000, 26.6700, 26.7000, 26.7000, 1811600, yfinance, 2026-02-19 08:25:10.098679, US:AKAM)を含みます"
+    },
+    {
+      "symbol_key": "US:AKAN",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 985,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2022-03-15, 375000.0000, 387500.0000, 102250.0000, 131250.0000, 131250.0000, 109, yfinance, 2026-02-19 08:25:10.212695, US:AKAN)を含みます"
+    },
+    {
+      "symbol_key": "US:AKBA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2014-03-20, 22.9000, 28.5000, 20.6200, 26.6950, 26.6950, 4677300, yfinance, 2026-02-19 08:25:10.365338, US:AKBA)を含みます"
+    },
+    {
+      "symbol_key": "US:AKTS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 26,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2026-01-09, 27.0000, 29.1600, 19.3330, 22.4000, 22.4000, 3117000, yfinance, 2026-02-19 08:25:10.463013, US:AKTS)を含みます"
+    },
+    {
+      "symbol_key": "US:AL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2011-04-19, 27.2500, 28.4000, 26.7500, 27.9500, 23.6639, 20033300, yfinance, 2026-02-19 08:25:10.697459, US:AL)を含みます"
+    },
+    {
+      "symbol_key": "US:ALAB",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 479,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2024-03-20, 52.5600, 63.5000, 50.6100, 62.0300, 62.0300, 16843300, yfinance, 2026-02-19 08:25:10.802412, US:ALAB)を含みます"
+    },
+    {
+      "symbol_key": "US:ALB",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 21.5000, 21.5900, 21.3900, 21.5900, 16.1735, 268400, yfinance, 2026-02-19 08:25:11.138854, US:ALB)を含みます"
+    },
+    {
+      "symbol_key": "US:ALBT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1984,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2018-03-27, 306.0000, 372.0000, 306.0000, 337.5000, 337.5000, 61, yfinance, 2026-02-19 08:25:11.334266, US:ALBT)を含みます"
+    },
+    {
+      "symbol_key": "US:ALC",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1724,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2019-04-09, 57.9500, 58.7300, 57.6700, 58.0400, 57.2163, 10608300, yfinance, 2026-02-19 08:25:11.536207, US:ALC)を含みます"
+    },
+    {
+      "symbol_key": "US:ALCO",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 45.4300, 45.7000, 45.0300, 45.2600, 33.9036, 5100, yfinance, 2026-02-19 08:25:11.83229, US:ALCO)を含みます"
+    },
+    {
+      "symbol_key": "US:ALCY",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 656,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2023-07-07, 10.2400, 10.2400, 10.2400, 10.2400, 10.2400, 0, yfinance, 2026-02-19 08:25:11.934651, US:ALCY)を含みます"
+    },
+    {
+      "symbol_key": "US:ALDF",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 293,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2024-12-13, 9.9500, 9.9500, 9.9000, 9.9000, 9.9000, 300, yfinance, 2026-02-19 08:25:12.036311, US:ALDF)を含みます"
+    },
+    {
+      "symbol_key": "US:ALDX",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2014-05-02, 7.5000, 7.6900, 6.0100, 7.2000, 7.2000, 579900, yfinance, 2026-02-19 08:25:12.310241, US:ALDX)を含みます"
+    },
+    {
+      "symbol_key": "US:ALEC",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1766,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2019-02-07, 18.7000, 19.5000, 18.0000, 18.0800, 18.0800, 3626100, yfinance, 2026-02-19 08:25:12.50043, US:ALEC)を含みます"
+    },
+    {
+      "symbol_key": "US:ALF",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 387,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2024-08-01, 9.9800, 10.0300, 9.9800, 10.0200, 10.0200, 1900, yfinance, 2026-02-19 08:25:12.600483, US:ALF)を含みます"
+    },
+    {
+      "symbol_key": "US:ALG",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 24.0900, 24.3600, 24.0100, 24.0600, 20.7119, 5100, yfinance, 2026-02-19 08:25:12.865705, US:ALG)を含みます"
+    },
+    {
+      "symbol_key": "US:ALGM",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1330,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2020-10-29, 19.4000, 19.7400, 17.0200, 17.7000, 17.7000, 11098400, yfinance, 2026-02-19 08:25:13.051972, US:ALGM)を含みます"
+    },
+    {
+      "symbol_key": "US:ALGN",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 8.4500, 8.4800, 7.9300, 8.0000, 8.0000, 802800, yfinance, 2026-02-19 08:25:13.343759, US:ALGN)を含みます"
+    },
+    {
+      "symbol_key": "US:ALGS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1339,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2020-10-16, 435.0000, 437.5000, 340.7500, 371.2500, 371.2500, 110456, yfinance, 2026-02-19 08:25:13.462358, US:ALGS)を含みます"
+    },
+    {
+      "symbol_key": "US:ALGT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-12-08, 24.0000, 26.2500, 24.0000, 25.1000, 20.3304, 5542000, yfinance, 2026-02-19 08:25:13.854278, US:ALGT)を含みます"
+    },
+    {
+      "symbol_key": "US:ALH",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 89,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2025-10-09, 24.5000, 25.2400, 23.5000, 24.8200, 24.8200, 14698300, yfinance, 2026-02-19 08:25:13.94574, US:ALH)を含みます"
+    },
+    {
+      "symbol_key": "US:ALHC",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1229,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-03-26, 19.0500, 19.7000, 16.3200, 17.3100, 17.3100, 5327000, yfinance, 2026-02-19 08:25:14.063257, US:ALHC)を含みます"
+    },
+    {
+      "symbol_key": "US:ALIT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1403,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2020-07-17, 10.7000, 10.7000, 10.4000, 10.4000, 9.9317, 6900, yfinance, 2026-02-19 08:25:14.187124, US:ALIT)を含みます"
+    },
+    {
+      "symbol_key": "US:ALK",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 7.9750, 8.0000, 7.8225, 7.8750, 7.0817, 1182400, yfinance, 2026-02-19 08:25:14.485326, US:ALK)を含みます"
+    },
+    {
+      "symbol_key": "US:ALKS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 23.6600, 23.8100, 22.7500, 22.8400, 22.8400, 1076600, yfinance, 2026-02-19 08:25:14.842797, US:ALKS)を含みます"
+    },
+    {
+      "symbol_key": "US:ALKT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1217,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-04-14, 41.2600, 49.3200, 41.0500, 43.0000, 43.0000, 5737400, yfinance, 2026-02-19 08:25:14.961508, US:ALKT)を含みます"
+    },
+    {
+      "symbol_key": "US:ALL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 54.0000, 54.0800, 53.6000, 53.8100, 33.0041, 3934300, yfinance, 2026-02-19 08:25:15.252314, US:ALL)を含みます"
+    },
+    {
+      "symbol_key": "US:ALLE",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2013-11-18, 49.7500, 50.0000, 47.4900, 48.4800, 42.7650, 587100, yfinance, 2026-02-19 08:25:15.432888, US:ALLE)を含みます"
+    },
+    {
+      "symbol_key": "US:ALLO",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1846,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2018-10-11, 22.0000, 25.9900, 21.6700, 25.0000, 25.0000, 8110200, yfinance, 2026-02-19 08:25:15.692584, US:ALLO)を含みます"
+    },
+    {
+      "symbol_key": "US:ALLR",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1042,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2021-12-21, 12474000.0000, 15288000.0000, 7400400.0000, 8820000.0000, 8820000.0000, 0, yfinance, 2026-02-19 08:25:15.804206, US:ALLR)を含みます"
+    },
+    {
+      "symbol_key": "US:ALLT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-11-16, 14.5000, 15.5300, 13.8100, 13.8100, 13.8100, 5704800, yfinance, 2026-02-19 08:25:16.022438, US:ALLT)を含みます"
+    },
+    {
+      "symbol_key": "US:ALLY",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2014-01-28, 25.8065, 25.9677, 25.8065, 25.9677, 19.8407, 527000, yfinance, 2026-02-19 08:25:16.204969, US:ALLY)を含みます"
+    },
+    {
+      "symbol_key": "US:ALMS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 410,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2024-06-28, 13.5000, 13.5300, 12.0200, 13.3000, 13.3000, 1767600, yfinance, 2026-02-19 08:25:16.311659, US:ALMS)を含みます"
+    },
+    {
+      "symbol_key": "US:ALNT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2006-02-21, 3.0000, 3.0000, 2.8867, 2.9067, 2.6761, 2550, yfinance, 2026-02-19 08:25:16.715909, US:ALNT)を含みます"
+    }
+  ],
+  "totals": {
+    "symbols": 200,
+    "failed": 200,
+    "fetched_rows": 0,
+    "inserted": 0,
+    "updated": 0
+  }
+}

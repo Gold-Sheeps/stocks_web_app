@@ -1,17 +1,33 @@
 from decimal import Decimal
-from datetime import datetime, timedelta
-from app.models.schemas import SectorPerformance, RotationResponse
+from datetime import datetime
+
 import psycopg
+
+from app.models.schemas import RotationResponse, SectorPerformance
+from app.services.freshness_service import FreshnessService
 
 
 class RotationService:
-    """Rotation画面のビジネスロジック"""
-    
+    """Rotation screen business logic."""
+
+    SECTOR_SYMBOLS = {
+        'US:XLK': 'Technology',
+        'US:XLV': 'Healthcare',
+        'US:XLF': 'Financials',
+        'US:XLE': 'Energy',
+        'US:XLY': 'Consumer Discretionary',
+        'US:XLP': 'Consumer Staples',
+        'US:XLI': 'Industrials',
+        'US:XLB': 'Materials',
+        'US:XLU': 'Utilities',
+        'US:XLRE': 'Real Estate',
+        'US:XLC': 'Communication Services',
+    }
+
     def __init__(self):
-        pass
-    
+        self.freshness_service = FreshnessService()
+
     def _get_db_connection(self):
-        """DB接続を取得"""
         return psycopg.connect(
             host="localhost",
             port=5432,
@@ -19,48 +35,35 @@ class RotationService:
             user="postgres",
             password="test"
         )
-    
+
     def get_sector_rotation(self) -> RotationResponse:
-        """セクターローテーションデータを取得"""
         sectors = self._get_sector_performance()
-        
+        freshness = self.freshness_service.price_freshness_for_symbols(
+            scope="rotation.sectors",
+            symbol_keys=list(self.SECTOR_SYMBOLS.keys()) + ["US:SPY"],
+            tz_name="America/New_York",
+            close_cutoff_hour_local=18,
+            note="Sector rotation uses US sector ETFs and SPY daily bars.",
+        )
         return RotationResponse(
             sectors=sectors,
-            last_updated=datetime.now()
+            last_updated=datetime.now(),
+            freshness=freshness,
         )
-    
+
     def _get_sector_performance(self) -> list[SectorPerformance]:
-        """セクター別パフォーマンスを計算（最適化版 - 一括クエリ）"""
-        
-        # 11セクターETF定義 (US: Prefix enforced)
-        sectors = {
-            'US:XLK': 'Technology',
-            'US:XLV': 'Healthcare',
-            'US:XLF': 'Financials',
-            'US:XLE': 'Energy',
-            'US:XLY': 'Consumer Discretionary',
-            'US:XLP': 'Consumer Staples',
-            'US:XLI': 'Industrials',
-            'US:XLB': 'Materials',
-            'US:XLU': 'Utilities',
-            'US:XLRE': 'Real Estate',
-            'US:XLC': 'Communication Services',
-        }
-        
         results = []
-        
+
         try:
             conn = self._get_db_connection()
             cursor = conn.cursor()
-            
-            # 全シンボル（11セクター + SPY）を一括で取得
-            all_symbols = list(sectors.keys()) + ['US:SPY']
+
+            all_symbols = list(self.SECTOR_SYMBOLS.keys()) + ['US:SPY']
             symbol_placeholders = ','.join(['%s'] * len(all_symbols))
-            
-            # 各シンボルの0日前、10日前、20日前、30日前の価格を一括取得
+
             cursor.execute(f"""
                 WITH target_dates AS (
-                    SELECT 
+                    SELECT
                         CURRENT_DATE as date_0,
                         CURRENT_DATE - INTERVAL '10 days' as date_10,
                         CURRENT_DATE - INTERVAL '20 days' as date_20,
@@ -102,7 +105,7 @@ class RotationService:
                       AND p.trading_date <= t.date_30
                     ORDER BY p.symbol_key, p.trading_date DESC
                 )
-                SELECT 
+                SELECT
                     p0.symbol_key,
                     p0.price_0,
                     p10.price_10,
@@ -113,8 +116,7 @@ class RotationService:
                 LEFT JOIN price_20 p20 ON p0.symbol_key = p20.symbol_key
                 LEFT JOIN price_30 p30 ON p0.symbol_key = p30.symbol_key
             """, all_symbols * 4)
-            
-            # 価格データをディクショナリに格納
+
             price_data = {}
             for row in cursor.fetchall():
                 symbol = row[0]
@@ -124,72 +126,61 @@ class RotationService:
                     'price_20': Decimal(str(row[3])) if row[3] else None,
                     'price_30': Decimal(str(row[4])) if row[4] else None,
                 }
-            
+
             cursor.close()
-            
-            # SPYのリターンを計算
+
             spy_data = price_data.get('US:SPY', {})
             spy_30 = spy_data.get('price_30')
             spy_0 = spy_data.get('price_0')
-            
             if spy_30 and spy_0 and spy_30 != 0:
                 spy_return = float(((spy_0 - spy_30) / spy_30) * 100)
             else:
                 spy_return = 0
-            
-            # 各セクターのパフォーマンスを計算
-            for symbol, name in sectors.items():
+
+            for symbol, name in self.SECTOR_SYMBOLS.items():
                 try:
                     data = price_data.get(symbol, {})
                     p0 = data.get('price_0')
                     p10 = data.get('price_10')
                     p20 = data.get('price_20')
                     p30 = data.get('price_30')
-                    
-                    # 30日リターン
+
                     if p0 and p30 and p30 != 0:
                         current_return = float(((p0 - p30) / p30) * 100)
                     else:
                         current_return = 0
-                    
-                    # 10日リターン
+
                     if p0 and p10 and p10 != 0:
                         return_10d = float(((p0 - p10) / p10) * 100)
                     else:
                         return_10d = 0
-                    
-                    # 20日リターン
+
                     if p0 and p20 and p20 != 0:
                         return_20d = float(((p0 - p20) / p20) * 100)
                     else:
                         return_20d = 0
-                    
-                    # モメンタム
+
                     momentum = return_10d - return_20d
-                    
-                    # 相対強度
                     if spy_return != 0:
                         relative_strength = (current_return / spy_return) * 100
                     else:
                         relative_strength = 100
-                    
+
                     results.append({
                         'sector': name,
                         'symbol': symbol,
                         'current_return': Decimal(str(current_return)),
                         'momentum': Decimal(str(momentum)),
-                        'relative_strength': Decimal(str(relative_strength))
+                        'relative_strength': Decimal(str(relative_strength)),
                     })
-                    
                 except Exception as e:
                     print(f"Error calculating {symbol}: {e}")
                     continue
-            
+
             conn.close()
-            
-            # Returnでソートしてランク付け
+
             results.sort(key=lambda x: float(x['current_return']), reverse=True)
-            
+
             performance_list = []
             for rank, sector_data in enumerate(results, 1):
                 performance_list.append(SectorPerformance(
@@ -197,39 +188,37 @@ class RotationService:
                     current_return=sector_data['current_return'],
                     momentum=sector_data['momentum'],
                     relative_strength=sector_data['relative_strength'],
-                    rank=rank
+                    rank=rank,
                 ))
-            
             return performance_list
-            
+
         except Exception as e:
             print(f"DB connection error: {e}")
             import traceback
             traceback.print_exc()
             return self._get_dummy_performance()
-    
+
     def _get_dummy_performance(self) -> list[SectorPerformance]:
-        """ダミーデータ（フォールバック用）"""
         return [
             SectorPerformance(
                 sector="Technology",
                 current_return=Decimal("8.5"),
                 momentum=Decimal("1.2"),
                 relative_strength=Decimal("115.3"),
-                rank=1
+                rank=1,
             ),
             SectorPerformance(
                 sector="Healthcare",
                 current_return=Decimal("4.2"),
                 momentum=Decimal("0.5"),
                 relative_strength=Decimal("102.1"),
-                rank=2
+                rank=2,
             ),
             SectorPerformance(
                 sector="Financials",
                 current_return=Decimal("2.8"),
                 momentum=Decimal("-0.3"),
                 relative_strength=Decimal("98.5"),
-                rank=3
+                rank=3,
             ),
         ]

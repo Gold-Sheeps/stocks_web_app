@@ -1,0 +1,117 @@
+{
+  "summary": {
+    "metrics": {
+      "accuracy": 0.5,
+      "macro_f1": 0.4388648388648389,
+      "logloss": 1.0983813203735202,
+      "brier": 0.22018061753172347,
+      "ece": 0.11013365656697595,
+      "interval_target_coverage": 0.8,
+      "interval_coverage": 0.425,
+      "interval_width_mean": 3.1223335305849713,
+      "best_flat_band_pct": null,
+      "interval_q": 1.5611667690992357
+    },
+    "baselines": {
+      "baseline_prior": {
+        "logloss": 1.0657114098688292,
+        "brier": 0.2167623745750334
+      },
+      "baseline_momentum": {
+        "logloss": 29.435650267779,
+        "brier": 0.5444444444444445
+      },
+      "model_vs_baseline": {
+        "beats_prior_logloss": false,
+        "beats_prior_brier": false,
+        "beats_momentum_logloss": true,
+        "beats_momentum_brier": true
+      }
+    },
+    "class_performance": {
+      "confusion_matrix": [
+        [
+          24,
+          15,
+          15
+        ],
+        [
+          4,
+          4,
+          2
+        ],
+        [
+          17,
+          7,
+          32
+        ]
+      ],
+      "class_metrics": {
+        "down": {
+          "precision": 0.5333333333333333,
+          "recall": 0.4444444444444444,
+          "f1": 0.48484848484848486
+        },
+        "flat": {
+          "precision": 0.15384615384615385,
+          "recall": 0.4,
+          "f1": 0.2222222222222222
+        },
+        "up": {
+          "precision": 0.6530612244897959,
+          "recall": 0.5714285714285714,
+          "f1": 0.6095238095238096
+        }
+      },
+      "class_ratio": {
+        "down": 0.45,
+        "flat": 0.08333333333333333,
+        "up": 0.4666666666666667
+      }
+    },
+    "interval_audit": {
+      "interval_target_mismatch_warn": false,
+      "interval_target_name": "close_future",
+      "interval_target_unit": "price",
+      "rows_head": [
+        {
+          "date": "2018-11-21",
+          "t_index": 700,
+          "y_true": 3.6613,
+          "y_pred": 5.48907995223999,
+          "q": 1.0967616653442382,
+          "lower": 4.392318248748779,
+          "upper": 6.585841655731201,
+          "covered": 0,
+          "target_name": "close_future",
+          "target_unit": "price"
+        },
+        {
+          "date": "2018-11-23",
+          "t_index": 701,
+          "y_true": 3.5895,
+          "y_pred": 5.4221415519714355,
+          "q": 1.0967616653442382,
+          "lower": 4.325379848480225,
+          "upper": 6.5189032554626465,
+          "covered": 0,
+          "target_name": "close_future",
+          "target_unit": "price"
+        },
+        {
+          "date": "2018-11-26",
+          "t_index": 702,
+          "y_true": 3.6735,
+          "y_pred": 5.454155921936035,
+          "q": 1.0967616653442382,
+          "lower": 4.357394218444824,
+          "upper": 6.550917625427246,
+          "covered": 0,
+          "target_name": "close_future",
+          "target_unit": "price"
+        }
+      ]
+    }
+  },
+  "diagnostic_comment": "Model logloss worse than baseline_prior -> probability model may not add value."
+}

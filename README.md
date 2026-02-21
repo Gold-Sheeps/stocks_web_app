@@ -1,5 +1,12 @@
 # 株式市場チェッカー（Trading System）
 
+PowerSHellで以下を実行 をすることでフロントAPIバックすべてが実行できる
+cd C:\Users\o_van\Desktop\stocks_web_app                                                                      
+.\start_services_visible.cmd 
+
+
+
+
 総合トレード運用システム - US株のスクリーニング、モニタリング、ポートフォリオ管理
 
 ## 📋 目次
@@ -343,9 +350,7 @@ cd C:\Users\o_van\Desktop\stocks_web_app\backend
 
 Note: in the two commands above, use `..\.venv\Scripts\python.exe` (no space).
 
-PowerSHellで以下を実行
-cd C:\Users\o_van\Desktop\stocks_web_app                                                                      
-.\start_services_visible.cmd 
+
 ---
 
 ## NVDA Backtest (DB-only)
@@ -391,3 +396,74 @@ python backend/scripts/run_backtest_nvda.py --asof 2026-02-16 --start 2019-01-01
 Policy:
 - External API is used only by `backend/scripts/refresh_market_data.py` for ETL/refresh.
 - Prediction/training/backtest (`prediction_service.py`, `run_backtest_nvda.py`) use DB data only.
+
+---
+
+## 20年分DB一括更新（uv run 1コマンド）
+
+20年分の価格データ更新と、更新後の計算結果（`indicator_daily` / `rs_ratings` / `sector_rotation`）を
+まとめてDB反映するための統合スクリプトを追加しています。
+
+### 実行コマンド（推奨）
+
+リポジトリルートで実行:
+
+```powershell
+uv run python backend/scripts/update_db_full_20y.py
+```
+
+デフォルト挙動:
+- 対象銘柄: `instruments.is_active=true` と `price_daily` 既存キーの和集合
+- 期間: 今日までの過去20年
+- 価格更新: `refresh_market_data.py` をチャンク実行（`--force-start` 付き）
+- 計算更新:
+  - `indicator_daily`（全対象銘柄）
+  - `rs_ratings`
+  - `sector_rotation`
+
+### よく使うオプション
+
+```powershell
+# 年数変更（例: 10年）
+uv run python backend/scripts/update_db_full_20y.py --years 10
+
+# 対象銘柄を明示指定
+uv run python backend/scripts/update_db_full_20y.py --symbols "US:NVDA,US:QQQ,US:^SOX,US:SMH"
+
+# 計算系の一部をスキップ
+uv run python backend/scripts/update_db_full_20y.py --skip-sector-rotation
+uv run python backend/scripts/update_db_full_20y.py --skip-rs
+uv run python backend/scripts/update_db_full_20y.py --skip-indicators
+```
+
+### 実行結果の確認
+
+- 実行サマリJSON:
+  - `backend/ml_predictor_data/update_db_full_20y_YYYYMMDD_HHMMSS.json`
+- 価格更新の個別サマリJSON（内部で呼ばれる更新処理）:
+  - `backend/ml_predictor_data/refresh_market_data_YYYYMMDD_HHMMSS.json`
+
+---
+
+## 20�N�ꊇ�X�V�i�⑫: CANSLIM/�V���{���X�V���܂߂�j
+
+`uv run python backend/scripts/update_db_full_20y.py` �́A�f�t�H���g��
+`scripts/full_db_refresh.py` �����s���܂��B
+���̂��߁A�ȉ����܂Ƃ߂čX�V�ΏۂɂȂ�܂��B
+
+- �V���{���n�X�V�iinstruments�֘A�j
+- �t�@���_�����^���X�V
+- CANSLIM�o�b�`�X�V
+
+�K�v�ɉ����Ď����w�肵�Ă��������B
+
+```powershell
+# CANSLIM���X�L�b�v
+uv run python backend/scripts/update_db_full_20y.py --skip-canslim
+
+# �t�@���_�����^�����X�L�b�v
+uv run python backend/scripts/update_db_full_20y.py --skip-fundamentals
+
+# full_db_refresh�A�g���̂��~�߂�i���i20�N+�w�W/RS/sector�̂݁j
+uv run python backend/scripts/update_db_full_20y.py --no-run-full-refresh
+```

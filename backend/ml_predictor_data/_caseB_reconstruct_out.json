@@ -1,0 +1,60 @@
+{
+  "latest_probs": {
+    "p_up": 0.252,
+    "p_down": 0.378,
+    "p_flat": 0.37,
+    "p_up_pct": 25,
+    "p_down_pct": 38,
+    "p_flat_pct": 37,
+    "sum_pct": 100,
+    "method": "reconstruct"
+  },
+  "raw_inputs": {
+    "p_trade": 0.63,
+    "p_up_cond": 0.4,
+    "eps": 1e-12,
+    "clip_before_norm": false
+  },
+  "metadata": {
+    "source_path": "backend\\ml_predictor_data\\_caseB_reconstruct.json",
+    "extracted_from_keys": [
+      "latest.p_trade",
+      "latest.p_up_cond"
+    ],
+    "inferred_args": {
+      "ticker": "US:NVDA",
+      "as_of_date": null,
+      "flat_band_pct": 2.0,
+      "horizon_trading_days": 15,
+      "calibration": "sigmoid",
+      "target_interval_coverage": 0.8,
+      "prob_mode": null,
+      "label_mode": null,
+      "tbm_vol_span": null,
+      "tbm_k": null
+    },
+    "recompute_source": null,
+    "used_args": {
+      "ticker": "US:NVDA",
+      "as_of_date": null,
+      "flat_band_pct": 2.0,
+      "horizon_trading_days": 15,
+      "calibration": "sigmoid",
+      "target_interval_coverage": 0.8,
+      "prob_mode": null,
+      "label_mode": null,
+      "tbm_vol_span": null,
+      "tbm_k": null
+    },
+    "method_detail": {
+      "method": "reconstruct",
+      "source_keys": [
+        "latest.p_trade",
+        "latest.p_up_cond"
+      ],
+      "recompute_source": null,
+      "used_args": null
+    },
+    "generated_at": "2026-02-18T00:58:33.361069+00:00"
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "metadata": {
+    "input_path": "backend\\ml_predictor_data\\validation_suite_20260217.json",
+    "generated_at": "2026-02-17T20:02:49",
+    "top": 15
+  },
+  "top_failures": [
+    {
+      "symbol": "US:NVDA",
+      "asof": "2026-02-16",
+      "severity_score": 50.0,
+      "model_logloss": 0.9154044299574937,
+      "prior_logloss": 1.0657114098688292,
+      "delta_logloss": -0.15030697991133546,
+      "model_brier": 0.17738881668127943,
+      "prior_brier": 0.2167623745750334,
+      "delta_brier": -0.03937355789375396,
+      "A_fail": false,
+      "C1_fail": true,
+      "C2_fail": false,
+      "fold_count": 8,
+      "c1_fold_count": 2,
+      "c2_fold_count": 0,
+      "c1_fold_ids": [
+        1,
+        4
+      ],
+      "c2_fold_ids": [],
+      "p_trade_std_small_fold_ids": [
+        2,
+        8
+      ],
+      "culprit_folds": {
+        "c1": [
+          {
+            "fold_id": 1,
+            "extreme_meta_pos_rate": {
+              "test": 1.0
+            }
+          },
+          {
+            "fold_id": 4,
+            "extreme_meta_pos_rate": {
+              "test": 1.0
+            }
+          }
+        ],
+        "c2": [],
+        "p_trade_std_small": [
+          {
+            "fold_id": 2
+          },
+          {
+            "fold_id": 8
+          }
+        ]
+      },
+      "note": "C1_fail: extreme meta_pos_rate folds=2",
+      "case_json_paths": {
+        "meta_on": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json",
+        "meta_off": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json",
+        "direct_on": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json",
+        "direct_off": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+      },
+      "meta_off_json_path_selected": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216_meta_off.json",
+      "meta_off_json_path_probed": [
+        "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json",
+        "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216_meta_off.json"
+      ]
+    }
+  ],
+  "aggregate": {
+    "A_win_rate": 1.0,
+    "A_win_count": 1,
+    "A_pair_count": 1,
+    "mean_logloss": {
+      "meta_off": 0.9154044299574937,
+      "prior": 1.0657114098688292,
+      "delta_meta_minus_prior": -0.15030697991133546
+    },
+    "mean_brier": {
+      "meta_off": 0.17738881668127943,
+      "prior": 0.2167623745750334,
+      "delta_meta_minus_prior": -0.03937355789375396
+    },
+    "C1_rate": 0.25,
+    "C1_fold_count": 2,
+    "C2_rate": 0.0,
+    "C2_fold_count": 0,
+    "total_fold_count": 8,
+    "conditions": {
+      "A": true,
+      "B": true,
+      "C1": false,
+      "C2": true
+    },
+    "final_pass_fail": "FAIL"
+  }
+}

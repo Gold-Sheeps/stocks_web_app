@@ -3,6 +3,7 @@ from datetime import datetime
 from app.models.schemas import (
     MonitorResponse, PortfolioSummary, MarketIndexData
 )
+from app.services.freshness_service import FreshnessService
 from app.services.portfolio_service import PortfolioService
 from app.core.config import settings
 import psycopg
@@ -10,9 +11,40 @@ import traceback
 
 class MonitorService:
     """Monitor screen business logic"""
+
+    INDICES_SYMBOLS = {
+        'US:^DJI': 'Dow Jones',
+        'US:^GSPC': 'S&P 500',
+        'US:^IXIC': 'NASDAQ',
+        'US:^RUT': 'Russell 2000',
+        'JP:^N225': 'Nikkei 225',
+        'US:^VIX': 'VIX'
+    }
+    RATE_SYMBOLS = {
+        'US:^TNX': 'US 10Y Yield',
+        'US:^FVX': 'US 5Y Yield',
+        'US:^IRX': 'US 3Y Yield'
+    }
+    CRYPTO_SYMBOLS = {
+        'BTC-USD': 'Bitcoin',
+        'ETH-USD': 'Ethereum'
+    }
+    FX_SYMBOLS = {
+        'US:USDJPY=X': 'USD/JPY',
+        'US:EURUSD=X': 'EUR/USD',
+        'US:GBPUSD=X': 'GBP/USD'
+    }
+    METAL_SYMBOLS = {
+        'US:GLD': 'Gold',
+        'US:SLV': 'Silver',
+        'US:CL=F': 'WTI Crude',
+        'US:PL=F': 'Platinum',
+        'US:HG=F': 'Copper',
+        'US:PA=F': 'Palladium'
+    }
     
     def __init__(self):
-        pass
+        self.freshness_service = FreshnessService()
     
     def _get_db_connection(self):
         """Get DB connection using settings"""
@@ -32,6 +64,7 @@ class MonitorService:
         metals = self.get_metals()
         rates = self.get_rates()
         crypto = self.get_crypto()
+        freshness = self._get_monitor_freshness()
         
         return MonitorResponse(
             portfolio=portfolio,
@@ -39,7 +72,8 @@ class MonitorService:
             fx_rates=fx_rates,
             metals=metals,
             rates=rates,
-            crypto=crypto
+            crypto=crypto,
+            freshness=freshness
         )
     
     def get_portfolio_summary(self) -> PortfolioSummary:
@@ -134,50 +168,59 @@ class MonitorService:
 
     def get_market_indices(self) -> list[MarketIndexData]:
         """Get market indices data"""
-        indices_symbols = {
-            'US:^DJI': 'Dow Jones',
-            'US:^GSPC': 'S&P 500',
-            'US:^IXIC': 'NASDAQ',
-            'US:^RUT': 'Russell 2000',
-            'JP:^N225': 'Nikkei 225',
-            'US:^VIX': 'VIX'
-        }
-        return self._get_market_data_by_symbols(indices_symbols)
+        return self._get_market_data_by_symbols(self.INDICES_SYMBOLS)
     
     def get_rates(self) -> list[MarketIndexData]:
         """Get bond rates"""
-        rate_symbols = {
-            'US:^TNX': 'US 10Y Yield',
-            'US:^FVX': 'US 5Y Yield',
-            'US:^IRX': 'US 3Y Yield'
-        }
-        return self._get_market_data_by_symbols(rate_symbols)
+        return self._get_market_data_by_symbols(self.RATE_SYMBOLS)
     
     def get_crypto(self) -> list[MarketIndexData]:
         """Get crypto prices"""
-        crypto_symbols = {
-            'BTC-USD': 'Bitcoin',
-            'ETH-USD': 'Ethereum'
-        }
-        return self._get_market_data_by_symbols(crypto_symbols)
+        return self._get_market_data_by_symbols(self.CRYPTO_SYMBOLS)
 
     def get_fx_rates(self) -> list[MarketIndexData]:
         """Get FX rates"""
-        fx_symbols = {
-            'US:USDJPY=X': 'USD/JPY',
-            'US:EURUSD=X': 'EUR/USD',
-            'US:GBPUSD=X': 'GBP/USD'
-        }
-        return self._get_market_data_by_symbols(fx_symbols)
+        return self._get_market_data_by_symbols(self.FX_SYMBOLS)
     
     def get_metals(self) -> list[MarketIndexData]:
         """Get metal prices and commodities"""
-        metal_symbols = {
-            'US:GLD': 'Gold',
-            'US:SLV': 'Silver',
-            'US:CL=F': 'WTI Crude',
-            'US:PL=F': 'Platinum',
-            'US:HG=F': 'Copper',
-            'US:PA=F': 'Palladium'
+        return self._get_market_data_by_symbols(self.METAL_SYMBOLS)
+
+    def _get_monitor_freshness(self) -> dict:
+        return {
+            "indices": self.freshness_service.price_freshness_for_symbols(
+                scope="monitor.indices",
+                symbol_keys=list(self.INDICES_SYMBOLS.keys()),
+                tz_name="America/New_York",
+                close_cutoff_hour_local=18,
+                note="US market close 기준. US market daily snapshot may be previous US business day.",
+            ),
+            "rates": self.freshness_service.price_freshness_for_symbols(
+                scope="monitor.rates",
+                symbol_keys=list(self.RATE_SYMBOLS.keys()),
+                tz_name="America/New_York",
+                close_cutoff_hour_local=18,
+                note="US market close 기준.",
+            ),
+            "fx_rates": self.freshness_service.price_freshness_for_symbols(
+                scope="monitor.fx_rates",
+                symbol_keys=list(self.FX_SYMBOLS.keys()),
+                tz_name="America/New_York",
+                close_cutoff_hour_local=18,
+                note="FX daily snapshot is judged on US/Eastern business-day close.",
+            ),
+            "metals": self.freshness_service.price_freshness_for_symbols(
+                scope="monitor.metals",
+                symbol_keys=list(self.METAL_SYMBOLS.keys()),
+                tz_name="America/New_York",
+                close_cutoff_hour_local=18,
+                note="Commodity ETFs/futures proxies judged on US/Eastern close.",
+            ),
+            "crypto": self.freshness_service.price_freshness_for_symbols(
+                scope="monitor.crypto",
+                symbol_keys=list(self.CRYPTO_SYMBOLS.keys()),
+                tz_name="America/New_York",
+                close_cutoff_hour_local=18,
+                note="Crypto is 24/7, but this system stores daily bars; freshness is checked by daily date.",
+            ),
         }
-        return self._get_market_data_by_symbols(metal_symbols)

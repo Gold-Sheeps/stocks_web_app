@@ -1,0 +1,43 @@
+{
+  "run_at": "2026-02-19T11:08:56",
+  "period": {
+    "start": "2006-02-19",
+    "end": "2026-02-19",
+    "years": 20
+  },
+  "symbols_count": 5124,
+  "refresh": {
+    "batches_total": 26,
+    "batches_success": 15,
+    "batches_failed": 11
+  },
+  "indicators": {
+    "processed": 5124,
+    "failed": 0
+  },
+  "rs_update": "ok",
+  "sector_rotation": "ok",
+  "full_refresh_pipeline": {
+    "status": "ok",
+    "returncode": 0,
+    "message": "full_db_refresh completed"
+  },
+  "args": {
+    "years": 20,
+    "end": null,
+    "symbols": null,
+    "include_inactive": false,
+    "include_existing_price_keys": true,
+    "source": "yfinance",
+    "chunk_size": 200,
+    "max_retries": 3,
+    "skip_indicators": false,
+    "skip_rs": false,
+    "skip_sector_rotation": false,
+    "run_full_refresh": true,
+    "full_refresh_backfill_days": 14,
+    "full_refresh_delay": 0.5,
+    "skip_fundamentals": false,
+    "skip_canslim": false
+  }
+}

@@ -117,6 +117,7 @@ class MonitorResponse(BaseModel):
     portfolio: Optional[PortfolioSummary] = None
     fx_rates: List[MarketIndexData] = []
     metals: List[MarketIndexData] = []
+    freshness: dict[str, "DataFreshness"] = {}
 
 
 # ========== Stock Detail Models ==========
@@ -311,6 +312,7 @@ class ScreenerResponse(BaseModel):
     page: int
     limit: int
     total_pages: int
+    freshness: "DataFreshness | None" = None
 
 
 # ========== Rotation Models ==========
@@ -327,6 +329,22 @@ class RotationResponse(BaseModel):
     """Rotation画面用レスポンス"""
     sectors: list[SectorPerformance]
     last_updated: datetime
+    freshness: "DataFreshness | None" = None
+
+
+class DataFreshness(BaseModel):
+    scope: str
+    market_timezone: str
+    market_now: datetime
+    expected_latest_date: date
+    latest_date_max: date | None = None
+    latest_date_min: date | None = None
+    symbols_total: int = 0
+    symbols_fresh: int = 0
+    symbols_stale: int = 0
+    is_fresh: bool = False
+    stale_symbols_sample: list[str] = []
+    note: str | None = None
 
 
 # ========== Sector Detail Models ==========

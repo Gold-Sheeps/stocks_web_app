@@ -1,0 +1,677 @@
+{
+  "ticker": "US:AGG",
+  "period": {
+    "start": "2006-02-20",
+    "end": "2026-02-18",
+    "as_of": "2026-02-18"
+  },
+  "metrics": {
+    "accuracy": 0.9949685534591195,
+    "macro_f1": 0.4987389659520807,
+    "logloss": 0.001565714387082339,
+    "brier": 1.1022263906537137e-05,
+    "ece": 0.0015600719406571974,
+    "win_rate_at_best": 0.0,
+    "coverage_at_best": 0.005031446540880503,
+    "n_trades_at_best": 4,
+    "avg_return_at_best": 0.00219582826590603,
+    "median_return_at_best": 0.002058157840187813,
+    "precision_at_p70": 0.0,
+    "coverage_at_p70": 0.0,
+    "n_trades_at_p70": 0,
+    "avg_return_at_p70": 0.0,
+    "interval_target_coverage": 0.8,
+    "interval_q": null,
+    "interval_width_mean": null,
+    "interval_coverage": null,
+    "bias": 0.0,
+    "bias_abs": 0.0
+  },
+  "diagnostics": {
+    "class_ratio": null,
+    "confusion_matrix": [
+      [
+        791,
+        4
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "confusion_2x2": [
+      [
+        791,
+        4
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "class_metrics": {
+      "no_trade": {
+        "precision": 1.0,
+        "recall": 0.9949685534591195,
+        "f1": 0.9974779319041615
+      },
+      "buy": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "trading_metrics": {
+      "trade_count": 4,
+      "action_counts": {
+        "buy": 4,
+        "hold": 791
+      }
+    },
+    "label_distribution": {
+      "negative_0": 1.0,
+      "positive_1": 0.0
+    },
+    "prediction_distribution": {
+      "buy_1": 0.005031446540880503,
+      "no_trade_0": 0.9949685534591195
+    },
+    "threshold_selection": {
+      "best": {
+        "t_buy": 0.01,
+        "win_rate": 0.0,
+        "coverage": 0.005031446540880503,
+        "n_trades": 4,
+        "avg_return": 0.00219582826590603,
+        "median_return": 0.002058157840187813,
+        "confusion_2x2": [
+          [
+            791,
+            4
+          ],
+          [
+            0,
+            0
+          ]
+        ]
+      },
+      "candidates": [
+        {
+          "t_buy": 0.01,
+          "win_rate": 0.0,
+          "coverage": 0.005031446540880503,
+          "n_trades": 4,
+          "avg_return": 0.00219582826590603,
+          "median_return": 0.002058157840187813,
+          "confusion_2x2": [
+            [
+              791,
+              4
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "fallback_unconstrained": true,
+      "constraints": {
+        "min_coverage": 0.05,
+        "min_trades": 50
+      }
+    },
+    "fixed_threshold_metrics": {
+      "0.7": {
+        "precision": 0.0,
+        "coverage": 0.0,
+        "n_trades": 0,
+        "avg_return": 0.0,
+        "confusion_matrix": [
+          [
+            795,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    "prob_up5_summary": {
+      "min": 1e-06,
+      "max": 0.058850705623626695,
+      "p50": 0.0010503303492441771,
+      "p90": 0.0026411718523319428,
+      "p95": 0.0027707884758912124,
+      "p99": 0.007145434612771489,
+      "mean": 0.0015600719406571974,
+      "std": 0.0029306039388684413
+    },
+    "prob_calibration_audit": {
+      "reliability_bins": [
+        {
+          "bin_lo": 0.0,
+          "bin_hi": 0.1,
+          "count": 795,
+          "pred_mean": 0.0015600719406571974,
+          "actual_rate": 0.0,
+          "gap_actual_minus_pred": -0.0015600719406571974
+        },
+        {
+          "bin_lo": 0.1,
+          "bin_hi": 0.2,
+          "count": 0,
+          "pred_mean": null,
+          "actual_rate": null,
+          "gap_actual_minus_pred": null
+        },
+        {
+          "bin_lo": 0.2,
+          "bin_hi": 0.30000000000000004,
+          "count": 0,
+          "pred_mean": null,
+          "actual_rate": null,
+          "gap_actual_minus_pred": null
+        },
+        {
+          "bin_lo": 0.30000000000000004,
+          "bin_hi": 0.4,
+          "count": 0,
+          "pred_mean": null,
+          "actual_rate": null,
+          "gap_actual_minus_pred": null
+        },
+        {
+          "bin_lo": 0.4,
+          "bin_hi": 0.5,
+          "count": 0,
+          "pred_mean": null,
+          "actual_rate": null,
+          "gap_actual_minus_pred": null
+        },
+        {
+          "bin_lo": 0.5,
+          "bin_hi": 0.6000000000000001,
+          "count": 0,
+          "pred_mean": null,
+          "actual_rate": null,
+          "gap_actual_minus_pred": null
+        },
+        {
+          "bin_lo": 0.6000000000000001,
+          "bin_hi": 0.7000000000000001,
+          "count": 0,
+          "pred_mean": null,
+          "actual_rate": null,
+          "gap_actual_minus_pred": null
+        },
+        {
+          "bin_lo": 0.7000000000000001,
+          "bin_hi": 0.8,
+          "count": 0,
+          "pred_mean": null,
+          "actual_rate": null,
+          "gap_actual_minus_pred": null
+        },
+        {
+          "bin_lo": 0.8,
+          "bin_hi": 0.9,
+          "count": 0,
+          "pred_mean": null,
+          "actual_rate": null,
+          "gap_actual_minus_pred": null
+        },
+        {
+          "bin_lo": 0.9,
+          "bin_hi": 1.0,
+          "count": 0,
+          "pred_mean": null,
+          "actual_rate": null,
+          "gap_actual_minus_pred": null
+        }
+      ],
+      "high_confidence_miss": {
+        "threshold": 0.7,
+        "count": 0,
+        "base_count": 0,
+        "rate": 0.0,
+        "top_misses": []
+      },
+      "low_confidence_miss": {
+        "threshold": 0.3,
+        "count": 0,
+        "base_count": 795,
+        "rate": 0.0,
+        "top_misses": []
+      }
+    }
+  },
+  "meta": {
+    "sources": {
+      "prices": "db:price_daily(US:AGG)",
+      "benchmarks": "db:price_daily(US:QQQ)",
+      "relative": "db:price_daily(US:QQQ)"
+    },
+    "origins": {
+      "prices": "ingested:yfinance",
+      "benchmarks": "ingested:yfinance",
+      "relative": "ingested:yfinance"
+    },
+    "used_feature_columns": [
+      "ret_1",
+      "ret_5",
+      "ret_10",
+      "ret_20",
+      "vol_20",
+      "atr14",
+      "atr14_pct",
+      "sma20_dist",
+      "sma50_dist",
+      "sma200_dist",
+      "ema21_dist",
+      "rsi14",
+      "macd",
+      "macd_signal",
+      "macd_hist",
+      "bb_pos",
+      "vol_chg_1",
+      "vol_ratio_20",
+      "qqq_vol_20",
+      "qqq_trend_50",
+      "regime_missing_flag",
+      "ret_rel_qqq_1",
+      "ret_rel_qqq_5",
+      "relative_missing_flag",
+      "ret_rel_semi_1",
+      "ret_rel_semi_5",
+      "sector_missing_flag",
+      "days_from_prev_earnings",
+      "days_to_next_earnings"
+    ],
+    "n_features": 29,
+    "feature_hash": "846a3dd7a14517206d7fbf40be3bae10b741d5c5d2833e56dcdffb6e3c070946",
+    "config_hash": "d5804ea40e125b2e4fd8903a9bc3d74119457dec1f1dad45d272fd9ca07042b4",
+    "db_freshness": {
+      "db_table": "price_daily",
+      "as_of_date": "2026-02-18",
+      "effective_as_of": "2026-02-18",
+      "required_start": "2021-02-18",
+      "lookback": "5y",
+      "horizon": 10,
+      "is_trading_day": true,
+      "symbols": [
+        "US:AGG",
+        "US:QQQ",
+        "US:SPY"
+      ],
+      "max_date": "2026-02-18",
+      "rows": 15090,
+      "missing_symbols": [],
+      "missing_ranges": {},
+      "by_symbol": {
+        "US:AGG": {
+          "min_date": "2006-02-21",
+          "max_date": "2026-02-18",
+          "rows": 5030,
+          "status": "OK",
+          "missing_ranges": []
+        },
+        "US:QQQ": {
+          "min_date": "2006-02-21",
+          "max_date": "2026-02-18",
+          "rows": 5030,
+          "status": "OK",
+          "missing_ranges": []
+        },
+        "US:SPY": {
+          "min_date": "2006-02-21",
+          "max_date": "2026-02-18",
+          "rows": 5030,
+          "status": "OK",
+          "missing_ranges": []
+        }
+      },
+      "warnings": []
+    },
+    "as_of_date": "2026-02-18",
+    "effective_as_of": "2026-02-18",
+    "is_trading_day": true,
+    "target_name": "return_up5_binary",
+    "target_unit": "fraction",
+    "target_transform": "future_return_fraction",
+    "target_scale_factor": 1.0,
+    "run_params": {
+      "as_of": "2026-02-18",
+      "start": "2006-02-20",
+      "end": "2026-02-18",
+      "horizon": 10,
+      "horizon_trading_days": 10,
+      "effective_as_of": "2026-02-18",
+      "flat_band": 2.0,
+      "flat_band_applied": 2.0,
+      "model": "xgb_db_only_v1",
+      "calibration": "sigmoid",
+      "feature_set": "v2_ohlcv_ta_relregime_event",
+      "feature_version": "v2_ohlcv_ta_relregime_event",
+      "regime_symbols": [
+        "US:QQQ",
+        "US:SPY"
+      ],
+      "relative_symbols": [
+        "US:QQQ"
+      ],
+      "sector_symbols": [],
+      "feature_hash": "846a3dd7a14517206d7fbf40be3bae10b741d5c5d2833e56dcdffb6e3c070946",
+      "config_hash": "d5804ea40e125b2e4fd8903a9bc3d74119457dec1f1dad45d272fd9ca07042b4",
+      "target_coverage": 0.8,
+      "target_interval_coverage": 0.8,
+      "lookback": "5y",
+      "preflight_only": false,
+      "fast": false,
+      "max_folds": null,
+      "fold_step": null,
+      "train_window": null,
+      "band_sweep_enabled": true,
+      "use_ensemble": true,
+      "ensemble_seeds": [
+        11,
+        29
+      ],
+      "purge_days": 10,
+      "embargo_mode": "pct",
+      "embargo_days": 51,
+      "embargo_pct": 0.01,
+      "folds_used": 53,
+      "target_transform": "future_return_fraction",
+      "target_scale_factor": 1.0,
+      "prob_mode": "meta",
+      "temp_scale": "on",
+      "class_weight_mode": "off",
+      "class_weight": null,
+      "threshold_mode": "argmax",
+      "t_down": null,
+      "t_up": null,
+      "threshold_search_enabled": true,
+      "down_recall_min": 0.1,
+      "pred_down_min_pct": 0.05,
+      "thresholds_applied": {
+        "t_buy": 0.01
+      },
+      "meta_band_mode": "fixed",
+      "meta_band_q": 0.65,
+      "meta_band_min_pct": 0.5,
+      "meta_band_max_pct": 10.0,
+      "label_mode": "up5_2w",
+      "target_return": 0.05,
+      "t_buy_grid": [
+        0.01
+      ],
+      "fixed_thresholds": [
+        0.7
+      ],
+      "min_coverage": 0.05,
+      "min_trades": 50,
+      "tbm_vol_span": 20,
+      "tbm_k": 1.5,
+      "temperature_best_T": 1.0660377358490567
+    },
+    "validation": {
+      "purge_days": 10,
+      "embargo_mode": "pct",
+      "embargo_days": 51,
+      "embargo_pct": 0.01,
+      "folds_used": 53
+    },
+    "meta_metrics": {
+      "prob_mode": "binary_up5",
+      "label_mode": "up5_2w",
+      "target_return": 0.05,
+      "horizon_trading_days": 10,
+      "warnings": [
+        "fold_start=280: binary fallback (single class in train)",
+        "fold_start=370: binary fallback (single class in train)",
+        "fold_start=460: binary fallback (single class in train)",
+        "fold_start=550: binary fallback (single class in train)",
+        "fold_start=640: binary fallback (single class in train)",
+        "fold_start=730: binary fallback (single class in train)",
+        "fold_start=820: binary fallback (single class in train)"
+      ]
+    },
+    "temperature_scaling": {
+      "enabled": true,
+      "best_T": 1.0660377358490567,
+      "search_grid": [
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.95,
+        1.0,
+        1.05,
+        1.1,
+        1.15,
+        1.2,
+        1.25,
+        1.3,
+        1.35,
+        1.4,
+        1.45,
+        1.5,
+        1.55,
+        1.6,
+        1.65,
+        1.7,
+        1.75,
+        1.8,
+        1.85,
+        1.9,
+        1.95,
+        2.0,
+        2.05,
+        2.1,
+        2.15,
+        2.2,
+        2.25,
+        2.3,
+        2.35,
+        2.4,
+        2.45,
+        2.5,
+        2.55,
+        2.6,
+        2.65,
+        2.7,
+        2.75,
+        2.8,
+        2.85,
+        2.9,
+        2.95,
+        3.0
+      ]
+    },
+    "interval_target_mismatch_warn": false,
+    "threshold_selection": {
+      "best": {
+        "t_buy": 0.01,
+        "win_rate": 0.0,
+        "coverage": 0.005031446540880503,
+        "n_trades": 4,
+        "avg_return": 0.00219582826590603,
+        "median_return": 0.002058157840187813,
+        "confusion_2x2": [
+          [
+            791,
+            4
+          ],
+          [
+            0,
+            0
+          ]
+        ]
+      },
+      "candidates": [
+        {
+          "t_buy": 0.01,
+          "win_rate": 0.0,
+          "coverage": 0.005031446540880503,
+          "n_trades": 4,
+          "avg_return": 0.00219582826590603,
+          "median_return": 0.002058157840187813,
+          "confusion_2x2": [
+            [
+              791,
+              4
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "fallback_unconstrained": true,
+      "constraints": {
+        "min_coverage": 0.05,
+        "min_trades": 50
+      }
+    },
+    "warnings": [
+      "fold_start=280: binary fallback (single class in train)",
+      "fold_start=370: binary fallback (single class in train)",
+      "fold_start=460: binary fallback (single class in train)",
+      "fold_start=550: binary fallback (single class in train)",
+      "fold_start=640: binary fallback (single class in train)",
+      "fold_start=730: binary fallback (single class in train)",
+      "fold_start=820: binary fallback (single class in train)"
+    ]
+  },
+  "meta_metrics": {
+    "prob_mode": "binary_up5",
+    "label_mode": "up5_2w",
+    "target_return": 0.05,
+    "horizon_trading_days": 10,
+    "warnings": [
+      "fold_start=280: binary fallback (single class in train)",
+      "fold_start=370: binary fallback (single class in train)",
+      "fold_start=460: binary fallback (single class in train)",
+      "fold_start=550: binary fallback (single class in train)",
+      "fold_start=640: binary fallback (single class in train)",
+      "fold_start=730: binary fallback (single class in train)",
+      "fold_start=820: binary fallback (single class in train)"
+    ]
+  },
+  "temperature_scaling": {
+    "enabled": true,
+    "best_T": 1.0660377358490567,
+    "search_grid": [
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7,
+      0.75,
+      0.8,
+      0.85,
+      0.9,
+      0.95,
+      1.0,
+      1.05,
+      1.1,
+      1.15,
+      1.2,
+      1.25,
+      1.3,
+      1.35,
+      1.4,
+      1.45,
+      1.5,
+      1.55,
+      1.6,
+      1.65,
+      1.7,
+      1.75,
+      1.8,
+      1.85,
+      1.9,
+      1.95,
+      2.0,
+      2.05,
+      2.1,
+      2.15,
+      2.2,
+      2.25,
+      2.3,
+      2.35,
+      2.4,
+      2.45,
+      2.5,
+      2.55,
+      2.6,
+      2.65,
+      2.7,
+      2.75,
+      2.8,
+      2.85,
+      2.9,
+      2.95,
+      3.0
+    ]
+  },
+  "prob_calibration": {
+    "temp_scale_mode": "global"
+  },
+  "baselines": {},
+  "interval_audit": {
+    "target_name": "return_up5_binary",
+    "target_unit": "fraction",
+    "target_transform": "future_return_fraction",
+    "target_scale_factor": 1.0,
+    "target_y_source": "target_return_pct_h",
+    "target_mismatch_warn": false,
+    "sample": []
+  },
+  "best_flat_band_pct": 1.0,
+  "band_sweep": [
+    {
+      "flat_band_pct": 0.5,
+      "macro_f1": 0.3589136918590501,
+      "logloss": 1.0715310508439457,
+      "ece": 0.07289935759785364,
+      "accuracy": 0.45084745762711864
+    },
+    {
+      "flat_band_pct": 1.0,
+      "macro_f1": 0.38700824271920964,
+      "logloss": 0.983944390755624,
+      "ece": 0.19373368818784864,
+      "accuracy": 0.6101694915254238
+    },
+    {
+      "flat_band_pct": 1.5,
+      "error": "Invalid classes inferred from unique values of `y`.  Expected: [0], got [1]"
+    },
+    {
+      "flat_band_pct": 2.0,
+      "error": "Invalid classes inferred from unique values of `y`.  Expected: [0], got [1]"
+    },
+    {
+      "flat_band_pct": 3.0,
+      "error": "Invalid classes inferred from unique values of `y`.  Expected: [0], got [1]"
+    },
+    {
+      "flat_band_pct": 4.0,
+      "error": "Invalid classes inferred from unique values of `y`.  Expected: [0], got [1]"
+    },
+    {
+      "flat_band_pct": 5.0,
+      "error": "Invalid classes inferred from unique values of `y`.  Expected: [0], got [1]"
+    }
+  ]
+}

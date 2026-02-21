@@ -1,0 +1,43 @@
+{
+  "run_at": "2026-02-19T08:51:04",
+  "source": "yfinance",
+  "db_only_check": false,
+  "start": "2006-02-19",
+  "end": "2026-02-19",
+  "symbols": [
+    {
+      "symbol_key": "US:CLRB",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "\"numeric\"型の入力構文が不正です: \"close\"\nCONTEXT:  無名ポータルパラメータ $6 = '...'"
+    }
+  ],
+  "totals": {
+    "symbols": 1,
+    "failed": 1,
+    "fetched_rows": 0,
+    "inserted": 0,
+    "updated": 0,
+    "skipped_overflow": 0
+  }
+}

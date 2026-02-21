@@ -1,0 +1,43 @@
+{
+  "run_at": "2026-02-19T08:27:45",
+  "period": {
+    "start": "2025-02-19",
+    "end": "2026-02-19",
+    "years": 1
+  },
+  "symbols_count": 1,
+  "refresh": {
+    "batches_total": 1,
+    "batches_success": 1,
+    "batches_failed": 0
+  },
+  "indicators": {
+    "processed": 0,
+    "failed": 0
+  },
+  "rs_update": "skipped",
+  "sector_rotation": "skipped",
+  "full_refresh_pipeline": {
+    "status": "skipped",
+    "returncode": 0,
+    "message": "skipped"
+  },
+  "args": {
+    "years": 1,
+    "end": null,
+    "symbols": "US:NVDA",
+    "include_inactive": false,
+    "include_existing_price_keys": true,
+    "source": "yfinance",
+    "chunk_size": 1,
+    "max_retries": 3,
+    "skip_indicators": true,
+    "skip_rs": true,
+    "skip_sector_rotation": true,
+    "run_full_refresh": false,
+    "full_refresh_backfill_days": 14,
+    "full_refresh_delay": 0.5,
+    "skip_fundamentals": false,
+    "skip_canslim": false
+  }
+}

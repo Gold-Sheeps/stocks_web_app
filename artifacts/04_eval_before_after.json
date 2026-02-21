@@ -1,0 +1,44 @@
+{
+  "summary": {
+    "off": {
+      "logloss": 1.1246372102410753,
+      "brier": 0.22536927726208847,
+      "prior_logloss": 1.1390987802642065,
+      "prior_brier": 0.22697410804048543
+    },
+    "fold": {
+      "logloss": 1.1345965893885572,
+      "brier": 0.22597950259747832,
+      "prior_logloss": 1.1390987802642065,
+      "prior_brier": 0.22697410804048543
+    },
+    "delta_fold_minus_off": {
+      "logloss": 0.009959379147481906,
+      "brier": 0.0006102253353898468
+    }
+  },
+  "fold_temperature_application": {
+    "total_folds": 37,
+    "applied_folds": 27,
+    "unapplied_folds": 10,
+    "applied": {
+      "logloss_calib_before_mean": 0.9898373300082078,
+      "logloss_calib_after_mean": 0.9887491166963125,
+      "brier_calib_before_mean": 0.19889106841570178,
+      "brier_calib_after_mean": 0.19871190880851441,
+      "extreme_before_mean": 0.0,
+      "extreme_after_mean": 0.0
+    },
+    "unapplied": {
+      "reasons": [
+        "worse_logloss_or_brier_on_calib"
+      ],
+      "logloss_calib_before_mean": 0.9727007679930363,
+      "logloss_calib_after_mean": 0.9720440095132178,
+      "brier_calib_before_mean": 0.1953397896053399,
+      "brier_calib_after_mean": 0.19542827881839345,
+      "extreme_before_mean": 0.0,
+      "extreme_after_mean": 0.0
+    }
+  }
+}

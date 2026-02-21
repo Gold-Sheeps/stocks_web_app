@@ -118,17 +118,22 @@ def main() -> int:
     end_date = date.today()
 
     if not args.skip_etf:
-        run_step("STEP 1/8 ETF prices + benchmark", [py, "src/fetch_sector_etfs.py"], args.dry_run)
-        run_step("STEP 2/8 Market indices", [py, "src/fetch_market_indices.py"], args.dry_run)
+        run_step("STEP 1/9 ETF prices + benchmark", [py, "src/fetch_sector_etfs.py"], args.dry_run)
+        run_step("STEP 2/9 Market indices", [py, "src/fetch_market_indices.py"], args.dry_run)
         run_step(
-            "STEP 3/8 Sector constituents",
+            "STEP 3/9 Sector constituents",
             [py, "src/fetch_sector_constituents.py"],
+            args.dry_run,
+        )
+        run_step(
+            "STEP 4/9 Monitor assets (indices/fx/metals/crypto)",
+            [py, "backend/scripts/update_monitor_data.py"],
             args.dry_run,
         )
 
     if not args.skip_individual:
         run_step(
-            "STEP 4/8 Individual US stock prices",
+            "STEP 5/9 Individual US stock prices",
             [
                 py,
                 "src/update_recent_prices.py",
@@ -143,14 +148,14 @@ def main() -> int:
         )
 
     if not args.skip_indicators:
-        run_step("STEP 5/8 Indicator recalculation", [py, "src/calculate_indicators_batch.py"], args.dry_run)
+        run_step("STEP 6/9 Indicator recalculation", [py, "src/calculate_indicators_batch.py"], args.dry_run)
 
     if not args.skip_rs:
-        run_step("STEP 6/8 RS rating recalculation", [py, "backend/scripts/update_rs_rating.py"], args.dry_run)
+        run_step("STEP 7/9 RS rating recalculation", [py, "backend/scripts/update_rs_rating.py"], args.dry_run)
 
     if not args.skip_fundamentals:
         run_step(
-            "STEP 7/8 Fundamentals (quarterly full set)",
+            "STEP 8/9 Fundamentals (quarterly full set)",
             [
                 py,
                 "src/update_fundamentals_eps.py",
@@ -167,7 +172,7 @@ def main() -> int:
 
     if not args.skip_canslim:
         run_step(
-            "STEP 8/8 CANSLIM analysis",
+            "STEP 9/9 CANSLIM analysis",
             [py, "scripts/run_canslim_batch.py", "--limit", "200", "--min-rs", "80"],
             args.dry_run,
         )

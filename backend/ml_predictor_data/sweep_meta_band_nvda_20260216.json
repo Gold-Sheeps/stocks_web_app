@@ -1,0 +1,1065 @@
+{
+  "metadata": {
+    "generated_at": "2026-02-17T20:50:38",
+    "args": {
+      "ticker": "US:NVDA",
+      "asof": "2026-02-16",
+      "start": "2019-01-01",
+      "end": "2026-02-16",
+      "horizon": 15,
+      "flat_band": 2.0,
+      "calibration": "sigmoid",
+      "db_check": true,
+      "fast": false,
+      "q_grid": [
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7
+      ],
+      "band_min_grid": [
+        0.5
+      ],
+      "band_max_grid": [
+        5.0,
+        6.0,
+        8.0,
+        10.0
+      ],
+      "top": 10
+    }
+  },
+  "grid_results": [
+    {
+      "q": 0.5,
+      "band_min_pct": 0.5,
+      "band_max_pct": 8.0,
+      "metrics": {
+        "logloss": 1.2155671324124016,
+        "brier": 0.2387543340718455
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.18838007740639306,
+        "delta_brier": 0.03040232006993729
+      },
+      "folds": 37,
+      "extreme_folds": 3,
+      "fallback_folds": 1,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 0,
+      "rates": {
+        "extreme_rate": 0.08108108108108109,
+        "fallback_rate": 0.02702702702702703
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 319.1847175462676,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.5,
+      "band_min_pct": 0.5,
+      "band_max_pct": 10.0,
+      "metrics": {
+        "logloss": 1.2155671324124016,
+        "brier": 0.2387543340718455
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.18838007740639306,
+        "delta_brier": 0.03040232006993729
+      },
+      "folds": 37,
+      "extreme_folds": 3,
+      "fallback_folds": 1,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 0,
+      "rates": {
+        "extreme_rate": 0.08108108108108109,
+        "fallback_rate": 0.02702702702702703
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 319.1847175462676,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.5,
+      "band_min_pct": 0.5,
+      "band_max_pct": 5.0,
+      "metrics": {
+        "logloss": 1.136225872621211,
+        "brier": 0.22227974467205372
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.10903881761520262,
+        "delta_brier": 0.013927730670145522
+      },
+      "folds": 37,
+      "extreme_folds": 4,
+      "fallback_folds": 0,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.10810810810810811,
+        "fallback_rate": 0.0
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 401.89427895549363,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.55,
+      "band_min_pct": 0.5,
+      "band_max_pct": 5.0,
+      "metrics": {
+        "logloss": 1.136225872621211,
+        "brier": 0.22227974467205372
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.10903881761520262,
+        "delta_brier": 0.013927730670145522
+      },
+      "folds": 37,
+      "extreme_folds": 4,
+      "fallback_folds": 0,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.10810810810810811,
+        "fallback_rate": 0.0
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 401.89427895549363,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.6,
+      "band_min_pct": 0.5,
+      "band_max_pct": 5.0,
+      "metrics": {
+        "logloss": 1.136225872621211,
+        "brier": 0.22227974467205372
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.10903881761520262,
+        "delta_brier": 0.013927730670145522
+      },
+      "folds": 37,
+      "extreme_folds": 4,
+      "fallback_folds": 0,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.10810810810810811,
+        "fallback_rate": 0.0
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 401.89427895549363,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.65,
+      "band_min_pct": 0.5,
+      "band_max_pct": 5.0,
+      "metrics": {
+        "logloss": 1.136225872621211,
+        "brier": 0.22227974467205372
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.10903881761520262,
+        "delta_brier": 0.013927730670145522
+      },
+      "folds": 37,
+      "extreme_folds": 4,
+      "fallback_folds": 0,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.10810810810810811,
+        "fallback_rate": 0.0
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 401.89427895549363,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.7,
+      "band_min_pct": 0.5,
+      "band_max_pct": 5.0,
+      "metrics": {
+        "logloss": 1.136225872621211,
+        "brier": 0.22227974467205372
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.10903881761520262,
+        "delta_brier": 0.013927730670145522
+      },
+      "folds": 37,
+      "extreme_folds": 4,
+      "fallback_folds": 0,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.10810810810810811,
+        "fallback_rate": 0.0
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 401.89427895549363,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.55,
+      "band_min_pct": 0.5,
+      "band_max_pct": 10.0,
+      "metrics": {
+        "logloss": 1.2224573673772043,
+        "brier": 0.2426698569162637
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.19527031237119585,
+        "delta_brier": 0.034317842914355495
+      },
+      "folds": 37,
+      "extreme_folds": 6,
+      "fallback_folds": 3,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 0,
+      "rates": {
+        "extreme_rate": 0.16216216216216217,
+        "fallback_rate": 0.08108108108108109
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 413.90599819990683,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.55,
+      "band_min_pct": 0.5,
+      "band_max_pct": 8.0,
+      "metrics": {
+        "logloss": 1.2185836819328741,
+        "brier": 0.24170312061935748
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.19139662692686565,
+        "delta_brier": 0.03335110661744928
+      },
+      "folds": 37,
+      "extreme_folds": 4,
+      "fallback_folds": 3,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 16,
+      "rates": {
+        "extreme_rate": 0.10810810810810811,
+        "fallback_rate": 0.08108108108108109
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 448.0988401617642,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.5,
+      "band_min_pct": 0.5,
+      "band_max_pct": 6.0,
+      "metrics": {
+        "logloss": 1.1920775867957358,
+        "brier": 0.23079798264404297
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.16489053178972735,
+        "delta_brier": 0.022445968642134773
+      },
+      "folds": 37,
+      "extreme_folds": 3,
+      "fallback_folds": 1,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.08108108108108109,
+        "fallback_rate": 0.02702702702702703
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 464.7824690739969,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.55,
+      "band_min_pct": 0.5,
+      "band_max_pct": 6.0,
+      "metrics": {
+        "logloss": 1.1920775867957358,
+        "brier": 0.23079798264404297
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.16489053178972735,
+        "delta_brier": 0.022445968642134773
+      },
+      "folds": 37,
+      "extreme_folds": 3,
+      "fallback_folds": 1,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.08108108108108109,
+        "fallback_rate": 0.02702702702702703
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 464.7824690739969,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.6,
+      "band_min_pct": 0.5,
+      "band_max_pct": 6.0,
+      "metrics": {
+        "logloss": 1.1920775867957358,
+        "brier": 0.23079798264404297
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.16489053178972735,
+        "delta_brier": 0.022445968642134773
+      },
+      "folds": 37,
+      "extreme_folds": 3,
+      "fallback_folds": 1,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.08108108108108109,
+        "fallback_rate": 0.02702702702702703
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 464.7824690739969,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.65,
+      "band_min_pct": 0.5,
+      "band_max_pct": 6.0,
+      "metrics": {
+        "logloss": 1.1920775867957358,
+        "brier": 0.23079798264404297
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.16489053178972735,
+        "delta_brier": 0.022445968642134773
+      },
+      "folds": 37,
+      "extreme_folds": 3,
+      "fallback_folds": 1,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.08108108108108109,
+        "fallback_rate": 0.02702702702702703
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 464.7824690739969,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.7,
+      "band_min_pct": 0.5,
+      "band_max_pct": 6.0,
+      "metrics": {
+        "logloss": 1.1920775867957358,
+        "brier": 0.23079798264404297
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.16489053178972735,
+        "delta_brier": 0.022445968642134773
+      },
+      "folds": 37,
+      "extreme_folds": 3,
+      "fallback_folds": 1,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.08108108108108109,
+        "fallback_rate": 0.02702702702702703
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 464.7824690739969,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.6,
+      "band_min_pct": 0.5,
+      "band_max_pct": 10.0,
+      "metrics": {
+        "logloss": 1.2461459362978657,
+        "brier": 0.24811744907237654
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.21895888129185725,
+        "delta_brier": 0.03976543507046834
+      },
+      "folds": 37,
+      "extreme_folds": 9,
+      "fallback_folds": 4,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 0,
+      "rates": {
+        "extreme_rate": 0.24324324324324326,
+        "fallback_rate": 0.10810810810810811
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": false,
+        "overall_ok": false
+      },
+      "score": 518.4897514327939,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.6,
+      "band_min_pct": 0.5,
+      "band_max_pct": 8.0,
+      "metrics": {
+        "logloss": 1.2204580430331806,
+        "brier": 0.2419347097393727
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.19327098802717213,
+        "delta_brier": 0.0335826957374645
+      },
+      "folds": 37,
+      "extreme_folds": 5,
+      "fallback_folds": 3,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 36,
+      "rates": {
+        "extreme_rate": 0.13513513513513514,
+        "fallback_rate": 0.08108108108108109
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 570.4363795021011,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.65,
+      "band_min_pct": 0.5,
+      "band_max_pct": 8.0,
+      "metrics": {
+        "logloss": 1.2201477625873431,
+        "brier": 0.24187547400666964
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.19296070758133466,
+        "delta_brier": 0.033523460004761446
+      },
+      "folds": 37,
+      "extreme_folds": 5,
+      "fallback_folds": 3,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.13513513513513514,
+        "fallback_rate": 0.08108108108108109
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 575.0076275908575,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.7,
+      "band_min_pct": 0.5,
+      "band_max_pct": 8.0,
+      "metrics": {
+        "logloss": 1.2201477625873431,
+        "brier": 0.24187547400666964
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.19296070758133466,
+        "delta_brier": 0.033523460004761446
+      },
+      "folds": 37,
+      "extreme_folds": 5,
+      "fallback_folds": 3,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.13513513513513514,
+        "fallback_rate": 0.08108108108108109
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 575.0076275908575,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.65,
+      "band_min_pct": 0.5,
+      "band_max_pct": 10.0,
+      "metrics": {
+        "logloss": 1.2652327622685866,
+        "brier": 0.25291448166049024
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.23804570726257812,
+        "delta_brier": 0.044562467658582045
+      },
+      "folds": 37,
+      "extreme_folds": 8,
+      "fallback_folds": 5,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 12,
+      "rates": {
+        "extreme_rate": 0.21621621621621623,
+        "fallback_rate": 0.13513513513513514
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": false,
+        "overall_ok": false
+      },
+      "score": 597.1706425797422,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.7,
+      "band_min_pct": 0.5,
+      "band_max_pct": 10.0,
+      "metrics": {
+        "logloss": 1.2729259232224248,
+        "brier": 0.25461794921832726
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.24573886821641633,
+        "delta_brier": 0.04626593521641906
+      },
+      "folds": 37,
+      "extreme_folds": 8,
+      "fallback_folds": 6,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 35,
+      "rates": {
+        "extreme_rate": 0.21621621621621623,
+        "fallback_rate": 0.16216216216216217
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": false,
+        "overall_ok": false
+      },
+      "score": 733.2707386492544,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    }
+  ],
+  "best_candidates": [
+    {
+      "q": 0.5,
+      "band_min_pct": 0.5,
+      "band_max_pct": 8.0,
+      "metrics": {
+        "logloss": 1.2155671324124016,
+        "brier": 0.2387543340718455
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.18838007740639306,
+        "delta_brier": 0.03040232006993729
+      },
+      "folds": 37,
+      "extreme_folds": 3,
+      "fallback_folds": 1,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 0,
+      "rates": {
+        "extreme_rate": 0.08108108108108109,
+        "fallback_rate": 0.02702702702702703
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 319.1847175462676,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.5,
+      "band_min_pct": 0.5,
+      "band_max_pct": 10.0,
+      "metrics": {
+        "logloss": 1.2155671324124016,
+        "brier": 0.2387543340718455
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.18838007740639306,
+        "delta_brier": 0.03040232006993729
+      },
+      "folds": 37,
+      "extreme_folds": 3,
+      "fallback_folds": 1,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 0,
+      "rates": {
+        "extreme_rate": 0.08108108108108109,
+        "fallback_rate": 0.02702702702702703
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 319.1847175462676,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.5,
+      "band_min_pct": 0.5,
+      "band_max_pct": 5.0,
+      "metrics": {
+        "logloss": 1.136225872621211,
+        "brier": 0.22227974467205372
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.10903881761520262,
+        "delta_brier": 0.013927730670145522
+      },
+      "folds": 37,
+      "extreme_folds": 4,
+      "fallback_folds": 0,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.10810810810810811,
+        "fallback_rate": 0.0
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 401.89427895549363,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.55,
+      "band_min_pct": 0.5,
+      "band_max_pct": 5.0,
+      "metrics": {
+        "logloss": 1.136225872621211,
+        "brier": 0.22227974467205372
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.10903881761520262,
+        "delta_brier": 0.013927730670145522
+      },
+      "folds": 37,
+      "extreme_folds": 4,
+      "fallback_folds": 0,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.10810810810810811,
+        "fallback_rate": 0.0
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 401.89427895549363,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.6,
+      "band_min_pct": 0.5,
+      "band_max_pct": 5.0,
+      "metrics": {
+        "logloss": 1.136225872621211,
+        "brier": 0.22227974467205372
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.10903881761520262,
+        "delta_brier": 0.013927730670145522
+      },
+      "folds": 37,
+      "extreme_folds": 4,
+      "fallback_folds": 0,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.10810810810810811,
+        "fallback_rate": 0.0
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 401.89427895549363,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.65,
+      "band_min_pct": 0.5,
+      "band_max_pct": 5.0,
+      "metrics": {
+        "logloss": 1.136225872621211,
+        "brier": 0.22227974467205372
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.10903881761520262,
+        "delta_brier": 0.013927730670145522
+      },
+      "folds": 37,
+      "extreme_folds": 4,
+      "fallback_folds": 0,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.10810810810810811,
+        "fallback_rate": 0.0
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 401.89427895549363,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.7,
+      "band_min_pct": 0.5,
+      "band_max_pct": 5.0,
+      "metrics": {
+        "logloss": 1.136225872621211,
+        "brier": 0.22227974467205372
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.10903881761520262,
+        "delta_brier": 0.013927730670145522
+      },
+      "folds": 37,
+      "extreme_folds": 4,
+      "fallback_folds": 0,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.10810810810810811,
+        "fallback_rate": 0.0
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 401.89427895549363,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.55,
+      "band_min_pct": 0.5,
+      "band_max_pct": 10.0,
+      "metrics": {
+        "logloss": 1.2224573673772043,
+        "brier": 0.2426698569162637
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.19527031237119585,
+        "delta_brier": 0.034317842914355495
+      },
+      "folds": 37,
+      "extreme_folds": 6,
+      "fallback_folds": 3,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 0,
+      "rates": {
+        "extreme_rate": 0.16216216216216217,
+        "fallback_rate": 0.08108108108108109
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 413.90599819990683,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.55,
+      "band_min_pct": 0.5,
+      "band_max_pct": 8.0,
+      "metrics": {
+        "logloss": 1.2185836819328741,
+        "brier": 0.24170312061935748
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.19139662692686565,
+        "delta_brier": 0.03335110661744928
+      },
+      "folds": 37,
+      "extreme_folds": 4,
+      "fallback_folds": 3,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 16,
+      "rates": {
+        "extreme_rate": 0.10810810810810811,
+        "fallback_rate": 0.08108108108108109
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 448.0988401617642,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    },
+    {
+      "q": 0.5,
+      "band_min_pct": 0.5,
+      "band_max_pct": 6.0,
+      "metrics": {
+        "logloss": 1.1920775867957358,
+        "brier": 0.23079798264404297
+      },
+      "baselines": {
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      },
+      "deltas": {
+        "delta_logloss": 0.16489053178972735,
+        "delta_brier": 0.022445968642134773
+      },
+      "folds": 37,
+      "extreme_folds": 3,
+      "fallback_folds": 1,
+      "band_hit_min_folds": 0,
+      "band_hit_max_folds": 37,
+      "rates": {
+        "extreme_rate": 0.08108108108108109,
+        "fallback_rate": 0.02702702702702703
+      },
+      "ok_flags": {
+        "A_ok": false,
+        "C1_ok": false,
+        "C2_ok": true,
+        "overall_ok": false
+      },
+      "score": 464.7824690739969,
+      "backtest_json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json"
+    }
+  ],
+  "summary": {
+    "total_runs": 20,
+    "success_runs": 20,
+    "failed_runs": 0,
+    "overall_ok_count": 0,
+    "best_score": 319.1847175462676
+  },
+  "failures": []
+}

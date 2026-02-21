@@ -677,7 +677,8 @@ class StockDetailApp {
             '3M': 66,
             '6M': 132,
             '1Y': 252,
-            '5Y': 1260
+            '5Y': 1260,
+            'MAX': -1
         };
         const weeklyMap = {
             '1D': 1,
@@ -686,11 +687,16 @@ class StockDetailApp {
             '3M': 13,
             '6M': 26,
             '1Y': 52,
-            '5Y': 260
+            '5Y': 260,
+            'MAX': -1
         };
-        const bars = (this.state.timeframe === '1w' ? weeklyMap : dailyMap)[period] || 66;
+        const bars = (this.state.timeframe === '1w' ? weeklyMap : dailyMap)[period] ?? 66;
         const source = Array.isArray(this.state.chartData) ? this.state.chartData : [];
-        this.state.chartDataFiltered = source.slice(Math.max(0, source.length - bars));
+        if (bars === -1) {
+            this.state.chartDataFiltered = source.slice();
+        } else {
+            this.state.chartDataFiltered = source.slice(Math.max(0, source.length - bars));
+        }
         this.resetFallbackView(this.state.chartDataFiltered.length);
 
         const btns = document.querySelectorAll('.chart-period-btn');

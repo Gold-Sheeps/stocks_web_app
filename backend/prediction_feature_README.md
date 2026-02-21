@@ -40,3 +40,9 @@ Optional:
 
 Offline fallback sample:
 - `backend/ml_predictor_data/nvda_sample.csv`
+
+## Backtest CLI example (DB-only)
+
+```powershell
+python backend/scripts/run_backtest_nvda.py --asof 2026-02-16 --start 2019-01-01 --end 2026-02-16 --horizon 15 --flat_band 2.0 --calibration sigmoid --db-check --fast --prob-mode meta --temp-scale on
+```

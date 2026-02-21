@@ -1,0 +1,435 @@
+{
+  "period": {
+    "start": "2018-01-01",
+    "end": "2026-02-18",
+    "asof": "2026-02-18"
+  },
+  "metrics": {
+    "precision_at_p70": 0.0,
+    "coverage_at_p70": 0.00101010101010101,
+    "n_trades_at_p70": 1,
+    "avg_return_at_p70": 0.02610279239174429,
+    "folds_used": 66
+  },
+  "diagnostics": {
+    "fixed_threshold_metrics": {
+      "0.7": {
+        "precision": 0.0,
+        "coverage": 0.00101010101010101,
+        "n_trades": 1,
+        "avg_return": 0.02610279239174429,
+        "confusion_matrix": [
+          [
+            769,
+            1
+          ],
+          [
+            220,
+            0
+          ]
+        ]
+      }
+    },
+    "prob_calibration_audit": {
+      "high_confidence_miss": {
+        "threshold": 0.7,
+        "count": 1,
+        "top_misses": [
+          {
+            "date": "2018-05-31",
+            "ticker": "US:MSFT",
+            "probability": 0.999999,
+            "realized_return": 0.02610279239174429,
+            "actual": 0
+          }
+        ]
+      },
+      "low_confidence_miss": {
+        "threshold": 0.3,
+        "count": 176,
+        "top_misses": [
+          {
+            "date": "2018-07-10",
+            "ticker": "US:MSFT",
+            "probability": 1e-06,
+            "realized_return": 0.05424990207598901,
+            "actual": 1
+          },
+          {
+            "date": "2018-07-10",
+            "ticker": "US:MSFT",
+            "probability": 1e-06,
+            "realized_return": 0.05424990207598901,
+            "actual": 1
+          },
+          {
+            "date": "2018-07-12",
+            "ticker": "US:MSFT",
+            "probability": 1e-06,
+            "realized_return": 0.05211632594298887,
+            "actual": 1
+          },
+          {
+            "date": "2018-07-12",
+            "ticker": "US:MSFT",
+            "probability": 1e-06,
+            "realized_return": 0.05211632594298887,
+            "actual": 1
+          },
+          {
+            "date": "2019-01-04",
+            "ticker": "US:MSFT",
+            "probability": 1e-06,
+            "realized_return": 0.056705582262336796,
+            "actual": 1
+          },
+          {
+            "date": "2019-01-04",
+            "ticker": "US:MSFT",
+            "probability": 1e-06,
+            "realized_return": 0.056705582262336796,
+            "actual": 1
+          },
+          {
+            "date": "2023-01-23",
+            "ticker": "US:AAPL",
+            "probability": 1e-06,
+            "realized_return": 0.07526043512153624,
+            "actual": 1
+          },
+          {
+            "date": "2023-01-23",
+            "ticker": "US:AAPL",
+            "probability": 1e-06,
+            "realized_return": 0.07526043512153624,
+            "actual": 1
+          },
+          {
+            "date": "2023-01-24",
+            "ticker": "US:AAPL",
+            "probability": 1e-06,
+            "realized_return": 0.08503472953062508,
+            "actual": 1
+          },
+          {
+            "date": "2023-01-24",
+            "ticker": "US:AAPL",
+            "probability": 1e-06,
+            "realized_return": 0.08503472953062508,
+            "actual": 1
+          },
+          {
+            "date": "2025-05-01",
+            "ticker": "US:MSFT",
+            "probability": 1e-06,
+            "realized_return": 0.0651857075693465,
+            "actual": 1
+          },
+          {
+            "date": "2025-05-01",
+            "ticker": "US:MSFT",
+            "probability": 1e-06,
+            "realized_return": 0.0651857075693465,
+            "actual": 1
+          },
+          {
+            "date": "2023-04-17",
+            "ticker": "US:MSFT",
+            "probability": 0.03333333333333333,
+            "realized_return": 0.05803324099722995,
+            "actual": 1
+          },
+          {
+            "date": "2023-04-17",
+            "ticker": "US:MSFT",
+            "probability": 0.03333333333333333,
+            "realized_return": 0.05803324099722995,
+            "actual": 1
+          },
+          {
+            "date": "2026-01-16",
+            "ticker": "US:AAPL",
+            "probability": 0.051094890510948905,
+            "realized_return": 0.056666536218839214,
+            "actual": 1
+          },
+          {
+            "date": "2026-01-16",
+            "ticker": "US:AAPL",
+            "probability": 0.051094890510948905,
+            "realized_return": 0.056666536218839214,
+            "actual": 1
+          },
+          {
+            "date": "2019-01-03",
+            "ticker": "US:MSFT",
+            "probability": 0.07894736842105263,
+            "realized_return": 0.08952772073921977,
+            "actual": 1
+          },
+          {
+            "date": "2019-01-03",
+            "ticker": "US:MSFT",
+            "probability": 0.07894736842105263,
+            "realized_return": 0.08952772073921977,
+            "actual": 1
+          },
+          {
+            "date": "2019-01-03",
+            "ticker": "US:AAPL",
+            "probability": 0.07894736842105263,
+            "realized_return": 0.09613896898516083,
+            "actual": 1
+          },
+          {
+            "date": "2019-01-03",
+            "ticker": "US:AAPL",
+            "probability": 0.07894736842105263,
+            "realized_return": 0.09613896898516083,
+            "actual": 1
+          },
+          {
+            "date": "2019-01-04",
+            "ticker": "US:AAPL",
+            "probability": 0.07894736842105263,
+            "realized_return": 0.05773640901119648,
+            "actual": 1
+          },
+          {
+            "date": "2025-06-11",
+            "ticker": "US:MSFT",
+            "probability": 0.10344827586206896,
+            "realized_return": 0.05253692183995606,
+            "actual": 1
+          },
+          {
+            "date": "2025-06-11",
+            "ticker": "US:MSFT",
+            "probability": 0.10344827586206896,
+            "realized_return": 0.05253692183995606,
+            "actual": 1
+          },
+          {
+            "date": "2024-06-28",
+            "ticker": "US:AAPL",
+            "probability": 0.1111111111111111,
+            "realized_return": 0.11290475738296468,
+            "actual": 1
+          },
+          {
+            "date": "2024-06-28",
+            "ticker": "US:AAPL",
+            "probability": 0.1111111111111111,
+            "realized_return": 0.11290475738296468,
+            "actual": 1
+          },
+          {
+            "date": "2024-07-01",
+            "ticker": "US:AAPL",
+            "probability": 0.1111111111111111,
+            "realized_return": 0.08336793540945786,
+            "actual": 1
+          },
+          {
+            "date": "2024-07-01",
+            "ticker": "US:AAPL",
+            "probability": 0.1111111111111111,
+            "realized_return": 0.08336793540945786,
+            "actual": 1
+          },
+          {
+            "date": "2018-07-11",
+            "ticker": "US:MSFT",
+            "probability": 0.125,
+            "realized_return": 0.08678172190625609,
+            "actual": 1
+          },
+          {
+            "date": "2018-07-11",
+            "ticker": "US:MSFT",
+            "probability": 0.125,
+            "realized_return": 0.08678172190625609,
+            "actual": 1
+          },
+          {
+            "date": "2020-04-23",
+            "ticker": "US:MSFT",
+            "probability": 0.1282051282051282,
+            "realized_return": 0.07105355267763391,
+            "actual": 1
+          },
+          {
+            "date": "2020-04-23",
+            "ticker": "US:MSFT",
+            "probability": 0.1282051282051282,
+            "realized_return": 0.07105355267763391,
+            "actual": 1
+          },
+          {
+            "date": "2020-04-23",
+            "ticker": "US:AAPL",
+            "probability": 0.1282051282051282,
+            "realized_return": 0.10438861215140172,
+            "actual": 1
+          },
+          {
+            "date": "2020-04-23",
+            "ticker": "US:AAPL",
+            "probability": 0.1282051282051282,
+            "realized_return": 0.10438861215140172,
+            "actual": 1
+          },
+          {
+            "date": "2020-04-24",
+            "ticker": "US:MSFT",
+            "probability": 0.1282051282051282,
+            "realized_return": 0.0580349470065884,
+            "actual": 1
+          },
+          {
+            "date": "2020-04-24",
+            "ticker": "US:MSFT",
+            "probability": 0.1282051282051282,
+            "realized_return": 0.0580349470065884,
+            "actual": 1
+          },
+          {
+            "date": "2020-04-24",
+            "ticker": "US:AAPL",
+            "probability": 0.1282051282051282,
+            "realized_return": 0.09598190620913873,
+            "actual": 1
+          },
+          {
+            "date": "2020-04-24",
+            "ticker": "US:AAPL",
+            "probability": 0.1282051282051282,
+            "realized_return": 0.09598190620913873,
+            "actual": 1
+          },
+          {
+            "date": "2020-04-27",
+            "ticker": "US:AAPL",
+            "probability": 0.1282051282051282,
+            "realized_return": 0.11244128968464162,
+            "actual": 1
+          },
+          {
+            "date": "2020-04-27",
+            "ticker": "US:AAPL",
+            "probability": 0.1282051282051282,
+            "realized_return": 0.11244128968464162,
+            "actual": 1
+          },
+          {
+            "date": "2020-04-27",
+            "ticker": "US:MSFT",
+            "probability": 0.1282051282051282,
+            "realized_return": 0.07291008330939386,
+            "actual": 1
+          },
+          {
+            "date": "2020-04-27",
+            "ticker": "US:MSFT",
+            "probability": 0.1282051282051282,
+            "realized_return": 0.07291008330939386,
+            "actual": 1
+          },
+          {
+            "date": "2020-04-28",
+            "ticker": "US:AAPL",
+            "probability": 0.1282051282051282,
+            "realized_return": 0.11784765596956003,
+            "actual": 1
+          },
+          {
+            "date": "2019-12-12",
+            "ticker": "US:AAPL",
+            "probability": 0.12833910967678502,
+            "realized_return": 0.06756059824651905,
+            "actual": 1
+          },
+          {
+            "date": "2019-12-12",
+            "ticker": "US:AAPL",
+            "probability": 0.12833910967678502,
+            "realized_return": 0.06756059824651905,
+            "actual": 1
+          },
+          {
+            "date": "2025-07-25",
+            "ticker": "US:AAPL",
+            "probability": 0.1340782122905028,
+            "realized_return": 0.07233027866093145,
+            "actual": 1
+          },
+          {
+            "date": "2025-07-25",
+            "ticker": "US:AAPL",
+            "probability": 0.1340782122905028,
+            "realized_return": 0.07233027866093145,
+            "actual": 1
+          },
+          {
+            "date": "2025-07-28",
+            "ticker": "US:AAPL",
+            "probability": 0.1340782122905028,
+            "realized_return": 0.06134080822237786,
+            "actual": 1
+          },
+          {
+            "date": "2025-07-28",
+            "ticker": "US:AAPL",
+            "probability": 0.1340782122905028,
+            "realized_return": 0.06134080822237786,
+            "actual": 1
+          },
+          {
+            "date": "2025-07-29",
+            "ticker": "US:AAPL",
+            "probability": 0.1340782122905028,
+            "realized_return": 0.0869976806929522,
+            "actual": 1
+          },
+          {
+            "date": "2025-07-29",
+            "ticker": "US:AAPL",
+            "probability": 0.1340782122905028,
+            "realized_return": 0.0869976806929522,
+            "actual": 1
+          }
+        ]
+      }
+    }
+  },
+  "meta": {
+    "run_params": {
+      "label_mode": "up5_2w",
+      "horizon": 10,
+      "target_return": 0.05,
+      "fixed_thresholds": [
+        0.7
+      ],
+      "feature_set": "v2_ohlcv_ta_relregime_event",
+      "tickers_file": "backend/config/pool_smoke.txt",
+      "n_tickers": 2
+    }
+  },
+  "per_ticker": [
+    {
+      "ticker": "US:AAPL",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0
+    },
+    {
+      "ticker": "US:MSFT",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0020161290322580645,
+      "n_trades_at_p70": 1,
+      "avg_return_at_p70": 0.02610279239174429
+    }
+  ],
+  "artifact_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\pooled_smoke_artifact.pkl"
+}

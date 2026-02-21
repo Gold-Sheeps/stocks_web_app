@@ -1,0 +1,123 @@
+﻿*** Begin Patch
+*** Update File: backend/app/services/prediction_service.py
+@@
+     def _derive_action_policy(self, probs_int: Dict[str, int]) -> Dict[str, Any]:
+@@
+         return {
+             "action": action,
+             "confidence": confidence,
+             "margin": margin,
+         }
++
++    def _derive_action_from_probs(
++        self,
++        p_up: float,
++        p_down: float,
++        p_flat: float,
++        c_min: float = 0.45,
++        delta_min: float = 0.06,
++        theta_buy: float = 0.08,
++        theta_sell: float = 0.08,
++    ) -> int:
++        pvals = np.array([float(p_up), float(p_down), float(p_flat)], dtype=float)
++        pvals = np.clip(pvals, 0.0, 1.0)
++        confidence = float(np.max(pvals))
++        sorted_vals = np.sort(pvals)
++        margin = float(sorted_vals[-1] - sorted_vals[-2]) if len(sorted_vals) >= 2 else 0.0
++        if confidence < c_min or margin < delta_min:
++            return 0
++        if (p_up - p_down) >= theta_buy:
++            return 1
++        if (p_down - p_up) >= theta_sell:
++            return -1
++        return 0
++
++    def _compute_trading_metrics(self, actions: List[int], step_returns: List[float]) -> Dict[str, Any]:
++        acts = np.asarray(actions, dtype=int)
++        rets = np.asarray(step_returns, dtype=float)
++        trade_mask = acts != 0
++        traded = rets[trade_mask]
++        trade_count = int(np.sum(trade_mask))
++        hit_rate = float(np.mean(traded > 0.0)) if trade_count > 0 else 0.0
++        avg_return = float(np.mean(traded)) if trade_count > 0 else 0.0
++
++        gross_profit = float(np.sum(traded[traded > 0.0])) if trade_count > 0 else 0.0
++        gross_loss = float(np.sum(np.abs(traded[traded < 0.0]))) if trade_count > 0 else 0.0
++        if gross_loss > 0.0:
++            profit_factor = float(gross_profit / gross_loss)
++        elif gross_profit > 0.0:
++            profit_factor = float("inf")
++        else:
++            profit_factor = 0.0
++
++        equity = np.cumprod(1.0 + rets) if len(rets) > 0 else np.array([1.0], dtype=float)
++        peak = np.maximum.accumulate(equity)
++        drawdown = (equity / np.where(peak > 0.0, peak, 1.0)) - 1.0
++        max_drawdown = float(np.min(drawdown)) if len(drawdown) > 0 else 0.0
++
++        return {
++            "trade_count": trade_count,
++            "hit_rate": hit_rate,
++            "avg_return": avg_return,
++            "max_drawdown": max_drawdown,
++            "profit_factor": profit_factor,
++            "action_counts": {
++                "buy": int(np.sum(acts == 1)),
++                "sell": int(np.sum(acts == -1)),
++                "hold": int(np.sum(acts == 0)),
++            },
++            "cost_model": {
++                "fee_bps_per_side": 5.0,
++                "slippage_bps_per_side": 5.0,
++                "round_trip_cost": 0.0020,
++            },
++        }
+@@
+         y_true: List[int] = []
+         y_pred: List[int] = []
+         prob_rows: List[np.ndarray] = []
++        trade_actions: List[int] = []
++        trade_step_returns: List[float] = []
+@@
+             temp_values.extend([float(best_t)] * len(X_test))
+             p_trade_values.extend((1.0 - p[:, 1]).astype(float).tolist())
+             if fold_stats:
+                 fold_stats[-1]["global_temp_applied"] = bool(global_temp_applied)
+                 fold_stats[-1]["global_temp_fallback_reason"] = global_temp_reason
++            for i in range(len(X_test)):
++                p_down_i = float(p[i, 0])
++                p_flat_i = float(p[i, 1])
++                p_up_i = float(p[i, 2])
++                action_i = self._derive_action_from_probs(
++                    p_up_i, p_down_i, p_flat_i, c_min=0.45, delta_min=0.06, theta_buy=0.08, theta_sell=0.08
++                )
++                trade_actions.append(int(action_i))
++                ret_pct = float(y_ret_test[i]) if i < len(y_ret_test) else 0.0
++                gross_ret = (ret_pct / 100.0) * float(action_i)
++                total_cost = 0.0020 if action_i != 0 else 0.0
++                trade_step_returns.append(float(gross_ret - total_cost))
+@@
+         prior_brier = float(self._multiclass_brier(y_true_arr, prior_probs_arr))
+         mom_brier = float(self._multiclass_brier(y_true_arr, mom_probs_arr))
+         class_ratio_after_meta = self._class_ratio(y_true_arr)
++        trading_metrics = self._compute_trading_metrics(trade_actions, trade_step_returns)
+         return {
+@@
+             "class_metrics": {
+                 "down": {"precision": float(pr[0]), "recall": float(rc[0]), "f1": float(f1_cls[0])},
+                 "flat": {"precision": float(pr[1]), "recall": float(rc[1]), "f1": float(f1_cls[1])},
+                 "up": {"precision": float(pr[2]), "recall": float(rc[2]), "f1": float(f1_cls[2])},
+             },
++            "trading_metrics": trading_metrics,
+*** End Patch
+
+*** Begin Patch
+*** Update File: backend/scripts/run_backtest_nvda.py
+@@
+     diagnostics = {
+         "class_ratio": backtest.get("class_ratio"),
+         "confusion_matrix": backtest.get("confusion_matrix"),
+         "class_metrics": backtest.get("class_metrics"),
++        "trading_metrics": backtest.get("trading_metrics"),
+     }
+*** End Patch

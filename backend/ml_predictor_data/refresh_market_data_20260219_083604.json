@@ -1,0 +1,5016 @@
+{
+  "run_at": "2026-02-19T08:33:51",
+  "source": "yfinance",
+  "db_only_check": false,
+  "start": "2006-02-19",
+  "end": "2026-02-19",
+  "symbols": [
+    {
+      "symbol_key": "JP:^N225",
+      "status": "OK",
+      "db_before": {
+        "rows": 4892,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 4892,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 4892,
+        "inserted": 0,
+        "updated": 4892
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:000001_SS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 0,
+        "max_date": null
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "Fetch failed for US:000001_SS: HTTP Error 404: Not Found"
+    },
+    {
+      "symbol_key": "US:A",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AA",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AAL",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AAMI",
+      "status": "OK",
+      "db_before": {
+        "rows": 2856,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 2856,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2856,
+        "inserted": 0,
+        "updated": 2856
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AAOI",
+      "status": "OK",
+      "db_before": {
+        "rows": 3117,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 3117,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 3117,
+        "inserted": 0,
+        "updated": 3117
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AAON",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AAP",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AAPB",
+      "status": "OK",
+      "db_before": {
+        "rows": 884,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 884,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 884,
+        "inserted": 0,
+        "updated": 884
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AAPD",
+      "status": "OK",
+      "db_before": {
+        "rows": 884,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 884,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 884,
+        "inserted": 0,
+        "updated": 884
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AAPL",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AAPU",
+      "status": "OK",
+      "db_before": {
+        "rows": 885,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 885,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 885,
+        "inserted": 0,
+        "updated": 885
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AARD",
+      "status": "OK",
+      "db_before": {
+        "rows": 254,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 254,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 254,
+        "inserted": 0,
+        "updated": 254
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABAT",
+      "status": "OK",
+      "db_before": {
+        "rows": 2511,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 2511,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2511,
+        "inserted": 0,
+        "updated": 2511
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABBV",
+      "status": "OK",
+      "db_before": {
+        "rows": 3302,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 3302,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 3302,
+        "inserted": 0,
+        "updated": 3302
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABCB",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABCL",
+      "status": "OK",
+      "db_before": {
+        "rows": 1301,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 1301,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1301,
+        "inserted": 0,
+        "updated": 1301
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABEO",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABG",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABM",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABNB",
+      "status": "OK",
+      "db_before": {
+        "rows": 1302,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 1302,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1302,
+        "inserted": 0,
+        "updated": 1302
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABOS",
+      "status": "OK",
+      "db_before": {
+        "rows": 1163,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 1163,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1163,
+        "inserted": 0,
+        "updated": 1163
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABP",
+      "status": "OK",
+      "db_before": {
+        "rows": 990,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 990,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 990,
+        "inserted": 0,
+        "updated": 990
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABSI",
+      "status": "OK",
+      "db_before": {
+        "rows": 1149,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 1149,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1149,
+        "inserted": 0,
+        "updated": 1149
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABT",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABTC",
+      "status": "OK",
+      "db_before": {
+        "rows": 2006,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 2006,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2006,
+        "inserted": 0,
+        "updated": 2006
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABTS",
+      "status": "OK",
+      "db_before": {
+        "rows": 2982,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 2982,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2982,
+        "inserted": 0,
+        "updated": 2982
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABUS",
+      "status": "OK",
+      "db_before": {
+        "rows": 4671,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 4671,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 4671,
+        "inserted": 0,
+        "updated": 4671
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABVC",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABVE",
+      "status": "OK",
+      "db_before": {
+        "rows": 409,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 409,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 409,
+        "inserted": 0,
+        "updated": 409
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ABX",
+      "status": "OK",
+      "db_before": {
+        "rows": 1364,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 1364,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1364,
+        "inserted": 0,
+        "updated": 1364
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACA",
+      "status": "OK",
+      "db_before": {
+        "rows": 1830,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 1830,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1830,
+        "inserted": 0,
+        "updated": 1830
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACAD",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACB",
+      "status": "OK",
+      "db_before": {
+        "rows": 2917,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 2917,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2917,
+        "inserted": 0,
+        "updated": 2917
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACCL",
+      "status": "OK",
+      "db_before": {
+        "rows": 84,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 84,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 84,
+        "inserted": 0,
+        "updated": 84
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACCO",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACCS",
+      "status": "OK",
+      "db_before": {
+        "rows": 4547,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 4547,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 4547,
+        "inserted": 0,
+        "updated": 4547
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACDC",
+      "status": "OK",
+      "db_before": {
+        "rows": 944,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 944,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 944,
+        "inserted": 0,
+        "updated": 944
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACEL",
+      "status": "OK",
+      "db_before": {
+        "rows": 2132,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 2132,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2132,
+        "inserted": 0,
+        "updated": 2132
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACET",
+      "status": "OK",
+      "db_before": {
+        "rows": 2026,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 2026,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2026,
+        "inserted": 0,
+        "updated": 2026
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACFN",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACGL",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACH",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACHC",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACHR",
+      "status": "OK",
+      "db_before": {
+        "rows": 1296,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 1296,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1296,
+        "inserted": 0,
+        "updated": 1296
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACHV",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACI",
+      "status": "OK",
+      "db_before": {
+        "rows": 1418,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 1418,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1418,
+        "inserted": 0,
+        "updated": 1418
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACIC",
+      "status": "OK",
+      "db_before": {
+        "rows": 4598,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 4598,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 4598,
+        "inserted": 0,
+        "updated": 4598
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACIU",
+      "status": "OK",
+      "db_before": {
+        "rows": 2363,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 2363,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2363,
+        "inserted": 0,
+        "updated": 2363
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACIW",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACLS",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACLX",
+      "status": "OK",
+      "db_before": {
+        "rows": 1012,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 1012,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1012,
+        "inserted": 0,
+        "updated": 1012
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACM",
+      "status": "OK",
+      "db_before": {
+        "rows": 4724,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 4724,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 4724,
+        "inserted": 0,
+        "updated": 4724
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACMR",
+      "status": "OK",
+      "db_before": {
+        "rows": 2083,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 2083,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2083,
+        "inserted": 0,
+        "updated": 2083
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACN",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACNB",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACNT",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACON",
+      "status": "OK",
+      "db_before": {
+        "rows": 959,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 959,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 959,
+        "inserted": 0,
+        "updated": 959
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACRS",
+      "status": "OK",
+      "db_before": {
+        "rows": 2607,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 2607,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2607,
+        "inserted": 0,
+        "updated": 2607
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACRV",
+      "status": "OK",
+      "db_before": {
+        "rows": 816,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 816,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 816,
+        "inserted": 0,
+        "updated": 816
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACT",
+      "status": "OK",
+      "db_before": {
+        "rows": 1110,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 1110,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1110,
+        "inserted": 0,
+        "updated": 1110
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACTG",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACTU",
+      "status": "OK",
+      "db_before": {
+        "rows": 380,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 380,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 380,
+        "inserted": 0,
+        "updated": 380
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACU",
+      "status": "OK",
+      "db_before": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 0,
+        "updated": 5030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACVA",
+      "status": "OK",
+      "db_before": {
+        "rows": 1231,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1232,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1232,
+        "inserted": 1,
+        "updated": 1231
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACWI",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 4502,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 4502,
+        "inserted": 1985,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ACXP",
+      "status": "OK",
+      "db_before": {
+        "rows": 1166,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1167,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1167,
+        "inserted": 1,
+        "updated": 1166
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AD",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADAG",
+      "status": "OK",
+      "db_before": {
+        "rows": 1261,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1262,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1262,
+        "inserted": 1,
+        "updated": 1261
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADBE",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADCT",
+      "status": "OK",
+      "db_before": {
+        "rows": 1445,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1446,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1446,
+        "inserted": 1,
+        "updated": 1445
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADEA",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADGM",
+      "status": "OK",
+      "db_before": {
+        "rows": 387,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 388,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 388,
+        "inserted": 1,
+        "updated": 387
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADI",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADIL",
+      "status": "OK",
+      "db_before": {
+        "rows": 1899,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1900,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1900,
+        "inserted": 1,
+        "updated": 1899
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADM",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADMA",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 3102,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 3102,
+        "inserted": 585,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADNT",
+      "status": "OK",
+      "db_before": {
+        "rows": 2346,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 2347,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2347,
+        "inserted": 1,
+        "updated": 2346
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADP",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADPT",
+      "status": "OK",
+      "db_before": {
+        "rows": 1669,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1670,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1670,
+        "inserted": 1,
+        "updated": 1669
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADSK",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADT",
+      "status": "OK",
+      "db_before": {
+        "rows": 2030,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 2031,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2031,
+        "inserted": 1,
+        "updated": 2030
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADTN",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADTX",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 821,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 821,
+        "max_date": "2026-02-17"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "numericフィールドのオーバーフロー\nDETAIL:  精度12、位取り4を持つフィールドは、10^8より小さな絶対値に丸められます。"
+    },
+    {
+      "symbol_key": "US:ADUS",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 4101,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 4101,
+        "inserted": 1584,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADV",
+      "status": "OK",
+      "db_before": {
+        "rows": 1539,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1540,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1540,
+        "inserted": 1,
+        "updated": 1539
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADVB",
+      "status": "OK",
+      "db_before": {
+        "rows": 239,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 240,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 240,
+        "inserted": 1,
+        "updated": 239
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ADXN",
+      "status": "OK",
+      "db_before": {
+        "rows": 1511,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1511,
+        "max_date": "2026-02-17"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1511,
+        "inserted": 0,
+        "updated": 1511
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AEBI",
+      "status": "OK",
+      "db_before": {
+        "rows": 158,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 159,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 159,
+        "inserted": 1,
+        "updated": 158
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AEE",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AEG",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AEHL",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 4571,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 4571,
+        "inserted": 2054,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AEHR",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AEI",
+      "status": "OK",
+      "db_before": {
+        "rows": 1311,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1312,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1312,
+        "inserted": 1,
+        "updated": 1311
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AEIS",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AEM",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AEMD",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AENT",
+      "status": "OK",
+      "db_before": {
+        "rows": 1231,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1232,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1232,
+        "inserted": 1,
+        "updated": 1231
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AEO",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AEP",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AER",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 4839,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 4839,
+        "inserted": 2322,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AERO",
+      "status": "OK",
+      "db_before": {
+        "rows": 69,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 70,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 70,
+        "inserted": 1,
+        "updated": 69
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AES",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AESI",
+      "status": "OK",
+      "db_before": {
+        "rows": 738,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 739,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 739,
+        "inserted": 1,
+        "updated": 738
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AEVA",
+      "status": "OK",
+      "db_before": {
+        "rows": 1501,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1502,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1502,
+        "inserted": 1,
+        "updated": 1501
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AEXA",
+      "status": "OK",
+      "db_before": {
+        "rows": 98,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 99,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 99,
+        "inserted": 1,
+        "updated": 98
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AEYE",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 3223,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 3223,
+        "inserted": 706,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AFBI",
+      "status": "OK",
+      "db_before": {
+        "rows": 2213,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 2213,
+        "max_date": "2026-02-17"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2213,
+        "inserted": 0,
+        "updated": 2213
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AFG",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AFK",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 4428,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 4428,
+        "inserted": 1911,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AFL",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AFRI",
+      "status": "OK",
+      "db_before": {
+        "rows": 1263,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1264,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1264,
+        "inserted": 1,
+        "updated": 1263
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AFRM",
+      "status": "OK",
+      "db_before": {
+        "rows": 1279,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1280,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1280,
+        "inserted": 1,
+        "updated": 1279
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AFRU",
+      "status": "OK",
+      "db_before": {
+        "rows": 106,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 107,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 107,
+        "inserted": 1,
+        "updated": 106
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AFYA",
+      "status": "OK",
+      "db_before": {
+        "rows": 1654,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1655,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1655,
+        "inserted": 1,
+        "updated": 1654
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AG",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 4835,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 4835,
+        "inserted": 2318,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGAE",
+      "status": "OK",
+      "db_before": {
+        "rows": 2088,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 2089,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2089,
+        "inserted": 1,
+        "updated": 2088
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGCC",
+      "status": "OK",
+      "db_before": {
+        "rows": 80,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 81,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 81,
+        "inserted": 1,
+        "updated": 80
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGCO",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGEN",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGG",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGGY",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 2669,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2669,
+        "inserted": 152,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGH",
+      "status": "OK",
+      "db_before": {
+        "rows": 254,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 255,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 255,
+        "inserted": 1,
+        "updated": 254
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGI",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGIG",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGIO",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 3162,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 3162,
+        "inserted": 645,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGIX",
+      "status": "OK",
+      "db_before": {
+        "rows": 397,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 398,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 398,
+        "inserted": 1,
+        "updated": 397
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGL",
+      "status": "OK",
+      "db_before": {
+        "rows": 1216,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1217,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1217,
+        "inserted": 1,
+        "updated": 1216
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGM",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGMH",
+      "status": "OK",
+      "db_before": {
+        "rows": 1969,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1970,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1970,
+        "inserted": 1,
+        "updated": 1969
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGO",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGPU",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 3974,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 3974,
+        "inserted": 1457,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGRO",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 3786,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 3786,
+        "inserted": 1269,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGRZ",
+      "status": "OK",
+      "db_before": {
+        "rows": 95,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 96,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 96,
+        "inserted": 1,
+        "updated": 95
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGX",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AGYS",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AHCO",
+      "status": "OK",
+      "db_before": {
+        "rows": 1939,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1940,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1940,
+        "inserted": 1,
+        "updated": 1939
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AHL",
+      "status": "OK",
+      "db_before": {
+        "rows": 195,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 196,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 196,
+        "inserted": 1,
+        "updated": 195
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AHMA",
+      "status": "OK",
+      "db_before": {
+        "rows": 81,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 82,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 82,
+        "inserted": 1,
+        "updated": 81
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AI",
+      "status": "OK",
+      "db_before": {
+        "rows": 1302,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1303,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1303,
+        "inserted": 1,
+        "updated": 1302
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIFF",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIFU",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 4602,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 4602,
+        "inserted": 2085,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIG",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AII",
+      "status": "OK",
+      "db_before": {
+        "rows": 195,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 196,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 196,
+        "inserted": 1,
+        "updated": 195
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIIO",
+      "status": "OK",
+      "db_before": {
+        "rows": 1485,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1486,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1486,
+        "inserted": 1,
+        "updated": 1485
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIMD",
+      "status": "OK",
+      "db_before": {
+        "rows": 1282,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1283,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1283,
+        "inserted": 1,
+        "updated": 1282
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIN",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIOT",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIP",
+      "status": "OK",
+      "db_before": {
+        "rows": 1080,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1081,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1081,
+        "inserted": 1,
+        "updated": 1080
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIPI",
+      "status": "OK",
+      "db_before": {
+        "rows": 427,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 428,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 428,
+        "inserted": 1,
+        "updated": 427
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIQ",
+      "status": "OK",
+      "db_before": {
+        "rows": 1949,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1950,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1950,
+        "inserted": 1,
+        "updated": 1949
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIR",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIRG",
+      "status": "OK",
+      "db_before": {
+        "rows": 2391,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 2392,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2392,
+        "inserted": 1,
+        "updated": 2391
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIRI",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIRJ",
+      "status": "OK",
+      "db_before": {
+        "rows": 1014,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1015,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1015,
+        "inserted": 1,
+        "updated": 1014
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIRO",
+      "status": "OK",
+      "db_before": {
+        "rows": 170,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 171,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 171,
+        "inserted": 1,
+        "updated": 170
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIRR",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 3004,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 3004,
+        "inserted": 487,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIRS",
+      "status": "OK",
+      "db_before": {
+        "rows": 1078,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1079,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1079,
+        "inserted": 1,
+        "updated": 1078
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIRT",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AISP",
+      "status": "OK",
+      "db_before": {
+        "rows": 1199,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1200,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1200,
+        "inserted": 1,
+        "updated": 1199
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIT",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIXC",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 2680,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2680,
+        "inserted": 163,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AIZ",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AJG",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AKA",
+      "status": "OK",
+      "db_before": {
+        "rows": 1105,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1106,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1106,
+        "inserted": 1,
+        "updated": 1105
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AKAM",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AKAN",
+      "status": "OK",
+      "db_before": {
+        "rows": 985,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 986,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 986,
+        "inserted": 1,
+        "updated": 985
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AKBA",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 2997,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2997,
+        "inserted": 480,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AKTS",
+      "status": "OK",
+      "db_before": {
+        "rows": 26,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 27,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 27,
+        "inserted": 1,
+        "updated": 26
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:AL",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 3730,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 3730,
+        "inserted": 1213,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALAB",
+      "status": "OK",
+      "db_before": {
+        "rows": 479,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 480,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 480,
+        "inserted": 1,
+        "updated": 479
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALB",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALBT",
+      "status": "OK",
+      "db_before": {
+        "rows": 1984,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1985,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1985,
+        "inserted": 1,
+        "updated": 1984
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALC",
+      "status": "OK",
+      "db_before": {
+        "rows": 1724,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1725,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1725,
+        "inserted": 1,
+        "updated": 1724
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALCO",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALCY",
+      "status": "OK",
+      "db_before": {
+        "rows": 656,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 657,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 657,
+        "inserted": 1,
+        "updated": 656
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALDF",
+      "status": "OK",
+      "db_before": {
+        "rows": 293,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 293,
+        "max_date": "2026-02-17"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 293,
+        "inserted": 0,
+        "updated": 293
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALDX",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 2967,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2967,
+        "inserted": 450,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALEC",
+      "status": "OK",
+      "db_before": {
+        "rows": 1766,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1767,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1767,
+        "inserted": 1,
+        "updated": 1766
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALF",
+      "status": "OK",
+      "db_before": {
+        "rows": 387,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 388,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 388,
+        "inserted": 1,
+        "updated": 387
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALG",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALGM",
+      "status": "OK",
+      "db_before": {
+        "rows": 1330,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1331,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1331,
+        "inserted": 1,
+        "updated": 1330
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALGN",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALGS",
+      "status": "OK",
+      "db_before": {
+        "rows": 1339,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1340,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1340,
+        "inserted": 1,
+        "updated": 1339
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALGT",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 4827,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 4827,
+        "inserted": 2310,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALH",
+      "status": "OK",
+      "db_before": {
+        "rows": 89,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 90,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 90,
+        "inserted": 1,
+        "updated": 89
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALHC",
+      "status": "OK",
+      "db_before": {
+        "rows": 1229,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1230,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1230,
+        "inserted": 1,
+        "updated": 1229
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALIT",
+      "status": "OK",
+      "db_before": {
+        "rows": 1403,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1404,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1404,
+        "inserted": 1,
+        "updated": 1403
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALK",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALKS",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALKT",
+      "status": "OK",
+      "db_before": {
+        "rows": 1217,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1218,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1218,
+        "inserted": 1,
+        "updated": 1217
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALL",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALLE",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 3080,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 3080,
+        "inserted": 563,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALLO",
+      "status": "OK",
+      "db_before": {
+        "rows": 1846,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1847,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1847,
+        "inserted": 1,
+        "updated": 1846
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALLR",
+      "status": "OK",
+      "db_before": {
+        "rows": 1042,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 1043,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1043,
+        "inserted": 1,
+        "updated": 1042
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALLT",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 4842,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 4842,
+        "inserted": 2325,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALLY",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 3033,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 3033,
+        "inserted": 516,
+        "updated": 2517
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALMS",
+      "status": "OK",
+      "db_before": {
+        "rows": 410,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 411,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 411,
+        "inserted": 1,
+        "updated": 410
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:ALNT",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 5030,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2513,
+        "updated": 2517
+      },
+      "error": null
+    }
+  ],
+  "totals": {
+    "symbols": 200,
+    "failed": 2,
+    "fetched_rows": 594514,
+    "inserted": 145753,
+    "updated": 448761
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "source": "backend\\ml_predictor_data\\backtest_nvda_20260216.json",
+  "ticker": "US:NVDA",
+  "period": {
+    "start": "2019-01-01",
+    "end": "2026-02-16",
+    "as_of": "2026-02-16"
+  },
+  "metrics": {
+    "accuracy": 0.43333333333333335,
+    "macro_f1": 0.3633156966490299,
+    "logloss": 1.183909012618685,
+    "brier": 0.23713572737367106,
+    "ece": 0.20826983678165747,
+    "interval_target_coverage": 0.8,
+    "interval_q": 0.7100776869773865,
+    "interval_width_mean": 1.4201554358005524,
+    "interval_coverage": 0.48333333333333334,
+    "bias": 1.0118706488658114,
+    "bias_abs": 1.0609943246682123
+  },
+  "trading_metrics": {
+    "trade_count": 59,
+    "hit_rate": 0.6440677966101694,
+    "avg_return": 0.04077528742101587,
+    "max_drawdown": -0.6591485792747769,
+    "profit_factor": 2.6055627028643515,
+    "action_counts": {
+      "buy": 59,
+      "sell": 0,
+      "hold": 61
+    },
+    "cost_model": {
+      "fee_bps_per_side": 5.0,
+      "slippage_bps_per_side": 5.0,
+      "round_trip_cost": 0.002
+    }
+  }
+}

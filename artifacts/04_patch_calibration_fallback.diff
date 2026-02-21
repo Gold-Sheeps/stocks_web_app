@@ -1,0 +1,74 @@
+﻿*** Begin Patch
+*** Update File: backend/app/services/prediction_service.py
+@@
+                 if temp_scale_mode == "fold":
+                     p_trade_test_before = np.asarray(p_trade_test, dtype=float).copy()
+@@
+                     p_cal_after = self._compose_meta_probs(p_trade_cal, p_up_cond_cal)
+                     p_test_after = self._compose_meta_probs(p_trade_test, p_up_cond_test)
+                     extreme_before = self._extreme_rate(p_test_raw)
+                     extreme_after = self._extreme_rate(p_test_after)
++                    ll_before = float(ll(y_c, self._safe_probs(p_cal_raw), labels=[0, 1, 2]))
++                    ll_after = float(ll(y_c, self._safe_probs(p_cal_after), labels=[0, 1, 2]))
++                    br_before = float(self._multiclass_brier(y_c, self._safe_probs(p_cal_raw)))
++                    br_after = float(self._multiclass_brier(y_c, self._safe_probs(p_cal_after)))
++                    temp_applied = bool((ll_after <= ll_before) and (br_after <= br_before))
++                    fallback_reason = None if temp_applied else "worse_logloss_or_brier_on_calib"
++                    if not temp_applied:
++                        p_cal_after = self._safe_probs(p_cal_raw)
++                        p_test_after = self._safe_probs(p_test_raw)
+                     fold_temp_stats = {
+                         "temp_T_trade": float(t_trade),
+                         "temp_T_side": float(t_side),
+                         "extreme_rate_before_temp": float(extreme_before),
+                         "extreme_rate_after_temp": float(extreme_after),
+-                        "logloss_calib_before_temp": float(ll(y_c, self._safe_probs(p_cal_raw), labels=[0, 1, 2])),
+-                        "logloss_calib_after_temp": float(ll(y_c, self._safe_probs(p_cal_after), labels=[0, 1, 2])),
++                        "logloss_calib_before_temp": ll_before,
++                        "logloss_calib_after_temp": ll_after,
++                        "brier_calib_before_temp": br_before,
++                        "brier_calib_after_temp": br_after,
++                        "temp_applied": temp_applied,
++                        "temp_fallback_reason": fallback_reason,
+@@
+             if temp_scale_mode == "global":
+                 best_t = self._search_temperature(p_cal_raw, y_c, temp_grid)
+-                p = self._temperature_scale(p_test_raw, best_t)
++                p_cal_t = self._temperature_scale(p_cal_raw, best_t)
++                p_test_t = self._temperature_scale(p_test_raw, best_t)
++                ll_before = float(ll(y_c, p_cal_raw, labels=[0, 1, 2]))
++                ll_after = float(ll(y_c, p_cal_t, labels=[0, 1, 2]))
++                br_before = float(self._multiclass_brier(y_c, p_cal_raw))
++                br_after = float(self._multiclass_brier(y_c, p_cal_t))
++                if ll_after <= ll_before and br_after <= br_before:
++                    p = p_test_t
++                    global_temp_applied = True
++                    global_temp_reason = None
++                else:
++                    p = p_test_raw
++                    best_t = 1.0
++                    global_temp_applied = False
++                    global_temp_reason = "worse_logloss_or_brier_on_calib"
+             elif temp_scale_mode == "fold":
+                 if mode_used == "meta":
+                     best_t = 1.0
+                     p = self._safe_probs(p_test_raw)
++                    global_temp_applied = True
++                    global_temp_reason = None
+                 else:
+@@
+                     best_t = 1.0
+                     p = self._safe_probs(p_test_raw)
++                    global_temp_applied = False
++                    global_temp_reason = "fold_mode_direct_not_supported"
+             else:
+                 best_t = 1.0
+                 p = self._safe_probs(p_test_raw)
++                global_temp_applied = True
++                global_temp_reason = None
+             temp_values.extend([float(best_t)] * len(X_test))
+             p_trade_values.extend((1.0 - p[:, 1]).astype(float).tolist())
++            if fold_stats:
++                fold_stats[-1]["global_temp_applied"] = bool(global_temp_applied)
++                fold_stats[-1]["global_temp_fallback_reason"] = global_temp_reason
+*** End Patch

@@ -1,0 +1,149 @@
+{
+  "run_at": "2026-02-17T20:15:26",
+  "inputs": {
+    "symbols": [
+      "US:NVDA"
+    ],
+    "asof_list": [
+      "2026-02-16"
+    ],
+    "start": "2019-01-01",
+    "end": "2026-02-16",
+    "horizon": 15,
+    "flat_band": 2.0,
+    "calibration": "sigmoid",
+    "db_check": true,
+    "fast": false,
+    "meta_band_mode": "quantile",
+    "meta_band_q": 0.65,
+    "meta_band_min_pct": 0.5,
+    "meta_band_max_pct": 10.0
+  },
+  "cases": [
+    {
+      "symbol": "US:NVDA",
+      "asof": "2026-02-16",
+      "case_id": "meta_on",
+      "prob_mode": "meta",
+      "temp_scale": "on",
+      "status": "OK",
+      "return_code": 0,
+      "json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json",
+      "summary": {
+        "logloss": 1.2652327622685866,
+        "brier": 0.25291448166049024,
+        "ece": 0.2954678913524058,
+        "accuracy": 0.14054054054054055,
+        "macro_f1": 0.0942618368496262,
+        "baseline_prior_logloss": 1.0271870550060085,
+        "baseline_prior_brier": 0.2083520140019082,
+        "beats_prior_logloss": false,
+        "beats_prior_brier": false,
+        "fold_count": 37,
+        "extreme_fold_count": 8,
+        "fallback_fold_count": 5
+      }
+    },
+    {
+      "symbol": "US:NVDA",
+      "asof": "2026-02-16",
+      "case_id": "meta_off",
+      "prob_mode": "meta",
+      "temp_scale": "off",
+      "status": "OK",
+      "return_code": 0,
+      "json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json",
+      "summary": {
+        "logloss": 1.817116878917851,
+        "brier": 0.32876014255084895,
+        "ece": 0.4559394257331083,
+        "accuracy": 0.14054054054054055,
+        "macro_f1": 0.0942618368496262,
+        "baseline_prior_logloss": 1.0271870550060085,
+        "baseline_prior_brier": 0.2083520140019082,
+        "beats_prior_logloss": false,
+        "beats_prior_brier": false,
+        "fold_count": 37,
+        "extreme_fold_count": 8,
+        "fallback_fold_count": 5
+      }
+    },
+    {
+      "symbol": "US:NVDA",
+      "asof": "2026-02-16",
+      "case_id": "direct_on",
+      "prob_mode": "direct",
+      "temp_scale": "on",
+      "status": "OK",
+      "return_code": 0,
+      "json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json",
+      "summary": {
+        "logloss": 1.0979851852050562,
+        "brier": 0.22254829271221743,
+        "ece": 0.027441001680927817,
+        "accuracy": 0.36036036036036034,
+        "macro_f1": 0.2518842814446185,
+        "baseline_prior_logloss": 1.0271870550060085,
+        "baseline_prior_brier": 0.2083520140019082,
+        "beats_prior_logloss": false,
+        "beats_prior_brier": false,
+        "fold_count": 0,
+        "extreme_fold_count": 0,
+        "fallback_fold_count": 0
+      }
+    },
+    {
+      "symbol": "US:NVDA",
+      "asof": "2026-02-16",
+      "case_id": "direct_off",
+      "prob_mode": "direct",
+      "temp_scale": "off",
+      "status": "OK",
+      "return_code": 0,
+      "json_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\backtest_nvda_20260216.json",
+      "summary": {
+        "logloss": 1.1163123007097404,
+        "brier": 0.2260973100419267,
+        "ece": 0.055136241134022816,
+        "accuracy": 0.36036036036036034,
+        "macro_f1": 0.2518842814446185,
+        "baseline_prior_logloss": 1.0271870550060085,
+        "baseline_prior_brier": 0.2083520140019082,
+        "beats_prior_logloss": false,
+        "beats_prior_brier": false,
+        "fold_count": 0,
+        "extreme_fold_count": 0,
+        "fallback_fold_count": 0
+      }
+    }
+  ],
+  "judgement": {
+    "eligible_pair_count": 1,
+    "pair_win_count": 0,
+    "win_rate": 0.0,
+    "avg_meta_off_logloss": 1.817116878917851,
+    "avg_prior_logloss": 1.0271870550060085,
+    "avg_logloss_delta_meta_minus_prior": 0.7899298239118424,
+    "total_fold_count": 37,
+    "extreme_fold_count": 8,
+    "extreme_fold_ratio": 0.21621621621621623,
+    "side_fallback_fold_count": 5,
+    "side_fallback_fold_ratio": 0.13513513513513514,
+    "condition_a": false,
+    "condition_b": false,
+    "condition_c1": false,
+    "condition_c2": false,
+    "passed": false,
+    "per_pair": [
+      {
+        "symbol": "US:NVDA",
+        "asof": "2026-02-16",
+        "win": false,
+        "logloss": 1.817116878917851,
+        "brier": 0.32876014255084895,
+        "prior_logloss": 1.0271870550060085,
+        "prior_brier": 0.2083520140019082
+      }
+    ]
+  }
+}

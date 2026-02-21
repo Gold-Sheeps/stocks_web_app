@@ -1,0 +1,41 @@
+{
+  "run_at": "2026-02-19T08:27:25",
+  "source": "yfinance",
+  "db_only_check": false,
+  "start": "2025-02-19",
+  "end": "2026-02-19",
+  "symbols": [
+    {
+      "symbol_key": "US:NVDA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 0,
+        "max_date": null
+      },
+      "fetch": {
+        "from": "2025-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0
+      },
+      "error": "リレーション\"price_daily\"の列\"symbol_key_old_backup\"のNULL値が非NULL制約に違反しています\nDETAIL:  失敗した行は(null, 2025-02-19, 139.5100, 141.3600, 137.2200, 139.2300, 139.1919, 167536000, yfinance, 2026-02-19 08:27:26.283934, US:NVDA)を含みます"
+    }
+  ],
+  "totals": {
+    "symbols": 1,
+    "failed": 1,
+    "fetched_rows": 0,
+    "inserted": 0,
+    "updated": 0
+  }
+}

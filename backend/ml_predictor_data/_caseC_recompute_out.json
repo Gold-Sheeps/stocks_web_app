@@ -1,0 +1,72 @@
+{
+  "latest_probs": {
+    "p_up": 0.36,
+    "p_down": 0.36,
+    "p_flat": 0.28,
+    "p_up_pct": 36,
+    "p_down_pct": 36,
+    "p_flat_pct": 28,
+    "sum_pct": 100,
+    "method": "recompute"
+  },
+  "raw_inputs": {
+    "p_trade": null,
+    "p_up_cond": null,
+    "eps": 1e-12,
+    "clip_before_norm": false
+  },
+  "metadata": {
+    "source_path": "backend\\ml_predictor_data\\backtest_nvda_20260216.json",
+    "extracted_from_keys": [
+      "predict.probs.up",
+      "predict.probs.down",
+      "predict.probs.flat"
+    ],
+    "inferred_args": {
+      "ticker": "US:NVDA",
+      "as_of_date": "2026-02-16",
+      "flat_band_pct": 2.0,
+      "horizon_trading_days": 15,
+      "calibration": "sigmoid",
+      "target_interval_coverage": 0.8,
+      "prob_mode": "meta",
+      "label_mode": "tbm",
+      "tbm_vol_span": 10,
+      "tbm_k": 3.5,
+      "temp_scale": "off"
+    },
+    "recompute_source": "saved_args",
+    "used_args": {
+      "ticker": "US:NVDA",
+      "as_of_date": "2026-02-16",
+      "flat_band_pct": 2.0,
+      "horizon_trading_days": 15,
+      "calibration": "sigmoid",
+      "target_interval_coverage": 0.8,
+      "prob_mode": "meta",
+      "label_mode": "tbm",
+      "tbm_vol_span": 10,
+      "tbm_k": 3.5,
+      "temp_scale": "off"
+    },
+    "method_detail": {
+      "method": "recompute",
+      "source_keys": null,
+      "recompute_source": "saved_args",
+      "used_args": {
+        "ticker": "US:NVDA",
+        "as_of_date": "2026-02-16",
+        "flat_band_pct": 2.0,
+        "horizon_trading_days": 15,
+        "calibration": "sigmoid",
+        "target_interval_coverage": 0.8,
+        "prob_mode": "meta",
+        "label_mode": "tbm",
+        "tbm_vol_span": 10,
+        "tbm_k": 3.5,
+        "temp_scale": "off"
+      }
+    },
+    "generated_at": "2026-02-18T00:58:45.389044+00:00"
+  }
+}

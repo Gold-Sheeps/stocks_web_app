@@ -13,7 +13,7 @@ router = APIRouter(prefix="/system", tags=["System"])
 
 class DataUpdateRequest(BaseModel):
     range_days: int = 14
-    targets: List[str] # Indices, FX, Metal, Sector, Stocks
+    targets: List[str] # Indices, FX, Metal, Crypto, Sector, Stocks
     
     class Config:
         json_schema_extra = {

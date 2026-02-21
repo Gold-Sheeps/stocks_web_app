@@ -1,0 +1,574 @@
+{
+  "period": {
+    "start": "2018-01-01",
+    "end": "2026-02-18",
+    "asof": "2026-02-18"
+  },
+  "metrics": {
+    "precision_at_p70": 0.4,
+    "coverage_at_p70": 0.012297097884899164,
+    "n_trades_at_p70": 25,
+    "avg_return_at_p70": 0.03353555330758375,
+    "folds_used": 0
+  },
+  "diagnostics": {
+    "fixed_threshold_metrics": {
+      "0.7": {
+        "precision": 0.4,
+        "coverage": 0.012297097884899164,
+        "n_trades": 25,
+        "avg_return": 0.03353555330758375,
+        "confusion_matrix": [
+          [
+            1673,
+            15
+          ],
+          [
+            335,
+            10
+          ]
+        ]
+      }
+    },
+    "confidence_bins": [
+      {
+        "bin": "[0.5,0.6)",
+        "lo": 0.5,
+        "hi": 0.6,
+        "n": 1,
+        "win_rate": 0.0,
+        "avg_return": 0.011331971019877374
+      },
+      {
+        "bin": "[0.6,0.7)",
+        "lo": 0.6,
+        "hi": 0.7,
+        "n": 5,
+        "win_rate": 0.0,
+        "avg_return": -0.004747893475702658
+      },
+      {
+        "bin": "[0.7,0.8)",
+        "lo": 0.7,
+        "hi": 0.8,
+        "n": 5,
+        "win_rate": 0.4,
+        "avg_return": 0.05539822682058386
+      },
+      {
+        "bin": "[0.8,0.9)",
+        "lo": 0.8,
+        "hi": 0.9,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      },
+      {
+        "bin": "[0.9,1.0]",
+        "lo": 0.9,
+        "hi": 1.0,
+        "n": 20,
+        "win_rate": 0.4,
+        "avg_return": 0.02806988492933372
+      }
+    ],
+    "prob_calibration_audit": {
+      "high_confidence_miss": {
+        "threshold": 0.7,
+        "count": 15,
+        "top_misses": [
+          {
+            "date": "2018-03-12",
+            "ticker": "US:MSFT",
+            "probability": 0.999999,
+            "realized_return": -0.030898005580241805,
+            "actual": 0
+          },
+          {
+            "date": "2018-07-23",
+            "ticker": "US:MSFT",
+            "probability": 0.999999,
+            "realized_return": 0.0014818931184588102,
+            "actual": 0
+          },
+          {
+            "date": "2018-09-25",
+            "ticker": "US:MSFT",
+            "probability": 0.999999,
+            "realized_return": -0.019134993446920046,
+            "actual": 0
+          },
+          {
+            "date": "2019-03-12",
+            "ticker": "US:MSFT",
+            "probability": 0.999999,
+            "realized_return": 0.03775743707093815,
+            "actual": 0
+          },
+          {
+            "date": "2022-06-10",
+            "ticker": "US:MSFT",
+            "probability": 0.999999,
+            "realized_return": 0.047037432309577465,
+            "actual": 0
+          },
+          {
+            "date": "2022-09-26",
+            "ticker": "US:MSFT",
+            "probability": 0.999999,
+            "realized_return": -0.034533586018109075,
+            "actual": 0
+          },
+          {
+            "date": "2022-09-27",
+            "ticker": "US:MSFT",
+            "probability": 0.999999,
+            "realized_return": -0.04652933463051479,
+            "actual": 0
+          },
+          {
+            "date": "2022-09-28",
+            "ticker": "US:MSFT",
+            "probability": 0.999999,
+            "realized_return": -0.06355000622225904,
+            "actual": 0
+          },
+          {
+            "date": "2022-09-29",
+            "ticker": "US:MSFT",
+            "probability": 0.999999,
+            "realized_return": -0.013726315789473698,
+            "actual": 0
+          },
+          {
+            "date": "2022-09-30",
+            "ticker": "US:MSFT",
+            "probability": 0.999999,
+            "realized_return": -0.018634607127522518,
+            "actual": 0
+          },
+          {
+            "date": "2022-10-12",
+            "ticker": "US:MSFT",
+            "probability": 0.999999,
+            "realized_return": 0.024673311184939095,
+            "actual": 0
+          },
+          {
+            "date": "2024-08-02",
+            "ticker": "US:MSFT",
+            "probability": 0.9344390117576853,
+            "realized_return": 0.024431442630174605,
+            "actual": 0
+          },
+          {
+            "date": "2022-09-15",
+            "ticker": "US:MSFT",
+            "probability": 0.772105827612123,
+            "realized_return": -0.03211345667943599,
+            "actual": 0
+          },
+          {
+            "date": "2025-11-20",
+            "ticker": "US:MSFT",
+            "probability": 0.7411254387668644,
+            "realized_return": 0.009886503772756683,
+            "actual": 0
+          },
+          {
+            "date": "2018-09-18",
+            "ticker": "US:MSFT",
+            "probability": 0.721977329088519,
+            "realized_return": 0.017136295380266953,
+            "actual": 0
+          }
+        ]
+      },
+      "low_confidence_miss": {
+        "threshold": 0.3,
+        "count": 273,
+        "top_misses": [
+          {
+            "date": "2020-03-30",
+            "ticker": "US:MSFT",
+            "probability": 1e-06,
+            "realized_return": 0.08406665418460957,
+            "actual": 1
+          },
+          {
+            "date": "2018-01-10",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.0513550444090185,
+            "actual": 1
+          },
+          {
+            "date": "2018-01-11",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.06789282470481384,
+            "actual": 1
+          },
+          {
+            "date": "2018-02-05",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.053636363636363704,
+            "actual": 1
+          },
+          {
+            "date": "2018-02-08",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.106458063757205,
+            "actual": 1
+          },
+          {
+            "date": "2018-02-09",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.0821047856656838,
+            "actual": 1
+          },
+          {
+            "date": "2018-02-12",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05688320430831384,
+            "actual": 1
+          },
+          {
+            "date": "2018-04-02",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.06382738364211482,
+            "actual": 1
+          },
+          {
+            "date": "2018-04-03",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.07089510645412989,
+            "actual": 1
+          },
+          {
+            "date": "2018-04-06",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.0528649008090436,
+            "actual": 1
+          },
+          {
+            "date": "2018-04-09",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05045719951525829,
+            "actual": 1
+          },
+          {
+            "date": "2018-05-18",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05510585305105864,
+            "actual": 1
+          },
+          {
+            "date": "2018-05-22",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05117948717948706,
+            "actual": 1
+          },
+          {
+            "date": "2018-06-27",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.06817715808898894,
+            "actual": 1
+          },
+          {
+            "date": "2018-06-28",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.06894454020075047,
+            "actual": 1
+          },
+          {
+            "date": "2018-06-29",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.0638880438089442,
+            "actual": 1
+          },
+          {
+            "date": "2018-07-02",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05939406059394048,
+            "actual": 1
+          },
+          {
+            "date": "2018-07-03",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.0612821807168098,
+            "actual": 1
+          },
+          {
+            "date": "2018-07-06",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05051403716884151,
+            "actual": 1
+          },
+          {
+            "date": "2018-07-09",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.06008836524300443,
+            "actual": 1
+          },
+          {
+            "date": "2018-07-10",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05424990207598901,
+            "actual": 1
+          },
+          {
+            "date": "2018-07-11",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.08678172190625609,
+            "actual": 1
+          },
+          {
+            "date": "2018-07-12",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05211632594298887,
+            "actual": 1
+          },
+          {
+            "date": "2018-09-07",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.0559098050087794,
+            "actual": 1
+          },
+          {
+            "date": "2018-10-24",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.09421422986708361,
+            "actual": 1
+          },
+          {
+            "date": "2018-12-24",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.1077233613088282,
+            "actual": 1
+          },
+          {
+            "date": "2019-01-03",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.08952772073921977,
+            "actual": 1
+          },
+          {
+            "date": "2019-01-04",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.056705582262336796,
+            "actual": 1
+          },
+          {
+            "date": "2019-02-01",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05292858532788469,
+            "actual": 1
+          },
+          {
+            "date": "2019-02-07",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.0541464804787688,
+            "actual": 1
+          },
+          {
+            "date": "2019-02-08",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05602346929118962,
+            "actual": 1
+          },
+          {
+            "date": "2019-02-11",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.06755344418052256,
+            "actual": 1
+          },
+          {
+            "date": "2019-02-14",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05266604303086986,
+            "actual": 1
+          },
+          {
+            "date": "2019-04-10",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.07454863133372158,
+            "actual": 1
+          },
+          {
+            "date": "2019-04-11",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.07944818416022592,
+            "actual": 1
+          },
+          {
+            "date": "2019-04-12",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.07292269532864837,
+            "actual": 1
+          },
+          {
+            "date": "2019-04-15",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.07889301941346538,
+            "actual": 1
+          },
+          {
+            "date": "2019-04-16",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05887223648257023,
+            "actual": 1
+          },
+          {
+            "date": "2019-05-24",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.050380228136882144,
+            "actual": 1
+          },
+          {
+            "date": "2019-05-29",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05242516407875786,
+            "actual": 1
+          },
+          {
+            "date": "2019-05-30",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05241390280760361,
+            "actual": 1
+          },
+          {
+            "date": "2019-06-03",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.10856141522029361,
+            "actual": 1
+          },
+          {
+            "date": "2019-06-04",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.09743423189347201,
+            "actual": 1
+          },
+          {
+            "date": "2019-06-05",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.07835969164746093,
+            "actual": 1
+          },
+          {
+            "date": "2019-06-06",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.0714285714285714,
+            "actual": 1
+          },
+          {
+            "date": "2019-10-22",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05932389821808326,
+            "actual": 1
+          },
+          {
+            "date": "2020-01-03",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05346110200479126,
+            "actual": 1
+          },
+          {
+            "date": "2020-01-07",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05152938190125633,
+            "actual": 1
+          },
+          {
+            "date": "2020-01-15",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.05883073906115932,
+            "actual": 1
+          },
+          {
+            "date": "2020-01-21",
+            "ticker": "US:MSFT",
+            "probability": 0.18233618233618232,
+            "realized_return": 0.08180180180180185,
+            "actual": 1
+          }
+        ]
+      }
+    }
+  },
+  "meta": {
+    "run_params": {
+      "label_mode": "up5_2w",
+      "horizon": 10,
+      "target_return": 0.05,
+      "fixed_thresholds": [
+        0.7
+      ],
+      "feature_set": "v2_ohlcv_ta_relregime_event",
+      "tickers_file": "backend/config/pool_smoke.txt",
+      "n_tickers": 2,
+      "train_tickers": [
+        "US:AAPL"
+      ],
+      "holdout_tickers": [
+        "US:MSFT"
+      ]
+    }
+  },
+  "per_ticker": [
+    {
+      "ticker": "US:MSFT",
+      "precision_at_p70": 0.4,
+      "coverage_at_p70": 0.012297097884899164,
+      "n_trades_at_p70": 25,
+      "avg_return_at_p70": 0.03353555330758375
+    }
+  ],
+  "artifact_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\pooled_smoke_holdout_artifact.pkl"
+}

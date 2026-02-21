@@ -1,0 +1,43 @@
+{
+  "run_at": "2026-02-19T08:51:29",
+  "source": "yfinance",
+  "db_only_check": false,
+  "start": "2006-02-19",
+  "end": "2026-02-19",
+  "symbols": [
+    {
+      "symbol_key": "US:CLRB",
+      "status": "OK",
+      "db_before": {
+        "rows": 2517,
+        "max_date": "2026-02-17"
+      },
+      "db_after": {
+        "rows": 4831,
+        "max_date": "2026-02-18"
+      },
+      "fetch": {
+        "from": "2006-02-19",
+        "to": "2026-02-19",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 5030,
+        "inserted": 2314,
+        "updated": 2517,
+        "skipped_overflow": 199
+      },
+      "error": null
+    }
+  ],
+  "totals": {
+    "symbols": 1,
+    "failed": 0,
+    "fetched_rows": 5030,
+    "inserted": 2314,
+    "updated": 2517,
+    "skipped_overflow": 199
+  }
+}

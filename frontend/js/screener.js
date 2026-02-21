@@ -54,8 +54,25 @@
 
         return {
             items: Array.isArray(items) ? items : [],
-            total: safeNumber(total, 0)
+            total: safeNumber(total, 0),
+            freshness: data?.freshness ?? null
         };
+    }
+
+    function renderFreshness(freshness) {
+        const el = $("screenerFreshness");
+        if (!el) return;
+        if (!freshness) {
+            el.textContent = "";
+            return;
+        }
+        const status = freshness.is_fresh ? "Fresh" : "Stale";
+        const cls = freshness.is_fresh ? "text-success" : "text-warning";
+        el.innerHTML = `
+            <span style="font-weight:700;">Data Freshness:</span>
+            <span class="${cls}" style="font-weight:700;">${status}</span>
+            <span> latest=${freshness.latest_date_max || 'N/A'} / expected=${freshness.expected_latest_date || 'N/A'} / stale=${freshness.symbols_stale || 0}</span>
+        `;
     }
 
     // Update filters from form
@@ -319,8 +336,9 @@
             if (state.filters.minRS !== null) {
                 url.searchParams.set("min_rs", String(state.filters.minRS));
             }
-            if (state.filters.minTotalScore !== null) {
-                url.searchParams.set("min_total_score", String(state.filters.minTotalScore));
+            const effectiveMinTotalScore = state.filters.searchQuery ? 0 : state.filters.minTotalScore;
+            if (effectiveMinTotalScore !== null) {
+                url.searchParams.set("min_total_score", String(effectiveMinTotalScore));
             }
 
             const volumeMin = $("volumeMin")?.value;
@@ -357,11 +375,12 @@
             const data = await res.json();
             console.log("[Screener] API Response:", data);
 
-            const { items, total } = normalizeScreenerResponse(data);
+            const { items, total, freshness } = normalizeScreenerResponse(data);
             state.items = items;
             state.total = total;
 
             renderMeta();
+            renderFreshness(freshness);
             renderTable();
 
             // Show results card

@@ -29,6 +29,8 @@ yf.set_tz_cache_location(str(_YF_CACHE_DIR))
 
 from app.db.database import Database
 
+MAX_PRICE_ABS = 99_999_999.9999
+
 
 @dataclass
 class SymbolResult:
@@ -75,6 +77,12 @@ def _parse_args() -> argparse.Namespace:
         type=int,
         default=3,
         help="Max retries per symbol for external fetch.",
+    )
+    parser.add_argument(
+        "--force-start",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Respect --start exactly (do not auto-shift to db max_date + 1).",
     )
     return parser.parse_args()
 
@@ -233,10 +241,10 @@ def _upsert_rows(
     source_label: str,
 ) -> Dict[str, int]:
     if df is None or df.empty:
-        return {"fetched_rows": 0, "inserted": 0, "updated": 0}
+        return {"fetched_rows": 0, "inserted": 0, "updated": 0, "skipped_overflow": 0}
 
     base_cols = ["symbol_key", "trading_date", "open", "high", "low", "close", "volume"]
-    optional_cols = ["adj_close", "source", "updated_at"]
+    optional_cols = ["adj_close", "source", "updated_at", "symbol_key_old_backup"]
     cols = [c for c in base_cols if c in available_cols] + [c for c in optional_cols if c in available_cols]
 
     if "symbol_key" not in cols or "trading_date" not in cols or "close" not in cols:
@@ -253,30 +261,49 @@ def _upsert_rows(
 
     inserted = 0
     updated = 0
+    skipped_overflow = 0
     for idx, row in df.iterrows():
+        open_v = _to_num(row.get("Open"))
+        high_v = _to_num(row.get("High"))
+        low_v = _to_num(row.get("Low"))
+        close_v = _to_num(row.get("Close"))
+        adj_close_v = _to_num(row.get("Adj Close"))
+        if (
+            _is_price_overflow(open_v)
+            or _is_price_overflow(high_v)
+            or _is_price_overflow(low_v)
+            or _is_price_overflow(close_v)
+            or _is_price_overflow(adj_close_v)
+        ):
+            skipped_overflow += 1
+            continue
+
         trading_date = pd.to_datetime(idx).date()
         params: List[Any] = []
-        for c in cols:
-            if c == "symbol_key":
+        for col in cols:
+            if col == "symbol_key":
                 params.append(symbol_key)
-            elif c == "trading_date":
+            elif col == "trading_date":
                 params.append(trading_date)
-            elif c == "open":
-                params.append(_to_num(row.get("Open")))
-            elif c == "high":
-                params.append(_to_num(row.get("High")))
-            elif c == "low":
-                params.append(_to_num(row.get("Low")))
-            elif c == "close":
-                params.append(_to_num(row.get("Close")))
-            elif c == "adj_close":
-                params.append(_to_num(row.get("Adj Close")))
-            elif c == "volume":
+            elif col == "open":
+                params.append(open_v)
+            elif col == "high":
+                params.append(high_v)
+            elif col == "low":
+                params.append(low_v)
+            elif col == "close":
+                params.append(close_v)
+            elif col == "adj_close":
+                params.append(adj_close_v)
+            elif col == "volume":
                 params.append(_to_int(row.get("Volume")))
-            elif c == "source":
+            elif col == "source":
                 params.append(source_label)
-            elif c == "updated_at":
+            elif col == "updated_at":
                 params.append(datetime.now())
+            elif col == "symbol_key_old_backup":
+                # Legacy schema compatibility: this column may be NOT NULL.
+                params.append(symbol_key)
             else:
                 params.append(None)
         db.cursor.execute(sql, tuple(params))
@@ -287,7 +314,12 @@ def _upsert_rows(
             updated += 1
 
     db.connection.commit()
-    return {"fetched_rows": int(len(df)), "inserted": inserted, "updated": updated}
+    return {
+        "fetched_rows": int(len(df)),
+        "inserted": inserted,
+        "updated": updated,
+        "skipped_overflow": skipped_overflow,
+    }
 
 
 def _to_num(value: Any) -> Optional[float]:
@@ -308,6 +340,12 @@ def _to_int(value: Any) -> Optional[int]:
         return None if v < 0 else v
     except Exception:
         return None
+
+
+def _is_price_overflow(value: Optional[float]) -> bool:
+    if value is None:
+        return False
+    return abs(value) > MAX_PRICE_ABS
 
 
 def main() -> int:
@@ -338,7 +376,7 @@ def main() -> int:
                 else None
             )
             fetch_start = start_opt
-            if last_date is not None:
+            if last_date is not None and not args.force_start:
                 next_day = last_date + timedelta(days=1)
                 fetch_start = max(fetch_start, next_day) if fetch_start is not None else next_day
 
@@ -349,7 +387,7 @@ def main() -> int:
                 "source_used": None,
                 "skipped": False,
             }
-            upsert_meta: Dict[str, Any] = {"fetched_rows": 0, "inserted": 0, "updated": 0}
+            upsert_meta: Dict[str, Any] = {"fetched_rows": 0, "inserted": 0, "updated": 0, "skipped_overflow": 0}
 
             if args.db_only_check:
                 fetch_meta["skipped"] = True
@@ -383,6 +421,9 @@ def main() -> int:
                         source_label=args.source,
                     )
                 except Exception as exc:
+                    # Recover transaction after failed INSERT/UPDATE before further queries.
+                    if db.connection is not None:
+                        db.connection.rollback()
                     failures.append(symbol_key)
                     after_fail = _db_stats(db, symbol_key, end_date)
                     results.append(
@@ -425,6 +466,7 @@ def main() -> int:
             "fetched_rows": int(sum(r.upsert.get("fetched_rows", 0) for r in results)),
             "inserted": int(sum(r.upsert.get("inserted", 0) for r in results)),
             "updated": int(sum(r.upsert.get("updated", 0) for r in results)),
+            "skipped_overflow": int(sum(r.upsert.get("skipped_overflow", 0) for r in results)),
         },
     }
 
@@ -438,10 +480,11 @@ def main() -> int:
     print(f"  period: {payload['start']} -> {payload['end']}")
     print(f"  symbols: {payload['totals']['symbols']}  failed: {payload['totals']['failed']}")
     print(
-        "  fetched_rows: {fetched}  inserted: {inserted}  updated: {updated}".format(
+        "  fetched_rows: {fetched}  inserted: {inserted}  updated: {updated}  skipped_overflow: {skipped}".format(
             fetched=payload["totals"]["fetched_rows"],
             inserted=payload["totals"]["inserted"],
             updated=payload["totals"]["updated"],
+            skipped=payload["totals"]["skipped_overflow"],
         )
     )
     for r in results:

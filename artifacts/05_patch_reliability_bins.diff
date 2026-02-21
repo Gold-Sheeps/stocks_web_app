@@ -1,0 +1,51 @@
+﻿*** Begin Patch
+*** Update File: backend/app/services/prediction_service.py
+@@
+     def _reliability_bins_multiclass(
+         self,
+         y_true: np.ndarray,
+         probs: np.ndarray,
+         n_bins: int = 10,
++        conf_min: float = 0.0,
++        conf_max: float = 1.0,
+     ) -> List[Dict[str, Any]]:
+         conf = np.max(probs, axis=1)
+         pred = np.argmax(probs, axis=1)
+-        bins = np.linspace(0.0, 1.0, n_bins + 1)
++        lo_edge = float(max(0.0, min(1.0, conf_min)))
++        hi_edge = float(max(lo_edge, min(1.0, conf_max)))
++        bins = np.linspace(lo_edge, hi_edge, n_bins + 1)
+@@
+                 rows.append(
+                     {
+                         "bin_lo": lo,
+                         "bin_hi": hi,
+                         "count": 0,
++                        "pred_mean": None,
++                        "actual_rate": None,
+                         "confidence_mean": None,
+                         "accuracy_mean": None,
+                     }
+                 )
+                 continue
+             rows.append(
+                 {
+                     "bin_lo": lo,
+                     "bin_hi": hi,
+                     "count": cnt,
++                    "pred_mean": float(np.mean(conf[mask])),
++                    "actual_rate": float(np.mean(pred[mask] == y_true[mask])),
+                     "confidence_mean": float(np.mean(conf[mask])),
+                     "accuracy_mean": float(np.mean(pred[mask] == y_true[mask])),
+                 }
+             )
+         return rows
+@@
+             "prob_calibration": {
+                 "ece_bins": self._reliability_bins_multiclass(y_true_arr, probs, n_bins=10),
++                "reliability_bins_pmax_033_100": self._reliability_bins_multiclass(
++                    y_true_arr, probs, n_bins=10, conf_min=0.33, conf_max=1.0
++                ),
+                 "temp_scale_mode": temp_scale_mode,
+             },
+*** End Patch

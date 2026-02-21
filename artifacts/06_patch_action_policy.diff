@@ -1,0 +1,54 @@
+﻿*** Begin Patch
+*** Update File: backend/app/services/prediction_service.py
+@@
+         probs_float = {"down": float(proba[0] * 100), "flat": float(proba[1] * 100), "up": float(proba[2] * 100)}
+         probs_int = self._round_to_100(probs_float)
++        action_policy = self._derive_action_policy(probs_int)
+@@
+         return {
+             "probs": {
+                 "up": probs_int["up"],
+                 "down": probs_int["down"],
+                 "flat": probs_int["flat"],
+             },
++            "action": action_policy["action"],
++            "confidence": action_policy["confidence"],
++            "margin": action_policy["margin"],
+             "price_forecast": {
+                 "point": round(point, 4),
+                 "p10": round(p10, 4),
+                 "p50": round(p50, 4),
+                 "p90": round(p90, 4),
+@@
+             },
+         }
++
++    def _derive_action_policy(self, probs_int: Dict[str, int]) -> Dict[str, Any]:
++        p_up = int(probs_int.get("up", 0))
++        p_down = int(probs_int.get("down", 0))
++        p_flat = int(probs_int.get("flat", 0))
++
++        vals = sorted([p_up, p_down, p_flat], reverse=True)
++        confidence = int(vals[0]) if vals else 0
++        margin = int(vals[0] - vals[1]) if len(vals) >= 2 else 0
++
++        # No-trade zone safety valve.
++        c_min = 45
++        delta_min = 6
++        theta_buy = 8
++        theta_sell = 8
++        if confidence < c_min or margin < delta_min:
++            action = "HOLD"
++        elif (p_up - p_down) >= theta_buy:
++            action = "BUY"
++        elif (p_down - p_up) >= theta_sell:
++            action = "SELL"
++        else:
++            action = "HOLD"
++
++        return {
++            "action": action,
++            "confidence": confidence,
++            "margin": margin,
++        }
+*** End Patch

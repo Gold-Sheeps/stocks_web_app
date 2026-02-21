@@ -41,6 +41,37 @@ function createSparkline(data, color) {
     return `<svg class="sparkline" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none"><polyline fill="none" stroke="${color}" stroke-width="1.5" points="${points}" opacity="0.7"/></svg>`;
 }
 
+function renderFreshnessMonitor(freshnessMap) {
+    const el = document.getElementById('freshnessMonitor');
+    if (!el) return;
+    if (!freshnessMap || typeof freshnessMap !== 'object') {
+        el.innerHTML = `
+            <div style="font-weight:700; margin-bottom:6px;">Data Freshness (Market-time aware)</div>
+            <div class="text-warning">Freshness data is not available from API response.</div>
+        `;
+        el.style.display = 'block';
+        return;
+    }
+    const rows = Object.entries(freshnessMap).map(([k, v]) => {
+        const ok = Boolean(v?.is_fresh);
+        const status = ok ? 'Fresh' : 'Stale';
+        const cls = ok ? 'text-success' : 'text-warning';
+        const latest = v?.latest_date_max || 'N/A';
+        const expected = v?.expected_latest_date || 'N/A';
+        const stale = Number(v?.symbols_stale || 0);
+        return `<div style="margin:2px 0;">
+            <span style="font-weight:700; min-width:95px; display:inline-block;">${k}</span>
+            <span class="${cls}" style="font-weight:700;">${status}</span>
+            <span class="text-muted"> latest=${latest} / expected=${expected} / stale=${stale}</span>
+        </div>`;
+    });
+    el.innerHTML = `
+        <div style="font-weight:700; margin-bottom:6px;">Data Freshness (Market-time aware)</div>
+        ${rows.join('')}
+    `;
+    el.style.display = 'block';
+}
+
 /**
  * Create/Update Portfolio Pie Chart
  */
@@ -251,6 +282,7 @@ async function loadMonitorData() {
         renderGroup('fxRates', TARGETS.fx, data.fx_rates || []);
         renderGroup('commodities', TARGETS.commodities, data.metals || []);
         renderGroup('crypto', TARGETS.crypto, data.crypto || []);
+        renderFreshnessMonitor(data.freshness || null);
 
         // Portfolio Summary
         if (data.portfolio) {

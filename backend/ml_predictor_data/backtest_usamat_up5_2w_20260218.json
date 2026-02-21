@@ -1,0 +1,1265 @@
+{
+  "ticker": "US:AMAT",
+  "period": {
+    "start": "2006-02-20",
+    "end": "2026-02-18",
+    "as_of": "2026-02-18"
+  },
+  "metrics": {
+    "accuracy": 0.7094339622641509,
+    "macro_f1": 0.593929450369155,
+    "logloss": 0.5728958984276414,
+    "brier": 0.1896381023010339,
+    "ece": 0.045717228726128364,
+    "win_rate_at_best": 0.4375,
+    "coverage_at_best": 0.20125786163522014,
+    "n_trades_at_best": 160,
+    "avg_return_at_best": 0.037352706224935944,
+    "median_return_at_best": 0.040955344047094555,
+    "precision_at_p70": 0.0,
+    "coverage_at_p70": 0.0,
+    "n_trades_at_p70": 0,
+    "avg_return_at_p70": 0.0,
+    "interval_target_coverage": 0.8,
+    "interval_q": null,
+    "interval_width_mean": null,
+    "interval_coverage": null,
+    "bias": 0.0,
+    "bias_abs": 0.0
+  },
+  "diagnostics": {
+    "class_ratio": null,
+    "confusion_matrix": [
+      [
+        494,
+        90
+      ],
+      [
+        141,
+        70
+      ]
+    ],
+    "confusion_2x2": [
+      [
+        494,
+        90
+      ],
+      [
+        141,
+        70
+      ]
+    ],
+    "class_metrics": {
+      "no_trade": {
+        "precision": 0.7779527559055118,
+        "recall": 0.8458904109589042,
+        "f1": 0.8105004101722724
+      },
+      "buy": {
+        "precision": 0.4375,
+        "recall": 0.33175355450236965,
+        "f1": 0.37735849056603776
+      }
+    },
+    "trading_metrics": {
+      "trade_count": 160,
+      "action_counts": {
+        "buy": 160,
+        "hold": 635
+      }
+    },
+    "label_distribution": {
+      "negative_0": 0.7345911949685534,
+      "positive_1": 0.26540880503144654
+    },
+    "prediction_distribution": {
+      "buy_1": 0.20125786163522014,
+      "no_trade_0": 0.7987421383647799
+    },
+    "threshold_selection": {
+      "best": {
+        "t_buy": 0.3051,
+        "win_rate": 0.4375,
+        "coverage": 0.20125786163522014,
+        "n_trades": 160,
+        "avg_return": 0.037352706224935944,
+        "median_return": 0.040955344047094555,
+        "confusion_2x2": [
+          [
+            494,
+            90
+          ],
+          [
+            141,
+            70
+          ]
+        ]
+      },
+      "candidates": [
+        {
+          "t_buy": 0.229,
+          "win_rate": 0.3409090909090909,
+          "coverage": 0.4981132075471698,
+          "n_trades": 396,
+          "avg_return": 0.019442891461748484,
+          "median_return": 0.019222895168404253,
+          "confusion_2x2": [
+            [
+              323,
+              261
+            ],
+            [
+              76,
+              135
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.2575,
+          "win_rate": 0.3805031446540881,
+          "coverage": 0.4,
+          "n_trades": 318,
+          "avg_return": 0.02562063903702394,
+          "median_return": 0.025000653152003283,
+          "confusion_2x2": [
+            [
+              387,
+              197
+            ],
+            [
+              90,
+              121
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.2796,
+          "win_rate": 0.41841004184100417,
+          "coverage": 0.30062893081761005,
+          "n_trades": 239,
+          "avg_return": 0.03316115527525386,
+          "median_return": 0.030256297275464528,
+          "confusion_2x2": [
+            [
+              445,
+              139
+            ],
+            [
+              111,
+              100
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.3051,
+          "win_rate": 0.4375,
+          "coverage": 0.20125786163522014,
+          "n_trades": 160,
+          "avg_return": 0.037352706224935944,
+          "median_return": 0.040955344047094555,
+          "confusion_2x2": [
+            [
+              494,
+              90
+            ],
+            [
+              141,
+              70
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.3172,
+          "win_rate": 0.38333333333333336,
+          "coverage": 0.1509433962264151,
+          "n_trades": 120,
+          "avg_return": 0.024895101488473348,
+          "median_return": 0.03166258426677415,
+          "confusion_2x2": [
+            [
+              510,
+              74
+            ],
+            [
+              165,
+              46
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.3358,
+          "win_rate": 0.3625,
+          "coverage": 0.10062893081761007,
+          "n_trades": 80,
+          "avg_return": 0.014059417104696312,
+          "median_return": 0.026421427217868332,
+          "confusion_2x2": [
+            [
+              533,
+              51
+            ],
+            [
+              182,
+              29
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.3591,
+          "win_rate": 0.275,
+          "coverage": 0.050314465408805034,
+          "n_trades": 40,
+          "avg_return": -0.002122049466867512,
+          "median_return": -0.016257732279453985,
+          "confusion_2x2": [
+            [
+              555,
+              29
+            ],
+            [
+              200,
+              11
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.3867,
+          "win_rate": 0.20833333333333334,
+          "coverage": 0.03018867924528302,
+          "n_trades": 24,
+          "avg_return": -0.021943603850380786,
+          "median_return": -0.028528110608862345,
+          "confusion_2x2": [
+            [
+              565,
+              19
+            ],
+            [
+              206,
+              5
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.4027,
+          "win_rate": 0.2857142857142857,
+          "coverage": 0.00880503144654088,
+          "n_trades": 7,
+          "avg_return": -0.016219840697350673,
+          "median_return": -0.019082663015574264,
+          "confusion_2x2": [
+            [
+              579,
+              5
+            ],
+            [
+              209,
+              2
+            ]
+          ]
+        }
+      ],
+      "fallback_unconstrained": false,
+      "constraints": {
+        "min_coverage": 0.05,
+        "min_trades": 50
+      }
+    },
+    "fixed_threshold_metrics": {
+      "0.7": {
+        "precision": 0.0,
+        "coverage": 0.0,
+        "n_trades": 0,
+        "avg_return": 0.0,
+        "confusion_matrix": [
+          [
+            584,
+            0
+          ],
+          [
+            211,
+            0
+          ]
+        ]
+      }
+    },
+    "prob_up5_summary": {
+      "min": 0.011155560479340354,
+      "max": 0.42980486230405934,
+      "p50": 0.22895707684240046,
+      "p90": 0.3358395467208353,
+      "p95": 0.3591444297611934,
+      "p99": 0.4026500445869327,
+      "mean": 0.2389334750152609,
+      "std": 0.07442524146333598
+    },
+    "prob_calibration_audit": {
+      "reliability_bins": [
+        {
+          "bin_lo": 0.0,
+          "bin_hi": 0.1,
+          "count": 18,
+          "pred_mean": 0.025575467784223538,
+          "actual_rate": 0.2222222222222222,
+          "gap_actual_minus_pred": 0.19664675443799867
+        },
+        {
+          "bin_lo": 0.1,
+          "bin_hi": 0.2,
+          "count": 223,
+          "pred_mean": 0.16902168320961136,
+          "actual_rate": 0.19282511210762332,
+          "gap_actual_minus_pred": 0.023803428898011958
+        },
+        {
+          "bin_lo": 0.2,
+          "bin_hi": 0.30000000000000004,
+          "count": 381,
+          "pred_mean": 0.243970446938559,
+          "actual_rate": 0.23097112860892388,
+          "gap_actual_minus_pred": -0.012999318329635107
+        },
+        {
+          "bin_lo": 0.30000000000000004,
+          "bin_hi": 0.4,
+          "count": 159,
+          "pred_mean": 0.33428468002560263,
+          "actual_rate": 0.4591194968553459,
+          "gap_actual_minus_pred": 0.12483481682974329
+        },
+        {
+          "bin_lo": 0.4,
+          "bin_hi": 0.5,
+          "count": 14,
+          "pred_mean": 0.4068510324008035,
+          "actual_rate": 0.21428571428571427,
+          "gap_actual_minus_pred": -0.19256531811508923
+        },
+        {
+          "bin_lo": 0.5,
+          "bin_hi": 0.6000000000000001,
+          "count": 0,
+          "pred_mean": null,
+          "actual_rate": null,
+          "gap_actual_minus_pred": null
+        },
+        {
+          "bin_lo": 0.6000000000000001,
+          "bin_hi": 0.7000000000000001,
+          "count": 0,
+          "pred_mean": null,
+          "actual_rate": null,
+          "gap_actual_minus_pred": null
+        },
+        {
+          "bin_lo": 0.7000000000000001,
+          "bin_hi": 0.8,
+          "count": 0,
+          "pred_mean": null,
+          "actual_rate": null,
+          "gap_actual_minus_pred": null
+        },
+        {
+          "bin_lo": 0.8,
+          "bin_hi": 0.9,
+          "count": 0,
+          "pred_mean": null,
+          "actual_rate": null,
+          "gap_actual_minus_pred": null
+        },
+        {
+          "bin_lo": 0.9,
+          "bin_hi": 1.0,
+          "count": 0,
+          "pred_mean": null,
+          "actual_rate": null,
+          "gap_actual_minus_pred": null
+        }
+      ],
+      "high_confidence_miss": {
+        "threshold": 0.7,
+        "count": 0,
+        "base_count": 0,
+        "rate": 0.0,
+        "top_misses": []
+      },
+      "low_confidence_miss": {
+        "threshold": 0.3,
+        "count": 135,
+        "base_count": 622,
+        "rate": 0.2170418006430868,
+        "top_misses": [
+          {
+            "date": "2008-01-08 00:00:00",
+            "probability": 0.0111569732930544,
+            "realized_return": 0.1083894672382122,
+            "actual": 1
+          },
+          {
+            "date": "2008-01-09 00:00:00",
+            "probability": 0.011173674959942207,
+            "realized_return": 0.07932692307692313,
+            "actual": 1
+          },
+          {
+            "date": "2008-01-04 00:00:00",
+            "probability": 0.011192786755359882,
+            "realized_return": 0.07453786523553974,
+            "actual": 1
+          },
+          {
+            "date": "2008-01-07 00:00:00",
+            "probability": 0.011196250401539147,
+            "realized_return": 0.07591153616258217,
+            "actual": 1
+          },
+          {
+            "date": "2007-04-04 00:00:00",
+            "probability": 0.13248640437962728,
+            "realized_return": 0.05040214477211813,
+            "actual": 1
+          },
+          {
+            "date": "2016-08-08 00:00:00",
+            "probability": 0.13550995550085063,
+            "realized_return": 0.08647036898993665,
+            "actual": 1
+          },
+          {
+            "date": "2016-08-05 00:00:00",
+            "probability": 0.1367523686209147,
+            "realized_return": 0.1055576277508392,
+            "actual": 1
+          },
+          {
+            "date": "2007-04-03 00:00:00",
+            "probability": 0.13864434527301525,
+            "realized_return": 0.0724795640326974,
+            "actual": 1
+          },
+          {
+            "date": "2016-03-17 00:00:00",
+            "probability": 0.14264079505833374,
+            "realized_return": 0.056213017751479244,
+            "actual": 1
+          },
+          {
+            "date": "2016-03-16 00:00:00",
+            "probability": 0.14618949799895864,
+            "realized_return": 0.056359102244389,
+            "actual": 1
+          },
+          {
+            "date": "2014-10-15 00:00:00",
+            "probability": 0.1472445195611115,
+            "realized_return": 0.10550694801852799,
+            "actual": 1
+          },
+          {
+            "date": "2016-03-15 00:00:00",
+            "probability": 0.15145385581045173,
+            "realized_return": 0.05728643216080398,
+            "actual": 1
+          },
+          {
+            "date": "2014-10-10 00:00:00",
+            "probability": 0.15466151649775609,
+            "realized_return": 0.05849722642460908,
+            "actual": 1
+          },
+          {
+            "date": "2014-10-23 00:00:00",
+            "probability": 0.16055533751808404,
+            "realized_return": 0.08086124401913874,
+            "actual": 1
+          },
+          {
+            "date": "2013-09-17 00:00:00",
+            "probability": 0.16391343463994623,
+            "realized_return": 0.09874213836477974,
+            "actual": 1
+          },
+          {
+            "date": "2017-04-11 00:00:00",
+            "probability": 0.16577698039898905,
+            "realized_return": 0.06570680628272241,
+            "actual": 1
+          },
+          {
+            "date": "2017-04-12 00:00:00",
+            "probability": 0.16598534930701367,
+            "realized_return": 0.09425469949695507,
+            "actual": 1
+          },
+          {
+            "date": "2017-04-19 00:00:00",
+            "probability": 0.1667593762380159,
+            "realized_return": 0.05859872611464967,
+            "actual": 1
+          },
+          {
+            "date": "2013-09-12 00:00:00",
+            "probability": 0.1672957236225378,
+            "realized_return": 0.115505335844319,
+            "actual": 1
+          },
+          {
+            "date": "2017-04-26 00:00:00",
+            "probability": 0.16747568157541484,
+            "realized_return": 0.05305821665438448,
+            "actual": 1
+          },
+          {
+            "date": "2017-04-18 00:00:00",
+            "probability": 0.16812564329207685,
+            "realized_return": 0.09618922470433657,
+            "actual": 1
+          },
+          {
+            "date": "2017-04-17 00:00:00",
+            "probability": 0.1682564291102721,
+            "realized_return": 0.0967911625460285,
+            "actual": 1
+          },
+          {
+            "date": "2017-04-21 00:00:00",
+            "probability": 0.1685614724248303,
+            "realized_return": 0.051269163106308024,
+            "actual": 1
+          },
+          {
+            "date": "2014-10-13 00:00:00",
+            "probability": 0.16912103017927033,
+            "realized_return": 0.11205073995771662,
+            "actual": 1
+          },
+          {
+            "date": "2014-10-16 00:00:00",
+            "probability": 0.16935913126374735,
+            "realized_return": 0.07398087569199796,
+            "actual": 1
+          },
+          {
+            "date": "2013-01-04 00:00:00",
+            "probability": 0.17225727290178158,
+            "realized_return": 0.07112616426756979,
+            "actual": 1
+          },
+          {
+            "date": "2017-04-13 00:00:00",
+            "probability": 0.17330646923618975,
+            "realized_return": 0.08235607675906165,
+            "actual": 1
+          },
+          {
+            "date": "2020-11-16 00:00:00",
+            "probability": 0.17970386694645016,
+            "realized_return": 0.13144468313641244,
+            "actual": 1
+          },
+          {
+            "date": "2025-07-01 00:00:00",
+            "probability": 0.1803399597584068,
+            "realized_return": 0.06013278188942106,
+            "actual": 1
+          },
+          {
+            "date": "2015-11-02 00:00:00",
+            "probability": 0.18069533351602576,
+            "realized_return": 0.05032563647128474,
+            "actual": 1
+          },
+          {
+            "date": "2013-09-19 00:00:00",
+            "probability": 0.18295130926626418,
+            "realized_return": 0.07706650093225598,
+            "actual": 1
+          },
+          {
+            "date": "2015-11-06 00:00:00",
+            "probability": 0.18355000407444486,
+            "realized_return": 0.06627565982404682,
+            "actual": 1
+          },
+          {
+            "date": "2014-10-14 00:00:00",
+            "probability": 0.18473317552599908,
+            "realized_return": 0.09875904860392959,
+            "actual": 1
+          },
+          {
+            "date": "2020-11-05 00:00:00",
+            "probability": 0.1859807831524884,
+            "realized_return": 0.10436025732666178,
+            "actual": 1
+          },
+          {
+            "date": "2013-09-20 00:00:00",
+            "probability": 0.1866161436619268,
+            "realized_return": 0.10295040803515378,
+            "actual": 1
+          },
+          {
+            "date": "2016-12-01 00:00:00",
+            "probability": 0.18676196655933383,
+            "realized_return": 0.09833887043189371,
+            "actual": 1
+          },
+          {
+            "date": "2014-10-22 00:00:00",
+            "probability": 0.1888987938757599,
+            "realized_return": 0.1034651049292339,
+            "actual": 1
+          },
+          {
+            "date": "2013-09-23 00:00:00",
+            "probability": 0.1896429208071793,
+            "realized_return": 0.11131957473420882,
+            "actual": 1
+          },
+          {
+            "date": "2014-05-28 00:00:00",
+            "probability": 0.18987894506058522,
+            "realized_return": 0.06572541382667962,
+            "actual": 1
+          },
+          {
+            "date": "2014-10-21 00:00:00",
+            "probability": 0.19022496769914413,
+            "realized_return": 0.0625601539942251,
+            "actual": 1
+          },
+          {
+            "date": "2013-09-18 00:00:00",
+            "probability": 0.1917963908583955,
+            "realized_return": 0.08019740900678606,
+            "actual": 1
+          },
+          {
+            "date": "2013-09-11 00:00:00",
+            "probability": 0.1921641113950188,
+            "realized_return": 0.11989956057752661,
+            "actual": 1
+          },
+          {
+            "date": "2013-09-13 00:00:00",
+            "probability": 0.19320960199551987,
+            "realized_return": 0.10622250157133895,
+            "actual": 1
+          },
+          {
+            "date": "2020-11-06 00:00:00",
+            "probability": 0.19561390277860458,
+            "realized_return": 0.08776407202608816,
+            "actual": 1
+          },
+          {
+            "date": "2015-11-04 00:00:00",
+            "probability": 0.19582428965335608,
+            "realized_return": 0.07468879668049788,
+            "actual": 1
+          },
+          {
+            "date": "2015-11-05 00:00:00",
+            "probability": 0.19728042446077526,
+            "realized_return": 0.08268887566924456,
+            "actual": 1
+          },
+          {
+            "date": "2014-10-17 00:00:00",
+            "probability": 0.19966087730927484,
+            "realized_return": 0.11116700201207251,
+            "actual": 1
+          },
+          {
+            "date": "2009-01-22 00:00:00",
+            "probability": 0.2010242529032021,
+            "realized_return": 0.118032786885246,
+            "actual": 1
+          },
+          {
+            "date": "2009-01-23 00:00:00",
+            "probability": 0.20148347400045943,
+            "realized_return": 0.07621009268795031,
+            "actual": 1
+          },
+          {
+            "date": "2020-11-18 00:00:00",
+            "probability": 0.2022232880741297,
+            "realized_return": 0.1372341830669661,
+            "actual": 1
+          }
+        ]
+      }
+    }
+  },
+  "meta": {
+    "sources": {
+      "prices": "db:price_daily(US:AMAT)",
+      "benchmarks": "db:price_daily(US:QQQ)",
+      "relative": "db:price_daily(US:QQQ)"
+    },
+    "origins": {
+      "prices": "ingested:yfinance",
+      "benchmarks": "ingested:yfinance",
+      "relative": "ingested:yfinance"
+    },
+    "used_feature_columns": [
+      "ret_1",
+      "ret_5",
+      "ret_10",
+      "ret_20",
+      "vol_20",
+      "atr14",
+      "atr14_pct",
+      "sma20_dist",
+      "sma50_dist",
+      "sma200_dist",
+      "ema21_dist",
+      "rsi14",
+      "macd",
+      "macd_signal",
+      "macd_hist",
+      "bb_pos",
+      "vol_chg_1",
+      "vol_ratio_20",
+      "qqq_vol_20",
+      "qqq_trend_50",
+      "regime_missing_flag",
+      "ret_rel_qqq_1",
+      "ret_rel_qqq_5",
+      "relative_missing_flag",
+      "ret_rel_semi_1",
+      "ret_rel_semi_5",
+      "sector_missing_flag",
+      "days_from_prev_earnings",
+      "days_to_next_earnings"
+    ],
+    "n_features": 29,
+    "feature_hash": "846a3dd7a14517206d7fbf40be3bae10b741d5c5d2833e56dcdffb6e3c070946",
+    "config_hash": "ee73ff476e1eaf20830862ae8ac0735ba837371990689d0a6a22767fc95251e7",
+    "db_freshness": {
+      "db_table": "price_daily",
+      "as_of_date": "2026-02-18",
+      "effective_as_of": "2026-02-18",
+      "required_start": "2021-02-18",
+      "lookback": "5y",
+      "horizon": 10,
+      "is_trading_day": true,
+      "symbols": [
+        "US:AMAT",
+        "US:QQQ",
+        "US:SPY"
+      ],
+      "max_date": "2026-02-18",
+      "rows": 15090,
+      "missing_symbols": [],
+      "missing_ranges": {},
+      "by_symbol": {
+        "US:AMAT": {
+          "min_date": "2006-02-21",
+          "max_date": "2026-02-18",
+          "rows": 5030,
+          "status": "OK",
+          "missing_ranges": []
+        },
+        "US:QQQ": {
+          "min_date": "2006-02-21",
+          "max_date": "2026-02-18",
+          "rows": 5030,
+          "status": "OK",
+          "missing_ranges": []
+        },
+        "US:SPY": {
+          "min_date": "2006-02-21",
+          "max_date": "2026-02-18",
+          "rows": 5030,
+          "status": "OK",
+          "missing_ranges": []
+        }
+      },
+      "warnings": []
+    },
+    "as_of_date": "2026-02-18",
+    "effective_as_of": "2026-02-18",
+    "is_trading_day": true,
+    "target_name": "return_up5_binary",
+    "target_unit": "fraction",
+    "target_transform": "future_return_fraction",
+    "target_scale_factor": 1.0,
+    "run_params": {
+      "as_of": "2026-02-18",
+      "start": "2006-02-20",
+      "end": "2026-02-18",
+      "horizon": 10,
+      "horizon_trading_days": 10,
+      "effective_as_of": "2026-02-18",
+      "flat_band": 2.0,
+      "flat_band_applied": 2.0,
+      "model": "xgb_db_only_v1",
+      "calibration": "sigmoid",
+      "feature_set": "v2_ohlcv_ta_relregime_event",
+      "feature_version": "v2_ohlcv_ta_relregime_event",
+      "regime_symbols": [
+        "US:QQQ",
+        "US:SPY"
+      ],
+      "relative_symbols": [
+        "US:QQQ"
+      ],
+      "sector_symbols": [],
+      "feature_hash": "846a3dd7a14517206d7fbf40be3bae10b741d5c5d2833e56dcdffb6e3c070946",
+      "config_hash": "ee73ff476e1eaf20830862ae8ac0735ba837371990689d0a6a22767fc95251e7",
+      "target_coverage": 0.8,
+      "target_interval_coverage": 0.8,
+      "lookback": "5y",
+      "preflight_only": false,
+      "fast": false,
+      "max_folds": null,
+      "fold_step": null,
+      "train_window": null,
+      "band_sweep_enabled": true,
+      "use_ensemble": true,
+      "ensemble_seeds": [
+        11,
+        29
+      ],
+      "purge_days": 10,
+      "embargo_mode": "pct",
+      "embargo_days": 51,
+      "embargo_pct": 0.01,
+      "folds_used": 53,
+      "target_transform": "future_return_fraction",
+      "target_scale_factor": 1.0,
+      "prob_mode": "meta",
+      "temp_scale": "on",
+      "class_weight_mode": "off",
+      "class_weight": null,
+      "threshold_mode": "argmax",
+      "t_down": null,
+      "t_up": null,
+      "threshold_search_enabled": true,
+      "down_recall_min": 0.1,
+      "pred_down_min_pct": 0.05,
+      "thresholds_applied": {
+        "t_buy": 0.3051
+      },
+      "meta_band_mode": "fixed",
+      "meta_band_q": 0.65,
+      "meta_band_min_pct": 0.5,
+      "meta_band_max_pct": 10.0,
+      "label_mode": "up5_2w",
+      "target_return": 0.05,
+      "t_buy_grid": [
+        0.229,
+        0.2575,
+        0.2796,
+        0.3051,
+        0.3172,
+        0.3358,
+        0.3591,
+        0.3867,
+        0.4027
+      ],
+      "fixed_thresholds": [
+        0.7
+      ],
+      "min_coverage": 0.05,
+      "min_trades": 50,
+      "tbm_vol_span": 20,
+      "tbm_k": 1.5,
+      "temperature_best_T": 0.9971698113207547
+    },
+    "validation": {
+      "purge_days": 10,
+      "embargo_mode": "pct",
+      "embargo_days": 51,
+      "embargo_pct": 0.01,
+      "folds_used": 53
+    },
+    "meta_metrics": {
+      "prob_mode": "binary_up5",
+      "label_mode": "up5_2w",
+      "target_return": 0.05,
+      "horizon_trading_days": 10,
+      "warnings": []
+    },
+    "temperature_scaling": {
+      "enabled": true,
+      "best_T": 0.9971698113207547,
+      "search_grid": [
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.95,
+        1.0,
+        1.05,
+        1.1,
+        1.15,
+        1.2,
+        1.25,
+        1.3,
+        1.35,
+        1.4,
+        1.45,
+        1.5,
+        1.55,
+        1.6,
+        1.65,
+        1.7,
+        1.75,
+        1.8,
+        1.85,
+        1.9,
+        1.95,
+        2.0,
+        2.05,
+        2.1,
+        2.15,
+        2.2,
+        2.25,
+        2.3,
+        2.35,
+        2.4,
+        2.45,
+        2.5,
+        2.55,
+        2.6,
+        2.65,
+        2.7,
+        2.75,
+        2.8,
+        2.85,
+        2.9,
+        2.95,
+        3.0
+      ]
+    },
+    "interval_target_mismatch_warn": false,
+    "threshold_selection": {
+      "best": {
+        "t_buy": 0.3051,
+        "win_rate": 0.4375,
+        "coverage": 0.20125786163522014,
+        "n_trades": 160,
+        "avg_return": 0.037352706224935944,
+        "median_return": 0.040955344047094555,
+        "confusion_2x2": [
+          [
+            494,
+            90
+          ],
+          [
+            141,
+            70
+          ]
+        ]
+      },
+      "candidates": [
+        {
+          "t_buy": 0.229,
+          "win_rate": 0.3409090909090909,
+          "coverage": 0.4981132075471698,
+          "n_trades": 396,
+          "avg_return": 0.019442891461748484,
+          "median_return": 0.019222895168404253,
+          "confusion_2x2": [
+            [
+              323,
+              261
+            ],
+            [
+              76,
+              135
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.2575,
+          "win_rate": 0.3805031446540881,
+          "coverage": 0.4,
+          "n_trades": 318,
+          "avg_return": 0.02562063903702394,
+          "median_return": 0.025000653152003283,
+          "confusion_2x2": [
+            [
+              387,
+              197
+            ],
+            [
+              90,
+              121
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.2796,
+          "win_rate": 0.41841004184100417,
+          "coverage": 0.30062893081761005,
+          "n_trades": 239,
+          "avg_return": 0.03316115527525386,
+          "median_return": 0.030256297275464528,
+          "confusion_2x2": [
+            [
+              445,
+              139
+            ],
+            [
+              111,
+              100
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.3051,
+          "win_rate": 0.4375,
+          "coverage": 0.20125786163522014,
+          "n_trades": 160,
+          "avg_return": 0.037352706224935944,
+          "median_return": 0.040955344047094555,
+          "confusion_2x2": [
+            [
+              494,
+              90
+            ],
+            [
+              141,
+              70
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.3172,
+          "win_rate": 0.38333333333333336,
+          "coverage": 0.1509433962264151,
+          "n_trades": 120,
+          "avg_return": 0.024895101488473348,
+          "median_return": 0.03166258426677415,
+          "confusion_2x2": [
+            [
+              510,
+              74
+            ],
+            [
+              165,
+              46
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.3358,
+          "win_rate": 0.3625,
+          "coverage": 0.10062893081761007,
+          "n_trades": 80,
+          "avg_return": 0.014059417104696312,
+          "median_return": 0.026421427217868332,
+          "confusion_2x2": [
+            [
+              533,
+              51
+            ],
+            [
+              182,
+              29
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.3591,
+          "win_rate": 0.275,
+          "coverage": 0.050314465408805034,
+          "n_trades": 40,
+          "avg_return": -0.002122049466867512,
+          "median_return": -0.016257732279453985,
+          "confusion_2x2": [
+            [
+              555,
+              29
+            ],
+            [
+              200,
+              11
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.3867,
+          "win_rate": 0.20833333333333334,
+          "coverage": 0.03018867924528302,
+          "n_trades": 24,
+          "avg_return": -0.021943603850380786,
+          "median_return": -0.028528110608862345,
+          "confusion_2x2": [
+            [
+              565,
+              19
+            ],
+            [
+              206,
+              5
+            ]
+          ]
+        },
+        {
+          "t_buy": 0.4027,
+          "win_rate": 0.2857142857142857,
+          "coverage": 0.00880503144654088,
+          "n_trades": 7,
+          "avg_return": -0.016219840697350673,
+          "median_return": -0.019082663015574264,
+          "confusion_2x2": [
+            [
+              579,
+              5
+            ],
+            [
+              209,
+              2
+            ]
+          ]
+        }
+      ],
+      "fallback_unconstrained": false,
+      "constraints": {
+        "min_coverage": 0.05,
+        "min_trades": 50
+      }
+    },
+    "warnings": []
+  },
+  "meta_metrics": {
+    "prob_mode": "binary_up5",
+    "label_mode": "up5_2w",
+    "target_return": 0.05,
+    "horizon_trading_days": 10,
+    "warnings": []
+  },
+  "temperature_scaling": {
+    "enabled": true,
+    "best_T": 0.9971698113207547,
+    "search_grid": [
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7,
+      0.75,
+      0.8,
+      0.85,
+      0.9,
+      0.95,
+      1.0,
+      1.05,
+      1.1,
+      1.15,
+      1.2,
+      1.25,
+      1.3,
+      1.35,
+      1.4,
+      1.45,
+      1.5,
+      1.55,
+      1.6,
+      1.65,
+      1.7,
+      1.75,
+      1.8,
+      1.85,
+      1.9,
+      1.95,
+      2.0,
+      2.05,
+      2.1,
+      2.15,
+      2.2,
+      2.25,
+      2.3,
+      2.35,
+      2.4,
+      2.45,
+      2.5,
+      2.55,
+      2.6,
+      2.65,
+      2.7,
+      2.75,
+      2.8,
+      2.85,
+      2.9,
+      2.95,
+      3.0
+    ]
+  },
+  "prob_calibration": {
+    "temp_scale_mode": "global"
+  },
+  "baselines": {},
+  "interval_audit": {
+    "target_name": "return_up5_binary",
+    "target_unit": "fraction",
+    "target_transform": "future_return_fraction",
+    "target_scale_factor": 1.0,
+    "target_y_source": "target_return_pct_h",
+    "target_mismatch_warn": false,
+    "sample": []
+  },
+  "best_flat_band_pct": 1.0,
+  "band_sweep": [
+    {
+      "flat_band_pct": 0.5,
+      "macro_f1": 0.26723990634113975,
+      "logloss": 1.1034594583798438,
+      "ece": 0.0420166166597277,
+      "accuracy": 0.3231638418079096
+    },
+    {
+      "flat_band_pct": 1.0,
+      "macro_f1": 0.291352152952631,
+      "logloss": 1.102621277514585,
+      "ece": 0.021050376575867356,
+      "accuracy": 0.3502824858757062
+    },
+    {
+      "flat_band_pct": 1.5,
+      "macro_f1": 0.28317944143089746,
+      "logloss": 1.0953282852524988,
+      "ece": 0.031884222827092655,
+      "accuracy": 0.3559322033898305
+    },
+    {
+      "flat_band_pct": 2.0,
+      "macro_f1": 0.2854920096394317,
+      "logloss": 1.1005564235363006,
+      "ece": 0.030157526472072104,
+      "accuracy": 0.34124293785310733
+    },
+    {
+      "flat_band_pct": 3.0,
+      "macro_f1": 0.2671927514066689,
+      "logloss": 1.1246618731421019,
+      "ece": 0.09053940567464963,
+      "accuracy": 0.28135593220338984
+    },
+    {
+      "flat_band_pct": 4.0,
+      "macro_f1": 0.2827311825436774,
+      "logloss": 1.1278539113865567,
+      "ece": 0.06124185869433482,
+      "accuracy": 0.3129943502824859
+    },
+    {
+      "flat_band_pct": 5.0,
+      "macro_f1": 0.28626345532272046,
+      "logloss": 1.1114554449824037,
+      "ece": 0.029624551359980746,
+      "accuracy": 0.3480225988700565
+    }
+  ]
+}

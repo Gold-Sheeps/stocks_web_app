@@ -1,6 +1,7 @@
 from typing import Optional
 import math
 from app.db.database import Database
+from app.services.freshness_service import FreshnessService
 
 
 class ScreenerService:
@@ -9,6 +10,15 @@ class ScreenerService:
     def __init__(self):
         self.db = Database()
         self.db.connect()
+        self.freshness_service = FreshnessService()
+
+    def _get_screener_freshness(self):
+        return self.freshness_service.price_freshness_for_active_instruments(
+            scope="screener.active_universe",
+            tz_name="America/New_York",
+            close_cutoff_hour_local=18,
+            note="Screener uses latest daily bar per active instrument.",
+        )
 
     def _ensure_rs_table_exists(self) -> None:
         self.db.execute_command(
@@ -96,6 +106,8 @@ class ScreenerService:
         rsi_filter: Optional[str] = None,
         symbol: Optional[str] = None,
     ) -> "ScreenerResponse":
+        # When user searches a specific symbol, do not hide it behind score cutoffs.
+        effective_min_total_score = 0 if symbol else int(min_total_score)
         where_sql, where_params = self._build_filter_clause(
             min_rs=min_rs,
             min_price=min_price,
@@ -234,13 +246,13 @@ class ScreenerService:
                 self._ensure_rs_table_exists()
                 count_res = self.db.execute_query(
                     count_query,
-                    tuple(where_params + [min_total_score]),
+                    tuple(where_params + [effective_min_total_score]),
                 )
                 total_stocks = int(count_res[0][0]) if count_res and count_res[0] else 0
 
                 results = self.db.execute_query(
                     page_query,
-                    tuple(where_params + [min_total_score, limit, offset]),
+                    tuple(where_params + [effective_min_total_score, limit, offset]),
                 )
 
                 if not results:
@@ -253,6 +265,7 @@ class ScreenerService:
                         page=(offset // limit) + 1 if limit > 0 else 1,
                         limit=limit,
                         total_pages=total_pages,
+                        freshness=self._get_screener_freshness(),
                     )
 
                 from app.models.schemas import ScreenerResult, ScreenerResponse
@@ -301,6 +314,7 @@ class ScreenerService:
                     page=(offset // limit) + 1 if limit > 0 else 1,
                     limit=limit,
                     total_pages=total_pages,
+                    freshness=self._get_screener_freshness(),
                 )
         except Exception as e:
             print(f"Error in scan_stocks: {e}")
