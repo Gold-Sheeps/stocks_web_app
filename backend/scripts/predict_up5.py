@@ -129,14 +129,24 @@ def _apply_artifact_calibration(artifact: Dict[str, Any], probs: np.ndarray) -> 
     p = np.asarray(probs, dtype=float).reshape(-1)
     cal = artifact.get("calibration", {"type": "none"})
     ctype = str(cal.get("type", "none")).lower()
+
+    if ctype == "platt" and cal.get("model") is not None:
+        lr = cal["model"]
+        eps = 1e-6
+        p_clip = np.clip(p, eps, 1.0 - eps)
+        logits = np.log(p_clip / (1.0 - p_clip)).reshape(-1, 1)
+        return np.clip(lr.predict_proba(logits)[:, 1], eps, 1.0 - eps)
+
     if ctype == "isotonic" and cal.get("model") is not None:
         iso = cal["model"]
         return np.clip(np.asarray(iso.predict(p), dtype=float), 1e-6, 1.0 - 1e-6)
+
     if ctype == "temp":
         t = float(cal.get("temperature", 1.0))
         z = np.log(np.clip(p, 1e-6, 1.0 - 1e-6) / np.clip(1.0 - p, 1e-6, 1.0 - 1e-6))
         out = 1.0 / (1.0 + np.exp(-(z / max(1e-6, t))))
         return np.clip(np.asarray(out, dtype=float), 1e-6, 1.0 - 1e-6)
+
     return np.clip(p, 1e-6, 1.0 - 1e-6)
 
 

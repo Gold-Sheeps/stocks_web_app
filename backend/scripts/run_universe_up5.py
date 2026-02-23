@@ -154,20 +154,102 @@ def _p70_row(payload: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def _micro_metrics(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
-    total_trades = int(sum(int(r.get("n_trades_at_p70") or 0) for r in rows))
-    total_samples = int(sum(int(r.get("n_samples") or 0) for r in rows))
-    weighted_wins = float(
-        sum(float(r.get("precision_at_p70") or 0.0) * int(r.get("n_trades_at_p70") or 0) for r in rows)
+def _threshold_row(payload: Dict[str, Any], threshold: float = 0.7) -> Dict[str, Any]:
+    """指定された threshold での metrics を取得。artifact の threshold_buy に連動可能。"""
+    metrics = payload.get("metrics", {}) or {}
+    diagnostics = payload.get("diagnostics", {}) or {}
+    fixed_metrics = diagnostics.get("fixed_threshold_metrics", {}) or {}
+
+    t_key = f"{threshold:g}"
+    t_key_alt = f"{threshold:.2f}"
+
+    if isinstance(fixed_metrics, dict):
+        t_data = fixed_metrics.get(t_key, {}) or fixed_metrics.get(t_key_alt, {}) or {}
+    else:
+        fixed_rows = fixed_metrics if isinstance(fixed_metrics, list) else []
+        t_data = next(
+            (r for r in fixed_rows if isinstance(r, dict) and abs(float(r.get("t_buy", -1.0)) - threshold) < 1e-6),
+            None,
+        ) or {}
+
+    # precision_at_threshold (新キー) → precision_at_p70 (旧キー) → t_data → None の順に探す
+    n_trades = int(
+        metrics.get("n_trades_at_threshold")
+        if metrics.get("n_trades_at_threshold") is not None
+        else (metrics.get("n_trades_at_p70") or t_data.get("n_trades") or 0)
     )
-    weighted_returns = float(
-        sum(float(r.get("avg_return_at_p70") or 0.0) * int(r.get("n_trades_at_p70") or 0) for r in rows)
-    )
+    precision = metrics.get("precision_at_threshold")
+    if precision is None:
+        precision = metrics.get("precision_at_p70")
+    if precision is None:
+        precision = t_data.get("precision", t_data.get("win_rate"))
+    coverage = metrics.get("coverage_at_threshold")
+    if coverage is None:
+        coverage = metrics.get("coverage_at_p70")
+    if coverage is None:
+        coverage = t_data.get("coverage")
+    avg_return = metrics.get("avg_return_at_threshold")
+    if avg_return is None:
+        avg_return = metrics.get("avg_return_at_p70")
+    if avg_return is None:
+        avg_return = t_data.get("avg_return")
+    n_samples = t_data.get("n_samples")
+    if n_samples is None and coverage not in (None, 0):
+        n_samples = int(round(float(n_trades) / float(coverage))) if float(coverage) > 0 else None
+
     return {
-        "precision_at_p70_micro": (float(weighted_wins / total_trades) if total_trades > 0 else None),
-        "coverage_at_p70_micro": (float(total_trades / total_samples) if total_samples > 0 else None),
+        "threshold": threshold,
+        "precision_at_threshold": float(precision) if precision is not None else None,
+        "coverage_at_threshold": float(coverage) if coverage is not None else None,
+        "n_trades_at_threshold": n_trades,
+        "avg_return_at_threshold": float(avg_return) if avg_return is not None else None,
+        "n_samples": int(n_samples) if n_samples is not None else None,
+        # 後方互換キー
+        "precision_at_p70": float(precision) if precision is not None else None,
+        "coverage_at_p70": float(coverage) if coverage is not None else None,
+        "n_trades_at_p70": n_trades,
+        "avg_return_at_p70": float(avg_return) if avg_return is not None else None,
+    }
+
+
+def _micro_metrics(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
+    # n_trades_at_threshold (新キー) → n_trades_at_p70 (旧キー) の順にフォールバック
+    def _n(r: Dict[str, Any]) -> int:
+        v = r.get("n_trades_at_threshold")
+        if v is not None:
+            return int(v)
+        return int(r.get("n_trades_at_p70") or 0)
+
+    def _prec(r: Dict[str, Any]) -> float:
+        v = r.get("precision_at_threshold")
+        if v is not None:
+            return float(v)
+        return float(r.get("precision_at_p70") or 0.0)
+
+    def _ret(r: Dict[str, Any]) -> float:
+        v = r.get("avg_return_at_threshold")
+        if v is not None:
+            return float(v)
+        return float(r.get("avg_return_at_p70") or 0.0)
+
+    total_trades = int(sum(_n(r) for r in rows))
+    total_samples = int(sum(int(r.get("n_samples") or 0) for r in rows))
+    weighted_wins = float(sum(_prec(r) * _n(r) for r in rows))
+    weighted_returns = float(sum(_ret(r) * _n(r) for r in rows))
+    precision_micro = float(weighted_wins / total_trades) if total_trades > 0 else None
+    coverage_micro = float(total_trades / total_samples) if total_samples > 0 else None
+    avg_return_micro = float(weighted_returns / total_trades) if total_trades > 0 else None
+    return {
+        # 新キー
+        "precision_micro": precision_micro,
+        "coverage_micro": coverage_micro,
+        "n_trades_micro": total_trades,
+        "avg_return_micro": avg_return_micro,
+        # 後方互換キー
+        "precision_at_p70_micro": precision_micro,
+        "coverage_at_p70_micro": coverage_micro,
         "n_trades_at_p70_micro": total_trades,
-        "avg_return_at_p70_micro": (float(weighted_returns / total_trades) if total_trades > 0 else None),
+        "avg_return_at_p70_micro": avg_return_micro,
     }
 
 
@@ -185,6 +267,10 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--fast", action="store_true", help="Pass --fast to per-ticker run.")
     parser.add_argument("--output-prefix", default=None, help="Optional prefix for universe summary files.")
     parser.add_argument("--out-prefix", default=None, help="Alias of --output-prefix.")
+    parser.add_argument(
+        "--threshold", type=float, default=None,
+        help="BUY threshold for evaluation. Default: read from backtest JSON (effective_threshold_buy), fallback 0.7.",
+    )
     return parser.parse_args()
 
 
@@ -211,6 +297,10 @@ def main() -> int:
 
     rows: List[Dict[str, Any]] = []
     warnings: List[str] = []
+    # CLI指定がある場合はそれを全銘柄に使う; ない場合は各銘柄のJSONから読む
+    cli_threshold = args.threshold
+    effective_threshold_summary: float = cli_threshold if cli_threshold is not None else 0.7
+
     for ticker in tickers:
         try:
             _, json_path = _run_single(
@@ -224,20 +314,43 @@ def main() -> int:
                 fast=bool(args.fast),
             )
             payload = json.loads(json_path.read_text(encoding="utf-8"))
+
+            # threshold を決定: CLI指定 > JSON内の effective_threshold_buy > 0.7
+            if cli_threshold is not None:
+                effective_threshold = float(cli_threshold)
+            else:
+                effective_threshold = float(
+                    payload.get("metrics", {}).get("effective_threshold_buy")
+                    or payload.get("meta", {}).get("run_params", {}).get("effective_threshold_buy")
+                    or 0.7
+                )
+                effective_threshold_summary = effective_threshold  # 最後に読んだ値を概要に使う
+
+            t_row = _threshold_row(payload, threshold=effective_threshold)
+            # 後方互換のため _p70_row も維持
             p70 = _p70_row(payload)
-            rows.append(
-                {
-                    "ticker": payload.get("ticker", ticker),
-                    "json_path": str(json_path),
-                    **p70,
-                }
-            )
+            row = {
+                "ticker": payload.get("ticker", ticker),
+                "json_path": str(json_path),
+                **p70,  # 後方互換キー (_at_p70)
+                # 新キーは t_row から上書き
+                "threshold": t_row["threshold"],
+                "precision_at_threshold": t_row["precision_at_threshold"],
+                "coverage_at_threshold": t_row["coverage_at_threshold"],
+                "n_trades_at_threshold": t_row["n_trades_at_threshold"],
+                "avg_return_at_threshold": t_row["avg_return_at_threshold"],
+            }
+            rows.append(row)
             print(
-                "[DONE] {t} precision_at_p70={p} n_trades_at_p70={n} coverage_at_p70={c}".format(
+                "[DONE] {t} threshold={tb} precision_at_threshold={p} n_trades_at_threshold={n} "
+                "coverage_at_threshold={c} (precision_at_p70={pp} n_trades_at_p70={np_})".format(
                     t=ticker,
-                    p=p70["precision_at_p70"],
-                    n=p70["n_trades_at_p70"],
-                    c=p70["coverage_at_p70"],
+                    tb=effective_threshold,
+                    p=t_row["precision_at_threshold"],
+                    n=t_row["n_trades_at_threshold"],
+                    c=t_row["coverage_at_threshold"],
+                    pp=p70["precision_at_p70"],
+                    np_=p70["n_trades_at_p70"],
                 )
             )
         except Exception as exc:
@@ -245,33 +358,37 @@ def main() -> int:
             print(f"[WARN] {exc}")
 
     micro = _micro_metrics(rows)
-    total_trades = int(micro["n_trades_at_p70_micro"])
-    precision_micro = micro["precision_at_p70_micro"]
-    coverage_micro = micro["coverage_at_p70_micro"]
-    avg_return_micro = micro["avg_return_at_p70_micro"]
+    total_trades = int(micro["n_trades_micro"])
+    precision_micro = micro["precision_micro"]
+    coverage_micro = micro["coverage_micro"]
+    avg_return_micro = micro["avg_return_micro"]
     evaluable = total_trades >= int(args.min_p70_trades)
     if not evaluable:
         warnings.append(
-            f"not_evaluable: n_trades_at_p70_micro={total_trades} < min_p70_trades={int(args.min_p70_trades)}"
+            f"not_evaluable: n_trades_micro={total_trades} < min_p70_trades={int(args.min_p70_trades)}"
         )
 
     prefix = args.out_prefix or args.output_prefix or f"universe_up5_{asof.strftime('%Y%m%d')}"
     csv_path = out_dir / f"{prefix}.csv"
     json_path = out_dir / f"{prefix}.json"
 
+    csv_fieldnames = [
+        "ticker",
+        "threshold",
+        "precision_at_threshold",
+        "n_trades_at_threshold",
+        "coverage_at_threshold",
+        "avg_return_at_threshold",
+        # 後方互換
+        "precision_at_p70",
+        "n_trades_at_p70",
+        "coverage_at_p70",
+        "avg_return_at_p70",
+        "n_samples",
+        "json_path",
+    ]
     with csv_path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(
-            f,
-            fieldnames=[
-                "ticker",
-                "precision_at_p70",
-                "n_trades_at_p70",
-                "coverage_at_p70",
-                "avg_return_at_p70",
-                "n_samples",
-                "json_path",
-            ],
-        )
+        writer = csv.DictWriter(f, fieldnames=csv_fieldnames, extrasaction="ignore")
         writer.writeheader()
         for r in rows:
             writer.writerow(r)
@@ -282,10 +399,17 @@ def main() -> int:
         "tickers": tickers,
         "fixed_thresholds": fixed_thresholds,
         "universe_metrics": {
-            "precision_at_p70_micro": precision_micro,
-            "coverage_at_p70_micro": coverage_micro,
-            "n_trades_at_p70_micro": total_trades,
-            "avg_return_at_p70_micro": avg_return_micro,
+            # 新キー
+            "effective_threshold": effective_threshold_summary,
+            "precision_micro": precision_micro,
+            "coverage_micro": coverage_micro,
+            "n_trades_micro": total_trades,
+            "avg_return_micro": avg_return_micro,
+            # 後方互換キー
+            "precision_at_p70_micro": micro["precision_at_p70_micro"],
+            "coverage_at_p70_micro": micro["coverage_at_p70_micro"],
+            "n_trades_at_p70_micro": micro["n_trades_at_p70_micro"],
+            "avg_return_at_p70_micro": micro["avg_return_at_p70_micro"],
             "is_evaluable": evaluable,
             "min_p70_trades": int(args.min_p70_trades),
         },
@@ -296,12 +420,16 @@ def main() -> int:
 
     print("")
     print("[UNIVERSE SUMMARY]")
+    print(f"  effective_threshold: {effective_threshold_summary}")
     print(f"  tickers_requested: {len(tickers)}")
     print(f"  tickers_succeeded: {len(rows)}")
-    print(f"  precision_at_p70_micro: {precision_micro}")
-    print(f"  coverage_at_p70_micro: {coverage_micro}")
-    print(f"  n_trades_at_p70_micro: {total_trades}")
-    print(f"  avg_return_at_p70_micro: {avg_return_micro}")
+    print(f"  precision_micro: {precision_micro}")
+    print(f"  coverage_micro: {coverage_micro}")
+    print(f"  n_trades_micro: {total_trades}")
+    print(f"  avg_return_micro: {avg_return_micro}")
+    # 後方互換出力
+    print(f"  precision_at_p70_micro: {micro['precision_at_p70_micro']}")
+    print(f"  n_trades_at_p70_micro: {micro['n_trades_at_p70_micro']}")
     print(f"  is_evaluable: {evaluable}")
     print(f"  csv: {csv_path}")
     print(f"  json: {json_path}")

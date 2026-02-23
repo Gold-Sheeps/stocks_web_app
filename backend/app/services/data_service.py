@@ -49,6 +49,54 @@ class DataService:
             # Everything else (Index, ETF, FX, Metal, US Stock) -> US:
             return f"US:{raw_symbol}"
 
+    def _run_script(self, cmd: List[str], cwd: Path, timeout: int | None = None) -> dict:
+        """Run a subprocess and return a small structured result for logs/UI."""
+        proc = subprocess.run(
+            cmd,
+            cwd=str(cwd),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+        stdout = (proc.stdout or "").strip()
+        stderr = (proc.stderr or "").strip()
+        tail_lines = (stdout.splitlines() + stderr.splitlines())[-40:]
+        return {
+            "returncode": proc.returncode,
+            "command": cmd,
+            "output_tail": tail_lines,
+        }
+
+    def _get_latest_price_date(self):
+        self.db.connect()
+        try:
+            row = self.db.execute_query("SELECT MAX(trading_date) FROM price_daily")
+            return row[0][0] if row and row[0][0] else None
+        finally:
+            self.db.disconnect()
+
+    def _run_ai_prediction_batch(self, repo_root: Path, max_tickers: int = 500) -> dict:
+        latest_date = self._get_latest_price_date()
+        if latest_date is None:
+            return {
+                "status": "skipped",
+                "reason": "No price_daily data",
+            }
+
+        script_path = Path(__file__).resolve().parents[1] / "scripts" / "run_daily_predictions.py"
+        cmd = [
+            sys.executable,
+            str(script_path),
+            "--asof",
+            latest_date.isoformat(),
+            "--max-tickers",
+            str(int(max_tickers)),
+        ]
+        result = self._run_script(cmd, cwd=repo_root, timeout=7200)
+        result["asof"] = latest_date.isoformat()
+        result["status"] = "success" if result["returncode"] == 0 else "failed"
+        return result
+
     def update_all_data(self, range_days: int = 14, targets: List[str] = None):
         """Data Update画面から統合バッチ(full_db_refresh.py)を実行"""
         targets = targets or []
@@ -72,6 +120,8 @@ class DataService:
             has_stocks = "Stocks" in selected
             has_sector = "Sector" in selected
             has_canslim = "CANSLIM" in selected
+            has_fundamentals = "Fundamentals" in selected
+            has_ai_prediction = ("AI" in selected) or ("AI Prediction" in selected)
 
             cmd = [
                 sys.executable,
@@ -92,40 +142,81 @@ class DataService:
             if not has_canslim:
                 cmd.append("--skip-canslim")
 
-            proc = subprocess.run(
-                cmd,
-                cwd=str(repo_root),
-                capture_output=True,
-                text=True,
-            )
+            main_result = self._run_script(cmd, cwd=repo_root)
+            tail_lines = main_result["output_tail"]
 
-            stdout = (proc.stdout or "").strip()
-            stderr = (proc.stderr or "").strip()
-            tail_lines = (stdout.splitlines() + stderr.splitlines())[-40:]
-
-            if proc.returncode != 0:
+            if main_result["returncode"] != 0:
                 details = {
                     "job_id": job_id,
-                    "returncode": proc.returncode,
-                    "command": cmd,
-                    "output_tail": tail_lines,
+                    "main_refresh": main_result,
                 }
                 self.log_system_event("Data Update", "FAILED", "Unified refresh failed", details)
                 return {
                     "status": "error",
-                    "message": f"Unified refresh failed (exit={proc.returncode})",
+                    "message": f"Unified refresh failed (exit={main_result['returncode']})",
                     "details": details,
                 }
 
+            post_steps: List[dict] = []
+
+            # Sector rotation computation (DB-side) after price refresh.
+            if has_sector:
+                try:
+                    ok = self.calculate_sector_rotation()
+                    post_steps.append(
+                        {
+                            "step": "sector_rotation",
+                            "status": "success" if ok else "failed",
+                        }
+                    )
+                except Exception as e:
+                    post_steps.append({"step": "sector_rotation", "status": "failed", "error": str(e)})
+
+            # Run fetch_fundamentals.py for watchlist/portfolio symbols when requested.
+            if has_fundamentals:
+                fund_script = Path(__file__).resolve().parents[1] / "scripts" / "fetch_fundamentals.py"
+                fund_result = self._run_script(
+                    [sys.executable, str(fund_script), "--max-symbols", "200"],
+                    cwd=repo_root,
+                )
+                fund_result["step"] = "fetch_fundamentals_watchlist_portfolio"
+                fund_result["status"] = "success" if fund_result["returncode"] == 0 else "failed"
+                post_steps.append(fund_result)
+                if fund_result["returncode"] != 0:
+                    print(
+                        "[DataService] fetch_fundamentals exited "
+                        f"{fund_result['returncode']}: {fund_result['output_tail']}"
+                    )
+
+            if has_ai_prediction:
+                ai_result = self._run_ai_prediction_batch(repo_root, max_tickers=500)
+                ai_result["step"] = "ai_prediction_batch"
+                post_steps.append(ai_result)
+
             details = {
                 "job_id": job_id,
-                "returncode": proc.returncode,
-                "command": cmd,
-                "output_tail": tail_lines,
+                "main_refresh": main_result,
+                "post_steps": post_steps,
             }
+            failed_post = [s for s in post_steps if s.get("status") in ("failed", "error")]
+            if failed_post:
+                self.log_system_event("Data Update", "FAILED", "Unified refresh completed with post-step failures", details)
+                return {
+                    "status": "error",
+                    "message": "Main refresh completed, but some post steps failed",
+                    "processed": 1,
+                    "failed": len(failed_post),
+                    "details": details,
+                }
+
             self.log_system_event("Data Update", "SUCCESS", "Unified refresh completed", details)
             # Keep legacy response keys for current frontend compatibility.
-            return {"status": "success", "processed": 1, "failed": 0, "details": details}
+            return {
+                "status": "success",
+                "processed": 1 + len(post_steps),
+                "failed": 0,
+                "details": details,
+            }
 
         except Exception as e:
             err_msg = str(e)
@@ -391,9 +482,11 @@ class DataService:
                 ))
             
             self.log_system_event("Sector Rotation", "SUCCESS", f"Calculated for {latest_date}")
+            return True
                 
         except Exception as e:
             # print(f"Sector Calc Error: {e}")
             self.log_system_event("Sector Rotation", "FAILED", str(e))
+            return False
         finally:
             self.db.disconnect()

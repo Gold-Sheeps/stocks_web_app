@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta
 from decimal import Decimal
+from pathlib import Path
 from typing import List, Optional, Dict, Any
 from app.db.database import Database
 from app.models.schemas import StockInfo, Indicators, PricePoint, StockDetailResponse
@@ -81,7 +82,22 @@ class StockDetailService:
                     ind.ema21,
                     ind.pivot,
                     COALESCE(rr.rating, ind_rs.rs_rating) AS rs_rating,
-                    ind.trading_date AS ind_trading_date
+                    ind.trading_date AS ind_trading_date,
+                    ind.vwap20,
+                    ind.obv,
+                    ind.mfi14,
+                    ind.plus_di14,
+                    ind.minus_di14,
+                    ind.adx14,
+                    ind.bb_upper20,
+                    ind.bb_lower20,
+                    ind.bb_width20,
+                    ind.bb_percent_b,
+                    ind.ichimoku_tenkan9,
+                    ind.ichimoku_kijun26,
+                    ind.ichimoku_senkou_a,
+                    ind.ichimoku_senkou_b,
+                    ind.ichimoku_chikou
                 FROM instruments i
                 LEFT JOIN LATERAL (
                     SELECT close, volume, trading_date
@@ -104,7 +120,10 @@ class StockDetailService:
                         sma5, sma20, sma50, sma200,
                         rsi14, macd, macd_signal, macd_hist,
                         atr14, high_52w, dist_to_52w_high_pct,
-                        ema21, pivot, rs_rating, trading_date
+                        ema21, pivot, rs_rating, trading_date,
+                        vwap20, obv, mfi14, plus_di14, minus_di14, adx14,
+                        bb_upper20, bb_lower20, bb_width20, bb_percent_b,
+                        ichimoku_tenkan9, ichimoku_kijun26, ichimoku_senkou_a, ichimoku_senkou_b, ichimoku_chikou
                     FROM indicator_daily
                     WHERE symbol_key = i.symbol_key
                       AND (p.trading_date IS NULL OR trading_date <= p.trading_date)
@@ -211,7 +230,22 @@ class StockDetailService:
                     rsi=v(r[11]), macd=v(r[12]), signal=v(r[13]), macd_hist=v(r[14]),
                     atr14=v(r[15]), high_52w=v(r[16]), dist_52w_high_pct=v(r[17]),
                     ema21=v(r[18]), pivot=pivot_val, rs_rating=int(r[20]) if r[20] is not None and r[20] > 0 else None,
-                    volume_ratio=None
+                    volume_ratio=None,
+                    vwap20=v(r[22]),
+                    obv=int(r[23]) if r[23] is not None else None,
+                    mfi14=v(r[24]),
+                    plus_di14=v(r[25]),
+                    minus_di14=v(r[26]),
+                    adx14=v(r[27]),
+                    bb_upper20=v(r[28]),
+                    bb_lower20=v(r[29]),
+                    bb_width20=v(r[30]),
+                    bb_percent_b=v(r[31]),
+                    ichimoku_tenkan9=v(r[32]),
+                    ichimoku_kijun26=v(r[33]),
+                    ichimoku_senkou_a=v(r[34]),
+                    ichimoku_senkou_b=v(r[35]),
+                    ichimoku_chikou=v(r[36]),
                 )
                 # Count missing critical indicators
                 for f in [indicators.rsi, indicators.macd, indicators.sma200, indicators.rs_rating]:
@@ -342,12 +376,20 @@ class StockDetailService:
             q_rat = """
                 SELECT
                     as_of_date, pe_ratio, forward_pe, roe_pct, roa_pct, net_margin_pct,
-                    debt_equity, current_ratio, quick_ratio, asset_turnover
+                    equity_ratio_pct, debt_equity, current_ratio, quick_ratio, asset_turnover
                 FROM fundamentals_ratios_latest
                 WHERE UPPER(symbol) = ANY(%s)
                 LIMIT 1
             """
             rat_res = self.db.execute_query(q_rat, (candidates,)) or []
+
+            # On-demand fetch for ratios when symbol not in DB
+            if not rat_res:
+                raw_ticker = next((c for c in reversed(candidates) if ":" not in c), None)
+                if raw_ticker:
+                    fetched = self._auto_fetch_fundamentals(raw_ticker)
+                    if fetched:
+                        rat_res = self.db.execute_query(q_rat, (candidates,)) or []
 
             if rat_res:
                 rr = rat_res[0]
@@ -360,10 +402,11 @@ class StockDetailService:
                         "roe": float(rr[3]) if rr[3] is not None else None,
                         "roa": float(rr[4]) if rr[4] is not None else None,
                         "net_margin": float(rr[5]) if rr[5] is not None else None,
-                        "debt_equity": float(rr[6]) if rr[6] is not None else None,
-                        "current_ratio": float(rr[7]) if rr[7] is not None else None,
-                        "quick_ratio": float(rr[8]) if rr[8] is not None else None,
-                        "asset_turnover": float(rr[9]) if rr[9] is not None else None,
+                        "equity_ratio": float(rr[6]) if rr[6] is not None else None,
+                        "debt_equity": float(rr[7]) if rr[7] is not None else None,
+                        "current_ratio": float(rr[8]) if rr[8] is not None else None,
+                        "quick_ratio": float(rr[9]) if rr[9] is not None else None,
+                        "asset_turnover": float(rr[10]) if rr[10] is not None else None,
                     },
                     "meta": {"as_of": as_of, "eps_period": as_of, "margin_period": as_of},
                 }
@@ -413,6 +456,7 @@ class StockDetailService:
                     "roe": None,
                     "roa": None,
                     "net_margin": latest_margin,
+                    "equity_ratio": None,
                     "debt_equity": None,
                     "current_ratio": None,
                     "quick_ratio": None,
@@ -428,6 +472,54 @@ class StockDetailService:
             return {"symbol": (symbol or "").strip().upper(), "ratios": {}, "error": str(e)}
         finally:
             self.db.disconnect()
+
+    def _auto_fetch_fundamentals(self, raw_symbol: str) -> bool:
+        """
+        On-demand fetch: called when a symbol has no data in the fundamentals DB.
+        Imports fetch logic from src/update_fundamentals_eps.py and saves via psycopg.
+        Returns True if data was fetched and saved.
+        """
+        import sys
+        try:
+            repo_root = Path(__file__).resolve().parents[3]
+            src_path = str(repo_root / "src")
+            if src_path not in sys.path:
+                sys.path.insert(0, src_path)
+
+            from update_fundamentals_eps import (  # type: ignore
+                fetch_quarterly_fundamentals,
+                fetch_ratio_snapshot,
+                upsert_fundamental,
+                upsert_comparison_latest,
+                upsert_ratios_latest,
+                is_equity_symbol,
+            )
+            import psycopg
+
+            if not is_equity_symbol(raw_symbol):
+                return False
+
+            conn = psycopg.connect(
+                "host=localhost port=5432 dbname=postgres user=postgres password=test"
+            )
+            try:
+                # Skip ensure_schema() to avoid DDL lock conflicts with the caller's open transaction
+                rows = fetch_quarterly_fundamentals(raw_symbol, max_quarters=8, include_snapshot=False)
+                if not rows:
+                    return False
+                for row in rows:
+                    upsert_fundamental(conn, raw_symbol, row)
+                upsert_comparison_latest(conn, raw_symbol, rows)
+                ratio = fetch_ratio_snapshot(raw_symbol)
+                upsert_ratios_latest(conn, raw_symbol, ratio)
+                conn.commit()
+                print(f"[StockDetailService] auto-fetched {raw_symbol}: {len(rows)} quarters")
+                return True
+            finally:
+                conn.close()
+        except Exception as e:
+            print(f"[StockDetailService] auto_fetch failed for {raw_symbol}: {e}")
+            return False
 
     def _candidate_fundamental_symbols(self, symbol: str) -> List[str]:
         raw = (symbol or "").strip().upper()
@@ -484,7 +576,10 @@ class StockDetailService:
                     revenue,
                     net_income,
                     operating_cash_flow,
+                    investing_cash_flow,
+                    financing_cash_flow,
                     free_cash_flow,
+                    capex,
                     updated_at
                 FROM fundamentals
                 WHERE UPPER(symbol) = ANY(%s)
@@ -497,10 +592,19 @@ class StockDetailService:
 
             results = self.db.execute_query(query, params) or []
 
+            # On-demand fetch for symbols not yet in DB (e.g. AG, any non-watchlist ticker)
+            if not results:
+                # Extract raw ticker (last candidate is always the plain ticker like "AG")
+                raw_ticker = next((c for c in reversed(candidates) if ":" not in c), None)
+                if raw_ticker:
+                    fetched = self._auto_fetch_fundamentals(raw_ticker)
+                    if fetched:
+                        results = self.db.execute_query(query, params) or []
+
             rows: List[Dict[str, Any]] = []
             for row in results:
                 period_end = row[1]
-                updated_at = row[7]
+                updated_at = row[10]
                 rows.append(
                     {
                         "symbol": row[0],
@@ -509,7 +613,10 @@ class StockDetailService:
                         "revenue": float(row[3]) if row[3] is not None else None,
                         "net_income": float(row[4]) if row[4] is not None else None,
                         "operating_cash_flow": float(row[5]) if row[5] is not None else None,
-                        "free_cash_flow": float(row[6]) if row[6] is not None else None,
+                        "investing_cash_flow": float(row[6]) if row[6] is not None else None,
+                        "financing_cash_flow": float(row[7]) if row[7] is not None else None,
+                        "free_cash_flow": float(row[8]) if row[8] is not None else None,
+                        "capex": float(row[9]) if row[9] is not None else None,
                         "updated_at": updated_at.isoformat() if isinstance(updated_at, datetime) else (str(updated_at) if updated_at else None),
                     }
                 )
@@ -612,7 +719,10 @@ class StockDetailService:
                     "revenue",
                     "net_income",
                     "operating_cash_flow",
+                    "investing_cash_flow",
+                    "financing_cash_flow",
                     "free_cash_flow",
+                    "capex",
                 ],
             }
         except Exception as e:
@@ -627,7 +737,10 @@ class StockDetailService:
                     "revenue",
                     "net_income",
                     "operating_cash_flow",
+                    "investing_cash_flow",
+                    "financing_cash_flow",
                     "free_cash_flow",
+                    "capex",
                 ],
             }
         finally:

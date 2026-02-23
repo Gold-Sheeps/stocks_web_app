@@ -77,6 +77,7 @@ class StockDetailApp {
 
         await this.fetchSummary();
         this.loadTradePlan();
+        this.fetchAiPrediction();
 
         await this.loadChartDataAll();
         this.applyPeriodAndRender(this.state.selectedPeriod);
@@ -885,39 +886,118 @@ class StockDetailApp {
     }
 
     renderIndicatorCards(indicators, info) {
-        const fmt = (v, d = 2) => (window.UI ? window.UI.formatNumber(v, d) : (v ?? '-'));
-        const pct = (v) => (window.UI ? window.UI.formatPct(v, true) : (v ?? '-'));
+        const fmt = (v, d = 2) => {
+            if (v === null || v === undefined || Number.isNaN(Number(v))) return '-';
+            return window.UI ? window.UI.formatNumber(Number(v), d) : Number(v).toFixed(d);
+        };
+        const pct = (v) => {
+            if (v === null || v === undefined || Number.isNaN(Number(v))) return '-';
+            return window.UI ? window.UI.formatPct(Number(v), true) : `${Number(v).toFixed(2)}%`;
+        };
+        const cp = Number(info.current_price);
+        const hasCp = Number.isFinite(cp) && cp > 0;
+
+        const badge = (status) => {
+            const s = String(status || 'NEUTRAL').toUpperCase();
+            const color = s === 'BUY' ? '#10b981' : (s === 'SELL' ? '#ef4444' : '#9ca3af');
+            return `<span style="font-size:11px; padding:2px 6px; border-radius:999px; border:1px solid ${color}; color:${color}; margin-left:8px;">${s}</span>`;
+        };
+        const row = (label, value, status = null) => `
+            <div class="kv-item">
+                <span class="kv-key">${label}</span>
+                <span class="kv-value">${value}${status ? badge(status) : ''}</span>
+            </div>
+        `;
+
+        const trendStatus = (price, ma) => {
+            if (!hasCp || ma == null || !Number.isFinite(Number(ma))) return 'NEUTRAL';
+            return price >= Number(ma) ? 'BUY' : 'SELL';
+        };
+        const rsiStatus = (rsi) => {
+            const v = Number(rsi);
+            if (!Number.isFinite(v)) return 'NEUTRAL';
+            if (v < 30) return 'BUY';
+            if (v > 70) return 'SELL';
+            return 'NEUTRAL';
+        };
+        const macdStatus = (m, s) => {
+            const mv = Number(m), sv = Number(s);
+            if (!Number.isFinite(mv) || !Number.isFinite(sv)) return 'NEUTRAL';
+            return mv >= sv ? 'BUY' : 'SELL';
+        };
+        const mfiStatus = (mfi) => {
+            const v = Number(mfi);
+            if (!Number.isFinite(v)) return 'NEUTRAL';
+            if (v < 20) return 'BUY';
+            if (v > 80) return 'SELL';
+            return 'NEUTRAL';
+        };
+        const dmiStatus = (pdi, mdi, adx) => {
+            const p = Number(pdi), m = Number(mdi), a = Number(adx);
+            if (!Number.isFinite(p) || !Number.isFinite(m)) return 'NEUTRAL';
+            if (Number.isFinite(a) && a < 20) return 'NEUTRAL';
+            return p >= m ? 'BUY' : 'SELL';
+        };
+        const bbStatus = (pb) => {
+            const v = Number(pb);
+            if (!Number.isFinite(v)) return 'NEUTRAL';
+            if (v < 0.2) return 'BUY';
+            if (v > 0.8) return 'SELL';
+            return 'NEUTRAL';
+        };
+        const vwapStatus = (vwap) => {
+            const v = Number(vwap);
+            if (!hasCp || !Number.isFinite(v)) return 'NEUTRAL';
+            return cp >= v ? 'BUY' : 'SELL';
+        };
+        const ichiStatus = (tenkan, kijun, spanA, spanB) => {
+            const t = Number(tenkan), k = Number(kijun), a = Number(spanA), b = Number(spanB);
+            if (!hasCp || ![t, k, a, b].every(Number.isFinite)) return 'NEUTRAL';
+            const cloudTop = Math.max(a, b);
+            const cloudBot = Math.min(a, b);
+            if (cp > cloudTop && t >= k) return 'BUY';
+            if (cp < cloudBot && t < k) return 'SELL';
+            return 'NEUTRAL';
+        };
 
         const trend = document.getElementById('sdTrend');
         if (trend) {
             trend.innerHTML = `
-                <div class="kv-item"><span class="kv-key">SMA20</span><span class="kv-value">${fmt(indicators.ma20)}</span></div>
-                <div class="kv-item"><span class="kv-key">SMA50</span><span class="kv-value">${fmt(indicators.ma50)}</span></div>
-                <div class="kv-item"><span class="kv-key">SMA200</span><span class="kv-value">${fmt(indicators.sma200)}</span></div>
-                <div class="kv-item"><span class="kv-key">EMA21</span><span class="kv-value">${fmt(indicators.ema21)}</span></div>
-                <div class="kv-item"><span class="kv-key">RS Rating</span><span class="kv-value">${indicators.rs_rating ?? '-'}</span></div>
+                ${row('SMA20', fmt(indicators.ma20), trendStatus(cp, indicators.ma20))}
+                ${row('SMA50', fmt(indicators.ma50), trendStatus(cp, indicators.ma50))}
+                ${row('SMA200', fmt(indicators.sma200), trendStatus(cp, indicators.sma200))}
+                ${row('EMA21', fmt(indicators.ema21), trendStatus(cp, indicators.ema21))}
+                ${row('VWAP20', fmt(indicators.vwap20), vwapStatus(indicators.vwap20))}
+                ${row('RS Rating', indicators.rs_rating ?? '-', (indicators.rs_rating ?? 0) >= 80 ? 'BUY' : ((indicators.rs_rating ?? 0) <= 40 ? 'SELL' : 'NEUTRAL'))}
+                ${row('Ichimoku', `T:${fmt(indicators.ichimoku_tenkan9)} K:${fmt(indicators.ichimoku_kijun26)}`, ichiStatus(indicators.ichimoku_tenkan9, indicators.ichimoku_kijun26, indicators.ichimoku_senkou_a, indicators.ichimoku_senkou_b))}
             `;
         }
 
         const momentum = document.getElementById('sdMomentum');
         if (momentum) {
             momentum.innerHTML = `
-                <div class="kv-item"><span class="kv-key">RSI(14)</span><span class="kv-value">${fmt(indicators.rsi)}</span></div>
-                <div class="kv-item"><span class="kv-key">MACD</span><span class="kv-value">${fmt(indicators.macd, 4)}</span></div>
-                <div class="kv-item"><span class="kv-key">Signal</span><span class="kv-value">${fmt(indicators.signal, 4)}</span></div>
-                <div class="kv-item"><span class="kv-key">MACD Hist</span><span class="kv-value">${fmt(indicators.macd_hist, 4)}</span></div>
-                <div class="kv-item"><span class="kv-key">Pivot</span><span class="kv-value">${fmt(indicators.pivot)}</span></div>
+                ${row('RSI(14)', fmt(indicators.rsi), rsiStatus(indicators.rsi))}
+                ${row('MFI(14)', fmt(indicators.mfi14), mfiStatus(indicators.mfi14))}
+                ${row('MACD', fmt(indicators.macd, 4), macdStatus(indicators.macd, indicators.signal))}
+                ${row('Signal', fmt(indicators.signal, 4))}
+                ${row('MACD Hist', fmt(indicators.macd_hist, 4), macdStatus(indicators.macd_hist, 0))}
+                ${row('+DI / -DI / ADX', `${fmt(indicators.plus_di14)}/${fmt(indicators.minus_di14)}/${fmt(indicators.adx14)}`, dmiStatus(indicators.plus_di14, indicators.minus_di14, indicators.adx14))}
+                ${row('Pivot', fmt(indicators.pivot), trendStatus(cp, indicators.pivot))}
             `;
         }
 
         const risk = document.getElementById('sdRisk');
         if (risk) {
             risk.innerHTML = `
-                <div class="kv-item"><span class="kv-key">ATR(14)</span><span class="kv-value">${fmt(indicators.atr14)}</span></div>
-                <div class="kv-item"><span class="kv-key">52W High</span><span class="kv-value">${fmt(indicators.high_52w)}</span></div>
-                <div class="kv-item"><span class="kv-key">Dist to 52W High</span><span class="kv-value">${pct(indicators.dist_52w_high_pct)}</span></div>
-                <div class="kv-item"><span class="kv-key">Volume</span><span class="kv-value">${fmt(info.volume, 0)}</span></div>
-                <div class="kv-item"><span class="kv-key">Market</span><span class="kv-value">${info.market || '-'}</span></div>
+                ${row('ATR(14)', fmt(indicators.atr14))}
+                ${row('BB Upper / Lower', `${fmt(indicators.bb_upper20)} / ${fmt(indicators.bb_lower20)}`)}
+                ${row('BB Width', fmt(indicators.bb_width20, 4))}
+                ${row('BB %B', fmt(indicators.bb_percent_b, 4), bbStatus(indicators.bb_percent_b))}
+                ${row('52W High', fmt(indicators.high_52w))}
+                ${row('Dist to 52W High', pct(indicators.dist_52w_high_pct))}
+                ${row('OBV', fmt(indicators.obv, 0))}
+                ${row('Volume', fmt(info.volume, 0))}
+                ${row('Market', info.market || '-')}
             `;
         }
     }
@@ -986,6 +1066,9 @@ class StockDetailApp {
             { label: 'Net Income / 純利益', key: 'net_income', digits: 0 },
             { label: 'EPS (Diluted) / 希薄化後EPS', key: 'eps', digits: 2 },
             { label: 'Operating Cash Flow / 営業CF', key: 'operating_cash_flow', digits: 0 },
+            { label: 'Investing Cash Flow / 投資CF', key: 'investing_cash_flow', digits: 0 },
+            { label: 'Financing Cash Flow / 財務CF', key: 'financing_cash_flow', digits: 0 },
+            { label: 'CapEx / 設備投資', key: 'capex', digits: 0 },
             { label: 'Free Cash Flow / フリーCF', key: 'free_cash_flow', digits: 0 }
         ];
         if (rows.length === 0) {
@@ -1051,6 +1134,10 @@ class StockDetailApp {
 
         const compVal = (obj, digits) => `${this.formatSigned(obj?.diff, digits)} (${this.formatSignedPct(obj?.pct)})`;
 
+        // YoY label: show comparison period if available
+        const yoyPeriod = comparison?.yoy_period || null;
+        const yoyLabel = yoyPeriod ? `YoY vs ${yoyPeriod}` : 'YoY / 前年比';
+
         tbody.innerHTML = metrics.map(m => `
             <tr>
                 <td class="fundamentals-sticky-col">${m.label}</td>
@@ -1064,11 +1151,21 @@ class StockDetailApp {
                 })()}
             </tr>
             <tr>
-                <td class="fundamentals-sticky-col">${m.label} YoY / 前年比</td>
+                <td class="fundamentals-sticky-col">${m.label} ${yoyLabel}</td>
                 ${(() => {
                     const vals = rows.map(r => r[m.key]);
                     const dates = rows.map(r => r.period_end_date);
-                    return rows.map((_, i) => `<td class="text-right fund-col">${compVal(calcYoy(vals, dates, i), m.digits)}</td>`).join('');
+                    return rows.map((_, i) => {
+                        const clientResult = calcYoy(vals, dates, i);
+                        // For the latest column (rightmost), fall back to server-precomputed comparison
+                        if (i === rows.length - 1 && (clientResult.diff === null || clientResult.diff === undefined)) {
+                            const precomp = comparison?.latest_vs_same_quarter_prev_year?.[m.key];
+                            if (precomp && (precomp.diff !== null && precomp.diff !== undefined)) {
+                                return `<td class="text-right fund-col" title="vs ${yoyPeriod || 'prior year'}">${compVal(precomp, m.digits)}</td>`;
+                            }
+                        }
+                        return `<td class="text-right fund-col">${compVal(clientResult, m.digits)}</td>`;
+                    }).join('');
                 })()}
             </tr>
         `).join('');
@@ -1123,6 +1220,9 @@ class StockDetailApp {
             set('ratioNetMargin', fmtPct(r.net_margin));
             set('ratioNetMarginSub', m.margin_period ? `Profit Margin | Period: ${m.margin_period}` : 'No DB data');
 
+            set('ratioEquityRatio', fmtPct(r.equity_ratio));
+            set('ratioEquityRatioSub', r.equity_ratio == null ? 'No DB data' : 'Equity / Total Assets');
+
             set('ratioDebtEquity', fmt(r.debt_equity, 2));
             set('ratioDebtEquitySub', r.debt_equity == null ? 'No DB data' : 'Leverage');
 
@@ -1137,11 +1237,11 @@ class StockDetailApp {
         } catch (e) {
             console.error('[Ratios] Load error:', e);
             [
-                'ratioPe', 'ratioRoe', 'ratioRoa', 'ratioNetMargin',
+                'ratioPe', 'ratioRoe', 'ratioRoa', 'ratioNetMargin', 'ratioEquityRatio',
                 'ratioDebtEquity', 'ratioCurrentRatio', 'ratioQuickRatio', 'ratioAssetTurnover'
             ].forEach((id) => set(id, '--'));
             [
-                'ratioPeSub', 'ratioRoeSub', 'ratioRoaSub', 'ratioNetMarginSub',
+                'ratioPeSub', 'ratioRoeSub', 'ratioRoaSub', 'ratioNetMarginSub', 'ratioEquityRatioSub',
                 'ratioDebtEquitySub', 'ratioCurrentRatioSub', 'ratioQuickRatioSub', 'ratioAssetTurnoverSub'
             ].forEach((id) => set(id, 'Failed to load'));
         }
@@ -1264,6 +1364,78 @@ class StockDetailApp {
         if (window.UI) window.UI.showToast('Trade plan cleared', 'info');
     }
 
+    async fetchAiPrediction() {
+        if (!this.symbol) return;
+        try {
+            const url = `${this.API_BASE}/stock/${encodeURIComponent(this.symbol)}/ai-prediction`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`API ${res.status}`);
+            const data = await res.json();
+            this.renderAiPrediction(data);
+        } catch (e) {
+            console.warn('[AI] fetchAiPrediction failed:', e);
+        }
+    }
+
+    renderAiPrediction(data) {
+        const probEl        = document.getElementById('tpAiProbUp5');
+        const decisionEl    = document.getElementById('tpAiDecision');
+        const dateEl        = document.getElementById('tpAiDate');
+        const thresholdNote = document.getElementById('tpAiThresholdNote');
+        const thresholdPct  = document.getElementById('tpAiThresholdPct');
+
+        if (!data || !data.has_prediction) {
+            if (probEl)        { probEl.textContent = '--'; probEl.className = 'tp-value'; }
+            if (decisionEl) {
+                if (data && data.message) {
+                    decisionEl.textContent = 'Data not available';
+                    decisionEl.style.fontSize = '0.8rem';
+                } else {
+                    decisionEl.textContent = 'No data';
+                }
+            }
+            if (dateEl)        dateEl.textContent = '--';
+            if (thresholdNote) thresholdNote.style.display = 'none';
+            return;
+        }
+
+        const pct = (data.p_up5 * 100).toFixed(1);
+        const threshold = data.threshold_buy || 0.5;
+        const thresholdPctVal = (threshold * 100).toFixed(0);
+
+        // 確率表示（色分け）
+        if (probEl) {
+            probEl.textContent = `${pct}%`;
+            probEl.className = 'tp-value';
+            if (data.p_up5 >= threshold) {
+                probEl.classList.add('ai-prob-high');
+            } else if (data.p_up5 >= 0.3) {
+                probEl.classList.add('ai-prob-medium');
+            } else {
+                probEl.classList.add('ai-prob-low');
+            }
+        }
+
+        // 判定表示
+        if (decisionEl) {
+            decisionEl.className = 'tp-value';
+            if (data.decision === 'BUY') {
+                decisionEl.textContent = '🟢 BUY';
+                decisionEl.classList.add('ai-signal-buy');
+            } else {
+                decisionEl.textContent = '⚪ NO TRADE';
+                decisionEl.classList.add('ai-signal-notrade');
+            }
+        }
+
+        // threshold 補足（常に表示）
+        if (thresholdNote) thresholdNote.style.display = 'flex';
+        if (thresholdPct)  thresholdPct.textContent = thresholdPctVal;
+
+        // 予測日
+        if (dateEl) dateEl.textContent = data.asof || '--';
+    }
+
     showFatal(msg) {
         console.error("FATAL:", msg);
         const alertEl = document.getElementById('sdAlert');
@@ -1288,3 +1460,31 @@ window.StockDetailApp = StockDetailApp;
     };
 })();
 
+// ---- AI Prediction: on-demand run ----
+async function runAiPrediction() {
+    if (!window.app || !window.app.symbol) return;
+    const btn     = document.getElementById('tpAiRunBtn');
+    const loading = document.getElementById('tpAiLoading');
+    if (btn)     { btn.disabled = true; btn.textContent = 'Running...'; }
+    if (loading) {
+        loading.style.display = 'block';
+        loading.innerHTML = '<span>Computing prediction... (may take 30s if fetching data)</span>';
+    }
+    try {
+        const url = `${window.app.API_BASE}/stock/${encodeURIComponent(window.app.symbol)}/ai-prediction/run`;
+        const res = await fetch(url, { method: 'POST' });
+        if (!res.ok) throw new Error(`API ${res.status}`);
+        const data = await res.json();
+        window.app.renderAiPrediction(data);
+        if (window.UI) window.UI.showToast('AI prediction updated', 'success');
+    } catch (e) {
+        console.error('[AI] runAiPrediction failed:', e);
+        if (window.UI) window.UI.showToast('Prediction failed: ' + e.message, 'error');
+    } finally {
+        if (btn)     { btn.disabled = false; btn.textContent = 'Run Now'; }
+        if (loading) loading.style.display = 'none';
+    }
+}
+
+// グローバルに明示エクスポート（defer 読み込みでも onclick から参照可能にする）
+window.runAiPrediction = runAiPrediction;

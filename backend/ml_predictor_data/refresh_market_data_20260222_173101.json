@@ -1,0 +1,147 @@
+{
+  "run_at": "2026-02-22T17:30:46",
+  "source": "yfinance",
+  "db_only_check": false,
+  "start": null,
+  "end": "2026-02-22",
+  "symbols": [
+    {
+      "symbol_key": "US:CRWV",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 226,
+        "max_date": "2026-02-20"
+      },
+      "db_after": {
+        "rows": 226,
+        "max_date": "2026-02-20"
+      },
+      "fetch": {
+        "from": "2026-02-21",
+        "to": "2026-02-22",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:CRWV: 'NoneType' object is not subscriptable"
+    },
+    {
+      "symbol_key": "US:QQQ",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5032,
+        "max_date": "2026-02-20"
+      },
+      "db_after": {
+        "rows": 5032,
+        "max_date": "2026-02-20"
+      },
+      "fetch": {
+        "from": "2026-02-21",
+        "to": "2026-02-22",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:QQQ: 'NoneType' object is not subscriptable"
+    },
+    {
+      "symbol_key": "US:SPY",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5032,
+        "max_date": "2026-02-20"
+      },
+      "db_after": {
+        "rows": 5032,
+        "max_date": "2026-02-20"
+      },
+      "fetch": {
+        "from": "2026-02-21",
+        "to": "2026-02-22",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:SPY: 'NoneType' object is not subscriptable"
+    },
+    {
+      "symbol_key": "US:^SOX",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 8004,
+        "max_date": "2026-02-20"
+      },
+      "db_after": {
+        "rows": 8004,
+        "max_date": "2026-02-20"
+      },
+      "fetch": {
+        "from": "2026-02-21",
+        "to": "2026-02-22",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:^SOX: 'NoneType' object is not subscriptable"
+    },
+    {
+      "symbol_key": "US:SMH",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5032,
+        "max_date": "2026-02-20"
+      },
+      "db_after": {
+        "rows": 5032,
+        "max_date": "2026-02-20"
+      },
+      "fetch": {
+        "from": "2026-02-21",
+        "to": "2026-02-22",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:SMH: 'NoneType' object is not subscriptable"
+    }
+  ],
+  "totals": {
+    "symbols": 5,
+    "failed": 5,
+    "fetched_rows": 0,
+    "inserted": 0,
+    "updated": 0,
+    "skipped_overflow": 0
+  }
+}

@@ -154,7 +154,7 @@ def test_json_audit_keys_threshold_off_default(monkeypatch):
             ],
         )
         assert code == 0, "main() should return 0 for successful run."
-        out_path = Path("backend/ml_predictor_data") / out_name
+        out_path = Path(__file__).resolve().parents[1] / "ml_predictor_data" / out_name
         data = json.loads(out_path.read_text(encoding="utf-8"))
         rp = data["meta"]["run_params"]
         assert rp["class_weight_mode"] == "off", "Default JSON must keep class_weight_mode=off."
@@ -163,7 +163,7 @@ def test_json_audit_keys_threshold_off_default(monkeypatch):
         assert rp["threshold_search_enabled"] is False, "Default JSON must keep threshold_search disabled."
         assert rp["thresholds_applied"] is None, "Default JSON should set thresholds_applied to null in argmax mode."
     finally:
-        p = Path("backend/ml_predictor_data") / out_name
+        p = Path(__file__).resolve().parents[1] / "ml_predictor_data" / out_name
         if p.exists():
             p.unlink()
 
@@ -190,7 +190,7 @@ def test_json_audit_keys_threshold_on(monkeypatch):
             ],
         )
         assert code == 0, "main() should return 0 for threshold mode run."
-        out_path = Path("backend/ml_predictor_data") / out_name
+        out_path = Path(__file__).resolve().parents[1] / "ml_predictor_data" / out_name
         data = json.loads(out_path.read_text(encoding="utf-8"))
         rp = data["meta"]["run_params"]
         assert rp["class_weight_mode"] == "custom", "JSON must record class_weight_mode=custom."
@@ -201,6 +201,6 @@ def test_json_audit_keys_threshold_on(monkeypatch):
         assert data["meta"]["threshold_selection"]["best"]["t_down"] == 0.3, "threshold_selection.best must exist for audit."
         assert len(data["meta"]["threshold_selection"]["candidates"]) >= 1, "threshold_selection.candidates must be non-empty."
     finally:
-        p = Path("backend/ml_predictor_data") / out_name
+        p = Path(__file__).resolve().parents[1] / "ml_predictor_data" / out_name
         if p.exists():
             p.unlink()

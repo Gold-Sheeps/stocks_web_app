@@ -6,7 +6,10 @@ Stored metrics per quarter:
 - net_income
 - eps (diluted EPS preferred)
 - operating_cash_flow
+- investing_cash_flow
+- financing_cash_flow
 - free_cash_flow
+- capex
 """
 
 from __future__ import annotations
@@ -102,7 +105,10 @@ def ensure_schema(conn: psycopg.Connection) -> None:
                 revenue DECIMAL,
                 net_income DECIMAL,
                 operating_cash_flow DECIMAL,
+                investing_cash_flow DECIMAL,
+                financing_cash_flow DECIMAL,
                 free_cash_flow DECIMAL,
+                capex DECIMAL,
                 updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (symbol, period_end_date)
             );
@@ -110,7 +116,14 @@ def ensure_schema(conn: psycopg.Connection) -> None:
         )
 
         # Backward compatible ALTERs for existing table.
-        for col in ["net_income", "operating_cash_flow", "free_cash_flow"]:
+        for col in [
+            "net_income",
+            "operating_cash_flow",
+            "investing_cash_flow",
+            "financing_cash_flow",
+            "free_cash_flow",
+            "capex",
+        ]:
             cur.execute(f"ALTER TABLE fundamentals ADD COLUMN IF NOT EXISTS {col} DECIMAL;")
 
         cur.execute(
@@ -140,10 +153,21 @@ def ensure_schema(conn: psycopg.Connection) -> None:
                 free_cash_flow_qoq_pct DECIMAL,
                 free_cash_flow_yoy_diff DECIMAL,
                 free_cash_flow_yoy_pct DECIMAL,
+                revenue_growth_qoq_pct DECIMAL,
+                revenue_growth_yoy_pct DECIMAL,
+                eps_growth_qoq_pct DECIMAL,
+                eps_growth_yoy_pct DECIMAL,
                 updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
             );
             """
         )
+        for col in [
+            "revenue_growth_qoq_pct",
+            "revenue_growth_yoy_pct",
+            "eps_growth_qoq_pct",
+            "eps_growth_yoy_pct",
+        ]:
+            cur.execute(f"ALTER TABLE fundamentals_comparison_latest ADD COLUMN IF NOT EXISTS {col} DECIMAL;")
         cur.execute(
             """
             CREATE TABLE IF NOT EXISTS fundamentals_ratios_latest (
@@ -154,6 +178,7 @@ def ensure_schema(conn: psycopg.Connection) -> None:
                 roe_pct DECIMAL,
                 roa_pct DECIMAL,
                 net_margin_pct DECIMAL,
+                equity_ratio_pct DECIMAL,
                 debt_equity DECIMAL,
                 current_ratio DECIMAL,
                 quick_ratio DECIMAL,
@@ -162,6 +187,7 @@ def ensure_schema(conn: psycopg.Connection) -> None:
             );
             """
         )
+        cur.execute("ALTER TABLE fundamentals_ratios_latest ADD COLUMN IF NOT EXISTS equity_ratio_pct DECIMAL;")
     conn.commit()
 
 
@@ -190,7 +216,7 @@ def _to_float(v) -> Optional[float]:
         return None
 
 
-def fetch_quarterly_fundamentals(raw_symbol: str, max_quarters: int = 8, include_snapshot: bool = True) -> list[dict]:
+def fetch_quarterly_fundamentals(raw_symbol: str, max_quarters: int = 8, include_snapshot: bool = False) -> list[dict]:
     yf_symbol = normalize_to_yf_symbol(raw_symbol)
     ticker = yf.Ticker(yf_symbol)
 
@@ -213,13 +239,38 @@ def fetch_quarterly_fundamentals(raw_symbol: str, max_quarters: int = 8, include
     eps = _first_series(q_income, ["Diluted EPS", "Basic EPS"])
     diluted_shares = _first_series(q_income, ["Diluted Average Shares", "Diluted Shares Number"])
     ocf = _first_series(q_cash, ["Operating Cash Flow", "Cash Flow From Continuing Operating Activities"])
+    cfi = _first_series(
+        q_cash,
+        [
+            "Investing Cash Flow",
+            "Cash Flow From Continuing Investing Activities",
+            "Net PPE Purchase And Sale",
+        ],
+    )
+    cff = _first_series(
+        q_cash,
+        [
+            "Financing Cash Flow",
+            "Cash Flow From Continuing Financing Activities",
+        ],
+    )
     fcf = _first_series(q_cash, ["Free Cash Flow"])
     capex = _first_series(q_cash, ["Capital Expenditure", "Capital Expenditures"])
 
-    periods = set()
-    for s in [rev, ni, eps, ocf, fcf]:
+    # Use income statement dates as primary periods.
+    # Cashflow data may span more quarters than income data, causing NULL revenue/eps rows.
+    income_periods: set = set()
+    for s in [rev, ni, eps]:
         if s is not None:
-            periods.update(list(s.index))
+            income_periods.update(list(s.index))
+    if income_periods:
+        periods = income_periods
+    else:
+        # Fallback: no income data at all; use cashflow dates
+        periods = set()
+        for s in [ocf, fcf]:
+            if s is not None:
+                periods.update(list(s.index))
 
     rows: list[dict] = []
 
@@ -234,11 +285,13 @@ def fetch_quarterly_fundamentals(raw_symbol: str, max_quarters: int = 8, include
                 "net_income": _to_float(ni.get(p)) if ni is not None else None,
                 "eps": _to_float(eps.get(p)) if eps is not None else None,
                 "operating_cash_flow": _to_float(ocf.get(p)) if ocf is not None else None,
+                "investing_cash_flow": _to_float(cfi.get(p)) if cfi is not None else None,
+                "financing_cash_flow": _to_float(cff.get(p)) if cff is not None else None,
                 "free_cash_flow": _to_float(fcf.get(p)) if fcf is not None else None,
+                "capex": _to_float(capex.get(p)) if capex is not None else None,
             }
-            cpx = _to_float(capex.get(p)) if capex is not None else None
             dshares = _to_float(diluted_shares.get(p)) if diluted_shares is not None else None
-            _derive_missing_fields(row, cpx, dshares)
+            _derive_missing_fields(row, row.get("capex"), dshares)
             rows.append(row)
 
     if include_snapshot:
@@ -250,9 +303,12 @@ def fetch_quarterly_fundamentals(raw_symbol: str, max_quarters: int = 8, include
             "net_income": _to_float(info.get("netIncomeToCommon")),
             "eps": _to_float(info.get("trailingEps") or info.get("epsTrailingTwelveMonths")),
             "operating_cash_flow": _to_float(info.get("operatingCashflow")),
+            "investing_cash_flow": None,
+            "financing_cash_flow": None,
             "free_cash_flow": _to_float(info.get("freeCashflow")),
+            "capex": _to_float(info.get("capitalExpenditures")),
         }
-        if any(snapshot[k] is not None for k in ["revenue", "net_income", "eps", "operating_cash_flow", "free_cash_flow"]):
+        if any(snapshot[k] is not None for k in ["revenue", "net_income", "eps", "operating_cash_flow", "free_cash_flow", "capex"]):
             # Keep one row per period_end_date; today's snapshot becomes latest.
             rows = [r for r in rows if r["period_end_date"] != today]
             rows.insert(0, snapshot)
@@ -332,8 +388,10 @@ def upsert_comparison_latest(conn: psycopg.Connection, raw_symbol: str, rows_des
                 eps_qoq_diff, eps_qoq_pct, eps_yoy_diff, eps_yoy_pct,
                 operating_cash_flow_qoq_diff, operating_cash_flow_qoq_pct, operating_cash_flow_yoy_diff, operating_cash_flow_yoy_pct,
                 free_cash_flow_qoq_diff, free_cash_flow_qoq_pct, free_cash_flow_yoy_diff, free_cash_flow_yoy_pct,
+                revenue_growth_qoq_pct, revenue_growth_yoy_pct, eps_growth_qoq_pct, eps_growth_yoy_pct,
                 updated_at
             ) VALUES (
+                %s, %s, %s, %s,
                 %s, %s, %s, %s,
                 %s, %s, %s, %s,
                 %s, %s, %s, %s,
@@ -366,6 +424,10 @@ def upsert_comparison_latest(conn: psycopg.Connection, raw_symbol: str, rows_des
                 free_cash_flow_qoq_pct = EXCLUDED.free_cash_flow_qoq_pct,
                 free_cash_flow_yoy_diff = EXCLUDED.free_cash_flow_yoy_diff,
                 free_cash_flow_yoy_pct = EXCLUDED.free_cash_flow_yoy_pct,
+                revenue_growth_qoq_pct = EXCLUDED.revenue_growth_qoq_pct,
+                revenue_growth_yoy_pct = EXCLUDED.revenue_growth_yoy_pct,
+                eps_growth_qoq_pct = EXCLUDED.eps_growth_qoq_pct,
+                eps_growth_yoy_pct = EXCLUDED.eps_growth_yoy_pct,
                 updated_at = CURRENT_TIMESTAMP
             """,
             (
@@ -378,6 +440,7 @@ def upsert_comparison_latest(conn: psycopg.Connection, raw_symbol: str, rows_des
                 vals["eps_qoq_diff"], vals["eps_qoq_pct"], vals["eps_yoy_diff"], vals["eps_yoy_pct"],
                 vals["operating_cash_flow_qoq_diff"], vals["operating_cash_flow_qoq_pct"], vals["operating_cash_flow_yoy_diff"], vals["operating_cash_flow_yoy_pct"],
                 vals["free_cash_flow_qoq_diff"], vals["free_cash_flow_qoq_pct"], vals["free_cash_flow_yoy_diff"], vals["free_cash_flow_yoy_pct"],
+                vals["revenue_qoq_pct"], vals["revenue_yoy_pct"], vals["eps_qoq_pct"], vals["eps_yoy_pct"],
             ),
         )
 
@@ -407,6 +470,7 @@ def fetch_ratio_snapshot(raw_symbol: str) -> dict:
     asset_turnover = None
     total_rev = _to_float(info.get("totalRevenue"))
     total_assets = None
+    total_equity = None
     try:
         qbs = ticker.quarterly_balance_sheet
         if qbs is None or qbs.empty:
@@ -419,10 +483,25 @@ def fetch_ratio_snapshot(raw_symbol: str) -> dict:
                     if len(s) > 0:
                         total_assets = _to_float(s.iloc[0])
                         break
+            for k in [
+                "stockholders equity",
+                "total stockholder equity",
+                "common stock equity",
+                "stockholders equity attributable to parent",
+            ]:
+                if k in bs_keys:
+                    s = qbs.loc[bs_keys[k]]
+                    if len(s) > 0:
+                        total_equity = _to_float(s.iloc[0])
+                        if total_equity is not None:
+                            break
     except Exception:
         pass
     if total_rev is not None and total_assets not in (None, 0):
         asset_turnover = total_rev / total_assets
+    equity_ratio_pct = None
+    if total_equity is not None and total_assets not in (None, 0):
+        equity_ratio_pct = (total_equity / total_assets) * 100.0
 
     return {
         "pe_ratio": pe_ratio,
@@ -430,6 +509,7 @@ def fetch_ratio_snapshot(raw_symbol: str) -> dict:
         "roe_pct": roe_pct,
         "roa_pct": roa_pct,
         "net_margin_pct": net_margin_pct,
+        "equity_ratio_pct": equity_ratio_pct,
         "debt_equity": debt_equity,
         "current_ratio": current_ratio,
         "quick_ratio": quick_ratio,
@@ -442,10 +522,10 @@ def upsert_ratios_latest(conn: psycopg.Connection, raw_symbol: str, ratio: dict)
         cur.execute(
             """
             INSERT INTO fundamentals_ratios_latest (
-                symbol, as_of_date, pe_ratio, forward_pe, roe_pct, roa_pct, net_margin_pct,
+                symbol, as_of_date, pe_ratio, forward_pe, roe_pct, roa_pct, net_margin_pct, equity_ratio_pct,
                 debt_equity, current_ratio, quick_ratio, asset_turnover, updated_at
             ) VALUES (
-                %s, CURRENT_DATE, %s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP
+                %s, CURRENT_DATE, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP
             )
             ON CONFLICT (symbol) DO UPDATE SET
                 as_of_date = EXCLUDED.as_of_date,
@@ -454,6 +534,7 @@ def upsert_ratios_latest(conn: psycopg.Connection, raw_symbol: str, ratio: dict)
                 roe_pct = EXCLUDED.roe_pct,
                 roa_pct = EXCLUDED.roa_pct,
                 net_margin_pct = EXCLUDED.net_margin_pct,
+                equity_ratio_pct = EXCLUDED.equity_ratio_pct,
                 debt_equity = EXCLUDED.debt_equity,
                 current_ratio = EXCLUDED.current_ratio,
                 quick_ratio = EXCLUDED.quick_ratio,
@@ -467,6 +548,7 @@ def upsert_ratios_latest(conn: psycopg.Connection, raw_symbol: str, ratio: dict)
                 ratio.get("roe_pct"),
                 ratio.get("roa_pct"),
                 ratio.get("net_margin_pct"),
+                ratio.get("equity_ratio_pct"),
                 ratio.get("debt_equity"),
                 ratio.get("current_ratio"),
                 ratio.get("quick_ratio"),
@@ -486,16 +568,22 @@ def upsert_fundamental(conn: psycopg.Connection, raw_symbol: str, row: dict) -> 
                 revenue,
                 net_income,
                 operating_cash_flow,
+                investing_cash_flow,
+                financing_cash_flow,
                 free_cash_flow,
+                capex,
                 updated_at
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
             ON CONFLICT (symbol, period_end_date) DO UPDATE SET
                 eps = EXCLUDED.eps,
                 revenue = EXCLUDED.revenue,
                 net_income = EXCLUDED.net_income,
                 operating_cash_flow = EXCLUDED.operating_cash_flow,
+                investing_cash_flow = EXCLUDED.investing_cash_flow,
+                financing_cash_flow = EXCLUDED.financing_cash_flow,
                 free_cash_flow = EXCLUDED.free_cash_flow,
+                capex = EXCLUDED.capex,
                 updated_at = CURRENT_TIMESTAMP
             """,
             (
@@ -505,7 +593,10 @@ def upsert_fundamental(conn: psycopg.Connection, raw_symbol: str, row: dict) -> 
                 row["revenue"],
                 row["net_income"],
                 row["operating_cash_flow"],
+                row.get("investing_cash_flow"),
+                row.get("financing_cash_flow"),
                 row["free_cash_flow"],
+                row.get("capex"),
             ),
         )
 

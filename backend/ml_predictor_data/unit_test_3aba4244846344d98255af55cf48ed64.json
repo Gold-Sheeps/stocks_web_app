@@ -1,0 +1,333 @@
+{
+  "ticker": "US:AAPL",
+  "period": {
+    "start": "2026-02-16",
+    "end": "2026-02-16",
+    "as_of": "2026-02-16"
+  },
+  "metrics": {
+    "accuracy": 0.5,
+    "macro_f1": 0.4,
+    "logloss": 1.1,
+    "brier": 0.22,
+    "ece": 0.08,
+    "win_rate_at_best": null,
+    "coverage_at_best": null,
+    "n_trades_at_best": null,
+    "avg_return_at_best": null,
+    "median_return_at_best": null,
+    "precision_at_p70": null,
+    "coverage_at_p70": null,
+    "n_trades_at_p70": null,
+    "avg_return_at_p70": null,
+    "interval_target_coverage": 0.8,
+    "interval_q": 1.0,
+    "interval_width_mean": 2.0,
+    "interval_coverage": 0.7,
+    "bias": 0.1,
+    "bias_abs": 0.2
+  },
+  "diagnostics": {
+    "class_ratio": {
+      "down": 0.3,
+      "flat": 0.3,
+      "up": 0.4
+    },
+    "confusion_matrix": [
+      [
+        4,
+        1,
+        0
+      ],
+      [
+        1,
+        3,
+        1
+      ],
+      [
+        0,
+        1,
+        4
+      ]
+    ],
+    "confusion_2x2": [
+      [
+        4,
+        1,
+        0
+      ],
+      [
+        1,
+        3,
+        1
+      ],
+      [
+        0,
+        1,
+        4
+      ]
+    ],
+    "class_metrics": {
+      "down": {
+        "precision": 0.8,
+        "recall": 0.8,
+        "f1": 0.8
+      },
+      "flat": {
+        "precision": 0.6,
+        "recall": 0.6,
+        "f1": 0.6
+      },
+      "up": {
+        "precision": 0.8,
+        "recall": 0.8,
+        "f1": 0.8
+      }
+    },
+    "trading_metrics": {},
+    "label_distribution": null,
+    "prediction_distribution": null,
+    "threshold_selection": {
+      "best": {
+        "t_down": 0.3,
+        "t_up": 0.5,
+        "macro_f1": 0.4,
+        "down_recall": 0.2,
+        "pred_down_pct": 0.1,
+        "confusion_matrix": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            1,
+            3,
+            1
+          ],
+          [
+            0,
+            1,
+            4
+          ]
+        ]
+      },
+      "candidates": [
+        {
+          "t_down": 0.3,
+          "t_up": 0.5,
+          "macro_f1": 0.4,
+          "down_recall": 0.2,
+          "pred_down_pct": 0.1,
+          "confusion_matrix": [
+            [
+              4,
+              1,
+              0
+            ],
+            [
+              1,
+              3,
+              1
+            ],
+            [
+              0,
+              1,
+              4
+            ]
+          ]
+        }
+      ]
+    },
+    "fixed_threshold_metrics": {},
+    "prob_up5_summary": null,
+    "prob_calibration_audit": null
+  },
+  "meta": {
+    "sources": {},
+    "origins": {},
+    "used_feature_columns": [
+      "f1",
+      "f2"
+    ],
+    "n_features": 2,
+    "feature_hash": "fake_feature_hash",
+    "config_hash": "c333bde76be69824fa93f10e3a741b936e16c482459bd9985efbf447fc8ac0d0",
+    "db_freshness": {},
+    "as_of_date": "2026-02-16",
+    "effective_as_of": "2026-02-16",
+    "is_trading_day": true,
+    "target_name": "close_future",
+    "target_unit": "price",
+    "target_transform": "raw_price",
+    "target_scale_factor": 1.0,
+    "run_params": {
+      "as_of": "2026-02-16",
+      "start": "2026-02-16",
+      "end": "2026-02-16",
+      "horizon": 15,
+      "horizon_trading_days": 15,
+      "effective_as_of": "2026-02-16",
+      "flat_band": 2.0,
+      "flat_band_applied": 2.0,
+      "model": "fake_model",
+      "calibration": "sigmoid",
+      "feature_set": "v2_ohlcv_ta_relregime_event",
+      "feature_version": "v2_ohlcv_ta_relregime_event",
+      "regime_symbols": [
+        "US:QQQ",
+        "US:SPY"
+      ],
+      "relative_symbols": [
+        "US:QQQ"
+      ],
+      "sector_symbols": [],
+      "feature_hash": "fake_feature_hash",
+      "config_hash": "c333bde76be69824fa93f10e3a741b936e16c482459bd9985efbf447fc8ac0d0",
+      "target_coverage": 0.8,
+      "target_interval_coverage": 0.8,
+      "lookback": "5y",
+      "preflight_only": false,
+      "fast": false,
+      "max_folds": null,
+      "fold_step": null,
+      "train_window": null,
+      "band_sweep_enabled": true,
+      "use_ensemble": true,
+      "ensemble_seeds": [
+        11,
+        29
+      ],
+      "purge_days": 15,
+      "embargo_mode": "pct",
+      "embargo_days": 5,
+      "embargo_pct": 0.01,
+      "folds_used": 3,
+      "target_transform": "raw_price",
+      "target_scale_factor": 1.0,
+      "prob_mode": "meta",
+      "temp_scale": "on",
+      "class_weight_mode": "custom",
+      "class_weight": {
+        "down": 3.0,
+        "flat": 1.0,
+        "up": 1.0
+      },
+      "threshold_mode": "threshold",
+      "t_down": null,
+      "t_up": null,
+      "threshold_search_enabled": true,
+      "down_recall_min": 0.1,
+      "pred_down_min_pct": 0.05,
+      "thresholds_applied": {
+        "t_down": 0.3,
+        "t_up": 0.5
+      },
+      "meta_band_mode": "fixed",
+      "meta_band_q": 0.65,
+      "meta_band_min_pct": 0.5,
+      "meta_band_max_pct": 10.0,
+      "label_mode": "fixed",
+      "target_return": 0.05,
+      "t_buy_grid": null,
+      "fixed_thresholds": [
+        0.5,
+        0.6,
+        0.7,
+        0.75,
+        0.8
+      ],
+      "min_coverage": 0.05,
+      "min_trades": 50,
+      "tbm_vol_span": 20,
+      "tbm_k": 1.5,
+      "temperature_best_T": 1.0
+    },
+    "validation": {
+      "purge_days": 15,
+      "embargo_mode": "pct",
+      "embargo_days": 5,
+      "embargo_pct": 0.01,
+      "folds_used": 3
+    },
+    "meta_metrics": {},
+    "temperature_scaling": {
+      "best_T": 1.0
+    },
+    "interval_target_mismatch_warn": false,
+    "threshold_selection": {
+      "best": {
+        "t_down": 0.3,
+        "t_up": 0.5,
+        "macro_f1": 0.4,
+        "down_recall": 0.2,
+        "pred_down_pct": 0.1,
+        "confusion_matrix": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            1,
+            3,
+            1
+          ],
+          [
+            0,
+            1,
+            4
+          ]
+        ]
+      },
+      "candidates": [
+        {
+          "t_down": 0.3,
+          "t_up": 0.5,
+          "macro_f1": 0.4,
+          "down_recall": 0.2,
+          "pred_down_pct": 0.1,
+          "confusion_matrix": [
+            [
+              4,
+              1,
+              0
+            ],
+            [
+              1,
+              3,
+              1
+            ],
+            [
+              0,
+              1,
+              4
+            ]
+          ]
+        }
+      ]
+    },
+    "warnings": [
+      "threshold_search: example"
+    ]
+  },
+  "meta_metrics": {},
+  "temperature_scaling": {
+    "best_T": 1.0
+  },
+  "prob_calibration": {
+    "temp_scale_mode": "off"
+  },
+  "baselines": {},
+  "interval_audit": {
+    "target_name": "close_future",
+    "target_unit": "price",
+    "target_transform": "raw_price",
+    "target_scale_factor": 1.0,
+    "target_y_source": "target_close_h",
+    "target_mismatch_warn": false,
+    "sample": []
+  },
+  "best_flat_band_pct": 2.0,
+  "band_sweep": []
+}

@@ -2,821 +2,821 @@
 <html lang="ja">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rotation - Trading System</title>
-    <link rel="stylesheet" href="css/common.css">
-    <style>
-        /* Enhanced Rotation Page Styles */
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Rotation - Trading System</title>
+ <link rel="stylesheet" href="css/common.css">
+ <style>
+ /* Enhanced Rotation Page Styles */
 
-        /* Sector Card Enhanced */
-        .sector-card {
-            background: linear-gradient(135deg,
-                    rgba(255, 255, 255, 0.05) 0%,
-                    rgba(255, 255, 255, 0.02) 100%);
-            backdrop-filter: blur(10px);
-            padding: var(--sp-4);
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-        }
+ /* Sector Card Enhanced */
+ .sector-card {
+ background: linear-gradient(135deg,
+ rgba(255, 255, 255, 0.05) 0%,
+ rgba(255, 255, 255, 0.02) 100%);
+ backdrop-filter: blur(10px);
+ padding: var(--sp-4);
+ border-radius: var(--radius-sm);
+ cursor: pointer;
+ transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+ border: 1px solid var(--border);
+ position: relative;
+ overflow: hidden;
+ }
 
-        .sector-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg,
-                    transparent,
-                    rgba(255, 255, 255, 0.05),
-                    transparent);
-            transition: left 0.5s;
-        }
+ .sector-card::before {
+ content: '';
+ position: absolute;
+ top: 0;
+ left: -100%;
+ width: 100%;
+ height: 100%;
+ background: linear-gradient(90deg,
+ transparent,
+ rgba(255, 255, 255, 0.05),
+ transparent);
+ transition: left 0.5s;
+ }
 
-        .sector-card:hover::before {
-            left: 100%;
-        }
+ .sector-card:hover::before {
+ left: 100%;
+ }
 
-        .sector-card:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
+ .sector-card:hover {
+ transform: translateY(-4px) scale(1.02);
+ box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+ border-color: rgba(255, 255, 255, 0.2);
+ }
 
-        .sector-card:active {
-            transform: translateY(-2px) scale(1.01);
-        }
+ .sector-card:active {
+ transform: translateY(-2px) scale(1.01);
+ }
 
-        /* Sector Card Variants */
-        .sector-card.strong {
-            border-color: var(--success);
-            background: linear-gradient(135deg,
-                    rgba(16, 185, 129, 0.1) 0%,
-                    rgba(16, 185, 129, 0.02) 100%);
-        }
+ /* Sector Card Variants */
+ .sector-card.strong {
+ border-color: var(--success);
+ background: linear-gradient(135deg,
+ rgba(16, 185, 129, 0.1) 0%,
+ rgba(16, 185, 129, 0.02) 100%);
+ }
 
-        .sector-card.weak {
-            border-color: var(--danger);
-            background: linear-gradient(135deg,
-                    rgba(239, 68, 68, 0.1) 0%,
-                    rgba(239, 68, 68, 0.02) 100%);
-        }
+ .sector-card.weak {
+ border-color: var(--danger);
+ background: linear-gradient(135deg,
+ rgba(239, 68, 68, 0.1) 0%,
+ rgba(239, 68, 68, 0.02) 100%);
+ }
 
-        /* Rank Badge Enhanced */
-        .rank-badge-circle {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.05));
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            color: var(--primary);
-        }
+ /* Rank Badge Enhanced */
+ .rank-badge-circle {
+ width: 28px;
+ height: 28px;
+ border-radius: 50%;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-size: 0.75rem;
+ font-weight: 700;
+ background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.05));
+ border: 1px solid rgba(99, 102, 241, 0.3);
+ color: var(--primary);
+ }
 
-        .rank-badge-circle.top-3 {
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(251, 191, 36, 0.1));
-            border-color: rgba(251, 191, 36, 0.5);
-            color: #fbbf24;
-            box-shadow: 0 0 12px rgba(251, 191, 36, 0.3);
-        }
+ .rank-badge-circle.top-3 {
+ background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(251, 191, 36, 0.1));
+ border-color: rgba(251, 191, 36, 0.5);
+ color: #fbbf24;
+ box-shadow: 0 0 12px rgba(251, 191, 36, 0.3);
+ }
 
-        /* Stat Display */
-        .sector-stat {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
+ /* Stat Display */
+ .sector-stat {
+ display: flex;
+ flex-direction: column;
+ gap: 2px;
+ }
 
-        .sector-stat-label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            opacity: 0.7;
-        }
+ .sector-stat-label {
+ font-size: 0.7rem;
+ color: var(--text-muted);
+ text-transform: uppercase;
+ letter-spacing: 0.05em;
+ opacity: 0.7;
+ }
 
-        .sector-stat-value {
-            font-size: 1.1rem;
-            font-weight: 700;
-            font-family: var(--font-mono);
-            letter-spacing: -0.02em;
-        }
+ .sector-stat-value {
+ font-size: 1.1rem;
+ font-weight: 700;
+ font-family: var(--font-mono);
+ letter-spacing: -0.02em;
+ }
 
-        /* Quadrant Panels Enhanced */
-        .quadrant-panel {
-            background: linear-gradient(135deg,
-                    rgba(255, 255, 255, 0.03) 0%,
-                    rgba(255, 255, 255, 0.01) 100%);
-            backdrop-filter: blur(10px);
-            padding: var(--sp-5);
-            border-radius: var(--radius-md);
-            border: 1px solid;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
+ /* Quadrant Panels Enhanced */
+ .quadrant-panel {
+ background: linear-gradient(135deg,
+ rgba(255, 255, 255, 0.03) 0%,
+ rgba(255, 255, 255, 0.01) 100%);
+ backdrop-filter: blur(10px);
+ padding: var(--sp-5);
+ border-radius: var(--radius-md);
+ border: 1px solid;
+ transition: all 0.3s ease;
+ position: relative;
+ overflow: hidden;
+ }
 
-        .quadrant-panel::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
+ .quadrant-panel::before {
+ content: '';
+ position: absolute;
+ top: -50%;
+ left: -50%;
+ width: 200%;
+ height: 200%;
+ background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+ opacity: 0;
+ transition: opacity 0.3s;
+ }
 
-        .quadrant-panel:hover::before {
-            opacity: 1;
-        }
+ .quadrant-panel:hover::before {
+ opacity: 1;
+ }
 
-        .quadrant-panel:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-        }
+ .quadrant-panel:hover {
+ transform: translateY(-2px);
+ box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+ }
 
-        .quadrant-leading {
-            border-color: var(--success);
-            background: linear-gradient(135deg,
-                    rgba(16, 185, 129, 0.08) 0%,
-                    rgba(16, 185, 129, 0.02) 100%);
-        }
+ .quadrant-leading {
+ border-color: var(--success);
+ background: linear-gradient(135deg,
+ rgba(16, 185, 129, 0.08) 0%,
+ rgba(16, 185, 129, 0.02) 100%);
+ }
 
-        .quadrant-weakening {
-            border-color: var(--warning);
-            background: linear-gradient(135deg,
-                    rgba(245, 158, 11, 0.08) 0%,
-                    rgba(245, 158, 11, 0.02) 100%);
-        }
+ .quadrant-weakening {
+ border-color: var(--warning);
+ background: linear-gradient(135deg,
+ rgba(245, 158, 11, 0.08) 0%,
+ rgba(245, 158, 11, 0.02) 100%);
+ }
 
-        .quadrant-improving {
-            border-color: var(--primary);
-            background: linear-gradient(135deg,
-                    rgba(99, 102, 241, 0.08) 0%,
-                    rgba(99, 102, 241, 0.02) 100%);
-        }
+ .quadrant-improving {
+ border-color: var(--primary);
+ background: linear-gradient(135deg,
+ rgba(99, 102, 241, 0.08) 0%,
+ rgba(99, 102, 241, 0.02) 100%);
+ }
 
-        .quadrant-lagging {
-            border-color: var(--danger);
-            background: linear-gradient(135deg,
-                    rgba(239, 68, 68, 0.08) 0%,
-                    rgba(239, 68, 68, 0.02) 100%);
-        }
+ .quadrant-lagging {
+ border-color: var(--danger);
+ background: linear-gradient(135deg,
+ rgba(239, 68, 68, 0.08) 0%,
+ rgba(239, 68, 68, 0.02) 100%);
+ }
 
-        .quadrant-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+ .quadrant-title {
+ font-size: 1.1rem;
+ font-weight: 700;
+ margin-bottom: 8px;
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ }
 
-        .quadrant-subtitle {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-bottom: 16px;
-            opacity: 0.7;
-        }
+ .quadrant-subtitle {
+ font-size: 0.75rem;
+ color: var(--text-muted);
+ margin-bottom: 16px;
+ opacity: 0.7;
+ }
 
-        /* Sector Badge in Matrix */
-        .matrix-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 6px 12px;
-            margin: 4px;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
+ /* Sector Badge in Matrix */
+ .matrix-badge {
+ display: inline-flex;
+ align-items: center;
+ gap: 6px;
+ background: rgba(255, 255, 255, 0.05);
+ padding: 6px 12px;
+ margin: 4px;
+ border-radius: 6px;
+ border: 1px solid rgba(255, 255, 255, 0.1);
+ font-size: 0.85rem;
+ font-weight: 500;
+ transition: all 0.2s ease;
+ cursor: pointer;
+ }
 
-        .matrix-badge:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
+ .matrix-badge:hover {
+ background: rgba(255, 255, 255, 0.1);
+ border-color: rgba(255, 255, 255, 0.2);
+ transform: translateY(-2px);
+ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+ }
 
-        .matrix-badge-icon {
-            font-size: 0.7rem;
-        }
+ .matrix-badge-icon {
+ font-size: 0.7rem;
+ }
 
-        /* Modal Enhanced */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
+ /* Modal Enhanced */
+ .modal-overlay {
+ position: fixed;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ background: rgba(0, 0, 0, 0.8);
+ backdrop-filter: blur(8px);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ z-index: 1000;
+ opacity: 0;
+ pointer-events: none;
+ transition: opacity 0.3s ease;
+ }
 
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
+ .modal-overlay.active {
+ opacity: 1;
+ pointer-events: all;
+ }
 
-        .modal-content {
-            background: linear-gradient(135deg,
-                    rgba(30, 30, 40, 0.98) 0%,
-                    rgba(20, 20, 30, 0.98) 100%);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-lg);
-            max-width: 900px;
-            width: 90%;
-            max-height: 80vh;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
+ .modal-content {
+ background: linear-gradient(135deg,
+ rgba(30, 30, 40, 0.98) 0%,
+ rgba(20, 20, 30, 0.98) 100%);
+ backdrop-filter: blur(20px);
+ border: 1px solid rgba(255, 255, 255, 0.1);
+ border-radius: var(--radius-lg);
+ max-width: 900px;
+ width: 90%;
+ max-height: 80vh;
+ overflow: hidden;
+ box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+ transform: scale(0.9);
+ transition: transform 0.3s ease;
+ }
 
-        .modal-overlay.active .modal-content {
-            transform: scale(1);
-        }
+ .modal-overlay.active .modal-content {
+ transform: scale(1);
+ }
 
-        .modal-header {
-            padding: 24px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.02);
-        }
+ .modal-header {
+ padding: 24px;
+ border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ background: rgba(255, 255, 255, 0.02);
+ }
 
-        .modal-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            letter-spacing: -0.01em;
-        }
+ .modal-title {
+ font-size: 1.3rem;
+ font-weight: 700;
+ letter-spacing: -0.01em;
+ }
 
-        .modal-close {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: none;
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+ .modal-close {
+ width: 32px;
+ height: 32px;
+ border-radius: 50%;
+ border: none;
+ background: rgba(255, 255, 255, 0.05);
+ color: white;
+ font-size: 1.5rem;
+ cursor: pointer;
+ transition: all 0.2s ease;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ }
 
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: rotate(90deg);
-        }
+ .modal-close:hover {
+ background: rgba(255, 255, 255, 0.1);
+ transform: rotate(90deg);
+ }
 
-        .modal-body {
-            padding: 24px;
-            overflow-y: auto;
-            max-height: calc(80vh - 100px);
-        }
+ .modal-body {
+ padding: 24px;
+ overflow-y: auto;
+ max-height: calc(80vh - 100px);
+ }
 
-        /* Top Stocks Table Enhanced */
-        .top-stocks-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-        }
+ /* Top Stocks Table Enhanced */
+ .top-stocks-table {
+ width: 100%;
+ border-collapse: separate;
+ border-spacing: 0;
+ }
 
-        .top-stocks-table thead th {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 12px 16px;
-            text-align: left;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            font-weight: 600;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
+ .top-stocks-table thead th {
+ background: rgba(255, 255, 255, 0.03);
+ padding: 12px 16px;
+ text-align: left;
+ font-size: 0.75rem;
+ text-transform: uppercase;
+ letter-spacing: 0.05em;
+ color: var(--text-muted);
+ font-weight: 600;
+ border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+ position: sticky;
+ top: 0;
+ z-index: 10;
+ }
 
-        .top-stocks-table tbody tr {
-            transition: all 0.2s ease;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
+ .top-stocks-table tbody tr {
+ transition: all 0.2s ease;
+ border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+ }
 
-        .top-stocks-table tbody tr:hover {
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateX(4px);
-        }
+ .top-stocks-table tbody tr:hover {
+ background: rgba(255, 255, 255, 0.05);
+ transform: translateX(4px);
+ }
 
-        .top-stocks-table tbody td {
-            padding: 14px 16px;
-            font-size: 0.9rem;
-        }
+ .top-stocks-table tbody td {
+ padding: 14px 16px;
+ font-size: 0.9rem;
+ }
 
-        .stock-symbol {
-            font-family: var(--font-mono);
-            font-weight: 600;
-            font-size: 1rem;
-            color: var(--primary);
-        }
+ .stock-symbol {
+ font-family: var(--font-mono);
+ font-weight: 600;
+ font-size: 1rem;
+ color: var(--primary);
+ }
 
-        .stock-name {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
+ .stock-name {
+ font-size: 0.75rem;
+ color: var(--text-muted);
+ margin-top: 2px;
+ }
 
-        .rank-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.05));
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            font-weight: 700;
-            font-size: 0.8rem;
-        }
+ .rank-badge {
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ width: 28px;
+ height: 28px;
+ border-radius: 50%;
+ background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.05));
+ border: 1px solid rgba(99, 102, 241, 0.3);
+ font-weight: 700;
+ font-size: 0.8rem;
+ }
 
-        .positive {
-            color: var(--success);
-            text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
-        }
+ .positive {
+ color: var(--success);
+ text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+ }
 
-        .negative {
-            color: var(--danger);
-            text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
-        }
+ .negative {
+ color: var(--danger);
+ text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+ }
 
-        /* Loading States */
-        .modal-loading {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 60px 20px;
-            gap: 16px;
-            color: var(--text-muted);
-        }
+ /* Loading States */
+ .modal-loading {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ justify-content: center;
+ padding: 60px 20px;
+ gap: 16px;
+ color: var(--text-muted);
+ }
 
-        .modal-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
+ .modal-spinner {
+ width: 40px;
+ height: 40px;
+ border: 3px solid rgba(255, 255, 255, 0.1);
+ border-top-color: var(--primary);
+ border-radius: 50%;
+ animation: spin 0.8s linear infinite;
+ }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
+ @keyframes spin {
+ to {
+ transform: rotate(360deg);
+ }
+ }
 
-        .modal-error {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--danger);
-            font-size: 1.1rem;
-        }
+ .modal-error {
+ text-align: center;
+ padding: 60px 20px;
+ color: var(--danger);
+ font-size: 1.1rem;
+ }
 
-        /* Page Header Enhanced */
-        .page-header {
-            margin-bottom: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
+ /* Page Header Enhanced */
+ .page-header {
+ margin-bottom: 24px;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ padding: 16px 0;
+ border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+ }
 
-        .page-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+ .page-title {
+ font-size: 1.8rem;
+ font-weight: 700;
+ letter-spacing: -0.02em;
+ display: flex;
+ align-items: center;
+ gap: 12px;
+ }
 
-        /* Fade-in Animation */
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
+ /* Fade-in Animation */
+ .fade-in {
+ animation: fadeIn 0.5s ease-in;
+ }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
+ @keyframes fadeIn {
+ from {
+ opacity: 0;
+ transform: translateY(10px);
+ }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+ to {
+ opacity: 1;
+ transform: translateY(0);
+ }
+ }
 
-        /* Staggered Animation */
-        .stagger-1 {
-            animation-delay: 0.05s;
-        }
+ /* Staggered Animation */
+ .stagger-1 {
+ animation-delay: 0.05s;
+ }
 
-        .stagger-2 {
-            animation-delay: 0.1s;
-        }
+ .stagger-2 {
+ animation-delay: 0.1s;
+ }
 
-        .stagger-3 {
-            animation-delay: 0.15s;
-        }
+ .stagger-3 {
+ animation-delay: 0.15s;
+ }
 
-        .stagger-4 {
-            animation-delay: 0.2s;
-        }
+ .stagger-4 {
+ animation-delay: 0.2s;
+ }
 
-        /* Responsive Grid */
-        .sector-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--sp-4);
-        }
+ /* Responsive Grid */
+ .sector-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+ gap: var(--sp-4);
+ }
 
-        .rotation-matrix {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--sp-4);
-        }
+ .rotation-matrix {
+ display: grid;
+ grid-template-columns: 1fr 1fr;
+ gap: var(--sp-4);
+ }
 
-        @media (max-width: 768px) {
-            .rotation-matrix {
-                grid-template-columns: 1fr;
-            }
+ @media (max-width: 768px) {
+ .rotation-matrix {
+ grid-template-columns: 1fr;
+ }
 
-            .page-title {
-                font-size: 1.4rem;
-            }
-        }
+ .page-title {
+ font-size: 1.4rem;
+ }
+ }
 
-        /* Glass Panel Override for this page */
-        .glass-panel {
-            opacity: 0;
-            animation: fadeIn 0.5s ease-in forwards;
-        }
-    </style>
+ /* Glass Panel Override for this page */
+ .glass-panel {
+ opacity: 0;
+ animation: fadeIn 0.5s ease-in forwards;
+ }
+ </style>
 </head>
 
 <body>
-    <!-- Sidebar Container -->
-    <div id="sidebar-container"></div>
+ <!-- Sidebar Container -->
+ <div id="sidebar-container"></div>
 
-    <div class="main-content">
-        <div class="container">
-            <!-- Loading -->
-            <div id="loading" class="loading-overlay">
-                <div class="spinner"></div>
-            </div>
+ <div class="main-content">
+ <div class="container">
+ <!-- Loading -->
+ <div id="loading" class="loading-overlay">
+ <div class="spinner"></div>
+ </div>
 
-            <!-- Page Header -->
-            <div class="page-header">
-                <div class="page-title">
-                    <span>SR</span> Sector Rotation
-                </div>
-                <div class="page-actions">
-                    <button class="btn btn-ghost btn-sm" onclick="loadRotationData()">
-                        <span style="margin-right: 4px;">R</span> Refresh
-                    </button>
-                </div>
-            </div>
-            <div class="glass-panel mb-4" id="rotationFreshness" style="padding: 12px 16px; display:none;"></div>
+ <!-- Page Header -->
+ <div class="page-header">
+ <div class="page-title">
+ <span>SR</span> Sector Rotation
+ </div>
+ <div class="page-actions">
+ <button class="btn btn-ghost btn-sm" onclick="loadRotationData()">
+ <span style="margin-right: 4px;">R</span> Refresh
+ </button>
+ </div>
+ </div>
+ <div class="glass-panel mb-4" id="rotationFreshness" style="padding: 12px 16px; display:none;"></div>
 
-            <div id="content" style="display:none; opacity:0; transition:opacity 0.5s;">
+ <div id="content" style="display:none; opacity:0; transition:opacity 0.5s;">
 
-                <!-- Sector Grid -->
-                <div class="glass-panel mb-4 fade-in">
-                    <div class="panel-header">
-                        <div class="panel-title">
-                            <span class="badge badge-primary">SP</span> Sector Performance
-                        </div>
-                    </div>
-                    <div class="sector-grid" id="sectorsGrid">
-                        <!-- JS injected here -->
-                    </div>
-                </div>
+ <!-- Sector Grid -->
+ <div class="glass-panel mb-4 fade-in">
+ <div class="panel-header">
+ <div class="panel-title">
+ <span class="badge badge-primary">SP</span> Sector Performance
+ </div>
+ </div>
+ <div class="sector-grid" id="sectorsGrid">
+ <!-- JS injected here -->
+ </div>
+ </div>
 
-                <!-- Rotation Matrix -->
-                <div class="glass-panel fade-in" style="animation-delay: 0.2s;">
-                    <div class="panel-header">
-                        <div class="panel-title">
-                            <span class="badge badge-accent">RM</span> Rotation Matrix
-                        </div>
-                    </div>
+ <!-- Rotation Matrix -->
+ <div class="glass-panel fade-in" style="animation-delay: 0.2s;">
+ <div class="panel-header">
+ <div class="panel-title">
+ <span class="badge badge-accent">RM</span> Rotation Matrix
+ </div>
+ </div>
 
-                    <div class="rotation-matrix" style="min-height: 500px;">
-                        <!-- Leading -->
-                        <div class="quadrant-panel quadrant-leading">
-                            <div class="quadrant-title text-success">
-                                Leading
-                            </div>
-                            <div class="quadrant-subtitle">High Return + Strong Momentum</div>
-                            <div id="quadLeading" class="d-flex flex-wrap"></div>
-                        </div>
+ <div class="rotation-matrix" style="min-height: 500px;">
+ <!-- Leading -->
+ <div class="quadrant-panel quadrant-leading">
+ <div class="quadrant-title text-success">
+ Leading
+ </div>
+ <div class="quadrant-subtitle">High Return + Strong Momentum</div>
+ <div id="quadLeading" class="d-flex flex-wrap"></div>
+ </div>
 
-                        <!-- Weakening -->
-                        <div class="quadrant-panel quadrant-weakening">
-                            <div class="quadrant-title text-warning">
-                                Weakening
-                            </div>
-                            <div class="quadrant-subtitle">High Return + Weak Momentum</div>
-                            <div id="quadWeakening" class="d-flex flex-wrap"></div>
-                        </div>
+ <!-- Weakening -->
+ <div class="quadrant-panel quadrant-weakening">
+ <div class="quadrant-title text-warning">
+ Weakening
+ </div>
+ <div class="quadrant-subtitle">High Return + Weak Momentum</div>
+ <div id="quadWeakening" class="d-flex flex-wrap"></div>
+ </div>
 
-                        <!-- Improving -->
-                        <div class="quadrant-panel quadrant-improving">
-                            <div class="quadrant-title" style="color:var(--primary);">
-                                Improving
-                            </div>
-                            <div class="quadrant-subtitle">Low Return + Strong Momentum</div>
-                            <div id="quadImproving" class="d-flex flex-wrap"></div>
-                        </div>
+ <!-- Improving -->
+ <div class="quadrant-panel quadrant-improving">
+ <div class="quadrant-title" style="color:var(--primary);">
+ Improving
+ </div>
+ <div class="quadrant-subtitle">Low Return + Strong Momentum</div>
+ <div id="quadImproving" class="d-flex flex-wrap"></div>
+ </div>
 
-                        <!-- Lagging -->
-                        <div class="quadrant-panel quadrant-lagging">
-                            <div class="quadrant-title text-danger">
-                                Lagging
-                            </div>
-                            <div class="quadrant-subtitle">Low Return + Weak Momentum</div>
-                            <div id="quadLagging" class="d-flex flex-wrap"></div>
-                        </div>
-                    </div>
-                </div>
+ <!-- Lagging -->
+ <div class="quadrant-panel quadrant-lagging">
+ <div class="quadrant-title text-danger">
+ Lagging
+ </div>
+ <div class="quadrant-subtitle">Low Return + Weak Momentum</div>
+ <div id="quadLagging" class="d-flex flex-wrap"></div>
+ </div>
+ </div>
+ </div>
 
-            </div>
-        </div>
-    </div>
+ </div>
+ </div>
+ </div>
 
-    <!-- ========== Modal ========== -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title" id="modalTitle">Sector Top 10</div>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <div class="modal-loading">
-                    <div class="modal-spinner"></div>
-                    Loading top stocks...
-                </div>
-            </div>
-        </div>
-    </div>
+ <!-- ========== Modal ========== -->
+ <div class="modal-overlay" id="modalOverlay">
+ <div class="modal-content">
+ <div class="modal-header">
+ <div class="modal-title" id="modalTitle">Sector Top 10</div>
+ <button class="modal-close" onclick="closeModal()">&times;</button>
+ </div>
+ <div class="modal-body" id="modalBody">
+ <div class="modal-loading">
+ <div class="modal-spinner"></div>
+ Loading top stocks...
+ </div>
+ </div>
+ </div>
+ </div>
 
-    <script src="js/config.js"></script>
-    <script src="js/common.js"></script>
-    <script>
-        const modalOverlay = document.getElementById('modalOverlay');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalBody = document.getElementById('modalBody');
+ <script src="js/config.js"></script>
+ <script src="js/common.js"></script>
+ <script>
+ const modalOverlay = document.getElementById('modalOverlay');
+ const modalTitle = document.getElementById('modalTitle');
+ const modalBody = document.getElementById('modalBody');
 
-        // Close modal when clicking on overlay
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) {
-                closeModal();
-            }
-        });
+ // Close modal when clicking on overlay
+ modalOverlay.addEventListener('click', (e) => {
+ if (e.target === modalOverlay) {
+ closeModal();
+ }
+ });
 
-        // Close modal with Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
-                closeModal();
-            }
-        });
+ // Close modal with Escape key
+ document.addEventListener('keydown', (e) => {
+ if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+ closeModal();
+ }
+ });
 
-        function closeModal() {
-            modalOverlay.classList.remove('active');
-        }
+ function closeModal() {
+ modalOverlay.classList.remove('active');
+ }
 
-        async function openSectorModal(sectorName) {
-            // Show modal with loading state
-            modalTitle.innerHTML = `<span class="badge badge-primary" style="margin-right: 8px;">TOP</span>${sectorName} - Top 10 Stocks`;
-            modalBody.innerHTML = `
-                <div class="modal-loading">
-                    <div class="modal-spinner"></div>
-                    Loading top stocks...
-                </div>
-            `;
-            modalOverlay.classList.add('active');
+ async function openSectorModal(sectorName) {
+ // Show modal with loading state
+ modalTitle.innerHTML = `<span class="badge badge-primary" style="margin-right: 8px;">TOP</span>${sectorName} - Top 10 Stocks`;
+ modalBody.innerHTML = `
+ <div class="modal-loading">
+ <div class="modal-spinner"></div>
+ Loading top stocks...
+ </div>
+ `;
+ modalOverlay.classList.add('active');
 
-            try {
-                // Encode sector name for URL
-                const encodedSector = encodeURIComponent(sectorName);
-                const response = await fetch(`${CONFIG.API_BASE}/sector/US/${encodedSector}/top?limit=10`);
+ try {
+ // Encode sector name for URL
+ const encodedSector = encodeURIComponent(sectorName);
+ const response = await fetch(`${CONFIG.API_BASE}/sector/US/${encodedSector}/top?limit=10`);
 
-                if (!response.ok) {
-                    throw new Error(`API returned ${response.status}`);
-                }
+ if (!response.ok) {
+ throw new Error(`API returned ${response.status}`);
+ }
 
-                const data = await response.json();
+ const data = await response.json();
 
-                // Build table HTML
-                const tableHtml = `
-                    <table class="top-stocks-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 60px;">Rank</th>
-                                <th>Symbol</th>
-                                <th>Company Name</th>
-                                <th style="text-align: center;">Role</th>
-                                <th style="text-align: right;">RS</th>
-                                <th style="text-align: right;">1Y Return</th>
-                                <th style="text-align: right;">52W Dist</th>
-                                <th style="text-align: right;">EPS</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${data.stocks.map((stock, index) => {
-                    const ret1y = parseFloat(stock.return_1y_pct || 0);
-                    const retClass = ret1y >= 0 ? 'positive' : 'negative';
-                    const name = stock.company_name || stock.name || '-';
-                    const rs = stock.rs_rating ?? '-';
-                    const role = stock.role || '-';
-                    const dist52 = stock.dist_52w_high_pct;
-                    const eps = stock.eps;
-                    const distText = (dist52 === null || dist52 === undefined) ? '-' : `${UI.formatNumber(dist52)}%`;
-                    const epsText = (eps === null || eps === undefined) ? 'N/A' : UI.formatNumber(eps);
+ // Build table HTML
+ const tableHtml = `
+ <table class="top-stocks-table">
+ <thead>
+ <tr>
+ <th style="width: 60px;">Rank</th>
+ <th>Symbol</th>
+ <th>Company Name</th>
+ <th style="text-align: center;">Role</th>
+ <th style="text-align: right;">RS</th>
+ <th style="text-align: right;">1Y Return</th>
+ <th style="text-align: right;">52W Dist</th>
+ <th style="text-align: right;">EPS</th>
+ </tr>
+ </thead>
+ <tbody>
+ ${data.stocks.map((stock, index) => {
+ const ret1y = parseFloat(stock.return_1y_pct || 0);
+ const retClass = ret1y >= 0 ? 'positive' : 'negative';
+ const name = stock.company_name || stock.name || '-';
+ const rs = stock.rs_rating ?? '-';
+ const role = stock.role || '-';
+ const dist52 = stock.dist_52w_high_pct;
+ const eps = stock.eps;
+ const distText = (dist52 === null || dist52 === undefined) ? '-' : `${UI.formatNumber(dist52)}%`;
+ const epsText = (eps === null || eps === undefined) ? 'N/A' : UI.formatNumber(eps);
 
-                    return `
-                                    <tr class="fade-in" style="animation-delay: ${index * 0.05}s;">
-                                        <td><span class="rank-badge">${index + 1}</span></td>
-                                        <td><span class="stock-symbol">${stock.symbol}</span></td>
-                                        <td>
-                                            <div style="font-weight: 500;">${name}</div>
-                                            <div class="stock-name">Price: ${UI.formatNumber(stock.price || stock.current_price)}</div>
-                                        </td>
-                                        <td style="text-align: center; font-weight: 700;">${role}</td>
-                                        <td style="text-align: right; font-family: var(--font-mono); font-weight: 700;">${rs}</td>
-                                        <td style="text-align: right; font-weight: 700;" class="${retClass}">
-                                            ${ret1y >= 0 ? '+' : '-'} ${UI.formatNumber(Math.abs(ret1y))}%
-                                        </td>
-                                        <td style="text-align: right; font-family: var(--font-mono);">${distText}</td>
-                                        <td style="text-align: right; font-family: var(--font-mono);">${epsText}</td>
-                                    </tr>
-                                `;
-                }).join('')}
-                        </tbody>
-                    </table>
-                `;
+ return `
+ <tr class="fade-in" style="animation-delay: ${index * 0.05}s;">
+ <td><span class="rank-badge">${index + 1}</span></td>
+ <td><span class="stock-symbol">${stock.symbol}</span></td>
+ <td>
+ <div style="font-weight: 500;">${name}</div>
+ <div class="stock-name">Price: ${UI.formatNumber(stock.price || stock.current_price)}</div>
+ </td>
+ <td style="text-align: center; font-weight: 700;">${role}</td>
+ <td style="text-align: right; font-family: var(--font-mono); font-weight: 700;">${rs}</td>
+ <td style="text-align: right; font-weight: 700;" class="${retClass}">
+ ${ret1y >= 0 ? '+' : '-'} ${UI.formatNumber(Math.abs(ret1y))}%
+ </td>
+ <td style="text-align: right; font-family: var(--font-mono);">${distText}</td>
+ <td style="text-align: right; font-family: var(--font-mono);">${epsText}</td>
+ </tr>
+ `;
+ }).join('')}
+ </tbody>
+ </table>
+ `;
 
-                modalBody.innerHTML = tableHtml;
+ modalBody.innerHTML = tableHtml;
 
-            } catch (error) {
-                console.error('Error loading top stocks:', error);
-                modalBody.innerHTML = `
-                    <div class="modal-error">
-                        Failed to load top stocks<br>
-                        <small style="color: #9ca3af; font-size: 14px; margin-top: 8px; display: block;">
-                            ${error.message}
-                        </small>
-                    </div>
-                `;
-            }
-        }
+ } catch (error) {
+ console.error('Error loading top stocks:', error);
+ modalBody.innerHTML = `
+ <div class="modal-error">
+ Failed to load top stocks<br>
+ <small style="color: #9ca3af; font-size: 14px; margin-top: 8px; display: block;">
+ ${error.message}
+ </small>
+ </div>
+ `;
+ }
+ }
 
-        async function loadRotationData() {
-            try {
-                const response = await fetch(`${CONFIG.API_BASE}/rotation/sectors`);
-                const data = await response.json();
-                const freshnessEl = document.getElementById('rotationFreshness');
-                if (freshnessEl && data.freshness) {
-                    const f = data.freshness;
-                    freshnessEl.innerHTML = `
-                        <div style="font-weight:700; margin-bottom:6px;">Data Freshness (US market-time)</div>
-                        <div>
-                            <span class="${f.is_fresh ? 'text-success' : 'text-warning'}" style="font-weight:700;">
-                                ${f.is_fresh ? 'Fresh' : 'Stale'}
-                            </span>
-                            <span class="text-muted">
-                                latest=${f.latest_date_max || 'N/A'} / expected=${f.expected_latest_date || 'N/A'} / stale=${f.symbols_stale || 0}
-                            </span>
-                        </div>
-                    `;
-                    freshnessEl.style.display = 'block';
-                }
+ async function loadRotationData() {
+ try {
+ const response = await fetch(`${CONFIG.API_BASE}/rotation/sectors`);
+ const data = await response.json();
+ const freshnessEl = document.getElementById('rotationFreshness');
+ if (freshnessEl && data.freshness) {
+ const f = data.freshness;
+ freshnessEl.innerHTML = `
+ <div style="font-weight:700; margin-bottom:6px;">Data Freshness (US market-time)</div>
+ <div>
+ <span class="${f.is_fresh ? 'text-success' : 'text-warning'}" style="font-weight:700;">
+ ${f.is_fresh ? 'Fresh' : 'Stale'}
+ </span>
+ <span class="text-muted">
+ latest=${f.latest_date_max || 'N/A'} / expected=${f.expected_latest_date || 'N/A'} / stale=${f.symbols_stale || 0}
+ </span>
+ </div>
+ `;
+ freshnessEl.style.display = 'block';
+ }
 
-                // Sector Cards with enhanced styling
-                const sectorsHtml = data.sectors.map((sector, index) => {
-                    const returnClass = parseFloat(sector.current_return) >= 0 ? 'text-success' : 'text-danger';
-                    const momentumClass = parseFloat(sector.momentum) >= 0 ? 'text-success' : 'text-danger';
+ // Sector Cards with enhanced styling
+ const sectorsHtml = data.sectors.map((sector, index) => {
+ const returnClass = parseFloat(sector.current_return) >= 0 ? 'text-success' : 'text-danger';
+ const momentumClass = parseFloat(sector.momentum) >= 0 ? 'text-success' : 'text-danger';
 
-                    // Determine card variant
-                    let cardClass = 'sector-card';
-                    if (parseFloat(sector.relative_strength) > 105) cardClass += ' strong';
-                    if (parseFloat(sector.relative_strength) < 95) cardClass += ' weak';
+ // Determine card variant
+ let cardClass = 'sector-card';
+ if (parseFloat(sector.relative_strength) > 105) cardClass += ' strong';
+ if (parseFloat(sector.relative_strength) < 95) cardClass += ' weak';
 
-                    // Top 3 badge style
-                    const rankBadgeClass = sector.rank <= 3 ? 'rank-badge-circle top-3' : 'rank-badge-circle';
+ // Top 3 badge style
+ const rankBadgeClass = sector.rank <= 3 ? 'rank-badge-circle top-3' : 'rank-badge-circle';
 
-                    return `
-                        <div class="${cardClass} fade-in stagger-${Math.min(index % 4 + 1, 4)}" 
-                             onclick="openSectorModal('${sector.sector}')">
-                            
-                            <div class="d-flex justify-content-between items-center mb-3">
-                                <div style="font-weight: 700; font-size: 0.95rem; letter-spacing: -0.01em;">${sector.sector}</div>
-                                <div class="${rankBadgeClass}">#${sector.rank}</div>
-                            </div>
-                            
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                <div class="sector-stat">
-                                    <div class="sector-stat-label">Return</div>
-                                    <div class="sector-stat-value ${returnClass}">${UI.formatNumber(sector.current_return)}%</div>
-                                </div>
-                                <div class="sector-stat">
-                                    <div class="sector-stat-label">Momentum</div>
-                                    <div class="sector-stat-value ${momentumClass}">${UI.formatNumber(sector.momentum)}</div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-                document.getElementById('sectorsGrid').innerHTML = sectorsHtml;
+ return `
+ <div class="${cardClass} fade-in stagger-${Math.min(index % 4 + 1, 4)}" 
+ onclick="openSectorModal('${sector.sector}')">
+ 
+ <div class="d-flex justify-content-between items-center mb-3">
+ <div style="font-weight: 700; font-size: 0.95rem; letter-spacing: -0.01em;">${sector.sector}</div>
+ <div class="${rankBadgeClass}">#${sector.rank}</div>
+ </div>
+ 
+ <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+ <div class="sector-stat">
+ <div class="sector-stat-label">Return</div>
+ <div class="sector-stat-value ${returnClass}">${UI.formatNumber(sector.current_return)}%</div>
+ </div>
+ <div class="sector-stat">
+ <div class="sector-stat-label">Momentum</div>
+ <div class="sector-stat-value ${momentumClass}">${UI.formatNumber(sector.momentum)}</div>
+ </div>
+ </div>
+ </div>
+ `;
+ }).join('');
+ document.getElementById('sectorsGrid').innerHTML = sectorsHtml;
 
-                // Rotation Matrix with enhanced badges
-                const leading = [];
-                const weakening = [];
-                const improving = [];
-                const lagging = [];
+ // Rotation Matrix with enhanced badges
+ const leading = [];
+ const weakening = [];
+ const improving = [];
+ const lagging = [];
 
-                data.sectors.forEach(s => {
-                    const ret = parseFloat(s.current_return);
-                    const mom = parseFloat(s.momentum);
+ data.sectors.forEach(s => {
+ const ret = parseFloat(s.current_return);
+ const mom = parseFloat(s.momentum);
 
-                    // Enhanced badge with icon
-                    let icon = 'S';
-                    if (ret >= 2 && mom >= 0.5) icon = 'L';
-                    else if (ret >= 2 && mom < 0.5) icon = 'W';
-                    else if (ret < 2 && mom >= 0.5) icon = 'I';
-                    else icon = 'G';
+ // Enhanced badge with icon
+ let icon = 'S';
+ if (ret >= 2 && mom >= 0.5) icon = 'L';
+ else if (ret >= 2 && mom < 0.5) icon = 'W';
+ else if (ret < 2 && mom >= 0.5) icon = 'I';
+ else icon = 'G';
 
-                    const badge = `
-                        <span class="matrix-badge fade-in" onclick="openSectorModal('${s.sector}')" style="animation-delay: ${Math.random() * 0.3}s;">
-                            <span class="matrix-badge-icon">${icon}</span>
-                            ${s.sector}
-                        </span>
-                    `;
+ const badge = `
+ <span class="matrix-badge fade-in" onclick="openSectorModal('${s.sector}')" style="animation-delay: ${Math.random() * 0.3}s;">
+ <span class="matrix-badge-icon">${icon}</span>
+ ${s.sector}
+ </span>
+ `;
 
-                    if (ret >= 2 && mom >= 0.5) leading.push(badge);
-                    else if (ret >= 2 && mom < 0.5) weakening.push(badge);
-                    else if (ret < 2 && mom >= 0.5) improving.push(badge);
-                    else lagging.push(badge);
-                });
+ if (ret >= 2 && mom >= 0.5) leading.push(badge);
+ else if (ret >= 2 && mom < 0.5) weakening.push(badge);
+ else if (ret < 2 && mom >= 0.5) improving.push(badge);
+ else lagging.push(badge);
+ });
 
-                document.getElementById('quadLeading').innerHTML = leading.join('') || '<span class="text-muted" style="opacity: 0.5;">No sectors in this quadrant</span>';
-                document.getElementById('quadWeakening').innerHTML = weakening.join('') || '<span class="text-muted" style="opacity: 0.5;">No sectors in this quadrant</span>';
-                document.getElementById('quadImproving').innerHTML = improving.join('') || '<span class="text-muted" style="opacity: 0.5;">No sectors in this quadrant</span>';
-                document.getElementById('quadLagging').innerHTML = lagging.join('') || '<span class="text-muted" style="opacity: 0.5;">No sectors in this quadrant</span>';
+ document.getElementById('quadLeading').innerHTML = leading.join('') || '<span class="text-muted" style="opacity: 0.5;">No sectors in this quadrant</span>';
+ document.getElementById('quadWeakening').innerHTML = weakening.join('') || '<span class="text-muted" style="opacity: 0.5;">No sectors in this quadrant</span>';
+ document.getElementById('quadImproving').innerHTML = improving.join('') || '<span class="text-muted" style="opacity: 0.5;">No sectors in this quadrant</span>';
+ document.getElementById('quadLagging').innerHTML = lagging.join('') || '<span class="text-muted" style="opacity: 0.5;">No sectors in this quadrant</span>';
 
-                document.getElementById('loading').style.display = 'none';
-                const content = document.getElementById('content');
-                if (content) {
-                    content.style.display = 'block';
-                    void content.offsetWidth;
-                    content.style.opacity = 1;
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                UI.showToast('Failed to load rotation data', 'error');
-                document.getElementById('loading').style.display = 'none';
-            }
-        }
+ document.getElementById('loading').style.display = 'none';
+ const content = document.getElementById('content');
+ if (content) {
+ content.style.display = 'block';
+ void content.offsetWidth;
+ content.style.opacity = 1;
+ }
+ } catch (error) {
+ console.error('Error:', error);
+ UI.showToast('Failed to load rotation data', 'error');
+ document.getElementById('loading').style.display = 'none';
+ }
+ }
 
-        // Initialize
-        loadRotationData();
-    </script>
+ // Initialize
+ loadRotationData();
+ </script>
 </body>
 
 </html>

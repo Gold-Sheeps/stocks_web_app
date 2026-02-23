@@ -4,6 +4,7 @@ import argparse
 import json
 import subprocess
 import sys
+import time
 from datetime import date, datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Set
@@ -42,6 +43,12 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--source", default="yfinance", choices=["yfinance"], help="Price refresh source.")
     parser.add_argument("--chunk-size", type=int, default=200, help="Symbols per refresh batch.")
     parser.add_argument("--max-retries", type=int, default=3, help="Retry count passed to refresh script.")
+    parser.add_argument(
+        "--batch-retries",
+        type=int,
+        default=2,
+        help="Retry count for failed refresh batches in this orchestrator (default: 2).",
+    )
     parser.add_argument(
         "--skip-indicators",
         action=argparse.BooleanOptionalAction,
@@ -153,11 +160,14 @@ def _run_refresh_batches(
     source: str,
     chunk_size: int,
     max_retries: int,
+    batch_retries: int,
 ) -> Dict[str, int]:
     script_path = Path(__file__).resolve().parent / "refresh_market_data.py"
     batches = _chunk(symbols, max(1, int(chunk_size)))
     success = 0
     failed = 0
+    retried_batches = 0
+    total_attempts = 0
     for idx, group in enumerate(batches, start=1):
         symbols_csv = ",".join(group)
         cmd = [
@@ -175,18 +185,44 @@ def _run_refresh_batches(
             str(max_retries),
             "--force-start",
         ]
-        print(f"[REFRESH] batch {idx}/{len(batches)} symbols={len(group)}")
-        proc = subprocess.run(cmd, capture_output=True, text=True)
-        if proc.stdout:
-            print(proc.stdout.rstrip())
-        if proc.returncode != 0:
-            failed += 1
+        max_batch_attempts = max(1, int(batch_retries) + 1)
+        batch_ok = False
+
+        for attempt in range(1, max_batch_attempts + 1):
+            total_attempts += 1
+            if attempt == 1:
+                print(f"[REFRESH] batch {idx}/{len(batches)} symbols={len(group)}")
+            else:
+                retried_batches += 1
+                print(
+                    f"[REFRESH][RETRY] batch {idx}/{len(batches)} attempt {attempt}/{max_batch_attempts}"
+                )
+
+            proc = subprocess.run(cmd, capture_output=True, text=True)
+            if proc.stdout:
+                print(proc.stdout.rstrip())
+
+            if proc.returncode == 0:
+                success += 1
+                batch_ok = True
+                break
+
             print(f"[REFRESH][ERROR] batch {idx} failed (exit={proc.returncode})")
             if proc.stderr:
                 print(proc.stderr.rstrip())
-        else:
-            success += 1
-    return {"batches_total": len(batches), "batches_success": success, "batches_failed": failed}
+            if attempt < max_batch_attempts:
+                # Short exponential backoff between batch retries.
+                time.sleep(float(2 ** (attempt - 1)))
+
+        if not batch_ok:
+            failed += 1
+    return {
+        "batches_total": len(batches),
+        "batches_success": success,
+        "batches_failed": failed,
+        "batches_retried": retried_batches,
+        "batch_attempts_total": total_attempts,
+    }
 
 
 def _run_indicators(symbols: List[str]) -> Dict[str, int]:
@@ -272,6 +308,7 @@ def main() -> int:
     print(f"  period={start_date.isoformat()} -> {end_date.isoformat()} (years={args.years})")
     print(f"  source={args.source}")
     print(f"  chunk_size={args.chunk_size} max_retries={args.max_retries}")
+    print(f"  batch_retries={args.batch_retries}")
     print(f"  skip_indicators={args.skip_indicators}")
     print(f"  skip_rs={args.skip_rs}")
     print(f"  skip_sector_rotation={args.skip_sector_rotation}")
@@ -286,6 +323,7 @@ def main() -> int:
         source=args.source,
         chunk_size=args.chunk_size,
         max_retries=args.max_retries,
+        batch_retries=int(args.batch_retries),
     )
 
     indicators_result = {"processed": 0, "failed": 0}
@@ -331,10 +369,12 @@ def main() -> int:
 
     print("[FULL UPDATE SUMMARY]")
     print(
-        "  refresh batches: {ok}/{all} (failed={ng})".format(
+        "  refresh batches: {ok}/{all} (failed={ng}, retried={rt}, attempts={att})".format(
             ok=refresh_result["batches_success"],
             all=refresh_result["batches_total"],
             ng=refresh_result["batches_failed"],
+            rt=refresh_result.get("batches_retried", 0),
+            att=refresh_result.get("batch_attempts_total", refresh_result["batches_total"]),
         )
     )
     print(

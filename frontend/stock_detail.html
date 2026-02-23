@@ -2,1285 +2,1367 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Detail - Neo-Dark Finance</title>
-    <link rel="stylesheet" href="/css/common.css?v=20260211-neo-01">
-    <style>
-        /* Enhanced Stock Detail Page Styles */
-
-        /* Page Header Enhanced */
-        .page-header {
-            background: linear-gradient(135deg,
-                    rgba(255, 255, 255, 0.08) 0%,
-                    rgba(255, 255, 255, 0.02) 100%);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 28px;
-            border-radius: var(--radius-md);
-            transition: all 0.3s ease;
-            margin-bottom: 24px;
-        }
-
-        .page-header:hover {
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .page-header__top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
-            gap: 24px;
-        }
-
-        /* Title Enhanced */
-        .title {
-            font-size: 2.2rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            letter-spacing: -0.02em;
-            font-family: var(--font-mono);
-            color: var(--primary);
-            text-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-        }
-
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-top: 8px;
-            font-weight: 500;
-        }
-
-        /* Price Box Enhanced */
-        .price-box {
-            text-align: right;
-            padding: 12px 20px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: var(--radius-sm);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .price-box:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .price-box__price {
-            font-size: 2.5rem;
-            font-weight: 700;
-            font-family: var(--font-mono);
-            line-height: 1;
-            letter-spacing: -0.02em;
-        }
-
-        .price-box__change {
-            font-weight: 700;
-            margin-top: 8px;
-            font-size: 1.1rem;
-        }
-
-        .price-box__meta {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 6px;
-            font-family: var(--font-mono);
-        }
-
-        /* Chips (Reasons) Enhanced */
-        .chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 16px;
-        }
-
-        .chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-            border: 1px solid;
-            transition: all 0.2s ease;
-        }
-
-        .chip:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .chip.buy {
-            background: linear-gradient(135deg,
-                    rgba(16, 185, 129, 0.2),
-                    rgba(16, 185, 129, 0.05));
-            border-color: var(--success);
-            color: var(--success);
-        }
-
-        .chip.watch {
-            background: linear-gradient(135deg,
-                    rgba(245, 158, 11, 0.2),
-                    rgba(245, 158, 11, 0.05));
-            border-color: var(--warning);
-            color: var(--warning);
-        }
-
-        .chip.caution {
-            background: linear-gradient(135deg,
-                    rgba(239, 68, 68, 0.2),
-                    rgba(239, 68, 68, 0.05));
-            border-color: var(--danger);
-            color: var(--danger);
-        }
-
-        .chip.info {
-            background: linear-gradient(135deg,
-                    rgba(99, 102, 241, 0.2),
-                    rgba(99, 102, 241, 0.05));
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        /* Alert Enhanced */
-        .alert {
-            padding: 16px 20px;
-            border-radius: var(--radius-sm);
-            border: 1px solid;
-            margin-top: 16px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .alert--warning {
-            background: linear-gradient(135deg,
-                    rgba(245, 158, 11, 0.15),
-                    rgba(245, 158, 11, 0.05));
-            border-color: var(--warning);
-            color: var(--warning);
-        }
-
-        .alert--hidden {
-            display: none;
-        }
-
-        /* Tabs Enhanced */
-        .tabs {
-            display: flex;
-            gap: 4px;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 6px;
-            border-radius: var(--radius-md);
-            margin-bottom: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .tab {
-            flex: 1;
-            padding: 12px 20px;
-            background: transparent;
-            border: none;
-            border-radius: var(--radius-sm);
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .tab:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-        }
-
-        .tab.is-active {
-            background: linear-gradient(135deg, var(--primary) 0%, rgba(99, 102, 241, 0.8) 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-
-        /* Tab Panels */
-        .tab-panel {
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .tab-panel.is-active {
-            display: block;
-            opacity: 1;
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Indicator Cards Enhanced */
-        .indicator-card {
-            background: linear-gradient(135deg,
-                    rgba(255, 255, 255, 0.05) 0%,
-                    rgba(255, 255, 255, 0.02) 100%);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 24px;
-            border-radius: var(--radius-md);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .indicator-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg,
-                    transparent,
-                    rgba(255, 255, 255, 0.05),
-                    transparent);
-            transition: left 0.5s;
-        }
-
-        .indicator-card:hover::before {
-            left: 100%;
-        }
-
-        .indicator-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        /* Card Variants */
-        #cardTrend {
-            border-left: 3px solid var(--primary);
-        }
-
-        #cardMomentum {
-            border-left: 3px solid var(--success);
-        }
-
-        #cardRisk {
-            border-left: 3px solid var(--warning);
-        }
-
-        /* Key-Value List Enhanced */
-        .kv-list {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .kv-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.2s ease;
-        }
-
-        .kv-item:last-child {
-            border-bottom: none;
-        }
-
-        .kv-item:hover {
-            background: rgba(255, 255, 255, 0.02);
-            padding-left: 8px;
-            border-radius: 4px;
-        }
-
-        .kv-key {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .kv-value {
-            font-family: var(--font-mono);
-            font-weight: 700;
-            font-size: 0.95rem;
-        }
-
-        /* Grid Layouts */
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: var(--sp-4);
-        }
-
-        /* Bullets List Enhanced */
-        .bullets {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .bullets li {
-            padding: 12px 16px;
-            margin-bottom: 8px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: var(--radius-sm);
-            border-left: 3px solid var(--primary);
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            transition: all 0.2s ease;
-        }
-
-        .bullets li:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-left-color: var(--success);
-            transform: translateX(4px);
-        }
-
-        /* Chart Container */
-        .chart-container {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: var(--radius-sm);
-            padding: 20px;
-            min-height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .chart-placeholder {
-            text-align: center;
-            color: var(--text-muted);
-        }
-
-        .chart-placeholder-icon {
-            font-size: 4rem;
-            margin-bottom: 16px;
-            opacity: 0.3;
-        }
-
-        /* Fundamentals Table */
-        .fundamentals-table {
-            width: max-content;
-            min-width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-top: 8px;
-        }
-
-        .fundamentals-table thead th {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 12px 16px;
-            text-align: left;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            font-weight: 600;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            white-space: nowrap;
-        }
-
-        .fundamentals-table thead th.text-right {
-            text-align: right;
-        }
-
-        .fundamentals-table tbody tr {
-            transition: all 0.2s ease;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .fundamentals-table tbody tr:hover {
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .fundamentals-table tbody td {
-            padding: 14px 16px;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-
-        .fundamentals-table tbody td.text-right {
-            text-align: right;
-            font-family: var(--font-mono);
-            font-weight: 600;
-        }
-
-        .fundamentals-scroll {
-            display: block;
-            max-width: 100%;
-            overflow-x: scroll;
-            overflow-y: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: var(--radius-sm);
-            -webkit-overflow-scrolling: touch;
-            cursor: grab;
-            scrollbar-gutter: stable both-edges;
-        }
-
-        .fundamentals-scroll.dragging {
-            cursor: grabbing;
-            user-select: none;
-        }
-
-        .fundamentals-sticky-col {
-            position: sticky;
-            left: 0;
-            z-index: 2;
-            background: rgba(14, 18, 26, 0.95);
-        }
-
-        .fundamentals-table thead .fundamentals-sticky-col {
-            z-index: 3;
-        }
-
-        .fund-col {
-            min-width: 170px;
-        }
-
-
-        /* Ratio Cards */
-        .ratio-card {
-            background: linear-gradient(135deg,
-                    rgba(255, 255, 255, 0.05) 0%,
-                    rgba(255, 255, 255, 0.02) 100%);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: var(--radius-md);
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .ratio-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        .ratio-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        .ratio-value {
-            font-size: 2rem;
-            font-weight: 700;
-            font-family: var(--font-mono);
-            letter-spacing: -0.02em;
-            line-height: 1;
-        }
-
-        .ratio-subtitle {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-top: 8px;
-        }
-
-        /* Grid for Ratios */
-        .ratio-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--sp-4);
-        }
-
-        /* Skeleton Loader */
-        .skeleton {
-            background: linear-gradient(90deg,
-                    rgba(255, 255, 255, 0.05) 25%,
-                    rgba(255, 255, 255, 0.1) 50%,
-                    rgba(255, 255, 255, 0.05) 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            border-radius: var(--radius-sm);
-        }
-
-        @keyframes shimmer {
-            0% {
-                background-position: -200% 0;
-            }
-
-            100% {
-                background-position: 200% 0;
-            }
-        }
-
-        .h-240 {
-            height: 240px;
-        }
-
-        /* Muted State */
-        .muted {
-            color: var(--text-muted);
-            font-style: italic;
-            padding: 40px 20px;
-            text-align: center;
-            font-size: 0.95rem;
-        }
-
-        /* Glass Panel Enhanced */
-        .glass-panel {
-            background: linear-gradient(135deg,
-                    rgba(255, 255, 255, 0.05) 0%,
-                    rgba(255, 255, 255, 0.02) 100%);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        /* Panel Header */
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .panel-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Color Utilities */
-        .text-success {
-            color: var(--success);
-            text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
-        }
-
-        .text-danger {
-            color: var(--danger);
-            text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
-        }
-
-        .text-warning {
-            color: var(--warning);
-            text-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
-        }
-
-        .text-muted {
-            color: var(--text-muted);
-        }
-
-        /* Utility Classes */
-        .hidden {
-            display: none !important;
-        }
-
-        .mt-4 {
-            margin-top: 16px;
-        }
-
-        .mb-4 {
-            margin-bottom: 16px;
-        }
-
-        .flex {
-            display: flex;
-        }
-
-        .items-center {
-            align-items: center;
-        }
-
-        .gap-2 {
-            gap: 8px;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .page-header__top {
-                flex-direction: column;
-                gap: 16px;
-            }
-
-            .price-box {
-                text-align: left;
-                width: 100%;
-            }
-
-            .title {
-                font-size: 1.6rem;
-            }
-
-            .price-box__price {
-                font-size: 2rem;
-            }
-
-            .grid-3 {
-                grid-template-columns: 1fr;
-            }
-
-            .tabs {
-                flex-direction: column;
-            }
-
-            .ratio-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Stagger Animation for Cards */
-        .indicator-card:nth-child(1) {
-            animation: fadeIn 0.5s ease-in 0.1s both;
-        }
-
-        .indicator-card:nth-child(2) {
-            animation: fadeIn 0.5s ease-in 0.2s both;
-        }
-
-        .indicator-card:nth-child(3) {
-            animation: fadeIn 0.5s ease-in 0.3s both;
-        }
-
-        /* Main Container */
-        .main {
-            padding: 24px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* Trade Panel Styles */
-        .trade-panel {
-            margin-top: 24px;
-            background: linear-gradient(135deg,
-                    rgba(99, 102, 241, 0.08) 0%,
-                    rgba(99, 102, 241, 0.02) 100%);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-        }
-
-        .trade-panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 20px;
-            background: rgba(99, 102, 241, 0.05);
-            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .trade-panel-header:hover {
-            background: rgba(99, 102, 241, 0.08);
-        }
-
-        .trade-panel-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .trade-panel-toggle {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            padding: 6px 12px;
-            color: var(--text-main);
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .trade-panel-toggle:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .trade-panel-body {
-            padding: 24px;
-            display: none;
-        }
-
-        .trade-panel-body.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .tp-section {
-            margin-bottom: 24px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: var(--radius-sm);
-            border-left: 3px solid var(--primary);
-        }
-
-        .tp-section-title {
-            font-size: 0.95rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 16px;
-            color: var(--primary);
-        }
-
-        .tp-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .tp-row:last-child {
-            border-bottom: none;
-        }
-
-        .tp-label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .tp-value {
-            font-family: var(--font-mono);
-            font-weight: 700;
-            font-size: 0.95rem;
-        }
-
-        .tp-input-group {
-            margin-bottom: 16px;
-        }
-
-        .tp-input-group label {
-            display: block;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-
-        .tp-input-group input,
-        .tp-input-group textarea {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: var(--radius-sm);
-            padding: 10px 12px;
-            color: var(--text-main);
-            font-size: 0.9rem;
-            font-family: var(--font-mono);
-        }
-
-        .tp-input-group input:focus,
-        .tp-input-group textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .tp-input-group textarea {
-            resize: vertical;
-            min-height: 80px;
-            font-family: var(--font-sans);
-        }
-
-        .tp-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .tp-actions {
-                flex-direction: column;
-            }
-        }
-
-        /* Symbol Search Styles */
-        .symbol-search {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .symbol-search-input {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: var(--radius-sm);
-            padding: 8px 12px;
-            color: var(--text-main);
-            font-size: 0.85rem;
-            font-family: var(--font-mono);
-            transition: all 0.2s ease;
-        }
-
-        .symbol-search-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .symbol-search-input::placeholder {
-            color: var(--text-muted);
-            opacity: 0.6;
-        }
-
-        @media (max-width: 768px) {
-            .symbol-search {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .symbol-search-input {
-                width: 100%;
-            }
-        }
-    </style>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Stock Detail - Neo-Dark Finance</title>
+ <link rel="stylesheet" href="/css/common.css?v=20260211-neo-01">
+ <style>
+ /* Enhanced Stock Detail Page Styles */
+
+ /* Page Header Enhanced */
+ .page-header {
+ background: linear-gradient(135deg,
+ rgba(255, 255, 255, 0.08) 0%,
+ rgba(255, 255, 255, 0.02) 100%);
+ backdrop-filter: blur(10px);
+ border: 1px solid rgba(255, 255, 255, 0.1);
+ padding: 28px;
+ border-radius: var(--radius-md);
+ transition: all 0.3s ease;
+ margin-bottom: 24px;
+ }
+
+ .page-header:hover {
+ border-color: rgba(255, 255, 255, 0.2);
+ box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+ }
+
+ .page-header__top {
+ display: flex;
+ justify-content: space-between;
+ align-items: flex-start;
+ margin-bottom: 16px;
+ gap: 24px;
+ }
+
+ /* Title Enhanced */
+ .title {
+ font-size: 2.2rem;
+ font-weight: 700;
+ display: flex;
+ align-items: center;
+ gap: 12px;
+ letter-spacing: -0.02em;
+ font-family: var(--font-mono);
+ color: var(--primary);
+ text-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+ }
+
+ .subtitle {
+ color: var(--text-muted);
+ font-size: 0.95rem;
+ margin-top: 8px;
+ font-weight: 500;
+ }
+
+ /* Price Box Enhanced */
+ .price-box {
+ text-align: right;
+ padding: 12px 20px;
+ background: rgba(255, 255, 255, 0.03);
+ border-radius: var(--radius-sm);
+ border: 1px solid rgba(255, 255, 255, 0.1);
+ transition: all 0.3s ease;
+ }
+
+ .price-box:hover {
+ background: rgba(255, 255, 255, 0.05);
+ border-color: rgba(255, 255, 255, 0.2);
+ transform: translateY(-2px);
+ }
+
+ .price-box__price {
+ font-size: 2.5rem;
+ font-weight: 700;
+ font-family: var(--font-mono);
+ line-height: 1;
+ letter-spacing: -0.02em;
+ }
+
+ .price-box__change {
+ font-weight: 700;
+ margin-top: 8px;
+ font-size: 1.1rem;
+ }
+
+ .price-box__meta {
+ font-size: 0.8rem;
+ color: var(--text-muted);
+ margin-top: 6px;
+ font-family: var(--font-mono);
+ }
+
+ /* Chips (Reasons) Enhanced */
+ .chips {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 8px;
+ margin-top: 16px;
+ }
+
+ .chip {
+ display: inline-flex;
+ align-items: center;
+ gap: 6px;
+ padding: 6px 14px;
+ border-radius: 8px;
+ font-size: 0.8rem;
+ font-weight: 600;
+ text-transform: uppercase;
+ letter-spacing: 0.03em;
+ border: 1px solid;
+ transition: all 0.2s ease;
+ }
+
+ .chip:hover {
+ transform: translateY(-2px);
+ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+ }
+
+ .chip.buy {
+ background: linear-gradient(135deg,
+ rgba(16, 185, 129, 0.2),
+ rgba(16, 185, 129, 0.05));
+ border-color: var(--success);
+ color: var(--success);
+ }
+
+ .chip.watch {
+ background: linear-gradient(135deg,
+ rgba(245, 158, 11, 0.2),
+ rgba(245, 158, 11, 0.05));
+ border-color: var(--warning);
+ color: var(--warning);
+ }
+
+ .chip.caution {
+ background: linear-gradient(135deg,
+ rgba(239, 68, 68, 0.2),
+ rgba(239, 68, 68, 0.05));
+ border-color: var(--danger);
+ color: var(--danger);
+ }
+
+ .chip.info {
+ background: linear-gradient(135deg,
+ rgba(99, 102, 241, 0.2),
+ rgba(99, 102, 241, 0.05));
+ border-color: var(--primary);
+ color: var(--primary);
+ }
+
+ /* Alert Enhanced */
+ .alert {
+ padding: 16px 20px;
+ border-radius: var(--radius-sm);
+ border: 1px solid;
+ margin-top: 16px;
+ font-size: 0.9rem;
+ display: flex;
+ align-items: center;
+ gap: 12px;
+ }
+
+ .alert--warning {
+ background: linear-gradient(135deg,
+ rgba(245, 158, 11, 0.15),
+ rgba(245, 158, 11, 0.05));
+ border-color: var(--warning);
+ color: var(--warning);
+ }
+
+ .alert--hidden {
+ display: none;
+ }
+
+ /* Tabs Enhanced */
+ .tabs {
+ display: flex;
+ gap: 4px;
+ background: rgba(255, 255, 255, 0.03);
+ padding: 6px;
+ border-radius: var(--radius-md);
+ margin-bottom: 24px;
+ border: 1px solid rgba(255, 255, 255, 0.1);
+ }
+
+ .tab {
+ flex: 1;
+ padding: 12px 20px;
+ background: transparent;
+ border: none;
+ border-radius: var(--radius-sm);
+ color: var(--text-muted);
+ font-weight: 600;
+ font-size: 0.9rem;
+ cursor: pointer;
+ transition: all 0.2s ease;
+ text-transform: uppercase;
+ letter-spacing: 0.05em;
+ }
+
+ .tab:hover {
+ background: rgba(255, 255, 255, 0.05);
+ color: white;
+ }
+
+ .tab.is-active {
+ background: linear-gradient(135deg, var(--primary) 0%, rgba(99, 102, 241, 0.8) 100%);
+ color: white;
+ box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+ }
+
+ /* Tab Panels */
+ .tab-panel {
+ display: none;
+ opacity: 0;
+ transition: opacity 0.3s ease;
+ }
+
+ .tab-panel.is-active {
+ display: block;
+ opacity: 1;
+ animation: fadeIn 0.5s ease-in;
+ }
+
+ @keyframes fadeIn {
+ from {
+ opacity: 0;
+ transform: translateY(10px);
+ }
+
+ to {
+ opacity: 1;
+ transform: translateY(0);
+ }
+ }
+
+ /* Indicator Cards Enhanced */
+ .indicator-card {
+ background: linear-gradient(135deg,
+ rgba(255, 255, 255, 0.05) 0%,
+ rgba(255, 255, 255, 0.02) 100%);
+ backdrop-filter: blur(10px);
+ border: 1px solid rgba(255, 255, 255, 0.1);
+ padding: 24px;
+ border-radius: var(--radius-md);
+ transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+ position: relative;
+ overflow: hidden;
+ }
+
+ .indicator-card::before {
+ content: '';
+ position: absolute;
+ top: 0;
+ left: -100%;
+ width: 100%;
+ height: 100%;
+ background: linear-gradient(90deg,
+ transparent,
+ rgba(255, 255, 255, 0.05),
+ transparent);
+ transition: left 0.5s;
+ }
+
+ .indicator-card:hover::before {
+ left: 100%;
+ }
+
+ .indicator-card:hover {
+ transform: translateY(-4px);
+ border-color: rgba(255, 255, 255, 0.2);
+ box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+ }
+
+ /* Card Variants */
+ #cardTrend {
+ border-left: 3px solid var(--primary);
+ }
+
+ #cardMomentum {
+ border-left: 3px solid var(--success);
+ }
+
+ #cardRisk {
+ border-left: 3px solid var(--warning);
+ }
+
+ /* Key-Value List Enhanced */
+ .kv-list {
+ display: flex;
+ flex-direction: column;
+ gap: 14px;
+ }
+
+ .kv-item {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ padding: 10px 0;
+ border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+ transition: all 0.2s ease;
+ }
+
+ .kv-item:last-child {
+ border-bottom: none;
+ }
+
+ .kv-item:hover {
+ background: rgba(255, 255, 255, 0.02);
+ padding-left: 8px;
+ border-radius: 4px;
+ }
+
+ .kv-key {
+ font-size: 0.85rem;
+ color: var(--text-muted);
+ font-weight: 500;
+ }
+
+ .kv-value {
+ font-family: var(--font-mono);
+ font-weight: 700;
+ font-size: 0.95rem;
+ }
+
+ /* Grid Layouts */
+ .grid-3 {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+ gap: var(--sp-4);
+ }
+
+ /* Bullets List Enhanced */
+ .bullets {
+ list-style: none;
+ padding: 0;
+ margin: 0;
+ }
+
+ .bullets li {
+ padding: 12px 16px;
+ margin-bottom: 8px;
+ background: rgba(255, 255, 255, 0.03);
+ border-radius: var(--radius-sm);
+ border-left: 3px solid var(--primary);
+ font-size: 0.9rem;
+ color: var(--text-muted);
+ transition: all 0.2s ease;
+ }
+
+ .bullets li:hover {
+ background: rgba(255, 255, 255, 0.05);
+ border-left-color: var(--success);
+ transform: translateX(4px);
+ }
+
+ /* Chart Container */
+ .chart-container {
+ background: rgba(0, 0, 0, 0.2);
+ border-radius: var(--radius-sm);
+ padding: 20px;
+ min-height: 400px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ }
+
+ .chart-placeholder {
+ text-align: center;
+ color: var(--text-muted);
+ }
+
+ .chart-placeholder-icon {
+ font-size: 4rem;
+ margin-bottom: 16px;
+ opacity: 0.3;
+ }
+
+ /* Fundamentals Table */
+ .fundamentals-table {
+ width: max-content;
+ min-width: 100%;
+ border-collapse: separate;
+ border-spacing: 0;
+ margin-top: 8px;
+ }
+
+ .fundamentals-table thead th {
+ background: rgba(255, 255, 255, 0.05);
+ padding: 12px 16px;
+ text-align: left;
+ font-size: 0.75rem;
+ text-transform: uppercase;
+ letter-spacing: 0.05em;
+ color: var(--text-muted);
+ font-weight: 600;
+ border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+ white-space: nowrap;
+ }
+
+ .fundamentals-table thead th.text-right {
+ text-align: right;
+ }
+
+ .fundamentals-table tbody tr {
+ transition: all 0.2s ease;
+ border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+ }
+
+ .fundamentals-table tbody tr:hover {
+ background: rgba(255, 255, 255, 0.03);
+ }
+
+ .fundamentals-table tbody td {
+ padding: 14px 16px;
+ font-size: 0.9rem;
+ white-space: nowrap;
+ }
+
+ .fundamentals-table tbody td.text-right {
+ text-align: right;
+ font-family: var(--font-mono);
+ font-weight: 600;
+ }
+
+ .fundamentals-scroll {
+ display: block;
+ max-width: 100%;
+ overflow-x: scroll;
+ overflow-y: hidden;
+ border: 1px solid rgba(255, 255, 255, 0.08);
+ border-radius: var(--radius-sm);
+ -webkit-overflow-scrolling: touch;
+ cursor: grab;
+ scrollbar-gutter: stable both-edges;
+ }
+
+ .fundamentals-scroll.dragging {
+ cursor: grabbing;
+ user-select: none;
+ }
+
+ .fundamentals-sticky-col {
+ position: sticky;
+ left: 0;
+ z-index: 2;
+ background: rgba(14, 18, 26, 0.95);
+ }
+
+ .fundamentals-table thead .fundamentals-sticky-col {
+ z-index: 3;
+ }
+
+ .fund-col {
+ min-width: 170px;
+ }
+
+
+ /* Ratio Cards */
+ .ratio-card {
+ background: linear-gradient(135deg,
+ rgba(255, 255, 255, 0.05) 0%,
+ rgba(255, 255, 255, 0.02) 100%);
+ backdrop-filter: blur(10px);
+ border: 1px solid rgba(255, 255, 255, 0.1);
+ padding: 20px;
+ border-radius: var(--radius-md);
+ text-align: center;
+ transition: all 0.3s ease;
+ }
+
+ .ratio-card:hover {
+ transform: translateY(-4px);
+ border-color: rgba(255, 255, 255, 0.2);
+ box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+ }
+
+ .ratio-label {
+ font-size: 0.75rem;
+ text-transform: uppercase;
+ letter-spacing: 0.08em;
+ color: var(--text-muted);
+ margin-bottom: 12px;
+ font-weight: 600;
+ }
+
+ .ratio-value {
+ font-size: 2rem;
+ font-weight: 700;
+ font-family: var(--font-mono);
+ letter-spacing: -0.02em;
+ line-height: 1;
+ }
+
+ .ratio-subtitle {
+ font-size: 0.85rem;
+ color: var(--text-muted);
+ margin-top: 8px;
+ }
+
+ /* Grid for Ratios */
+ .ratio-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+ gap: var(--sp-4);
+ }
+
+ /* Skeleton Loader */
+ .skeleton {
+ background: linear-gradient(90deg,
+ rgba(255, 255, 255, 0.05) 25%,
+ rgba(255, 255, 255, 0.1) 50%,
+ rgba(255, 255, 255, 0.05) 75%);
+ background-size: 200% 100%;
+ animation: shimmer 1.5s infinite;
+ border-radius: var(--radius-sm);
+ }
+
+ @keyframes shimmer {
+ 0% {
+ background-position: -200% 0;
+ }
+
+ 100% {
+ background-position: 200% 0;
+ }
+ }
+
+ .h-240 {
+ height: 240px;
+ }
+
+ /* Muted State */
+ .muted {
+ color: var(--text-muted);
+ font-style: italic;
+ padding: 40px 20px;
+ text-align: center;
+ font-size: 0.95rem;
+ }
+
+ /* Glass Panel Enhanced */
+ .glass-panel {
+ background: linear-gradient(135deg,
+ rgba(255, 255, 255, 0.05) 0%,
+ rgba(255, 255, 255, 0.02) 100%);
+ backdrop-filter: blur(10px);
+ border: 1px solid rgba(255, 255, 255, 0.1);
+ transition: all 0.3s ease;
+ }
+
+ /* Panel Header */
+ .panel-header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ }
+
+ .panel-title {
+ font-size: 1.1rem;
+ font-weight: 700;
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ }
+
+ /* Color Utilities */
+ .text-success {
+ color: var(--success);
+ text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+ }
+
+ .text-danger {
+ color: var(--danger);
+ text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+ }
+
+ .text-warning {
+ color: var(--warning);
+ text-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+ }
+
+ .text-muted {
+ color: var(--text-muted);
+ }
+
+ /* Utility Classes */
+ .hidden {
+ display: none !important;
+ }
+
+ .mt-4 {
+ margin-top: 16px;
+ }
+
+ .mb-4 {
+ margin-bottom: 16px;
+ }
+
+ .flex {
+ display: flex;
+ }
+
+ .items-center {
+ align-items: center;
+ }
+
+ .gap-2 {
+ gap: 8px;
+ }
+
+ /* Responsive */
+ @media (max-width: 768px) {
+ .page-header__top {
+ flex-direction: column;
+ gap: 16px;
+ }
+
+ .price-box {
+ text-align: left;
+ width: 100%;
+ }
+
+ .title {
+ font-size: 1.6rem;
+ }
+
+ .price-box__price {
+ font-size: 2rem;
+ }
+
+ .grid-3 {
+ grid-template-columns: 1fr;
+ }
+
+ .tabs {
+ flex-direction: column;
+ }
+
+ .ratio-grid {
+ grid-template-columns: 1fr;
+ }
+ }
+
+ /* Stagger Animation for Cards */
+ .indicator-card:nth-child(1) {
+ animation: fadeIn 0.5s ease-in 0.1s both;
+ }
+
+ .indicator-card:nth-child(2) {
+ animation: fadeIn 0.5s ease-in 0.2s both;
+ }
+
+ .indicator-card:nth-child(3) {
+ animation: fadeIn 0.5s ease-in 0.3s both;
+ }
+
+ /* Main Container */
+ .main {
+ padding: 24px;
+ }
+
+ .container {
+ max-width: 1400px;
+ margin: 0 auto;
+ }
+
+ /* Trade Panel Styles */
+ .trade-panel {
+ margin-top: 24px;
+ background: linear-gradient(135deg,
+ rgba(99, 102, 241, 0.08) 0%,
+ rgba(99, 102, 241, 0.02) 100%);
+ border: 1px solid rgba(99, 102, 241, 0.2);
+ border-radius: var(--radius-md);
+ overflow: hidden;
+ }
+
+ .trade-panel-header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ padding: 16px 20px;
+ background: rgba(99, 102, 241, 0.05);
+ border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+ cursor: pointer;
+ transition: all 0.2s ease;
+ }
+
+ .trade-panel-header:hover {
+ background: rgba(99, 102, 241, 0.08);
+ }
+
+ .trade-panel-title {
+ font-size: 1.1rem;
+ font-weight: 700;
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ }
+
+ .trade-panel-toggle {
+ background: rgba(255, 255, 255, 0.1);
+ border: 1px solid rgba(255, 255, 255, 0.2);
+ border-radius: 6px;
+ padding: 6px 12px;
+ color: var(--text-main);
+ font-size: 0.85rem;
+ font-weight: 600;
+ cursor: pointer;
+ transition: all 0.2s ease;
+ }
+
+ .trade-panel-toggle:hover {
+ background: rgba(255, 255, 255, 0.15);
+ }
+
+ .trade-panel-body {
+ padding: 24px;
+ display: none;
+ }
+
+ .trade-panel-body.active {
+ display: block;
+ animation: fadeIn 0.3s ease;
+ }
+
+ .tp-section {
+ margin-bottom: 24px;
+ padding: 20px;
+ background: rgba(0, 0, 0, 0.2);
+ border-radius: var(--radius-sm);
+ border-left: 3px solid var(--primary);
+ }
+
+ .tp-section-title {
+ font-size: 0.95rem;
+ font-weight: 700;
+ text-transform: uppercase;
+ letter-spacing: 0.05em;
+ margin-bottom: 16px;
+ color: var(--primary);
+ }
+
+ .tp-row {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ padding: 10px 0;
+ border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+ }
+
+ .tp-row:last-child {
+ border-bottom: none;
+ }
+
+ .tp-label {
+ font-size: 0.85rem;
+ color: var(--text-muted);
+ font-weight: 500;
+ }
+
+ .tp-value {
+ font-family: var(--font-mono);
+ font-weight: 700;
+ font-size: 0.95rem;
+ }
+
+ .tp-input-group {
+ margin-bottom: 16px;
+ }
+
+ .tp-input-group label {
+ display: block;
+ font-size: 0.75rem;
+ font-weight: 600;
+ text-transform: uppercase;
+ letter-spacing: 0.05em;
+ color: var(--text-muted);
+ margin-bottom: 6px;
+ }
+
+ .tp-input-group input,
+ .tp-input-group textarea {
+ width: 100%;
+ background: rgba(255, 255, 255, 0.05);
+ border: 1px solid rgba(255, 255, 255, 0.15);
+ border-radius: var(--radius-sm);
+ padding: 10px 12px;
+ color: var(--text-main);
+ font-size: 0.9rem;
+ font-family: var(--font-mono);
+ }
+
+ .tp-input-group input:focus,
+ .tp-input-group textarea:focus {
+ outline: none;
+ border-color: var(--primary);
+ box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+ }
+
+ .tp-input-group textarea {
+ resize: vertical;
+ min-height: 80px;
+ font-family: var(--font-sans);
+ }
+
+ .tp-actions {
+ display: flex;
+ gap: 12px;
+ margin-top: 20px;
+ }
+
+ @media (max-width: 768px) {
+ .tp-actions {
+ flex-direction: column;
+ }
+ }
+
+ /* Symbol Search Styles */
+ .symbol-search {
+ display: flex;
+ gap: 8px;
+ align-items: center;
+ margin-top: 12px;
+ padding-top: 12px;
+ border-top: 1px solid rgba(255, 255, 255, 0.1);
+ }
+
+ .symbol-search-input {
+ flex: 1;
+ background: rgba(255, 255, 255, 0.05);
+ border: 1px solid rgba(255, 255, 255, 0.15);
+ border-radius: var(--radius-sm);
+ padding: 8px 12px;
+ color: var(--text-main);
+ font-size: 0.85rem;
+ font-family: var(--font-mono);
+ transition: all 0.2s ease;
+ }
+
+ .symbol-search-input:focus {
+ outline: none;
+ border-color: var(--primary);
+ box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+ }
+
+ .symbol-search-input::placeholder {
+ color: var(--text-muted);
+ opacity: 0.6;
+ }
+
+ @media (max-width: 768px) {
+ .symbol-search {
+ flex-direction: column;
+ align-items: stretch;
+ }
+
+ .symbol-search-input {
+ width: 100%;
+ }
+ }
+
+ /* AI Prediction Section */
+ .ai-pred-section {
+ background: rgba(99, 102, 241, 0.06);
+ border: 1px solid rgba(99, 102, 241, 0.25);
+ border-radius: 8px;
+ padding: 12px 14px;
+ margin-bottom: 8px;
+ }
+ .ai-pred-section .tp-section-title {
+ color: #818cf8;
+ }
+ .ai-pred-badge {
+ display: inline-block;
+ padding: 2px 10px;
+ border-radius: 4px;
+ font-size: 0.78rem;
+ font-weight: 700;
+ letter-spacing: 0.05em;
+ }
+ .ai-pred-badge--buy { background: rgba(52, 211, 153, 0.18); color: #34d399; }
+ .ai-pred-badge--notrade { background: rgba(156, 163, 175, 0.15); color: #9ca3af; }
+ .ai-pred-run-btn {
+ margin-top: 8px;
+ width: 100%;
+ padding: 5px 0;
+ background: rgba(99, 102, 241, 0.15);
+ border: 1px solid rgba(99, 102, 241, 0.4);
+ border-radius: 5px;
+ color: #a5b4fc;
+ font-size: 0.8rem;
+ cursor: pointer;
+ transition: background 0.2s;
+ }
+ .ai-pred-run-btn:hover {
+ background: rgba(99, 102, 241, 0.3);
+ }
+ .ai-pred-run-btn:disabled {
+ opacity: 0.5;
+ cursor: not-allowed;
+ }
+
+ /* AI Prediction probability color classes */
+ .ai-prob-high { color: #34d399; }
+ .ai-prob-medium { color: #fbbf24; }
+ .ai-prob-low { color: #9ca3af; }
+
+ /* AI Prediction signal classes */
+ .ai-signal-buy { color: #34d399; font-weight: 700; }
+ .ai-signal-notrade { color: #9ca3af; }
+ </style>
 </head>
 
 <body>
-    <div id="sidebar-container"></div>
+ <div id="sidebar-container"></div>
 
-    <main class="main">
-        <div class="container">
+ <main class="main">
+ <div class="container">
 
-            <!-- Stock Header -->
-            <section class="page-header glass-panel">
-                <div class="page-header__top">
-                    <div style="flex: 1;">
-                        <div class="flex items-center gap-2">
-                            <div id="sdSymbol" class="title">--</div>
-                        </div>
-                        <div id="sdName" class="subtitle">--</div>
-                    </div>
-                    <div class="price-box">
-                        <div id="sdPrice" class="price-box__price">--</div>
-                        <div id="sdChange" class="price-box__change">--</div>
-                        <div id="sdYtd" class="price-box__meta">YTD: --</div>
-                    </div>
-                </div>
+ <!-- Stock Header -->
+ <section class="page-header glass-panel">
+ <div class="page-header__top">
+ <div style="flex: 1;">
+ <div class="flex items-center gap-2">
+ <div id="sdSymbol" class="title">--</div>
+ </div>
+ <div id="sdName" class="subtitle">--</div>
+ </div>
+ <div class="price-box">
+ <div id="sdPrice" class="price-box__price">--</div>
+ <div id="sdChange" class="price-box__change">--</div>
+ <div id="sdYtd" class="price-box__meta">YTD: --</div>
+ </div>
+ </div>
 
-                <div id="sdReasons" class="chips">
-                    <!-- Chips will be injected by JS -->
-                </div>
-                <div id="sdAlert" class="alert alert--warning alert--hidden">
-                    <!-- Alerts will be injected by JS -->
-                </div>
+ <div id="sdReasons" class="chips">
+ <!-- Chips will be injected by JS -->
+ </div>
+ <div id="sdAlert" class="alert alert--warning alert--hidden">
+ <!-- Alerts will be injected by JS -->
+ </div>
 
-                <!-- Symbol Search -->
-                <div class="symbol-search">
-                    <input type="text" id="sdSearchInput" class="symbol-search-input"
-                        placeholder="Search symbol (e.g., NVDA or US:AAPL)" autocomplete="off">
-                    <button class="btn btn-primary btn-sm" id="sdSearchGo">Go</button>
-                </div>
-            </section>
+ <!-- Symbol Search -->
+ <div class="symbol-search">
+ <input type="text" id="sdSearchInput" class="symbol-search-input"
+ placeholder="Search symbol (e.g., NVDA or US:AAPL)" autocomplete="off">
+ <button class="btn btn-primary btn-sm" id="sdSearchGo">Go</button>
+ </div>
+ </section>
 
-            <!-- Navigation Tabs -->
-            <nav class="tabs">
-                <button class="tab is-active" data-tab="indicators">Indicators</button>
-                <button class="tab" data-tab="chart">Chart</button>
-                <button class="tab" data-tab="fundamentals">Fundamentals</button>
-                <button class="tab" data-tab="ratios">Ratios</button>
-            </nav>
+ <!-- Navigation Tabs -->
+ <nav class="tabs">
+ <button class="tab is-active" data-tab="indicators">Indicators</button>
+ <button class="tab" data-tab="chart">Chart</button>
+ <button class="tab" data-tab="fundamentals">Fundamentals</button>
+ <button class="tab" data-tab="ratios">Ratios</button>
+ </nav>
 
-            <!-- Tab: Indicators -->
-            <section id="tab-indicators" class="tab-panel is-active">
-                <div class="grid-3">
-                    <!-- Trend Card -->
-                    <div class="glass-panel indicator-card" id="cardTrend">
-                        <div class="panel-header mb-4">
-                            <div class="panel-title">Trend Analysis</div>
-                        </div>
-                        <div id="sdTrend" class="kv-list">
-                            <!-- JS injected -->
-                            <div style="padding: 20px; text-align: center; color: var(--text-muted);">Loading...</div>
-                        </div>
-                    </div>
+ <!-- Tab: Indicators -->
+ <section id="tab-indicators" class="tab-panel is-active">
+ <div class="grid-3">
+ <!-- Trend Card -->
+ <div class="glass-panel indicator-card" id="cardTrend">
+ <div class="panel-header mb-4">
+ <div class="panel-title">Trend Analysis</div>
+ </div>
+ <div id="sdTrend" class="kv-list">
+ <!-- JS injected -->
+ <div style="padding: 20px; text-align: center; color: var(--text-muted);">Loading...</div>
+ </div>
+ </div>
 
-                    <!-- Momentum Card -->
-                    <div class="glass-panel indicator-card" id="cardMomentum">
-                        <div class="panel-header mb-4">
-                            <div class="panel-title">Momentum</div>
-                        </div>
-                        <div id="sdMomentum" class="kv-list">
-                            <!-- JS injected -->
-                            <div style="padding: 20px; text-align: center; color: var(--text-muted);">Loading...</div>
-                        </div>
-                    </div>
+ <!-- Momentum Card -->
+ <div class="glass-panel indicator-card" id="cardMomentum">
+ <div class="panel-header mb-4">
+ <div class="panel-title">Momentum</div>
+ </div>
+ <div id="sdMomentum" class="kv-list">
+ <!-- JS injected -->
+ <div style="padding: 20px; text-align: center; color: var(--text-muted);">Loading...</div>
+ </div>
+ </div>
 
-                    <!-- Risk Card -->
-                    <div class="glass-panel indicator-card" id="cardRisk">
-                        <div class="panel-header mb-4">
-                            <div class="panel-title">Risk & Volatility</div>
-                        </div>
-                        <div id="sdRisk" class="kv-list">
-                            <!-- JS injected -->
-                            <div style="padding: 20px; text-align: center; color: var(--text-muted);">Loading...</div>
-                        </div>
-                    </div>
-                </div>
+ <!-- Risk Card -->
+ <div class="glass-panel indicator-card" id="cardRisk">
+ <div class="panel-header mb-4">
+ <div class="panel-title">Risk & Volatility</div>
+ </div>
+ <div id="sdRisk" class="kv-list">
+ <!-- JS injected -->
+ <div style="padding: 20px; text-align: center; color: var(--text-muted);">Loading...</div>
+ </div>
+ </div>
+ </div>
 
-                <!-- Missing Features -->
-                <div class="glass-panel mt-4" style="padding: 24px;">
-                    <div class="panel-title mb-4">
-                        Coming Soon (Phase 5-2/5-3)
-                    </div>
-                    <ul id="sdMissing" class="bullets">
-                        <li>Technical: VWAP, OBV, MFI, ADX/DMI, Bollinger Bands, Ichimoku Cloud</li>
-                        <li>Fundamentals: Revenue Growth, Net Income, EPS, Cash Flow (CFO/CFI/CFF), CapEx</li>
-                        <li>Ratios: ROE, ROA, Net Margin, Equity Ratio, Debt-to-Equity, P/E Ratio</li>
-                    </ul>
-                </div>
-            </section>
+ </section>
 
-            <!-- Tab: Chart -->
-            <section id="tab-chart" class="tab-panel">
-                <div class="glass-panel" style="padding: 24px;">
-                    <div class="panel-title mb-4">Price Chart</div>
+ <!-- Tab: Chart -->
+ <section id="tab-chart" class="tab-panel">
+ <div class="glass-panel" style="padding: 24px;">
+ <div class="panel-title mb-4">Price Chart</div>
 
-                    <!-- Drawing Toolbar -->
-                    <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
-                        <button class="btn btn-ghost btn-sm" id="btnDrawNone"
-                            style="background: rgba(99, 102, 241, 0.2);">
-                            Cursor
-                        </button>
-                        <button class="btn btn-ghost btn-sm" id="btnDrawHLine">
-                            Horizontal Line
-                        </button>
-                        <button class="btn btn-ghost btn-sm" id="btnDrawTrendLine">
-                            Trend Line
-                        </button>
-                        <button class="btn btn-ghost btn-sm" id="btnToggleChartType">
-                            Toggle Candles/Line
-                        </button>
-                        <button class="btn btn-ghost btn-sm" id="btnClearLines">
-                            Clear Lines
-                        </button>
-                        <div style="flex: 1;"></div>
-                        <button class="btn btn-ghost btn-sm" id="btnResetZoom">
-                            Reset Zoom
-                        </button>
-                    </div>
+ <!-- Drawing Toolbar -->
+ <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+ <button class="btn btn-ghost btn-sm" id="btnDrawNone"
+ style="background: rgba(99, 102, 241, 0.2);">
+ Cursor
+ </button>
+ <button class="btn btn-ghost btn-sm" id="btnDrawHLine">
+ Horizontal Line
+ </button>
+ <button class="btn btn-ghost btn-sm" id="btnDrawTrendLine">
+ Trend Line
+ </button>
+ <button class="btn btn-ghost btn-sm" id="btnToggleChartType">
+ Toggle Candles/Line
+ </button>
+ <button class="btn btn-ghost btn-sm" id="btnClearLines">
+ Clear Lines
+ </button>
+ <div style="flex: 1;"></div>
+ <button class="btn btn-ghost btn-sm" id="btnResetZoom">
+ Reset Zoom
+ </button>
+ </div>
 
-                    <div class="chart-container" style="position: relative;">
-                        <canvas id="mainPriceChart"></canvas>
-                    </div>
+ <div class="chart-container" style="position: relative;">
+ <canvas id="mainPriceChart"></canvas>
+ </div>
 
-                    <!-- Chart Controls -->
-                    <div style="margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
-                        <button class="btn btn-primary btn-sm tf-btn active" data-tf="1d">Daily</button>
-                        <button class="btn btn-ghost btn-sm tf-btn" data-tf="1w">Weekly</button>
-                        <div style="width: 1px; background: rgba(255,255,255,0.12); margin: 0 4px;"></div>
-                        <button class="btn btn-ghost btn-sm chart-period-btn" data-period="1D">1D</button>
-                        <button class="btn btn-ghost btn-sm chart-period-btn" data-period="5D">5D</button>
-                        <button class="btn btn-ghost btn-sm chart-period-btn" data-period="1M">1M</button>
-                        <button class="btn btn-primary btn-sm chart-period-btn active" data-period="3M">3M</button>
-                        <button class="btn btn-ghost btn-sm chart-period-btn" data-period="6M">6M</button>
-                        <button class="btn btn-ghost btn-sm chart-period-btn" data-period="1Y">1Y</button>
-                        <button class="btn btn-ghost btn-sm chart-period-btn" data-period="5Y">5Y</button>
-                        <button class="btn btn-ghost btn-sm chart-period-btn" data-period="MAX">MAX</button>
-                    </div>
+ <!-- Chart Controls -->
+ <div style="margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
+ <button class="btn btn-primary btn-sm tf-btn active" data-tf="1d">Daily</button>
+ <button class="btn btn-ghost btn-sm tf-btn" data-tf="1w">Weekly</button>
+ <div style="width: 1px; background: rgba(255,255,255,0.12); margin: 0 4px;"></div>
+ <button class="btn btn-ghost btn-sm chart-period-btn" data-period="1D">1D</button>
+ <button class="btn btn-ghost btn-sm chart-period-btn" data-period="5D">5D</button>
+ <button class="btn btn-ghost btn-sm chart-period-btn" data-period="1M">1M</button>
+ <button class="btn btn-primary btn-sm chart-period-btn active" data-period="3M">3M</button>
+ <button class="btn btn-ghost btn-sm chart-period-btn" data-period="6M">6M</button>
+ <button class="btn btn-ghost btn-sm chart-period-btn" data-period="1Y">1Y</button>
+ <button class="btn btn-ghost btn-sm chart-period-btn" data-period="5Y">5Y</button>
+ <button class="btn btn-ghost btn-sm chart-period-btn" data-period="MAX">MAX</button>
+ </div>
 
-                    <!-- Price Chart Container -->
-                    <div style="background: rgba(0, 0, 0, 0.3); border-radius: 8px; padding: 20px;">
-                        <div
-                            style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
-                            Volume
-                        </div>
-                        <canvas id="volumeChart" style="max-height: 150px;"></canvas>
-                    </div>
-                </div>
+ <!-- Price Chart Container -->
+ <div style="background: rgba(0, 0, 0, 0.3); border-radius: 8px; padding: 20px;">
+ <div
+ style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
+ Volume
+ </div>
+ <canvas id="volumeChart" style="max-height: 150px;"></canvas>
+ </div>
+ </div>
 
-                <!-- Trade Panel (Collapsible) -->
-                <div class="trade-panel">
-                    <div class="trade-panel-header" onclick="toggleTradePanel()">
-                        <div class="trade-panel-title">Trade Panel</div>
-                        <button class="trade-panel-toggle" id="tpToggle">Open</button>
-                    </div>
+ <!-- Trade Panel (Collapsible) -->
+ <div class="trade-panel">
+ <div class="trade-panel-header" onclick="toggleTradePanel()">
+ <div class="trade-panel-title">Trade Panel</div>
+ <button class="trade-panel-toggle" id="tpToggle">Open</button>
+ </div>
 
-                    <div class="trade-panel-body" id="tpBody">
-                        <!-- A. Forecast / Probabilities (Display Only) -->
-                        <div class="tp-section">
-                            <div class="tp-section-title">Forecast / Probabilities</div>
-                            <div class="tp-row">
-                                <span class="tp-label">Forecast Range</span>
-                                <span class="tp-value" id="tpForecastRange">--</span>
-                            </div>
-                            <div class="tp-row">
-                                <span class="tp-label">Up Probability</span>
-                                <span class="tp-value text-success" id="tpProbUp">--</span>
-                            </div>
-                            <div class="tp-row">
-                                <span class="tp-label">Down Probability</span>
-                                <span class="tp-value text-danger" id="tpProbDown">--</span>
-                            </div>
-                            <div class="tp-row">
-                                <span class="tp-label">Flat Probability</span>
-                                <span class="tp-value text-muted" id="tpProbFlat">--</span>
-                            </div>
-                            <div class="tp-row">
-                                <span class="tp-label">Confidence</span>
-                                <span class="tp-value" id="tpConfidence">--</span>
-                            </div>
-                            <div class="tp-row">
-                                <span class="tp-label">Key Drivers</span>
-                                <span class="tp-value" id="tpDrivers">--</span>
-                            </div>
-                        </div>
+ <div class="trade-panel-body" id="tpBody">
 
-                        <!-- B. Events (Display Only) -->
-                        <div class="tp-section">
-                            <div class="tp-section-title">Events</div>
-                            <div class="tp-row">
-                                <span class="tp-label">Next Event</span>
-                                <span class="tp-value" id="tpNextEvent">--</span>
-                            </div>
-                            <div class="tp-row">
-                                <span class="tp-label">Note</span>
-                                <span class="tp-value" id="tpEventNote">--</span>
-                            </div>
-                        </div>
+ <!-- AI Prediction (up5_2w) -->
+ <div class="tp-section" id="tpAiSection" style="border-left-color: #8b5cf6;">
+ <div class="tp-section-title" style="display: flex; justify-content: space-between; align-items: center;">
+ <span> AI Prediction</span>
+ <button class="btn btn-ghost btn-sm" id="tpAiRunBtn" onclick="runAiPrediction()"
+ style="font-size: 0.7rem; padding: 4px 10px;">
+ Run Now
+ </button>
+ </div>
 
-                        <!-- Pivot Info (Display Only) -->
-                        <div class="tp-section">
-                            <div class="tp-section-title">Pivot Analysis</div>
-                            <div class="tp-row">
-                                <span class="tp-label">Pivot</span>
-                                <span class="tp-value" id="tpPivot">--</span>
-                            </div>
-                            <div class="tp-row">
-                                <span class="tp-label">Pivot Diff %</span>
-                                <span class="tp-value" id="tpPivotDiffPct">--</span>
-                            </div>
-                            <div class="tp-row">
-                                <span class="tp-label">Buy Range</span>
-                                <span class="tp-value" id="tpBuyRange">--</span>
-                            </div>
-                        </div>
+ <div class="tp-row">
+ <span class="tp-label">2週間以内に+5%上昇する確率</span>
+ <span class="tp-value" id="tpAiProbUp5" style="font-size: 1.4rem; font-weight: 800;">--</span>
+ </div>
 
-                        <!-- C. Position / Risk Plan (Input + Save) -->
-                        <div class="tp-section" style="border-left-color: var(--success);">
-                            <div class="tp-section-title">Position / Risk Plan</div>
+ <div class="tp-row">
+ <span class="tp-label">判定</span>
+ <span class="tp-value" id="tpAiDecision">--</span>
+ </div>
 
-                            <div class="tp-input-group">
-                                <label>Entry Price</label>
-                                <input type="number" step="0.01" id="tpEntry" placeholder="e.g. 142.50">
-                            </div>
+ <div id="tpAiThresholdNote" class="tp-row" style="display: none;">
+ <span class="tp-label" style="font-size: 0.75rem; color: var(--text-muted); font-style: italic;">
+ ※ 確率<span id="tpAiThresholdPct">50</span>%以上でBUYシグナル
+ </span>
+ </div>
 
-                            <div class="tp-input-group">
-                                <label>Stop Loss</label>
-                                <input type="number" step="0.01" id="tpStop" placeholder="e.g. 138.00">
-                            </div>
+ <div class="tp-row">
+ <span class="tp-label">予測日</span>
+ <span class="tp-value" id="tpAiDate" style="font-size: 0.8rem;">--</span>
+ </div>
 
-                            <div class="tp-input-group">
-                                <label>Take Profit</label>
-                                <input type="number" step="0.01" id="tpTakeProfit" placeholder="e.g. 150.00">
-                            </div>
+ <div id="tpAiLoading" style="display: none; text-align: center; padding: 12px; color: var(--text-muted);">
+ <span>Computing prediction...</span>
+ </div>
+ </div>
 
-                            <div class="tp-input-group">
-                                <label>Position Size</label>
-                                <input type="number" step="1" id="tpPositionSize" placeholder="e.g. 100">
-                            </div>
+ <!-- A. Forecast / Probabilities (Display Only) -->
+ <div class="tp-section">
+ <div class="tp-section-title">Forecast / Probabilities</div>
+ <div class="tp-row">
+ <span class="tp-label">Forecast Range</span>
+ <span class="tp-value" id="tpForecastRange">--</span>
+ </div>
+ <div class="tp-row">
+ <span class="tp-label">Up Probability</span>
+ <span class="tp-value text-success" id="tpProbUp">--</span>
+ </div>
+ <div class="tp-row">
+ <span class="tp-label">Down Probability</span>
+ <span class="tp-value text-danger" id="tpProbDown">--</span>
+ </div>
+ <div class="tp-row">
+ <span class="tp-label">Flat Probability</span>
+ <span class="tp-value text-muted" id="tpProbFlat">--</span>
+ </div>
+ <div class="tp-row">
+ <span class="tp-label">Confidence</span>
+ <span class="tp-value" id="tpConfidence">--</span>
+ </div>
+ <div class="tp-row">
+ <span class="tp-label">Key Drivers</span>
+ <span class="tp-value" id="tpDrivers">--</span>
+ </div>
+ </div>
 
-                            <div class="tp-input-group">
-                                <label>Notes</label>
-                                <textarea id="tpNotes" placeholder="Trade memo..."></textarea>
-                            </div>
+ <!-- B. Events (Display Only) -->
+ <div class="tp-section">
+ <div class="tp-section-title">Events</div>
+ <div class="tp-row">
+ <span class="tp-label">Next Event</span>
+ <span class="tp-value" id="tpNextEvent">--</span>
+ </div>
+ <div class="tp-row">
+ <span class="tp-label">Note</span>
+ <span class="tp-value" id="tpEventNote">--</span>
+ </div>
+ </div>
 
-                            <div class="tp-actions">
-                                <button class="btn btn-success" id="tpSave" onclick="saveTradePlan()">
-                                    Save
-                                </button>
-                                <button class="btn btn-ghost" id="tpClear" onclick="clearTradePlan()">
-                                    Clear
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+ <!-- Pivot Info (Display Only) -->
+ <div class="tp-section">
+ <div class="tp-section-title">Pivot Analysis</div>
+ <div class="tp-row">
+ <span class="tp-label">Pivot</span>
+ <span class="tp-value" id="tpPivot">--</span>
+ </div>
+ <div class="tp-row">
+ <span class="tp-label">Pivot Diff %</span>
+ <span class="tp-value" id="tpPivotDiffPct">--</span>
+ </div>
+ <div class="tp-row">
+ <span class="tp-label">Buy Range</span>
+ <span class="tp-value" id="tpBuyRange">--</span>
+ </div>
+ </div>
 
-            <!-- Tab: Fundamentals -->
-            <section id="tab-fundamentals" class="tab-panel">
-                <div class="glass-panel" style="padding: 24px;">
-                    <div class="panel-title mb-4">Financial Statements</div>
-                    <div class="fundamentals-scroll">
-                        <table class="fundamentals-table" id="fundamentalsTable">
-                            <thead id="fundamentalsHead">
-                                <tr>
-                                    <th class="fundamentals-sticky-col">Metric</th>
-                                    <th class="text-right">Loading...</th>
-                                </tr>
-                            </thead>
-                            <tbody id="fundamentalsBody">
-                                <tr>
-                                    <td class="fundamentals-sticky-col">Revenue</td>
-                                    <td class="text-right">--</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+ <!-- C. Position / Risk Plan (Input + Save) -->
+ <div class="tp-section" style="border-left-color: var(--success);">
+ <div class="tp-section-title">Position / Risk Plan</div>
 
-                </div>
-            </section>
+ <div class="tp-input-group">
+ <label>Entry Price</label>
+ <input type="number" step="0.01" id="tpEntry" placeholder="e.g. 142.50">
+ </div>
 
-            <!-- Tab: Ratios -->
-            <section id="tab-ratios" class="tab-panel">
-                <div class="glass-panel" style="padding: 24px;">
-                    <div class="panel-title mb-4">Financial Ratios</div>
+ <div class="tp-input-group">
+ <label>Stop Loss</label>
+ <input type="number" step="0.01" id="tpStop" placeholder="e.g. 138.00">
+ </div>
 
-                    <div class="ratio-grid">
-                        <div class="ratio-card">
-                            <div class="ratio-label">P/E Ratio</div>
-                            <div class="ratio-value" id="ratioPe">--</div>
-                            <div class="ratio-subtitle" id="ratioPeSub">Forward P/E: --</div>
-                        </div>
+ <div class="tp-input-group">
+ <label>Take Profit</label>
+ <input type="number" step="0.01" id="tpTakeProfit" placeholder="e.g. 150.00">
+ </div>
 
-                        <div class="ratio-card">
-                            <div class="ratio-label">ROE</div>
-                            <div class="ratio-value" id="ratioRoe">--</div>
-                            <div class="ratio-subtitle" id="ratioRoeSub">Return on Equity</div>
-                        </div>
+ <div class="tp-input-group">
+ <label>Position Size</label>
+ <input type="number" step="1" id="tpPositionSize" placeholder="e.g. 100">
+ </div>
 
-                        <div class="ratio-card">
-                            <div class="ratio-label">ROA</div>
-                            <div class="ratio-value" id="ratioRoa">--</div>
-                            <div class="ratio-subtitle" id="ratioRoaSub">Return on Assets</div>
-                        </div>
+ <div class="tp-input-group">
+ <label>Notes</label>
+ <textarea id="tpNotes" placeholder="Trade memo..."></textarea>
+ </div>
 
-                        <div class="ratio-card">
-                            <div class="ratio-label">Net Margin</div>
-                            <div class="ratio-value" id="ratioNetMargin">--</div>
-                            <div class="ratio-subtitle" id="ratioNetMarginSub">Profit Margin</div>
-                        </div>
+ <div class="tp-actions">
+ <button class="btn btn-success" id="tpSave" onclick="saveTradePlan()">
+ Save
+ </button>
+ <button class="btn btn-ghost" id="tpClear" onclick="clearTradePlan()">
+ Clear
+ </button>
+ </div>
+ </div>
+ </div>
+ </div>
+ </section>
 
-                        <div class="ratio-card">
-                            <div class="ratio-label">Debt/Equity</div>
-                            <div class="ratio-value" id="ratioDebtEquity">--</div>
-                            <div class="ratio-subtitle" id="ratioDebtEquitySub">Low Leverage</div>
-                        </div>
+ <!-- Tab: Fundamentals -->
+ <section id="tab-fundamentals" class="tab-panel">
+ <div class="glass-panel" style="padding: 24px;">
+ <div class="panel-title mb-4">Financial Statements</div>
+ <div class="fundamentals-scroll">
+ <table class="fundamentals-table" id="fundamentalsTable">
+ <thead id="fundamentalsHead">
+ <tr>
+ <th class="fundamentals-sticky-col">Metric</th>
+ <th class="text-right">Loading...</th>
+ </tr>
+ </thead>
+ <tbody id="fundamentalsBody">
+ <tr>
+ <td class="fundamentals-sticky-col">Revenue</td>
+ <td class="text-right">--</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
 
-                        <div class="ratio-card">
-                            <div class="ratio-label">Current Ratio</div>
-                            <div class="ratio-value" id="ratioCurrentRatio">--</div>
-                            <div class="ratio-subtitle" id="ratioCurrentRatioSub">Liquidity</div>
-                        </div>
+ </div>
+ </section>
 
-                        <div class="ratio-card">
-                            <div class="ratio-label">Quick Ratio</div>
-                            <div class="ratio-value" id="ratioQuickRatio">--</div>
-                            <div class="ratio-subtitle" id="ratioQuickRatioSub">Acid Test</div>
-                        </div>
+ <!-- Tab: Ratios -->
+ <section id="tab-ratios" class="tab-panel">
+ <div class="glass-panel" style="padding: 24px;">
+ <div class="panel-title mb-4">Financial Ratios</div>
 
-                        <div class="ratio-card">
-                            <div class="ratio-label">Asset Turnover</div>
-                            <div class="ratio-value" id="ratioAssetTurnover">--</div>
-                            <div class="ratio-subtitle" id="ratioAssetTurnoverSub">Efficiency</div>
-                        </div>
-                    </div>
+ <div class="ratio-grid">
+ <div class="ratio-card">
+ <div class="ratio-label">P/E Ratio</div>
+ <div class="ratio-value" id="ratioPe">--</div>
+ <div class="ratio-subtitle" id="ratioPeSub">Forward P/E: --</div>
+ </div>
 
-                    <div class="muted mt-4">
-                        <small>DB-based values are shown where available; otherwise -- is displayed.</small>
-                    </div>
-                </div>
-            </section>
+ <div class="ratio-card">
+ <div class="ratio-label">ROE</div>
+ <div class="ratio-value" id="ratioRoe">--</div>
+ <div class="ratio-subtitle" id="ratioRoeSub">Return on Equity</div>
+ </div>
 
-        </div>
-    </main>
+ <div class="ratio-card">
+ <div class="ratio-label">ROA</div>
+ <div class="ratio-value" id="ratioRoa">--</div>
+ <div class="ratio-subtitle" id="ratioRoaSub">Return on Assets</div>
+ </div>
 
-    <!-- Scripts (Strict Order) -->
-    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
-    <script defer
-        src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
-    <script defer
-        src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@3.3.0/dist/chartjs-chart-financial.min.js"></script>
+ <div class="ratio-card">
+ <div class="ratio-label">Net Margin</div>
+ <div class="ratio-value" id="ratioNetMargin">--</div>
+ <div class="ratio-subtitle" id="ratioNetMarginSub">Profit Margin</div>
+ </div>
 
-    <script defer src="/js/config.js?v=20260211-neo-01"></script>
-    <script defer src="/js/common.js?v=20260211-neo-01"></script>
-    <script defer src="/js/stock_detail.js?v=20260219-max1"></script>
+ <div class="ratio-card">
+ <div class="ratio-label">Equity Ratio</div>
+ <div class="ratio-value" id="ratioEquityRatio">--</div>
+ <div class="ratio-subtitle" id="ratioEquityRatioSub">Equity / Total Assets</div>
+ </div>
 
-    <script>
-        // Tab Navigation & App Initialization
-        document.addEventListener('DOMContentLoaded', function () {
-            // Register Chart.js plugins (Minimal & Robust)
-            if (window.Chart) {
-                // zoom
-                try {
-                    const zoom = window.ChartZoom || window['chartjs-plugin-zoom'];
-                    if (zoom) Chart.register(zoom);
-                } catch (e) {
-                    console.warn('[Chart] Zoom plugin registration failed:', e);
-                }
+ <div class="ratio-card">
+ <div class="ratio-label">Debt/Equity</div>
+ <div class="ratio-value" id="ratioDebtEquity">--</div>
+ <div class="ratio-subtitle" id="ratioDebtEquitySub">Low Leverage</div>
+ </div>
 
-                // annotation
-                try {
-                    if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
-                } catch (e) {
-                    console.warn('[Chart] Annotation plugin registration failed:', e);
-                }
+ <div class="ratio-card">
+ <div class="ratio-label">Current Ratio</div>
+ <div class="ratio-value" id="ratioCurrentRatio">--</div>
+ <div class="ratio-subtitle" id="ratioCurrentRatioSub">Liquidity</div>
+ </div>
 
-                // financial
-                const fin = window['chartjs-chart-financial'] || window.ChartFinancial;
-                window.financialReady = false;
-                if (fin && fin.CandlestickController) {
-                    try {
-                        const regs = [
-                            fin.CandlestickController,
-                            fin.OhlcController,
-                            fin.FinancialScale,
-                            fin.FinancialLinearScale
-                        ].filter(Boolean);
-                        if (regs.length > 0) {
-                            Chart.register(...regs);
-                            window.financialReady = true;
-                            console.log('[Chart] Financial plugin registered');
-                        }
-                    } catch (e) {
-                        console.warn('[Chart] Financial plugin registration failed:', e);
-                    }
-                }
-            }
+ <div class="ratio-card">
+ <div class="ratio-label">Quick Ratio</div>
+ <div class="ratio-value" id="ratioQuickRatio">--</div>
+ <div class="ratio-subtitle" id="ratioQuickRatioSub">Acid Test</div>
+ </div>
 
-            // Initialize App
-            console.log("[StockDetail] Initializing StockDetailApp...");
-            window.app = new StockDetailApp();
-            window.app.init().catch(err => {
-                console.error("[StockDetail] Initialization failed:", err);
-                if (window.app && window.app.showFatal) {
-                    window.app.showFatal(`Initialization failed: ${err.message}`);
-                }
-            });
-        });
-    </script>
+ <div class="ratio-card">
+ <div class="ratio-label">Asset Turnover</div>
+ <div class="ratio-value" id="ratioAssetTurnover">--</div>
+ <div class="ratio-subtitle" id="ratioAssetTurnoverSub">Efficiency</div>
+ </div>
+ </div>
+
+ <div class="muted mt-4">
+ <small>DB-based values are shown where available; otherwise -- is displayed.</small>
+ </div>
+ </div>
+ </section>
+
+ </div>
+ </main>
+
+ <!-- Scripts (Strict Order) -->
+ <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+ <script defer src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+ <script defer
+ src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+ <script defer
+ src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@3.3.0/dist/chartjs-chart-financial.min.js"></script>
+
+ <script defer src="/js/config.js?v=20260211-neo-01"></script>
+ <script defer src="/js/common.js?v=20260211-neo-01"></script>
+ <script defer src="/js/stock_detail.js?v=20260223-yoy1"></script>
+
+ <script>
+ // Tab Navigation & App Initialization
+ document.addEventListener('DOMContentLoaded', function () {
+ // Register Chart.js plugins (Minimal & Robust)
+ if (window.Chart) {
+ // zoom
+ try {
+ const zoom = window.ChartZoom || window['chartjs-plugin-zoom'];
+ if (zoom) Chart.register(zoom);
+ } catch (e) {
+ console.warn('[Chart] Zoom plugin registration failed:', e);
+ }
+
+ // annotation
+ try {
+ if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
+ } catch (e) {
+ console.warn('[Chart] Annotation plugin registration failed:', e);
+ }
+
+ // financial
+ const fin = window['chartjs-chart-financial'] || window.ChartFinancial;
+ window.financialReady = false;
+ if (fin && fin.CandlestickController) {
+ try {
+ const regs = [
+ fin.CandlestickController,
+ fin.OhlcController,
+ fin.FinancialScale,
+ fin.FinancialLinearScale
+ ].filter(Boolean);
+ if (regs.length > 0) {
+ Chart.register(...regs);
+ window.financialReady = true;
+ console.log('[Chart] Financial plugin registered');
+ }
+ } catch (e) {
+ console.warn('[Chart] Financial plugin registration failed:', e);
+ }
+ }
+ }
+
+ // Initialize App
+ console.log("[StockDetail] Initializing StockDetailApp...");
+ window.app = new StockDetailApp();
+ window.app.init().catch(err => {
+ console.error("[StockDetail] Initialization failed:", err);
+ if (window.app && window.app.showFatal) {
+ window.app.showFatal(`Initialization failed: ${err.message}`);
+ }
+ });
+ });
+ </script>
 
 </body>
 

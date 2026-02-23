@@ -1,0 +1,1013 @@
+{
+  "period": {
+    "start": "2006-01-01",
+    "end": "2026-02-18",
+    "asof": "2026-02-18"
+  },
+  "metrics": {
+    "precision_at_p70": 0.0,
+    "coverage_at_p70": 0.0,
+    "n_trades_at_p70": 0,
+    "avg_return_at_p70": 0.0,
+    "effective_threshold_buy": 0.7,
+    "precision_at_threshold": 0.0,
+    "coverage_at_threshold": 0.0,
+    "n_trades_at_threshold": 0,
+    "avg_return_at_threshold": 0.0,
+    "folds_used": 100
+  },
+  "diagnostics": {
+    "fixed_threshold_metrics": {
+      "0.5": {
+        "precision": 1.0,
+        "coverage": 0.006,
+        "n_trades": 9,
+        "avg_return": 0.09387222946544993,
+        "confusion_matrix": [
+          [
+            1115,
+            0
+          ],
+          [
+            376,
+            9
+          ]
+        ]
+      },
+      "0.6": {
+        "precision": 0.0,
+        "coverage": 0.0,
+        "n_trades": 0,
+        "avg_return": 0.0,
+        "confusion_matrix": [
+          [
+            1115,
+            0
+          ],
+          [
+            385,
+            0
+          ]
+        ]
+      },
+      "0.7": {
+        "precision": 0.0,
+        "coverage": 0.0,
+        "n_trades": 0,
+        "avg_return": 0.0,
+        "confusion_matrix": [
+          [
+            1115,
+            0
+          ],
+          [
+            385,
+            0
+          ]
+        ]
+      }
+    },
+    "confidence_bins": [
+      {
+        "bin": "[0.5,0.6)",
+        "lo": 0.5,
+        "hi": 0.6,
+        "n": 9,
+        "win_rate": 1.0,
+        "avg_return": 0.09387222946544993
+      },
+      {
+        "bin": "[0.6,0.7)",
+        "lo": 0.6,
+        "hi": 0.7,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      },
+      {
+        "bin": "[0.7,0.8)",
+        "lo": 0.7,
+        "hi": 0.8,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      },
+      {
+        "bin": "[0.8,0.9)",
+        "lo": 0.8,
+        "hi": 0.9,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      },
+      {
+        "bin": "[0.9,1.0]",
+        "lo": 0.9,
+        "hi": 1.0,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      }
+    ],
+    "probability_audit": {
+      "pre_calibration_summary": {
+        "n": 1500,
+        "min": 1e-06,
+        "max": 0.933181643486023,
+        "mean": 0.5443761535658284,
+        "std": 0.2267684865738467,
+        "quantiles": {
+          "0.1": 0.18130531907081604,
+          "0.25": 0.3853609561920166,
+          "0.5": 0.5930392742156982,
+          "0.75": 0.7241519689559937,
+          "0.9": 0.8015543818473816,
+          "0.95": 0.820356747508049,
+          "0.99": 0.9271461367607117
+        }
+      },
+      "post_calibration_summary": {
+        "n": 1500,
+        "min": 1e-06,
+        "max": 0.5364021790765525,
+        "mean": 0.22229458804410043,
+        "std": 0.07468441999410116,
+        "quantiles": {
+          "0.1": 0.11785852537159626,
+          "0.25": 0.18429182281176662,
+          "0.5": 0.23551270919669529,
+          "0.75": 0.26689755453166,
+          "0.9": 0.29247061384471507,
+          "0.95": 0.3211737962839108,
+          "0.99": 0.3658230459665933
+        }
+      }
+    },
+    "prob_calibration_audit": {
+      "high_confidence_miss": {
+        "threshold": 0.7,
+        "count": 0,
+        "top_misses": []
+      },
+      "low_confidence_miss": {
+        "threshold": 0.7,
+        "count": 385,
+        "top_misses": [
+          {
+            "date": "2016-07-13",
+            "ticker": "US:META",
+            "probability": 0.05429919138107595,
+            "realized_return": 0.0561740023976709,
+            "actual": 1
+          },
+          {
+            "date": "2016-07-13",
+            "ticker": "US:META",
+            "probability": 0.05429919138107595,
+            "realized_return": 0.0561740023976709,
+            "actual": 1
+          },
+          {
+            "date": "2016-07-13",
+            "ticker": "US:META",
+            "probability": 0.05429919138107595,
+            "realized_return": 0.0561740023976709,
+            "actual": 1
+          },
+          {
+            "date": "2016-07-13",
+            "ticker": "US:META",
+            "probability": 0.05429919138107595,
+            "realized_return": 0.0561740023976709,
+            "actual": 1
+          },
+          {
+            "date": "2016-07-13",
+            "ticker": "US:META",
+            "probability": 0.05429919138107595,
+            "realized_return": 0.0561740023976709,
+            "actual": 1
+          },
+          {
+            "date": "2016-07-13",
+            "ticker": "US:META",
+            "probability": 0.05429919138107595,
+            "realized_return": 0.0561740023976709,
+            "actual": 1
+          },
+          {
+            "date": "2016-03-07",
+            "ticker": "US:META",
+            "probability": 0.09232731945512246,
+            "realized_return": 0.05788328761940775,
+            "actual": 1
+          },
+          {
+            "date": "2016-03-07",
+            "ticker": "US:META",
+            "probability": 0.09232731945512246,
+            "realized_return": 0.05788328761940775,
+            "actual": 1
+          },
+          {
+            "date": "2016-03-07",
+            "ticker": "US:META",
+            "probability": 0.09232731945512246,
+            "realized_return": 0.05788328761940775,
+            "actual": 1
+          },
+          {
+            "date": "2016-03-07",
+            "ticker": "US:META",
+            "probability": 0.09232731945512246,
+            "realized_return": 0.05788328761940775,
+            "actual": 1
+          },
+          {
+            "date": "2016-03-07",
+            "ticker": "US:META",
+            "probability": 0.09232731945512246,
+            "realized_return": 0.05788328761940775,
+            "actual": 1
+          },
+          {
+            "date": "2016-03-07",
+            "ticker": "US:META",
+            "probability": 0.09232731945512246,
+            "realized_return": 0.05788328761940775,
+            "actual": 1
+          },
+          {
+            "date": "2016-09-15",
+            "ticker": "US:AMZN",
+            "probability": 0.09306479284779805,
+            "realized_return": 0.07712195819096013,
+            "actual": 1
+          },
+          {
+            "date": "2016-09-15",
+            "ticker": "US:AMZN",
+            "probability": 0.09306479284779805,
+            "realized_return": 0.07712195819096013,
+            "actual": 1
+          },
+          {
+            "date": "2016-09-15",
+            "ticker": "US:AMZN",
+            "probability": 0.09306479284779805,
+            "realized_return": 0.07712195819096013,
+            "actual": 1
+          },
+          {
+            "date": "2016-09-15",
+            "ticker": "US:AMZN",
+            "probability": 0.09306479284779805,
+            "realized_return": 0.07712195819096013,
+            "actual": 1
+          },
+          {
+            "date": "2016-09-15",
+            "ticker": "US:AMZN",
+            "probability": 0.09306479284779805,
+            "realized_return": 0.07712195819096013,
+            "actual": 1
+          },
+          {
+            "date": "2016-09-15",
+            "ticker": "US:AMZN",
+            "probability": 0.09306479284779805,
+            "realized_return": 0.07712195819096013,
+            "actual": 1
+          },
+          {
+            "date": "2012-01-23",
+            "ticker": "US:QCOM",
+            "probability": 0.10567332915749797,
+            "realized_return": 0.05021496130696468,
+            "actual": 1
+          },
+          {
+            "date": "2012-01-23",
+            "ticker": "US:QCOM",
+            "probability": 0.10567332915749797,
+            "realized_return": 0.05021496130696468,
+            "actual": 1
+          },
+          {
+            "date": "2012-01-23",
+            "ticker": "US:QCOM",
+            "probability": 0.10567332915749797,
+            "realized_return": 0.05021496130696468,
+            "actual": 1
+          },
+          {
+            "date": "2020-03-27",
+            "ticker": "US:MSFT",
+            "probability": 0.13213895981949128,
+            "realized_return": 0.10561122244488974,
+            "actual": 1
+          },
+          {
+            "date": "2020-03-27",
+            "ticker": "US:MSFT",
+            "probability": 0.13213895981949128,
+            "realized_return": 0.10561122244488974,
+            "actual": 1
+          },
+          {
+            "date": "2020-03-27",
+            "ticker": "US:MSFT",
+            "probability": 0.13213895981949128,
+            "realized_return": 0.10561122244488974,
+            "actual": 1
+          },
+          {
+            "date": "2020-03-27",
+            "ticker": "US:MSFT",
+            "probability": 0.13213895981949128,
+            "realized_return": 0.10561122244488974,
+            "actual": 1
+          },
+          {
+            "date": "2020-03-27",
+            "ticker": "US:MSFT",
+            "probability": 0.13213895981949128,
+            "realized_return": 0.10561122244488974,
+            "actual": 1
+          },
+          {
+            "date": "2020-03-27",
+            "ticker": "US:MSFT",
+            "probability": 0.13213895981949128,
+            "realized_return": 0.10561122244488974,
+            "actual": 1
+          },
+          {
+            "date": "2020-03-27",
+            "ticker": "US:MSFT",
+            "probability": 0.13213895981949128,
+            "realized_return": 0.10561122244488974,
+            "actual": 1
+          },
+          {
+            "date": "2020-03-27",
+            "ticker": "US:MSFT",
+            "probability": 0.13213895981949128,
+            "realized_return": 0.10561122244488974,
+            "actual": 1
+          },
+          {
+            "date": "2020-03-27",
+            "ticker": "US:MSFT",
+            "probability": 0.13213895981949128,
+            "realized_return": 0.10561122244488974,
+            "actual": 1
+          },
+          {
+            "date": "2012-10-25",
+            "ticker": "US:QCOM",
+            "probability": 0.1533700767064273,
+            "realized_return": 0.07295838411979805,
+            "actual": 1
+          },
+          {
+            "date": "2012-10-25",
+            "ticker": "US:QCOM",
+            "probability": 0.1533700767064273,
+            "realized_return": 0.07295838411979805,
+            "actual": 1
+          },
+          {
+            "date": "2012-10-25",
+            "ticker": "US:QCOM",
+            "probability": 0.1533700767064273,
+            "realized_return": 0.07295838411979805,
+            "actual": 1
+          },
+          {
+            "date": "2012-10-25",
+            "ticker": "US:QCOM",
+            "probability": 0.1533700767064273,
+            "realized_return": 0.07295838411979805,
+            "actual": 1
+          },
+          {
+            "date": "2012-10-25",
+            "ticker": "US:QCOM",
+            "probability": 0.1533700767064273,
+            "realized_return": 0.07295838411979805,
+            "actual": 1
+          },
+          {
+            "date": "2012-10-25",
+            "ticker": "US:QCOM",
+            "probability": 0.1533700767064273,
+            "realized_return": 0.07295838411979805,
+            "actual": 1
+          },
+          {
+            "date": "2020-03-27",
+            "ticker": "US:AAPL",
+            "probability": 0.16937403130757978,
+            "realized_return": 0.10297085654314998,
+            "actual": 1
+          },
+          {
+            "date": "2020-03-27",
+            "ticker": "US:AAPL",
+            "probability": 0.16937403130757978,
+            "realized_return": 0.10297085654314998,
+            "actual": 1
+          },
+          {
+            "date": "2020-03-27",
+            "ticker": "US:AAPL",
+            "probability": 0.16937403130757978,
+            "realized_return": 0.10297085654314998,
+            "actual": 1
+          },
+          {
+            "date": "2020-03-27",
+            "ticker": "US:AAPL",
+            "probability": 0.16937403130757978,
+            "realized_return": 0.10297085654314998,
+            "actual": 1
+          },
+          {
+            "date": "2020-03-27",
+            "ticker": "US:AAPL",
+            "probability": 0.16937403130757978,
+            "realized_return": 0.10297085654314998,
+            "actual": 1
+          },
+          {
+            "date": "2020-03-27",
+            "ticker": "US:AAPL",
+            "probability": 0.16937403130757978,
+            "realized_return": 0.10297085654314998,
+            "actual": 1
+          },
+          {
+            "date": "2012-01-23",
+            "ticker": "US:TSLA",
+            "probability": 0.17483563839865657,
+            "realized_return": 0.1878747128368914,
+            "actual": 1
+          },
+          {
+            "date": "2012-01-23",
+            "ticker": "US:TSLA",
+            "probability": 0.17483563839865657,
+            "realized_return": 0.1878747128368914,
+            "actual": 1
+          },
+          {
+            "date": "2012-01-23",
+            "ticker": "US:TSLA",
+            "probability": 0.17483563839865657,
+            "realized_return": 0.1878747128368914,
+            "actual": 1
+          },
+          {
+            "date": "2016-05-10",
+            "ticker": "US:QCOM",
+            "probability": 0.1766531903602657,
+            "realized_return": 0.0659635666347076,
+            "actual": 1
+          },
+          {
+            "date": "2016-05-10",
+            "ticker": "US:QCOM",
+            "probability": 0.1766531903602657,
+            "realized_return": 0.0659635666347076,
+            "actual": 1
+          },
+          {
+            "date": "2016-05-10",
+            "ticker": "US:QCOM",
+            "probability": 0.1766531903602657,
+            "realized_return": 0.0659635666347076,
+            "actual": 1
+          },
+          {
+            "date": "2016-05-10",
+            "ticker": "US:QCOM",
+            "probability": 0.1766531903602657,
+            "realized_return": 0.0659635666347076,
+            "actual": 1
+          },
+          {
+            "date": "2016-05-10",
+            "ticker": "US:QCOM",
+            "probability": 0.1766531903602657,
+            "realized_return": 0.0659635666347076,
+            "actual": 1
+          }
+        ],
+        "top_misses_dedup": [
+          {
+            "date": "2016-07-13",
+            "ticker": "US:META",
+            "probability": 0.05429919138107595,
+            "realized_return": 0.0561740023976709,
+            "actual": 1
+          },
+          {
+            "date": "2016-03-07",
+            "ticker": "US:META",
+            "probability": 0.09232731945512246,
+            "realized_return": 0.05788328761940775,
+            "actual": 1
+          },
+          {
+            "date": "2016-09-15",
+            "ticker": "US:AMZN",
+            "probability": 0.09306479284779805,
+            "realized_return": 0.07712195819096013,
+            "actual": 1
+          },
+          {
+            "date": "2012-01-23",
+            "ticker": "US:QCOM",
+            "probability": 0.10567332915749797,
+            "realized_return": 0.05021496130696468,
+            "actual": 1
+          },
+          {
+            "date": "2020-03-27",
+            "ticker": "US:MSFT",
+            "probability": 0.13213895981949128,
+            "realized_return": 0.10561122244488974,
+            "actual": 1
+          },
+          {
+            "date": "2012-10-25",
+            "ticker": "US:QCOM",
+            "probability": 0.1533700767064273,
+            "realized_return": 0.07295838411979805,
+            "actual": 1
+          },
+          {
+            "date": "2020-03-27",
+            "ticker": "US:AAPL",
+            "probability": 0.16937403130757978,
+            "realized_return": 0.10297085654314998,
+            "actual": 1
+          },
+          {
+            "date": "2012-01-23",
+            "ticker": "US:TSLA",
+            "probability": 0.17483563839865657,
+            "realized_return": 0.1878747128368914,
+            "actual": 1
+          },
+          {
+            "date": "2016-05-10",
+            "ticker": "US:QCOM",
+            "probability": 0.1766531903602657,
+            "realized_return": 0.0659635666347076,
+            "actual": 1
+          },
+          {
+            "date": "2007-03-29",
+            "ticker": "US:INTC",
+            "probability": 0.1850601959618431,
+            "realized_return": 0.07176532215819797,
+            "actual": 1
+          },
+          {
+            "date": "2013-03-08",
+            "ticker": "US:AAPL",
+            "probability": 0.18972571599241037,
+            "realized_return": 0.06992852788190884,
+            "actual": 1
+          },
+          {
+            "date": "2017-03-28",
+            "ticker": "US:TSLA",
+            "probability": 0.19368516336798,
+            "realized_return": 0.1126687463169105,
+            "actual": 1
+          },
+          {
+            "date": "2017-01-23",
+            "ticker": "US:AAPL",
+            "probability": 0.19524526353010488,
+            "realized_return": 0.08502664890073275,
+            "actual": 1
+          },
+          {
+            "date": "2021-10-26",
+            "ticker": "US:MSFT",
+            "probability": 0.19663456180614725,
+            "realized_return": 0.08332527167779169,
+            "actual": 1
+          },
+          {
+            "date": "2020-01-23",
+            "ticker": "US:INTC",
+            "probability": 0.2045960144620378,
+            "realized_return": 0.05953885028427042,
+            "actual": 1
+          },
+          {
+            "date": "2024-06-21",
+            "ticker": "US:META",
+            "probability": 0.20467952665894942,
+            "realized_return": 0.06980880391285038,
+            "actual": 1
+          },
+          {
+            "date": "2008-04-28",
+            "ticker": "US:AAPL",
+            "probability": 0.20930189902320895,
+            "realized_return": 0.09243424261143796,
+            "actual": 1
+          },
+          {
+            "date": "2014-08-05",
+            "ticker": "US:TSLA",
+            "probability": 0.21247437591409296,
+            "realized_return": 0.0766071462265634,
+            "actual": 1
+          },
+          {
+            "date": "2013-09-17",
+            "ticker": "US:AMZN",
+            "probability": 0.21490750079126494,
+            "realized_return": 0.055166518723082314,
+            "actual": 1
+          },
+          {
+            "date": "2008-04-28",
+            "ticker": "US:AMD",
+            "probability": 0.2195013153573816,
+            "realized_return": 0.19333333333333336,
+            "actual": 1
+          },
+          {
+            "date": "2010-04-12",
+            "ticker": "US:AAPL",
+            "probability": 0.22651421401676303,
+            "realized_return": 0.11230527434937354,
+            "actual": 1
+          },
+          {
+            "date": "2014-01-24",
+            "ticker": "US:TSLA",
+            "probability": 0.22712782537555987,
+            "realized_return": 0.06832474226804108,
+            "actual": 1
+          },
+          {
+            "date": "2013-11-18",
+            "ticker": "US:AAPL",
+            "probability": 0.23445970305263178,
+            "realized_return": 0.09195303009852873,
+            "actual": 1
+          },
+          {
+            "date": "2024-02-13",
+            "ticker": "US:TSLA",
+            "probability": 0.23626335102545498,
+            "realized_return": 0.09792413868057803,
+            "actual": 1
+          },
+          {
+            "date": "2013-11-18",
+            "ticker": "US:AAPL",
+            "probability": 0.23669665035932733,
+            "realized_return": 0.09195303009852873,
+            "actual": 1
+          },
+          {
+            "date": "2015-04-20",
+            "ticker": "US:TSLA",
+            "probability": 0.24566777213379262,
+            "realized_return": 0.12295483276944343,
+            "actual": 1
+          },
+          {
+            "date": "2006-11-15",
+            "ticker": "US:AAPL",
+            "probability": 0.24628257520386498,
+            "realized_return": 0.0905456725964422,
+            "actual": 1
+          },
+          {
+            "date": "2023-01-23",
+            "ticker": "US:TSLA",
+            "probability": 0.2502222158410188,
+            "realized_return": 0.35485217391304347,
+            "actual": 1
+          },
+          {
+            "date": "2013-09-17",
+            "ticker": "US:AVGO",
+            "probability": 0.25073340156392687,
+            "realized_return": 0.08225324027916248,
+            "actual": 1
+          },
+          {
+            "date": "2024-10-28",
+            "ticker": "US:INTC",
+            "probability": 0.252648137619906,
+            "realized_return": 0.09293193717277483,
+            "actual": 1
+          },
+          {
+            "date": "2024-06-21",
+            "ticker": "US:AMD",
+            "probability": 0.25276951295938516,
+            "realized_return": 0.10829250139552205,
+            "actual": 1
+          },
+          {
+            "date": "2021-06-21",
+            "ticker": "US:AAPL",
+            "probability": 0.25377837454824753,
+            "realized_return": 0.07346938775510203,
+            "actual": 1
+          },
+          {
+            "date": "2023-05-31",
+            "ticker": "US:QCOM",
+            "probability": 0.2577676227195131,
+            "realized_return": 0.0880874702407195,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-18",
+            "ticker": "US:AAPL",
+            "probability": 0.25800645646432796,
+            "realized_return": 0.08092315453169663,
+            "actual": 1
+          },
+          {
+            "date": "2024-10-28",
+            "ticker": "US:TSLA",
+            "probability": 0.2586304051026696,
+            "realized_return": 0.3332825416174623,
+            "actual": 1
+          },
+          {
+            "date": "2022-11-16",
+            "ticker": "US:AVGO",
+            "probability": 0.2598138717311453,
+            "realized_return": 0.07625114806636324,
+            "actual": 1
+          },
+          {
+            "date": "2020-08-03",
+            "ticker": "US:AAPL",
+            "probability": 0.26029400625007587,
+            "realized_return": 0.0520481927710843,
+            "actual": 1
+          },
+          {
+            "date": "2009-12-29",
+            "ticker": "US:AVGO",
+            "probability": 0.2663662941566853,
+            "realized_return": 0.05077010838562468,
+            "actual": 1
+          },
+          {
+            "date": "2022-07-13",
+            "ticker": "US:INTC",
+            "probability": 0.2716414408007815,
+            "realized_return": 0.07981725342649826,
+            "actual": 1
+          },
+          {
+            "date": "2022-07-13",
+            "ticker": "US:MSFT",
+            "probability": 0.2731376275047886,
+            "realized_return": 0.06339031339031354,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-31",
+            "ticker": "US:QCOM",
+            "probability": 0.27356211783439655,
+            "realized_return": 0.050839734409582116,
+            "actual": 1
+          },
+          {
+            "date": "2023-12-08",
+            "ticker": "US:INTC",
+            "probability": 0.2780398572444271,
+            "realized_return": 0.1241217798594847,
+            "actual": 1
+          },
+          {
+            "date": "2011-11-01",
+            "ticker": "US:TSLA",
+            "probability": 0.2799680604167083,
+            "realized_return": 0.17488183659689405,
+            "actual": 1
+          },
+          {
+            "date": "2016-07-13",
+            "ticker": "US:AVGO",
+            "probability": 0.2807530201024447,
+            "realized_return": 0.052410901467505155,
+            "actual": 1
+          },
+          {
+            "date": "2025-11-19",
+            "ticker": "US:GOOGL",
+            "probability": 0.2825686599411349,
+            "realized_return": 0.08473071274888146,
+            "actual": 1
+          },
+          {
+            "date": "2022-03-04",
+            "ticker": "US:AMZN",
+            "probability": 0.2875831230752385,
+            "realized_return": 0.10717792379893032,
+            "actual": 1
+          },
+          {
+            "date": "2018-08-23",
+            "ticker": "US:AVGO",
+            "probability": 0.28950376047530635,
+            "realized_return": 0.1312807043144122,
+            "actual": 1
+          },
+          {
+            "date": "2017-12-07",
+            "ticker": "US:TSLA",
+            "probability": 0.2908050419088314,
+            "realized_return": 0.06561185196609043,
+            "actual": 1
+          },
+          {
+            "date": "2025-03-10",
+            "ticker": "US:AMD",
+            "probability": 0.31602769097837835,
+            "realized_return": 0.1782055262340887,
+            "actual": 1
+          },
+          {
+            "date": "2014-06-02",
+            "ticker": "US:AMD",
+            "probability": 0.3188215958257596,
+            "realized_return": 0.11838790931989941,
+            "actual": 1
+          }
+        ]
+      }
+    }
+  },
+  "meta": {
+    "run_params": {
+      "label_mode": "up5_2w",
+      "horizon": 10,
+      "target_return": 0.05,
+      "fixed_thresholds": [
+        0.5,
+        0.6,
+        0.7
+      ],
+      "feature_set": "v2_ohlcv_ta_relregime_event",
+      "tickers_file": "tickers.txt",
+      "n_tickers": 10,
+      "train_tickers": [
+        "US:AAPL",
+        "US:MSFT",
+        "US:GOOGL",
+        "US:AMZN",
+        "US:META",
+        "US:TSLA",
+        "US:AMD",
+        "US:INTC",
+        "US:QCOM",
+        "US:AVGO"
+      ],
+      "holdout_tickers": []
+    }
+  },
+  "per_ticker": [
+    {
+      "ticker": "US:AAPL",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.7,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AMD",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.7,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AMZN",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.7,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AVGO",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.7,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:GOOGL",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.7,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:INTC",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.7,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:META",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.7,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:MSFT",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.7,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:QCOM",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.7,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:TSLA",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.7,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    }
+  ],
+  "artifact_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\pooled_up5_compat_fixed07_artifact.pkl"
+}

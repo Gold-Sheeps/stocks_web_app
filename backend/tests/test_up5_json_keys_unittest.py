@@ -92,7 +92,7 @@ class TestUp5JsonKeys(unittest.TestCase):
     def test_run_params_and_diagnostics_keys_exist(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             out_name = "tmp_up5_json_test.json"
-            out_path = Path("backend/ml_predictor_data") / out_name
+            out_path = Path(__file__).resolve().parents[1] / "ml_predictor_data" / out_name
             if out_path.exists():
                 out_path.unlink()
             argv = [

@@ -2,1275 +2,1275 @@
 <html lang="ja">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio - Trading System</title>
-    <link rel="stylesheet" href="css/common.css">
-    <style>
-        /* Enhanced Portfolio Page Styles */
-
-        /* Performance Cards Enhanced */
-        .performance-card {
-            background: linear-gradient(135deg,
-                    rgba(255, 255, 255, 0.08) 0%,
-                    rgba(255, 255, 255, 0.02) 100%);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-md);
-            padding: 24px;
-            text-align: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .performance-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg,
-                    transparent,
-                    rgba(255, 255, 255, 0.05),
-                    transparent);
-            transition: left 0.5s;
-        }
-
-        .performance-card:hover::before {
-            left: 100%;
-        }
-
-        .performance-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        .card-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        .card-value {
-            font-size: 2rem;
-            font-weight: 700;
-            font-family: var(--font-mono);
-            letter-spacing: -0.02em;
-            line-height: 1;
-        }
-
-        .card-subtitle {
-            font-size: 0.95rem;
-            font-weight: 600;
-            margin-top: 8px;
-            font-family: var(--font-mono);
-        }
-
-        .card-secondary {
-            font-size: 1.1rem;
-            font-family: var(--font-mono);
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        /* Special card variants */
-        .card-total-assets {
-            border-color: rgba(99, 102, 241, 0.3);
-            background: linear-gradient(135deg,
-                    rgba(99, 102, 241, 0.1) 0%,
-                    rgba(99, 102, 241, 0.02) 100%);
-        }
-
-        .card-total-assets .card-value {
-            color: var(--primary);
-            text-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-        }
-
-        .card-pnl-positive {
-            border-color: rgba(16, 185, 129, 0.3);
-            background: linear-gradient(135deg,
-                    rgba(16, 185, 129, 0.1) 0%,
-                    rgba(16, 185, 129, 0.02) 100%);
-        }
-
-        .card-pnl-positive .card-value {
-            color: var(--success);
-            text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
-        }
-
-        .card-pnl-negative {
-            border-color: rgba(239, 68, 68, 0.3);
-            background: linear-gradient(135deg,
-                    rgba(239, 68, 68, 0.1) 0%,
-                    rgba(239, 68, 68, 0.02) 100%);
-        }
-
-        .card-pnl-negative .card-value {
-            color: var(--danger);
-            text-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
-        }
-
-        .card-best-performer {
-            border-color: rgba(251, 191, 36, 0.3);
-            background: linear-gradient(135deg,
-                    rgba(251, 191, 36, 0.1) 0%,
-                    rgba(251, 191, 36, 0.02) 100%);
-        }
-
-        .card-best-performer .card-value {
-            color: #fbbf24;
-            text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
-        }
-
-        /* Performance Grid */
-        .performance-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: var(--sp-4);
-            margin-bottom: var(--sp-6);
-        }
-
-        /* Holdings Table Enhanced */
-        .holdings-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-
-        .holdings-table thead th {
-            background: linear-gradient(180deg,
-                    rgba(255, 255, 255, 0.05) 0%,
-                    rgba(255, 255, 255, 0.02) 100%);
-            padding: 14px 16px;
-            text-align: left;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            font-weight: 600;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .holdings-table thead th.text-right {
-            text-align: right;
-        }
-
-        .holdings-table tbody tr {
-            transition: all 0.2s ease;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            opacity: 0;
-            animation: fadeInRow 0.4s ease-in forwards;
-        }
-
-        @keyframes fadeInRow {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .holdings-table tbody tr:hover {
-            background: linear-gradient(90deg,
-                    rgba(99, 102, 241, 0.05) 0%,
-                    rgba(99, 102, 241, 0.02) 100%);
-            transform: translateX(4px);
-            box-shadow: -4px 0 0 var(--primary);
-        }
-
-        .holdings-table tbody td {
-            padding: 16px;
-            font-size: 0.9rem;
-        }
-
-        /* Stagger animation */
-        .holdings-table tbody tr:nth-child(1) {
-            animation-delay: 0s;
-        }
-
-        .holdings-table tbody tr:nth-child(2) {
-            animation-delay: 0.05s;
-        }
-
-        .holdings-table tbody tr:nth-child(3) {
-            animation-delay: 0.1s;
-        }
-
-        .holdings-table tbody tr:nth-child(4) {
-            animation-delay: 0.15s;
-        }
-
-        .holdings-table tbody tr:nth-child(5) {
-            animation-delay: 0.2s;
-        }
-
-        .holdings-table tbody tr:nth-child(6) {
-            animation-delay: 0.25s;
-        }
-
-        .holdings-table tbody tr:nth-child(7) {
-            animation-delay: 0.3s;
-        }
-
-        .holdings-table tbody tr:nth-child(8) {
-            animation-delay: 0.35s;
-        }
-
-        .holdings-table tbody tr:nth-child(9) {
-            animation-delay: 0.4s;
-        }
-
-        .holdings-table tbody tr:nth-child(10) {
-            animation-delay: 0.45s;
-        }
-
-        /* Symbol Cell Enhanced */
-        .symbol-cell {
-            font-family: var(--font-mono);
-            font-weight: 700;
-            font-size: 1rem;
-            color: var(--primary);
-            letter-spacing: -0.01em;
-        }
-
-        .company-name {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 2px;
-            font-weight: 400;
-        }
-
-        /* Number Cells */
-        .num-cell {
-            font-family: var(--font-mono);
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        /* Side Badge Enhanced */
-        .side-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border: 1px solid;
-        }
-
-        .side-badge.buy {
-            background: linear-gradient(135deg,
-                    rgba(16, 185, 129, 0.2),
-                    rgba(16, 185, 129, 0.05));
-            border-color: var(--success);
-            color: var(--success);
-        }
-
-        .side-badge.sell {
-            background: linear-gradient(135deg,
-                    rgba(239, 68, 68, 0.2),
-                    rgba(239, 68, 68, 0.05));
-            border-color: var(--danger);
-            color: var(--danger);
-        }
-
-        /* Modal Enhanced */
-        .custom-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .custom-modal.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .modal-dialog {
-            background: linear-gradient(135deg,
-                    rgba(30, 30, 40, 0.98) 0%,
-                    rgba(20, 20, 30, 0.98) 100%);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-lg);
-            max-width: 550px;
-            width: 90%;
-            max-height: 85vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-
-        .custom-modal.active .modal-dialog {
-            transform: scale(1);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 24px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .modal-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-
-        .modal-close {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: none;
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: rotate(90deg);
-        }
-
-        /* Form Styles */
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .input-group label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            opacity: 0.8;
-        }
-
-        .input-group input,
-        .input-group select {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: var(--radius-sm);
-            padding: 10px 14px;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-            color: white;
-        }
-
-        .input-group input:focus,
-        .input-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .input-group input:hover,
-        .input-group select:hover {
-            border-color: rgba(255, 255, 255, 0.25);
-        }
-
-        .input-group input[readonly] {
-            background: rgba(0, 0, 0, 0.3);
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        /* Form Grid */
-        .form-grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        /* Page Header Enhanced */
-        .page-header {
-            margin-bottom: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .page-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .page-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        /* Delete Button in Trades */
-        .delete-trade-btn {
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            color: var(--danger);
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .delete-trade-btn:hover {
-            background: var(--danger);
-            border-color: var(--danger);
-            color: white;
-            transform: scale(1.1) rotate(90deg);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-        }
-
-        /* Button Enhancements */
-        .btn {
-            transition: all 0.2s ease;
-            font-weight: 600;
-        }
-
-        .btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn:active:not(:disabled) {
-            transform: translateY(0);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, rgba(99, 102, 241, 0.8) 100%);
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 1) 0%, var(--primary) 100%);
-        }
-
-        /* Glass Panel Enhanced */
-        .glass-panel {
-            background: linear-gradient(135deg,
-                    rgba(255, 255, 255, 0.05) 0%,
-                    rgba(255, 255, 255, 0.02) 100%);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        /* Fade-in Animation */
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Staggered Animation */
-        .stagger-1 {
-            animation-delay: 0.05s;
-        }
-
-        .stagger-2 {
-            animation-delay: 0.1s;
-        }
-
-        .stagger-3 {
-            animation-delay: 0.15s;
-        }
-
-        .stagger-4 {
-            animation-delay: 0.2s;
-        }
-
-        /* Loading Overlay Enhanced */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Color Utilities */
-        .text-success {
-            color: var(--success);
-            text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
-        }
-
-        .text-danger {
-            color: var(--danger);
-            text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
-        }
-
-        .text-muted {
-            color: var(--text-muted);
-        }
-
-        .text-right {
-            text-align: right;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .page-title {
-                font-size: 1.4rem;
-            }
-
-            .performance-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .form-grid-2 {
-                grid-template-columns: 1fr;
-            }
-
-            .card-value {
-                font-size: 1.6rem;
-            }
-        }
-    </style>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Portfolio - Trading System</title>
+ <link rel="stylesheet" href="css/common.css">
+ <style>
+ /* Enhanced Portfolio Page Styles */
+
+ /* Performance Cards Enhanced */
+ .performance-card {
+ background: linear-gradient(135deg,
+ rgba(255, 255, 255, 0.08) 0%,
+ rgba(255, 255, 255, 0.02) 100%);
+ backdrop-filter: blur(10px);
+ border: 1px solid rgba(255, 255, 255, 0.1);
+ border-radius: var(--radius-md);
+ padding: 24px;
+ text-align: center;
+ transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+ position: relative;
+ overflow: hidden;
+ }
+
+ .performance-card::before {
+ content: '';
+ position: absolute;
+ top: 0;
+ left: -100%;
+ width: 100%;
+ height: 100%;
+ background: linear-gradient(90deg,
+ transparent,
+ rgba(255, 255, 255, 0.05),
+ transparent);
+ transition: left 0.5s;
+ }
+
+ .performance-card:hover::before {
+ left: 100%;
+ }
+
+ .performance-card:hover {
+ transform: translateY(-4px);
+ border-color: rgba(255, 255, 255, 0.2);
+ box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+ }
+
+ .card-label {
+ font-size: 0.7rem;
+ text-transform: uppercase;
+ letter-spacing: 0.08em;
+ color: var(--text-muted);
+ margin-bottom: 12px;
+ font-weight: 600;
+ }
+
+ .card-value {
+ font-size: 2rem;
+ font-weight: 700;
+ font-family: var(--font-mono);
+ letter-spacing: -0.02em;
+ line-height: 1;
+ }
+
+ .card-subtitle {
+ font-size: 0.95rem;
+ font-weight: 600;
+ margin-top: 8px;
+ font-family: var(--font-mono);
+ }
+
+ .card-secondary {
+ font-size: 1.1rem;
+ font-family: var(--font-mono);
+ color: var(--text-muted);
+ margin-top: 4px;
+ }
+
+ /* Special card variants */
+ .card-total-assets {
+ border-color: rgba(99, 102, 241, 0.3);
+ background: linear-gradient(135deg,
+ rgba(99, 102, 241, 0.1) 0%,
+ rgba(99, 102, 241, 0.02) 100%);
+ }
+
+ .card-total-assets .card-value {
+ color: var(--primary);
+ text-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+ }
+
+ .card-pnl-positive {
+ border-color: rgba(16, 185, 129, 0.3);
+ background: linear-gradient(135deg,
+ rgba(16, 185, 129, 0.1) 0%,
+ rgba(16, 185, 129, 0.02) 100%);
+ }
+
+ .card-pnl-positive .card-value {
+ color: var(--success);
+ text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+ }
+
+ .card-pnl-negative {
+ border-color: rgba(239, 68, 68, 0.3);
+ background: linear-gradient(135deg,
+ rgba(239, 68, 68, 0.1) 0%,
+ rgba(239, 68, 68, 0.02) 100%);
+ }
+
+ .card-pnl-negative .card-value {
+ color: var(--danger);
+ text-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+ }
+
+ .card-best-performer {
+ border-color: rgba(251, 191, 36, 0.3);
+ background: linear-gradient(135deg,
+ rgba(251, 191, 36, 0.1) 0%,
+ rgba(251, 191, 36, 0.02) 100%);
+ }
+
+ .card-best-performer .card-value {
+ color: #fbbf24;
+ text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+ }
+
+ /* Performance Grid */
+ .performance-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+ gap: var(--sp-4);
+ margin-bottom: var(--sp-6);
+ }
+
+ /* Holdings Table Enhanced */
+ .holdings-table {
+ width: 100%;
+ border-collapse: separate;
+ border-spacing: 0;
+ }
+
+ .holdings-table thead th {
+ background: linear-gradient(180deg,
+ rgba(255, 255, 255, 0.05) 0%,
+ rgba(255, 255, 255, 0.02) 100%);
+ padding: 14px 16px;
+ text-align: left;
+ font-size: 0.7rem;
+ text-transform: uppercase;
+ letter-spacing: 0.05em;
+ color: var(--text-muted);
+ font-weight: 600;
+ border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+ position: sticky;
+ top: 0;
+ z-index: 10;
+ }
+
+ .holdings-table thead th.text-right {
+ text-align: right;
+ }
+
+ .holdings-table tbody tr {
+ transition: all 0.2s ease;
+ border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+ opacity: 0;
+ animation: fadeInRow 0.4s ease-in forwards;
+ }
+
+ @keyframes fadeInRow {
+ from {
+ opacity: 0;
+ transform: translateY(10px);
+ }
+
+ to {
+ opacity: 1;
+ transform: translateY(0);
+ }
+ }
+
+ .holdings-table tbody tr:hover {
+ background: linear-gradient(90deg,
+ rgba(99, 102, 241, 0.05) 0%,
+ rgba(99, 102, 241, 0.02) 100%);
+ transform: translateX(4px);
+ box-shadow: -4px 0 0 var(--primary);
+ }
+
+ .holdings-table tbody td {
+ padding: 16px;
+ font-size: 0.9rem;
+ }
+
+ /* Stagger animation */
+ .holdings-table tbody tr:nth-child(1) {
+ animation-delay: 0s;
+ }
+
+ .holdings-table tbody tr:nth-child(2) {
+ animation-delay: 0.05s;
+ }
+
+ .holdings-table tbody tr:nth-child(3) {
+ animation-delay: 0.1s;
+ }
+
+ .holdings-table tbody tr:nth-child(4) {
+ animation-delay: 0.15s;
+ }
+
+ .holdings-table tbody tr:nth-child(5) {
+ animation-delay: 0.2s;
+ }
+
+ .holdings-table tbody tr:nth-child(6) {
+ animation-delay: 0.25s;
+ }
+
+ .holdings-table tbody tr:nth-child(7) {
+ animation-delay: 0.3s;
+ }
+
+ .holdings-table tbody tr:nth-child(8) {
+ animation-delay: 0.35s;
+ }
+
+ .holdings-table tbody tr:nth-child(9) {
+ animation-delay: 0.4s;
+ }
+
+ .holdings-table tbody tr:nth-child(10) {
+ animation-delay: 0.45s;
+ }
+
+ /* Symbol Cell Enhanced */
+ .symbol-cell {
+ font-family: var(--font-mono);
+ font-weight: 700;
+ font-size: 1rem;
+ color: var(--primary);
+ letter-spacing: -0.01em;
+ }
+
+ .company-name {
+ font-size: 0.75rem;
+ color: var(--text-muted);
+ margin-top: 2px;
+ font-weight: 400;
+ }
+
+ /* Number Cells */
+ .num-cell {
+ font-family: var(--font-mono);
+ font-weight: 600;
+ font-size: 0.9rem;
+ }
+
+ /* Side Badge Enhanced */
+ .side-badge {
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ padding: 4px 12px;
+ border-radius: 6px;
+ font-size: 0.75rem;
+ font-weight: 700;
+ text-transform: uppercase;
+ letter-spacing: 0.05em;
+ border: 1px solid;
+ }
+
+ .side-badge.buy {
+ background: linear-gradient(135deg,
+ rgba(16, 185, 129, 0.2),
+ rgba(16, 185, 129, 0.05));
+ border-color: var(--success);
+ color: var(--success);
+ }
+
+ .side-badge.sell {
+ background: linear-gradient(135deg,
+ rgba(239, 68, 68, 0.2),
+ rgba(239, 68, 68, 0.05));
+ border-color: var(--danger);
+ color: var(--danger);
+ }
+
+ /* Modal Enhanced */
+ .custom-modal {
+ position: fixed;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ background: rgba(0, 0, 0, 0.8);
+ backdrop-filter: blur(8px);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ z-index: 1000;
+ opacity: 0;
+ pointer-events: none;
+ transition: opacity 0.3s ease;
+ }
+
+ .custom-modal.active {
+ opacity: 1;
+ pointer-events: all;
+ }
+
+ .modal-dialog {
+ background: linear-gradient(135deg,
+ rgba(30, 30, 40, 0.98) 0%,
+ rgba(20, 20, 30, 0.98) 100%);
+ backdrop-filter: blur(20px);
+ border: 1px solid rgba(255, 255, 255, 0.1);
+ border-radius: var(--radius-lg);
+ max-width: 550px;
+ width: 90%;
+ max-height: 85vh;
+ overflow-y: auto;
+ box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+ transform: scale(0.9);
+ transition: transform 0.3s ease;
+ }
+
+ .custom-modal.active .modal-dialog {
+ transform: scale(1);
+ }
+
+ .modal-header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ padding: 24px;
+ border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+ background: rgba(255, 255, 255, 0.02);
+ }
+
+ .modal-title {
+ font-size: 1.3rem;
+ font-weight: 700;
+ }
+
+ .modal-close {
+ width: 32px;
+ height: 32px;
+ border-radius: 50%;
+ border: none;
+ background: rgba(255, 255, 255, 0.05);
+ color: white;
+ font-size: 1.5rem;
+ cursor: pointer;
+ transition: all 0.2s ease;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ }
+
+ .modal-close:hover {
+ background: rgba(255, 255, 255, 0.1);
+ transform: rotate(90deg);
+ }
+
+ /* Form Styles */
+ .input-group {
+ display: flex;
+ flex-direction: column;
+ gap: 6px;
+ }
+
+ .input-group label {
+ font-size: 0.75rem;
+ font-weight: 600;
+ text-transform: uppercase;
+ letter-spacing: 0.05em;
+ color: var(--text-muted);
+ opacity: 0.8;
+ }
+
+ .input-group input,
+ .input-group select {
+ background: rgba(255, 255, 255, 0.05);
+ border: 1px solid rgba(255, 255, 255, 0.15);
+ border-radius: var(--radius-sm);
+ padding: 10px 14px;
+ font-size: 0.9rem;
+ transition: all 0.2s ease;
+ color: white;
+ }
+
+ .input-group input:focus,
+ .input-group select:focus {
+ outline: none;
+ border-color: var(--primary);
+ background: rgba(255, 255, 255, 0.08);
+ box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+ }
+
+ .input-group input:hover,
+ .input-group select:hover {
+ border-color: rgba(255, 255, 255, 0.25);
+ }
+
+ .input-group input[readonly] {
+ background: rgba(0, 0, 0, 0.3);
+ cursor: not-allowed;
+ opacity: 0.6;
+ }
+
+ /* Form Grid */
+ .form-grid-2 {
+ display: grid;
+ grid-template-columns: 1fr 1fr;
+ gap: 16px;
+ }
+
+ /* Page Header Enhanced */
+ .page-header {
+ margin-bottom: 24px;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ padding: 16px 0;
+ border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+ flex-wrap: wrap;
+ gap: 16px;
+ }
+
+ .page-title {
+ font-size: 1.8rem;
+ font-weight: 700;
+ letter-spacing: -0.02em;
+ display: flex;
+ align-items: center;
+ gap: 12px;
+ }
+
+ .page-actions {
+ display: flex;
+ gap: 8px;
+ flex-wrap: wrap;
+ }
+
+ /* Delete Button in Trades */
+ .delete-trade-btn {
+ width: 28px;
+ height: 28px;
+ border-radius: 6px;
+ background: rgba(239, 68, 68, 0.1);
+ border: 1px solid rgba(239, 68, 68, 0.2);
+ color: var(--danger);
+ font-size: 1.1rem;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ cursor: pointer;
+ transition: all 0.2s ease;
+ }
+
+ .delete-trade-btn:hover {
+ background: var(--danger);
+ border-color: var(--danger);
+ color: white;
+ transform: scale(1.1) rotate(90deg);
+ box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+ }
+
+ /* Button Enhancements */
+ .btn {
+ transition: all 0.2s ease;
+ font-weight: 600;
+ }
+
+ .btn:hover:not(:disabled) {
+ transform: translateY(-2px);
+ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+ }
+
+ .btn:active:not(:disabled) {
+ transform: translateY(0);
+ }
+
+ .btn-primary {
+ background: linear-gradient(135deg, var(--primary) 0%, rgba(99, 102, 241, 0.8) 100%);
+ }
+
+ .btn-primary:hover:not(:disabled) {
+ background: linear-gradient(135deg, rgba(99, 102, 241, 1) 0%, var(--primary) 100%);
+ }
+
+ /* Glass Panel Enhanced */
+ .glass-panel {
+ background: linear-gradient(135deg,
+ rgba(255, 255, 255, 0.05) 0%,
+ rgba(255, 255, 255, 0.02) 100%);
+ backdrop-filter: blur(10px);
+ border: 1px solid rgba(255, 255, 255, 0.1);
+ transition: all 0.3s ease;
+ }
+
+ /* Fade-in Animation */
+ .fade-in {
+ animation: fadeIn 0.5s ease-in;
+ }
+
+ @keyframes fadeIn {
+ from {
+ opacity: 0;
+ transform: translateY(10px);
+ }
+
+ to {
+ opacity: 1;
+ transform: translateY(0);
+ }
+ }
+
+ /* Staggered Animation */
+ .stagger-1 {
+ animation-delay: 0.05s;
+ }
+
+ .stagger-2 {
+ animation-delay: 0.1s;
+ }
+
+ .stagger-3 {
+ animation-delay: 0.15s;
+ }
+
+ .stagger-4 {
+ animation-delay: 0.2s;
+ }
+
+ /* Loading Overlay Enhanced */
+ .loading-overlay {
+ position: fixed;
+ top: 0;
+ left: 0;
+ right: 0;
+ bottom: 0;
+ background: rgba(0, 0, 0, 0.8);
+ backdrop-filter: blur(8px);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ z-index: 9999;
+ }
+
+ .spinner {
+ width: 60px;
+ height: 60px;
+ border: 4px solid rgba(255, 255, 255, 0.1);
+ border-top-color: var(--primary);
+ border-radius: 50%;
+ animation: spin 0.8s linear infinite;
+ }
+
+ @keyframes spin {
+ to {
+ transform: rotate(360deg);
+ }
+ }
+
+ /* Color Utilities */
+ .text-success {
+ color: var(--success);
+ text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+ }
+
+ .text-danger {
+ color: var(--danger);
+ text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+ }
+
+ .text-muted {
+ color: var(--text-muted);
+ }
+
+ .text-right {
+ text-align: right;
+ }
+
+ /* Responsive */
+ @media (max-width: 768px) {
+ .page-title {
+ font-size: 1.4rem;
+ }
+
+ .performance-grid {
+ grid-template-columns: 1fr;
+ }
+
+ .form-grid-2 {
+ grid-template-columns: 1fr;
+ }
+
+ .card-value {
+ font-size: 1.6rem;
+ }
+ }
+ </style>
 </head>
 
 <body>
-    <!-- Sidebar Container -->
-    <div id="sidebar-container"></div>
-
-    <div class="main-content">
-        <div class="container">
-            <!-- Loading -->
-            <div id="loading" class="loading-overlay">
-                <div class="spinner"></div>
-            </div>
-
-            <!-- Page Header -->
-            <div class="page-header">
-                <div class="page-title">
-                    <span>💼</span> Portfolio
-                </div>
-                <div class="page-actions">
-                    <button class="btn btn-primary" onclick="openModal('EQUITY')">
-                        <span style="margin-right: 4px;">+</span> Stock
-                    </button>
-                    <button class="btn btn-primary" onclick="openCashModal()">
-                        <span style="margin-right: 4px;">💰</span> Cash
-                    </button>
-                    <button class="btn btn-ghost" onclick="openModal('ETF')">
-                        <span style="margin-right: 4px;">+</span> ETF
-                    </button>
-                    <button class="btn btn-ghost" onclick="openModal('FX')">
-                        <span style="margin-right: 4px;">+</span> FX
-                    </button>
-                </div>
-            </div>
-
-            <div id="content" style="display:none; opacity:0; transition:opacity 0.5s;">
-                <!-- Performance Grid -->
-                <div class="performance-grid">
-                    <div class="performance-card card-total-assets fade-in stagger-1">
-                        <div class="card-label">Total Assets</div>
-                        <div class="card-value" id="totalValue">¥0</div>
-                    </div>
-                    <div class="performance-card fade-in stagger-2">
-                        <div class="card-label">Cash</div>
-                        <div class="card-value card-secondary" id="cashValue">¥0</div>
-                    </div>
-                    <div class="performance-card fade-in stagger-3">
-                        <div class="card-label">Total Cost</div>
-                        <div class="card-value card-secondary" id="totalCost">¥0</div>
-                    </div>
-                    <div class="performance-card fade-in stagger-4" id="pnlCard">
-                        <div class="card-label">Total P&L</div>
-                        <div class="card-value" id="totalGainLoss">¥0</div>
-                        <div class="card-subtitle" id="totalGainLossPct">0%</div>
-                    </div>
-                    <div class="performance-card card-best-performer fade-in stagger-5">
-                        <div class="card-label">Best Performer</div>
-                        <div class="card-value" id="bestPerformer">-</div>
-                    </div>
-                </div>
-
-                <!-- Holdings Table -->
-                <div class="glass-panel mb-6 fade-in" style="animation-delay: 0.25s;">
-                    <div class="panel-header">
-                        <div class="panel-title">
-                            <span class="badge badge-primary">📊</span> Holdings
-                        </div>
-                    </div>
-                    <div class="table-container">
-                        <table class="holdings-table">
-                            <thead>
-                                <tr>
-                                    <th>Symbol</th>
-                                    <th class="text-right">Shares</th>
-                                    <th class="text-right">Avg Cost</th>
-                                    <th class="text-right">Price</th>
-                                    <th class="text-right">Value</th>
-                                    <th class="text-right">P&L</th>
-                                    <th class="text-right">P&L %</th>
-                                    <th class="text-right">Cost Basis</th>
-                                    <th class="text-center">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="holdingsBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Trades Table -->
-                <div class="glass-panel fade-in" style="animation-delay: 0.35s;">
-                    <div class="panel-header">
-                        <div class="panel-title">
-                            <span class="badge badge-accent">📜</span> Trade History
-                        </div>
-                    </div>
-                    <div class="table-container">
-                        <table class="holdings-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Symbol</th>
-                                    <th>Side</th>
-                                    <th class="text-right">Shares</th>
-                                    <th class="text-right">Price</th>
-                                    <th class="text-right">Amount</th>
-                                    <th class="text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tradesBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Transaction Modal -->
-    <div class="custom-modal" id="modalOverlay">
-        <div class="modal-dialog glass-panel">
-            <div class="modal-header">
-                <div class="modal-title" id="modalTitle">Register Trade</div>
-                <button class="modal-close" onclick="closeModal()">×</button>
-            </div>
-
-            <form id="tradeForm" onsubmit="submitTrade(event)" style="padding: 24px;">
-                <input type="hidden" id="assetType" name="asset_type">
-
-                <div class="form-grid-2 mb-4">
-                    <div class="input-group">
-                        <label>Market</label>
-                        <select id="market" name="market" onchange="updateCurrency()">
-                            <option value="US">🇺🇸 US Stock</option>
-                            <option value="JP">🇯🇵 JP Stock</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Side</label>
-                        <select id="side" name="side">
-                            <option value="BUY">📈 BUY</option>
-                            <option value="SELL">📉 SELL</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="input-group mb-4">
-                    <label>Symbol</label>
-                    <input type="text" id="symbol" name="symbol" list="symbolList" placeholder="e.g. NVDA, AAPL"
-                        required autocomplete="off">
-                    <datalist id="symbolList"></datalist>
-                </div>
-
-                <div class="input-group mb-4">
-                    <label>Trade Date</label>
-                    <input type="date" id="tradeDate" name="trade_date" required>
-                </div>
-
-                <div class="form-grid-2 mb-4">
-                    <div class="input-group">
-                        <label>Shares</label>
-                        <input type="number" step="any" id="shares" name="shares" placeholder="100" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Price per Share</label>
-                        <input type="number" step="any" id="price" name="price" placeholder="150.00" required>
-                    </div>
-                </div>
-
-                <div class="form-grid-2 mb-4">
-                    <div class="input-group">
-                        <label>Currency</label>
-                        <input type="text" id="currency" name="currency" value="USD" readonly>
-                    </div>
-                    <div class="input-group">
-                        <label>FX Rate (to JPY)</label>
-                        <input type="number" step="any" id="fxRate" name="fx_rate_to_jpy" placeholder="150.0">
-                    </div>
-                </div>
-
-                <div class="input-group mb-6">
-                    <label>Memo (Optional)</label>
-                    <input type="text" id="memo" name="memo" placeholder="Trade notes...">
-                </div>
-
-                <div class="d-flex justify-end gap-2">
-                    <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">
-                        <span style="margin-right: 4px;">✓</span> Register
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Cash Modal -->
-    <div class="custom-modal" id="cashModal">
-        <div class="modal-dialog glass-panel">
-            <div class="modal-header">
-                <div class="modal-title">💰 現金残高を編集</div>
-                <button class="modal-close" onclick="closeCashModal()">×</button>
-            </div>
-
-            <form id="cashForm" onsubmit="submitCash(event)" style="padding: 24px;">
-                <div class="input-group mb-4">
-                    <label>現金残高（JPY）</label>
-                    <input type="number" step="0.01" id="cashAmount" name="cash_amount" placeholder="例: 1000000"
-                        required>
-                </div>
-
-                <div class="input-group mb-6">
-                    <label>メモ（任意）</label>
-                    <input type="text" id="cashMemo" name="memo" placeholder="入金、出金など...">
-                </div>
-
-                <div class="d-flex justify-end gap-2">
-                    <button type="button" class="btn btn-ghost" onclick="closeCashModal()">キャンセル</button>
-                    <button type="submit" class="btn btn-primary">
-                        <span style="margin-right: 4px;">✓</span> 保存
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Edit Holding Modal -->
-    <div class="custom-modal" id="editHoldingModal">
-        <div class="modal-dialog glass-panel">
-            <div class="modal-header">
-                <div class="modal-title">✏️ Holdingを編集</div>
-                <button class="modal-close" onclick="closeEditHoldingModal()">×</button>
-            </div>
-
-            <form id="editHoldingForm" onsubmit="submitEditHolding(event)" style="padding: 24px;">
-                <input type="hidden" id="editHoldingId">
-
-                <div class="input-group mb-4">
-                    <label>Symbol</label>
-                    <input type="text" id="editSymbol" readonly
-                        style="background: rgba(0,0,0,0.3); cursor: not-allowed;">
-                </div>
-
-                <div class="form-grid-2 mb-4">
-                    <div class="input-group">
-                        <label>Shares</label>
-                        <input type="number" step="any" id="editShares" name="shares" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Average Cost</label>
-                        <input type="number" step="any" id="editAvgCost" name="avg_cost" required>
-                    </div>
-                </div>
-
-                <div class="d-flex justify-end gap-2">
-                    <button type="button" class="btn btn-ghost" onclick="closeEditHoldingModal()">キャンセル</button>
-                    <button type="submit" class="btn btn-primary">
-                        <span style="margin-right: 4px;">✓</span> 更新
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script src="js/config.js"></script>
-    <script src="js/common.js"></script>
-    <script>
-        // --- Cash Management ---
-        let currentCash = null;
-
-        function openCashModal() {
-            document.getElementById('cashAmount').value = Number.isFinite(currentCash) ? currentCash : '';
-            document.getElementById('cashModal').classList.add('active');
-        }
-
-        function closeCashModal() {
-            document.getElementById('cashModal').classList.remove('active');
-        }
-
-        async function submitCash(event) {
-            event.preventDefault();
-            const amount = parseFloat(document.getElementById('cashAmount').value);
-            const memoInput = (document.getElementById('cashMemo')?.value || '').trim();
-            if (!Number.isFinite(amount)) {
-                if (window.UI && window.UI.showToast) {
-                    window.UI.showToast('金額を正しく入力してください', 'warning');
-                } else {
-                    alert('金額を正しく入力してください');
-                }
-                return;
-            }
-
-            try {
-                // Reflect cash change into DB as DEPOSIT/WITHDRAW trade.
-                const delta = amount - currentCash;
-                if (Math.abs(delta) < 0.000001) {
-                    closeCashModal();
-                    if (window.UI && window.UI.showToast) {
-                        window.UI.showToast('変更はありません', 'info');
-                    }
-                    return;
-                }
-
-                const side = delta >= 0 ? 'DEPOSIT' : 'WITHDRAW';
-                const tradeDate = new Date().toISOString().slice(0, 10);
-                const payload = {
-                    symbol_key: 'JP:CASH',
-                    market: 'JP',
-                    asset_type: 'CASH',
-                    side: side,
-                    trade_date: tradeDate,
-                    shares: 1,
-                    price: Math.abs(delta),
-                    currency: 'JPY',
-                    memo: memoInput || `Cash adjustment via modal (${side})`
-                };
-
-                const res = await fetch(`${CONFIG.API_BASE}/portfolio/trade`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!res.ok) {
-                    let detail = '';
-                    try {
-                        const err = await res.json();
-                        detail = err.detail || JSON.stringify(err);
-                    } catch (_) {}
-                    throw new Error(`Cash update failed (${res.status}) ${detail}`);
-                }
-
-                await loadPortfolio();
-
-                closeCashModal();
-
-                if (window.UI && window.UI.showToast) {
-                    window.UI.showToast('現金残高を更新しました', 'success');
-                } else {
-                    alert('現金残高を更新しました');
-                }
-            } catch (error) {
-                console.error('Cash update error:', error);
-                if (window.UI && window.UI.showToast) {
-                    window.UI.showToast('エラーが発生しました', 'error');
-                } else {
-                    alert('エラーが発生しました');
-                }
-            }
-        }
-
-        // --- Edit Holding ---
-        function openEditHoldingModal(holdingId, symbol, shares, avgCost) {
-            document.getElementById('editHoldingId').value = holdingId;
-            document.getElementById('editSymbol').value = symbol;
-            document.getElementById('editShares').value = shares;
-            document.getElementById('editAvgCost').value = avgCost;
-            document.getElementById('editHoldingModal').classList.add('active');
-        }
-
-        function closeEditHoldingModal() {
-            document.getElementById('editHoldingModal').classList.remove('active');
-        }
-
-        async function submitEditHolding(event) {
-            event.preventDefault();
-
-            const holdingId = document.getElementById('editHoldingId').value;
-            const shares = parseFloat(document.getElementById('editShares').value);
-            const avgCost = parseFloat(document.getElementById('editAvgCost').value);
-
-            try {
-                const response = await fetch(`${CONFIG.API_BASE}/portfolio/holdings/${holdingId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        shares: shares,
-                        avg_cost: avgCost
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                await loadPortfolio();
-                closeEditHoldingModal();
-
-                if (window.UI && window.UI.showToast) {
-                    window.UI.showToast('Holdingを更新しました', 'success');
-                } else {
-                    alert('Holdingを更新しました');
-                }
-            } catch (error) {
-                console.error('Edit holding error:', error);
-                if (window.UI && window.UI.showToast) {
-                    window.UI.showToast('エラーが発生しました', 'error');
-                } else {
-                    alert('エラーが発生しました');
-                }
-            }
-        }
-
-        // --- Formatting Utils ---
-        function formatCurrency(value, currency = 'JPY') {
-            if (currency === 'JPY') {
-                return new Intl.NumberFormat('ja-JP', {
-                    style: 'currency',
-                    currency: 'JPY',
-                    minimumFractionDigits: 0
-                }).format(value);
-            } else {
-                return new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: currency,
-                    minimumFractionDigits: 2
-                }).format(value);
-            }
-        }
-
-        function formatNumber(value, decimals = 2) {
-            if (value === null || value === undefined) return '-';
-            return new Intl.NumberFormat('en-US', {
-                minimumFractionDigits: decimals,
-                maximumFractionDigits: decimals
-            }).format(value);
-        }
-
-        function formatPct(value) {
-            if (value === null || value === undefined) return '-';
-            const num = parseFloat(value);
-            const color = num >= 0 ? 'var(--success)' : 'var(--danger)';
-            const arrow = num >= 0 ? '▲' : '▼';
-            return `<span style="color: ${color}; font-weight: 700;">${arrow} ${Math.abs(num).toFixed(2)}%</span>`;
-        }
-
-        // --- main Logic ---
-        async function loadPortfolio() {
-            try {
-                const response = await fetch(`${CONFIG.API_BASE}/portfolio/`);
-                const data = await response.json();
-
-                // Performance
-                document.getElementById('totalValue').textContent = formatCurrency(data.performance.total_value, 'JPY');
-                document.getElementById('totalCost').textContent = formatCurrency(data.performance.total_cost, 'JPY');
-
-                const totalGain = data.performance.total_gain_loss;
-                const totalGainEl = document.getElementById('totalGainLoss');
-                const pnlCard = document.getElementById('pnlCard');
-
-                totalGainEl.textContent = formatCurrency(totalGain, 'JPY');
-
-                // Update card styling based on P&L
-                pnlCard.classList.remove('card-pnl-positive', 'card-pnl-negative');
-                if (totalGain >= 0) {
-                    pnlCard.classList.add('card-pnl-positive');
-                } else {
-                    pnlCard.classList.add('card-pnl-negative');
-                }
-
-                const gainPct = parseFloat(data.performance.total_gain_loss_pct);
-                document.getElementById('totalGainLossPct').innerHTML = formatPct(gainPct);
-
-                document.getElementById('bestPerformer').textContent = data.performance.best_performer || '-';
-
-                // Use backend-calculated cash balance (avoid double counting with local cache)
-                const serverCash = parseFloat(data.performance.cash_balance || 0);
-                currentCash = serverCash;
-                document.getElementById('cashValue').textContent = formatCurrency(serverCash, 'JPY');
-
-                // Holdings
-                const holdingsHtml = data.holdings.map(h => {
-                    const gainClass = parseFloat(h.gain_loss) >= 0 ? 'text-success' : 'text-danger';
-                    const currencySymbol = h.currency === 'USD' ? '$' : '¥';
-                    return `
-                        <tr>
-                            <td>
-                                <div class="symbol-cell">${h.symbol}</div>
-                                <div class="company-name">${h.name || '-'}</div>
-                            </td>
-                            <td class="text-right num-cell">${formatNumber(h.shares, 2)}</td>
-                            <td class="text-right num-cell text-muted">${currencySymbol}${formatNumber(h.avg_cost)}</td>
-                            <td class="text-right num-cell" style="font-weight: 700;">${currencySymbol}${formatNumber(h.current_price)}</td>
-                            <td class="text-right num-cell" style="font-weight: 700;">${currencySymbol}${formatNumber(h.market_value)}</td>
-                            <td class="text-right num-cell ${gainClass}">${currencySymbol}${formatNumber(h.gain_loss)}</td>
-                            <td class="text-right ${gainClass}">${formatPct(h.gain_loss_pct)}</td>
-                            <td class="text-right num-cell text-muted">${currencySymbol}${formatNumber(h.cost_basis)}</td>
-                            <td class="text-center">
-                                <button class="btn btn-ghost btn-sm" onclick="openEditHoldingModal(${h.id}, '${h.symbol}', ${h.shares}, ${h.avg_cost})" title="編集">
-                                    ✏️
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-                document.getElementById('holdingsBody').innerHTML = holdingsHtml || '<tr><td colspan="9" class="text-center text-muted" style="padding: 40px;">No holdings yet</td></tr>';
-
-                // Trades
-                const tradesHtml = data.recent_trades.map(t => {
-                    const sideBadgeClass = t.side === 'BUY' ? 'buy' : 'sell';
-                    const currencySymbol = t.currency === 'USD' ? '$' : '¥';
-                    return `
-                        <tr>
-                            <td class="text-muted" style="font-size: 0.85rem;">${t.trade_date}</td>
-                            <td class="symbol-cell">${t.symbol}</td>
-                            <td><span class="side-badge ${sideBadgeClass}">${t.side}</span></td>
-                            <td class="text-right num-cell">${formatNumber(t.shares)}</td>
-                            <td class="text-right num-cell">${currencySymbol}${formatNumber(t.price)}</td>
-                            <td class="text-right num-cell">${currencySymbol}${formatNumber(t.amount)}</td>
-                            <td class="text-right">
-                                <button class="delete-trade-btn" onclick="deleteTrade('${t.trade_id}')" title="Delete trade">×</button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-                document.getElementById('tradesBody').innerHTML = tradesHtml || '<tr><td colspan="7" class="text-center text-muted" style="padding: 40px;">No trade history</td></tr>';
-
-                document.getElementById('loading').style.display = 'none';
-
-                // Fade in
-                const content = document.getElementById('content');
-                content.style.display = 'block';
-                void content.offsetWidth;
-                content.style.opacity = 1;
-
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('loading').style.display = 'none';
-                UI.showToast(`Error: ${error.message}`, 'error');
-            }
-        }
-
-        // --- Modal & Form Logic ---
-        async function openModal(assetType) {
-            document.getElementById('modalOverlay').classList.add('active');
-            document.getElementById('assetType').value = assetType;
-            document.getElementById('modalTitle').textContent = `${assetType} 取引登録`;
-
-            // Set default date to today
-            document.getElementById('tradeDate').valueAsDate = new Date();
-
-            // Set market default
-            if (assetType === 'FX') {
-                document.getElementById('market').value = 'US';
-            } else if (assetType === 'ETF') {
-                document.getElementById('market').value = 'US';
-            } else {
-                document.getElementById('market').value = 'US';
-            }
-            updateCurrency();
-
-            // Load symbols if not loaded
-            if (!symbolsLoaded) {
-                await loadSymbols();
-            }
-        }
-
-        let symbolsLoaded = false;
-
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('active');
-            document.getElementById('tradeForm').reset();
-        }
-
-        // Close modal on overlay click
-        document.getElementById('modalOverlay').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('modalOverlay')) {
-                closeModal();
-            }
-        });
-
-        // Close modal on Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.getElementById('modalOverlay').classList.contains('active')) {
-                closeModal();
-            }
-        });
-
-        function updateCurrency() {
-            const market = document.getElementById('market').value;
-            const currencyInput = document.getElementById('currency');
-            if (market === 'US') {
-                currencyInput.value = 'USD';
-                document.getElementById('fxRate').placeholder = "150.0";
-            } else {
-                currencyInput.value = 'JPY';
-                document.getElementById('fxRate').placeholder = "1.0";
-                document.getElementById('fxRate').value = 1.0;
-            }
-        }
-
-        async function loadSymbols() {
-            try {
-                const res = await fetch(`${CONFIG.API_BASE}/portfolio/symbols`);
-                const symbols = await res.json();
-                const list = document.getElementById('symbolList');
-                list.innerHTML = '';
-                symbols.forEach(s => {
-                    const option = document.createElement('option');
-                    option.value = s.symbol;
-                    option.label = `${s.name} (${s.market})`;
-                    list.appendChild(option);
-                });
-                symbolsLoaded = true;
-            } catch (e) {
-                console.error("Failed to load symbols", e);
-            }
-        }
-
-        async function submitTrade(event) {
-            event.preventDefault();
-
-            const formData = new FormData(event.target);
-            const data = {
-                asset_type: formData.get('asset_type'),
-                market: formData.get('market'),
-                side: formData.get('side'),
-                symbol_key: formData.get('symbol'),
-                trade_date: formData.get('trade_date'),
-                shares: parseFloat(formData.get('shares')),
-                price: parseFloat(formData.get('price')),
-                currency: formData.get('currency'),
-                fx_rate_to_jpy: formData.get('fx_rate_to_jpy') ? parseFloat(formData.get('fx_rate_to_jpy')) : 1.0,
-                memo: formData.get('memo')
-            };
-
-            try {
-                const res = await fetch(`${CONFIG.API_BASE}/portfolio/trade`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                if (res.ok) {
-                    UI.showToast('✓ Trade registered successfully', 'success');
-                    closeModal();
-                    loadPortfolio();
-                } else {
-                    const err = await res.json();
-                    UI.showToast('Error: ' + err.detail, 'error');
-                }
-            } catch (e) {
-                UI.showToast('Connection Error', 'error');
-            }
-        }
-
-        async function deleteTrade(id) {
-            if (!confirm('本当に削除しますか？')) return;
-
-            try {
-                const res = await fetch(`${CONFIG.API_BASE}/portfolio/trade/${id}`, {
-                    method: 'DELETE'
-                });
-                if (res.ok) {
-                    UI.showToast('✓ Trade deleted', 'info');
-                    loadPortfolio();
-                } else {
-                    UI.showToast('Failed to delete', 'error');
-                }
-            } catch (e) {
-                UI.showToast('Connection Error', 'error');
-            }
-        }
-
-        // Init
-        loadPortfolio();
-    </script>
+ <!-- Sidebar Container -->
+ <div id="sidebar-container"></div>
+
+ <div class="main-content">
+ <div class="container">
+ <!-- Loading -->
+ <div id="loading" class="loading-overlay">
+ <div class="spinner"></div>
+ </div>
+
+ <!-- Page Header -->
+ <div class="page-header">
+ <div class="page-title">
+ <span></span> Portfolio
+ </div>
+ <div class="page-actions">
+ <button class="btn btn-primary" onclick="openModal('EQUITY')">
+ <span style="margin-right: 4px;">+</span> Stock
+ </button>
+ <button class="btn btn-primary" onclick="openCashModal()">
+ <span style="margin-right: 4px;"></span> Cash
+ </button>
+ <button class="btn btn-ghost" onclick="openModal('ETF')">
+ <span style="margin-right: 4px;">+</span> ETF
+ </button>
+ <button class="btn btn-ghost" onclick="openModal('FX')">
+ <span style="margin-right: 4px;">+</span> FX
+ </button>
+ </div>
+ </div>
+
+ <div id="content" style="display:none; opacity:0; transition:opacity 0.5s;">
+ <!-- Performance Grid -->
+ <div class="performance-grid">
+ <div class="performance-card card-total-assets fade-in stagger-1">
+ <div class="card-label">Total Assets</div>
+ <div class="card-value" id="totalValue">¥0</div>
+ </div>
+ <div class="performance-card fade-in stagger-2">
+ <div class="card-label">Cash</div>
+ <div class="card-value card-secondary" id="cashValue">¥0</div>
+ </div>
+ <div class="performance-card fade-in stagger-3">
+ <div class="card-label">Total Cost</div>
+ <div class="card-value card-secondary" id="totalCost">¥0</div>
+ </div>
+ <div class="performance-card fade-in stagger-4" id="pnlCard">
+ <div class="card-label">Total P&L</div>
+ <div class="card-value" id="totalGainLoss">¥0</div>
+ <div class="card-subtitle" id="totalGainLossPct">0%</div>
+ </div>
+ <div class="performance-card card-best-performer fade-in stagger-5">
+ <div class="card-label">Best Performer</div>
+ <div class="card-value" id="bestPerformer">-</div>
+ </div>
+ </div>
+
+ <!-- Holdings Table -->
+ <div class="glass-panel mb-6 fade-in" style="animation-delay: 0.25s;">
+ <div class="panel-header">
+ <div class="panel-title">
+ <span class="badge badge-primary"></span> Holdings
+ </div>
+ </div>
+ <div class="table-container">
+ <table class="holdings-table">
+ <thead>
+ <tr>
+ <th>Symbol</th>
+ <th class="text-right">Shares</th>
+ <th class="text-right">Avg Cost</th>
+ <th class="text-right">Price</th>
+ <th class="text-right">Value</th>
+ <th class="text-right">P&L</th>
+ <th class="text-right">P&L %</th>
+ <th class="text-right">Cost Basis</th>
+ <th class="text-center">Actions</th>
+ </tr>
+ </thead>
+ <tbody id="holdingsBody"></tbody>
+ </table>
+ </div>
+ </div>
+
+ <!-- Trades Table -->
+ <div class="glass-panel fade-in" style="animation-delay: 0.35s;">
+ <div class="panel-header">
+ <div class="panel-title">
+ <span class="badge badge-accent"></span> Trade History
+ </div>
+ </div>
+ <div class="table-container">
+ <table class="holdings-table">
+ <thead>
+ <tr>
+ <th>Date</th>
+ <th>Symbol</th>
+ <th>Side</th>
+ <th class="text-right">Shares</th>
+ <th class="text-right">Price</th>
+ <th class="text-right">Amount</th>
+ <th class="text-right">Action</th>
+ </tr>
+ </thead>
+ <tbody id="tradesBody"></tbody>
+ </table>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- Transaction Modal -->
+ <div class="custom-modal" id="modalOverlay">
+ <div class="modal-dialog glass-panel">
+ <div class="modal-header">
+ <div class="modal-title" id="modalTitle">Register Trade</div>
+ <button class="modal-close" onclick="closeModal()">×</button>
+ </div>
+
+ <form id="tradeForm" onsubmit="submitTrade(event)" style="padding: 24px;">
+ <input type="hidden" id="assetType" name="asset_type">
+
+ <div class="form-grid-2 mb-4">
+ <div class="input-group">
+ <label>Market</label>
+ <select id="market" name="market" onchange="updateCurrency()">
+ <option value="US"> US Stock</option>
+ <option value="JP"> JP Stock</option>
+ </select>
+ </div>
+ <div class="input-group">
+ <label>Side</label>
+ <select id="side" name="side">
+ <option value="BUY"> BUY</option>
+ <option value="SELL"> SELL</option>
+ </select>
+ </div>
+ </div>
+
+ <div class="input-group mb-4">
+ <label>Symbol</label>
+ <input type="text" id="symbol" name="symbol" list="symbolList" placeholder="e.g. NVDA, AAPL"
+ required autocomplete="off">
+ <datalist id="symbolList"></datalist>
+ </div>
+
+ <div class="input-group mb-4">
+ <label>Trade Date</label>
+ <input type="date" id="tradeDate" name="trade_date" required>
+ </div>
+
+ <div class="form-grid-2 mb-4">
+ <div class="input-group">
+ <label>Shares</label>
+ <input type="number" step="any" id="shares" name="shares" placeholder="100" required>
+ </div>
+ <div class="input-group">
+ <label>Price per Share</label>
+ <input type="number" step="any" id="price" name="price" placeholder="150.00" required>
+ </div>
+ </div>
+
+ <div class="form-grid-2 mb-4">
+ <div class="input-group">
+ <label>Currency</label>
+ <input type="text" id="currency" name="currency" value="USD" readonly>
+ </div>
+ <div class="input-group">
+ <label>FX Rate (to JPY)</label>
+ <input type="number" step="any" id="fxRate" name="fx_rate_to_jpy" placeholder="150.0">
+ </div>
+ </div>
+
+ <div class="input-group mb-6">
+ <label>Memo (Optional)</label>
+ <input type="text" id="memo" name="memo" placeholder="Trade notes...">
+ </div>
+
+ <div class="d-flex justify-end gap-2">
+ <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+ <button type="submit" class="btn btn-primary">
+ <span style="margin-right: 4px;"></span> Register
+ </button>
+ </div>
+ </form>
+ </div>
+ </div>
+
+ <!-- Cash Modal -->
+ <div class="custom-modal" id="cashModal">
+ <div class="modal-dialog glass-panel">
+ <div class="modal-header">
+ <div class="modal-title"> 現金残高を編集</div>
+ <button class="modal-close" onclick="closeCashModal()">×</button>
+ </div>
+
+ <form id="cashForm" onsubmit="submitCash(event)" style="padding: 24px;">
+ <div class="input-group mb-4">
+ <label>現金残高（JPY）</label>
+ <input type="number" step="0.01" id="cashAmount" name="cash_amount" placeholder="例: 1000000"
+ required>
+ </div>
+
+ <div class="input-group mb-6">
+ <label>メモ（任意）</label>
+ <input type="text" id="cashMemo" name="memo" placeholder="入金、出金など...">
+ </div>
+
+ <div class="d-flex justify-end gap-2">
+ <button type="button" class="btn btn-ghost" onclick="closeCashModal()">キャンセル</button>
+ <button type="submit" class="btn btn-primary">
+ <span style="margin-right: 4px;"></span> 保存
+ </button>
+ </div>
+ </form>
+ </div>
+ </div>
+
+ <!-- Edit Holding Modal -->
+ <div class="custom-modal" id="editHoldingModal">
+ <div class="modal-dialog glass-panel">
+ <div class="modal-header">
+ <div class="modal-title">️ Holdingを編集</div>
+ <button class="modal-close" onclick="closeEditHoldingModal()">×</button>
+ </div>
+
+ <form id="editHoldingForm" onsubmit="submitEditHolding(event)" style="padding: 24px;">
+ <input type="hidden" id="editHoldingId">
+
+ <div class="input-group mb-4">
+ <label>Symbol</label>
+ <input type="text" id="editSymbol" readonly
+ style="background: rgba(0,0,0,0.3); cursor: not-allowed;">
+ </div>
+
+ <div class="form-grid-2 mb-4">
+ <div class="input-group">
+ <label>Shares</label>
+ <input type="number" step="any" id="editShares" name="shares" required>
+ </div>
+ <div class="input-group">
+ <label>Average Cost</label>
+ <input type="number" step="any" id="editAvgCost" name="avg_cost" required>
+ </div>
+ </div>
+
+ <div class="d-flex justify-end gap-2">
+ <button type="button" class="btn btn-ghost" onclick="closeEditHoldingModal()">キャンセル</button>
+ <button type="submit" class="btn btn-primary">
+ <span style="margin-right: 4px;"></span> 更新
+ </button>
+ </div>
+ </form>
+ </div>
+ </div>
+
+ <script src="js/config.js"></script>
+ <script src="js/common.js"></script>
+ <script>
+ // --- Cash Management ---
+ let currentCash = null;
+
+ function openCashModal() {
+ document.getElementById('cashAmount').value = Number.isFinite(currentCash) ? currentCash : '';
+ document.getElementById('cashModal').classList.add('active');
+ }
+
+ function closeCashModal() {
+ document.getElementById('cashModal').classList.remove('active');
+ }
+
+ async function submitCash(event) {
+ event.preventDefault();
+ const amount = parseFloat(document.getElementById('cashAmount').value);
+ const memoInput = (document.getElementById('cashMemo')?.value || '').trim();
+ if (!Number.isFinite(amount)) {
+ if (window.UI && window.UI.showToast) {
+ window.UI.showToast('金額を正しく入力してください', 'warning');
+ } else {
+ alert('金額を正しく入力してください');
+ }
+ return;
+ }
+
+ try {
+ // Reflect cash change into DB as DEPOSIT/WITHDRAW trade.
+ const delta = amount - currentCash;
+ if (Math.abs(delta) < 0.000001) {
+ closeCashModal();
+ if (window.UI && window.UI.showToast) {
+ window.UI.showToast('変更はありません', 'info');
+ }
+ return;
+ }
+
+ const side = delta >= 0 ? 'DEPOSIT' : 'WITHDRAW';
+ const tradeDate = new Date().toISOString().slice(0, 10);
+ const payload = {
+ symbol_key: 'JP:CASH',
+ market: 'JP',
+ asset_type: 'CASH',
+ side: side,
+ trade_date: tradeDate,
+ shares: 1,
+ price: Math.abs(delta),
+ currency: 'JPY',
+ memo: memoInput || `Cash adjustment via modal (${side})`
+ };
+
+ const res = await fetch(`${CONFIG.API_BASE}/portfolio/trade`, {
+ method: 'POST',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify(payload)
+ });
+
+ if (!res.ok) {
+ let detail = '';
+ try {
+ const err = await res.json();
+ detail = err.detail || JSON.stringify(err);
+ } catch (_) {}
+ throw new Error(`Cash update failed (${res.status}) ${detail}`);
+ }
+
+ await loadPortfolio();
+
+ closeCashModal();
+
+ if (window.UI && window.UI.showToast) {
+ window.UI.showToast('現金残高を更新しました', 'success');
+ } else {
+ alert('現金残高を更新しました');
+ }
+ } catch (error) {
+ console.error('Cash update error:', error);
+ if (window.UI && window.UI.showToast) {
+ window.UI.showToast('エラーが発生しました', 'error');
+ } else {
+ alert('エラーが発生しました');
+ }
+ }
+ }
+
+ // --- Edit Holding ---
+ function openEditHoldingModal(holdingId, symbol, shares, avgCost) {
+ document.getElementById('editHoldingId').value = holdingId;
+ document.getElementById('editSymbol').value = symbol;
+ document.getElementById('editShares').value = shares;
+ document.getElementById('editAvgCost').value = avgCost;
+ document.getElementById('editHoldingModal').classList.add('active');
+ }
+
+ function closeEditHoldingModal() {
+ document.getElementById('editHoldingModal').classList.remove('active');
+ }
+
+ async function submitEditHolding(event) {
+ event.preventDefault();
+
+ const holdingId = document.getElementById('editHoldingId').value;
+ const shares = parseFloat(document.getElementById('editShares').value);
+ const avgCost = parseFloat(document.getElementById('editAvgCost').value);
+
+ try {
+ const response = await fetch(`${CONFIG.API_BASE}/portfolio/holdings/${holdingId}`, {
+ method: 'PUT',
+ headers: {
+ 'Content-Type': 'application/json'
+ },
+ body: JSON.stringify({
+ shares: shares,
+ avg_cost: avgCost
+ })
+ });
+
+ if (!response.ok) {
+ throw new Error(`HTTP error! status: ${response.status}`);
+ }
+
+ await loadPortfolio();
+ closeEditHoldingModal();
+
+ if (window.UI && window.UI.showToast) {
+ window.UI.showToast('Holdingを更新しました', 'success');
+ } else {
+ alert('Holdingを更新しました');
+ }
+ } catch (error) {
+ console.error('Edit holding error:', error);
+ if (window.UI && window.UI.showToast) {
+ window.UI.showToast('エラーが発生しました', 'error');
+ } else {
+ alert('エラーが発生しました');
+ }
+ }
+ }
+
+ // --- Formatting Utils ---
+ function formatCurrency(value, currency = 'JPY') {
+ if (currency === 'JPY') {
+ return new Intl.NumberFormat('ja-JP', {
+ style: 'currency',
+ currency: 'JPY',
+ minimumFractionDigits: 0
+ }).format(value);
+ } else {
+ return new Intl.NumberFormat('en-US', {
+ style: 'currency',
+ currency: currency,
+ minimumFractionDigits: 2
+ }).format(value);
+ }
+ }
+
+ function formatNumber(value, decimals = 2) {
+ if (value === null || value === undefined) return '-';
+ return new Intl.NumberFormat('en-US', {
+ minimumFractionDigits: decimals,
+ maximumFractionDigits: decimals
+ }).format(value);
+ }
+
+ function formatPct(value) {
+ if (value === null || value === undefined) return '-';
+ const num = parseFloat(value);
+ const color = num >= 0 ? 'var(--success)' : 'var(--danger)';
+ const arrow = num >= 0 ? '▲' : '▼';
+ return `<span style="color: ${color}; font-weight: 700;">${arrow} ${Math.abs(num).toFixed(2)}%</span>`;
+ }
+
+ // --- main Logic ---
+ async function loadPortfolio() {
+ try {
+ const response = await fetch(`${CONFIG.API_BASE}/portfolio/`);
+ const data = await response.json();
+
+ // Performance
+ document.getElementById('totalValue').textContent = formatCurrency(data.performance.total_value, 'JPY');
+ document.getElementById('totalCost').textContent = formatCurrency(data.performance.total_cost, 'JPY');
+
+ const totalGain = data.performance.total_gain_loss;
+ const totalGainEl = document.getElementById('totalGainLoss');
+ const pnlCard = document.getElementById('pnlCard');
+
+ totalGainEl.textContent = formatCurrency(totalGain, 'JPY');
+
+ // Update card styling based on P&L
+ pnlCard.classList.remove('card-pnl-positive', 'card-pnl-negative');
+ if (totalGain >= 0) {
+ pnlCard.classList.add('card-pnl-positive');
+ } else {
+ pnlCard.classList.add('card-pnl-negative');
+ }
+
+ const gainPct = parseFloat(data.performance.total_gain_loss_pct);
+ document.getElementById('totalGainLossPct').innerHTML = formatPct(gainPct);
+
+ document.getElementById('bestPerformer').textContent = data.performance.best_performer || '-';
+
+ // Use backend-calculated cash balance (avoid double counting with local cache)
+ const serverCash = parseFloat(data.performance.cash_balance || 0);
+ currentCash = serverCash;
+ document.getElementById('cashValue').textContent = formatCurrency(serverCash, 'JPY');
+
+ // Holdings
+ const holdingsHtml = data.holdings.map(h => {
+ const gainClass = parseFloat(h.gain_loss) >= 0 ? 'text-success' : 'text-danger';
+ const currencySymbol = h.currency === 'USD' ? '$' : '¥';
+ return `
+ <tr>
+ <td>
+ <div class="symbol-cell">${h.symbol}</div>
+ <div class="company-name">${h.name || '-'}</div>
+ </td>
+ <td class="text-right num-cell">${formatNumber(h.shares, 2)}</td>
+ <td class="text-right num-cell text-muted">${currencySymbol}${formatNumber(h.avg_cost)}</td>
+ <td class="text-right num-cell" style="font-weight: 700;">${currencySymbol}${formatNumber(h.current_price)}</td>
+ <td class="text-right num-cell" style="font-weight: 700;">${currencySymbol}${formatNumber(h.market_value)}</td>
+ <td class="text-right num-cell ${gainClass}">${currencySymbol}${formatNumber(h.gain_loss)}</td>
+ <td class="text-right ${gainClass}">${formatPct(h.gain_loss_pct)}</td>
+ <td class="text-right num-cell text-muted">${currencySymbol}${formatNumber(h.cost_basis)}</td>
+ <td class="text-center">
+ <button class="btn btn-ghost btn-sm" onclick="openEditHoldingModal(${h.id}, '${h.symbol}', ${h.shares}, ${h.avg_cost})" title="編集">
+ ️
+ </button>
+ </td>
+ </tr>
+ `;
+ }).join('');
+ document.getElementById('holdingsBody').innerHTML = holdingsHtml || '<tr><td colspan="9" class="text-center text-muted" style="padding: 40px;">No holdings yet</td></tr>';
+
+ // Trades
+ const tradesHtml = data.recent_trades.map(t => {
+ const sideBadgeClass = t.side === 'BUY' ? 'buy' : 'sell';
+ const currencySymbol = t.currency === 'USD' ? '$' : '¥';
+ return `
+ <tr>
+ <td class="text-muted" style="font-size: 0.85rem;">${t.trade_date}</td>
+ <td class="symbol-cell">${t.symbol}</td>
+ <td><span class="side-badge ${sideBadgeClass}">${t.side}</span></td>
+ <td class="text-right num-cell">${formatNumber(t.shares)}</td>
+ <td class="text-right num-cell">${currencySymbol}${formatNumber(t.price)}</td>
+ <td class="text-right num-cell">${currencySymbol}${formatNumber(t.amount)}</td>
+ <td class="text-right">
+ <button class="delete-trade-btn" onclick="deleteTrade('${t.trade_id}')" title="Delete trade">×</button>
+ </td>
+ </tr>
+ `;
+ }).join('');
+ document.getElementById('tradesBody').innerHTML = tradesHtml || '<tr><td colspan="7" class="text-center text-muted" style="padding: 40px;">No trade history</td></tr>';
+
+ document.getElementById('loading').style.display = 'none';
+
+ // Fade in
+ const content = document.getElementById('content');
+ content.style.display = 'block';
+ void content.offsetWidth;
+ content.style.opacity = 1;
+
+ } catch (error) {
+ console.error('Error:', error);
+ document.getElementById('loading').style.display = 'none';
+ UI.showToast(`Error: ${error.message}`, 'error');
+ }
+ }
+
+ // --- Modal & Form Logic ---
+ async function openModal(assetType) {
+ document.getElementById('modalOverlay').classList.add('active');
+ document.getElementById('assetType').value = assetType;
+ document.getElementById('modalTitle').textContent = `${assetType} 取引登録`;
+
+ // Set default date to today
+ document.getElementById('tradeDate').valueAsDate = new Date();
+
+ // Set market default
+ if (assetType === 'FX') {
+ document.getElementById('market').value = 'US';
+ } else if (assetType === 'ETF') {
+ document.getElementById('market').value = 'US';
+ } else {
+ document.getElementById('market').value = 'US';
+ }
+ updateCurrency();
+
+ // Load symbols if not loaded
+ if (!symbolsLoaded) {
+ await loadSymbols();
+ }
+ }
+
+ let symbolsLoaded = false;
+
+ function closeModal() {
+ document.getElementById('modalOverlay').classList.remove('active');
+ document.getElementById('tradeForm').reset();
+ }
+
+ // Close modal on overlay click
+ document.getElementById('modalOverlay').addEventListener('click', (e) => {
+ if (e.target === document.getElementById('modalOverlay')) {
+ closeModal();
+ }
+ });
+
+ // Close modal on Escape key
+ document.addEventListener('keydown', (e) => {
+ if (e.key === 'Escape' && document.getElementById('modalOverlay').classList.contains('active')) {
+ closeModal();
+ }
+ });
+
+ function updateCurrency() {
+ const market = document.getElementById('market').value;
+ const currencyInput = document.getElementById('currency');
+ if (market === 'US') {
+ currencyInput.value = 'USD';
+ document.getElementById('fxRate').placeholder = "150.0";
+ } else {
+ currencyInput.value = 'JPY';
+ document.getElementById('fxRate').placeholder = "1.0";
+ document.getElementById('fxRate').value = 1.0;
+ }
+ }
+
+ async function loadSymbols() {
+ try {
+ const res = await fetch(`${CONFIG.API_BASE}/portfolio/symbols`);
+ const symbols = await res.json();
+ const list = document.getElementById('symbolList');
+ list.innerHTML = '';
+ symbols.forEach(s => {
+ const option = document.createElement('option');
+ option.value = s.symbol;
+ option.label = `${s.name} (${s.market})`;
+ list.appendChild(option);
+ });
+ symbolsLoaded = true;
+ } catch (e) {
+ console.error("Failed to load symbols", e);
+ }
+ }
+
+ async function submitTrade(event) {
+ event.preventDefault();
+
+ const formData = new FormData(event.target);
+ const data = {
+ asset_type: formData.get('asset_type'),
+ market: formData.get('market'),
+ side: formData.get('side'),
+ symbol_key: formData.get('symbol'),
+ trade_date: formData.get('trade_date'),
+ shares: parseFloat(formData.get('shares')),
+ price: parseFloat(formData.get('price')),
+ currency: formData.get('currency'),
+ fx_rate_to_jpy: formData.get('fx_rate_to_jpy') ? parseFloat(formData.get('fx_rate_to_jpy')) : 1.0,
+ memo: formData.get('memo')
+ };
+
+ try {
+ const res = await fetch(`${CONFIG.API_BASE}/portfolio/trade`, {
+ method: 'POST',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify(data)
+ });
+
+ if (res.ok) {
+ UI.showToast(' Trade registered successfully', 'success');
+ closeModal();
+ loadPortfolio();
+ } else {
+ const err = await res.json();
+ UI.showToast('Error: ' + err.detail, 'error');
+ }
+ } catch (e) {
+ UI.showToast('Connection Error', 'error');
+ }
+ }
+
+ async function deleteTrade(id) {
+ if (!confirm('本当に削除しますか？')) return;
+
+ try {
+ const res = await fetch(`${CONFIG.API_BASE}/portfolio/trade/${id}`, {
+ method: 'DELETE'
+ });
+ if (res.ok) {
+ UI.showToast(' Trade deleted', 'info');
+ loadPortfolio();
+ } else {
+ UI.showToast('Failed to delete', 'error');
+ }
+ } catch (e) {
+ UI.showToast('Connection Error', 'error');
+ }
+ }
+
+ // Init
+ loadPortfolio();
+ </script>
 </body>
 
 </html>

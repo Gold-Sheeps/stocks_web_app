@@ -11,7 +11,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
-from sklearn.isotonic import IsotonicRegression  # type: ignore
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
@@ -32,6 +31,7 @@ class FoldConfig:
     embargo_mode: str = "pct"
     embargo_days: int = 5
     embargo_pct: float = 0.01
+    calibration_method: str = "platt"
 
 
 def _parse_iso_date(value: str, label: str) -> date:
@@ -141,6 +141,7 @@ def _collect_ticker_frame(
 def _build_pooled_dataset(
     frames: List[pd.DataFrame],
     feature_cols: List[str],
+    use_ticker_dummies: bool = True,
 ) -> Tuple[pd.DataFrame, List[str], List[str]]:
     if not frames:
         raise ValueError("No frames to pool.")
@@ -150,10 +151,16 @@ def _build_pooled_dataset(
             if col not in f.columns:
                 raise ValueError(f"Feature column missing in pooled frame: {col}")
     pooled = pd.concat(frames, axis=0).sort_index()
-    pooled["ticker_id"] = pooled["ticker"].astype(str)
-    dummies = pd.get_dummies(pooled["ticker_id"], prefix="tid", dtype=float)
-    dummy_cols = list(dummies.columns)
-    X_df = pd.concat([pooled[base_cols].astype(float), dummies], axis=1)
+
+    if use_ticker_dummies:
+        pooled["ticker_id"] = pooled["ticker"].astype(str)
+        dummies = pd.get_dummies(pooled["ticker_id"], prefix="tid", dtype=float)
+        dummy_cols = list(dummies.columns)
+        X_df = pd.concat([pooled[base_cols].astype(float), dummies], axis=1)
+    else:
+        dummy_cols = []
+        X_df = pooled[base_cols].astype(float)
+
     pooled = pooled.join(X_df, rsuffix="_x")
     model_feature_columns = list(X_df.columns)
     return pooled, model_feature_columns, dummy_cols
@@ -174,6 +181,8 @@ def _build_inference_matrix_for_pooled(
 
 
 def _fit_binary_model(svc: PredictionService, X: np.ndarray, y: np.ndarray):
+    # inf → nan に変換（XGBoost は nan を missing として扱える）
+    X = np.where(np.isinf(X), np.nan, X)
     pos = int(np.sum(y == 1))
     neg = int(np.sum(y == 0))
     spw = float(neg / max(1, pos))
@@ -199,26 +208,58 @@ def _apply_calibration(
     p_cal_raw: np.ndarray,
     y_cal: np.ndarray,
     p_test_raw: np.ndarray,
+    method: str = "platt",
 ) -> Tuple[np.ndarray, np.ndarray, Dict[str, Any]]:
+    """
+    キャリブレーション。デフォルトを Platt Scaling に変更。
+    Platt = LogisticRegression on raw probabilities → sigmoid fit。
+    Isotonic は確率を経験分布に圧縮するため、正例率が低い場合に
+    高確信領域 (p>=0.7) が物理的に出なくなる問題がある。
+    """
     y = np.asarray(y_cal, dtype=int)
     p_cal = np.asarray(p_cal_raw, dtype=float).reshape(-1)
     p_test = np.asarray(p_test_raw, dtype=float).reshape(-1)
     if len(y) == 0 or len(np.unique(y)) < 2:
         return p_cal, p_test, {"type": "none"}
-    try:
-        iso = IsotonicRegression(out_of_bounds="clip")
-        iso.fit(p_cal, y)
-        p_cal_iso = np.clip(np.asarray(iso.predict(p_cal), dtype=float), 1e-6, 1.0 - 1e-6)
-        p_test_iso = np.clip(np.asarray(iso.predict(p_test), dtype=float), 1e-6, 1.0 - 1e-6)
-        return p_cal_iso, p_test_iso, {"type": "isotonic", "model": iso}
-    except Exception:
-        temp_grid = [round(x, 2) for x in np.arange(0.5, 3.01, 0.05)]
-        t = svc._search_temperature_binary(p_cal, y, temp_grid)
-        return (
-            svc._temperature_scale_binary(p_cal, t),
-            svc._temperature_scale_binary(p_test, t),
-            {"type": "temp", "temperature": float(t)},
-        )
+
+    if method == "platt":
+        try:
+            from sklearn.linear_model import LogisticRegression
+            eps = 1e-6
+            p_cal_clip = np.clip(p_cal, eps, 1.0 - eps)
+            logits_cal = np.log(p_cal_clip / (1.0 - p_cal_clip)).reshape(-1, 1)
+            lr = LogisticRegression(C=1e10, solver="lbfgs", max_iter=1000)
+            lr.fit(logits_cal, y)
+            p_test_clip = np.clip(p_test, eps, 1.0 - eps)
+            logits_test = np.log(p_test_clip / (1.0 - p_test_clip)).reshape(-1, 1)
+            p_cal_out = np.clip(lr.predict_proba(logits_cal)[:, 1], eps, 1.0 - eps)
+            p_test_out = np.clip(lr.predict_proba(logits_test)[:, 1], eps, 1.0 - eps)
+            return p_cal_out, p_test_out, {
+                "type": "platt",
+                "model": lr,
+                "coef": float(lr.coef_[0][0]),
+                "intercept": float(lr.intercept_[0]),
+            }
+        except Exception:
+            return p_cal, p_test, {"type": "none"}
+
+    if method == "isotonic":
+        try:
+            from sklearn.isotonic import IsotonicRegression
+            iso = IsotonicRegression(out_of_bounds="clip")
+            iso.fit(p_cal, y)
+            p_cal_iso = np.clip(np.asarray(iso.predict(p_cal), dtype=float), 1e-6, 1.0 - 1e-6)
+            p_test_iso = np.clip(np.asarray(iso.predict(p_test), dtype=float), 1e-6, 1.0 - 1e-6)
+            return p_cal_iso, p_test_iso, {"type": "isotonic", "model": iso}
+        except Exception:
+            pass
+
+    # method == "none" or fallback
+    return (
+        np.clip(p_cal, 1e-6, 1.0 - 1e-6),
+        np.clip(p_test, 1e-6, 1.0 - 1e-6),
+        {"type": "none"},
+    )
 
 
 def _walk_forward_eval(
@@ -284,9 +325,9 @@ def _walk_forward_eval(
             p_test = np.asarray(p_test_raw, dtype=float)
         else:
             clf = _fit_binary_model(svc, X_t, y_t)
-            p_cal_raw = clf.predict_proba(X_c)[:, 1]
-            p_test_raw = clf.predict_proba(X_test)[:, 1]
-            _, p_test, _ = _apply_calibration(svc, p_cal_raw, y_c, p_test_raw)
+            p_cal_raw = clf.predict_proba(np.where(np.isinf(X_c), np.nan, X_c))[:, 1]
+            p_test_raw = clf.predict_proba(np.where(np.isinf(X_test), np.nan, X_test))[:, 1]
+            _, p_test, _ = _apply_calibration(svc, p_cal_raw, y_c, p_test_raw, method=cfg.calibration_method)
 
         y_true.extend(y_test.tolist())
         probs_pre.extend(np.asarray(p_test_raw, dtype=float).tolist())
@@ -459,6 +500,7 @@ def _fit_final_model_and_calibrator(
     svc: PredictionService,
     pooled: pd.DataFrame,
     model_feature_columns: List[str],
+    calibration_method: str = "platt",
 ) -> Dict[str, Any]:
     df = pooled.sort_index()
     X = df[model_feature_columns].to_numpy(dtype=float)
@@ -472,7 +514,7 @@ def _fit_final_model_and_calibrator(
     model = _fit_binary_model(svc, X_t, y_t)
     if len(X_c) > 0:
         p_cal_raw = model.predict_proba(X_c)[:, 1]
-        _, _, cal = _apply_calibration(svc, p_cal_raw, y_c, p_cal_raw)
+        _, _, cal = _apply_calibration(svc, p_cal_raw, y_c, p_cal_raw, method=calibration_method)
     else:
         cal = {"type": "none"}
     return {"model": model, "calibration": cal}
@@ -483,17 +525,28 @@ def _predict_with_model_and_calibration(
     model,
     x: np.ndarray,
 ) -> np.ndarray:
+    x = np.where(np.isinf(x), np.nan, x)
     p_raw = model.predict_proba(x)[:, 1]
     ctype = str((calibration or {}).get("type", "none")).lower()
+
+    if ctype == "platt" and calibration.get("model") is not None:
+        lr = calibration["model"]
+        eps = 1e-6
+        p_clip = np.clip(p_raw, eps, 1.0 - eps)
+        logits = np.log(p_clip / (1.0 - p_clip)).reshape(-1, 1)
+        return np.clip(lr.predict_proba(logits)[:, 1], eps, 1.0 - eps)
+
     if ctype == "isotonic" and calibration.get("model") is not None:
         iso = calibration["model"]
         p = np.asarray(iso.predict(p_raw), dtype=float)
         return np.clip(p, 1e-6, 1.0 - 1e-6)
+
     if ctype == "temp":
         t = float(calibration.get("temperature", 1.0))
         z = np.log(np.clip(p_raw, 1e-6, 1.0 - 1e-6) / np.clip(1.0 - p_raw, 1e-6, 1.0 - 1e-6))
         out = 1.0 / (1.0 + np.exp(-(z / max(1e-6, t))))
         return np.clip(np.asarray(out, dtype=float), 1e-6, 1.0 - 1e-6)
+
     return np.clip(np.asarray(p_raw, dtype=float), 1e-6, 1.0 - 1e-6)
 
 
@@ -511,11 +564,11 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--sector-symbols", default="")
     parser.add_argument("--horizon", type=int, default=10)
     parser.add_argument("--target-return", type=float, default=0.05)
-    parser.add_argument("--fixed-threshold", type=float, default=None, help="Primary BUY threshold. Default: 0.7.")
+    parser.add_argument("--fixed-threshold", type=float, default=None, help="Primary BUY threshold. Default depends on calibration method: 0.5 (platt), 0.7 (isotonic), 0.9 (none).")
     parser.add_argument("--fixed-thresholds", default="0.7")
     parser.add_argument("--min-train-rows", type=int, default=280)
-    parser.add_argument("--fold-step", type=int, default=30)
-    parser.add_argument("--test-window", type=int, default=15)
+    parser.add_argument("--fold-step", type=int, default=10)
+    parser.add_argument("--test-window", type=int, default=25)
     parser.add_argument("--train-window", type=int, default=None)
     parser.add_argument("--purge-days", type=int, default=None)
     parser.add_argument("--embargo-mode", default="pct", choices=["pct", "days"])
@@ -523,6 +576,20 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--embargo-pct", type=float, default=0.01)
     parser.add_argument("--audit-top-n", type=int, default=50)
     parser.add_argument("--out-prefix", default=None)
+    parser.add_argument(
+        "--calibration-method",
+        default="platt",
+        choices=["platt", "isotonic", "none"],
+        help="Calibration method for walk-forward and final model. Default: platt. "
+             "isotonic was the previous default but compresses probabilities, "
+             "preventing p>=0.7 from appearing.",
+    )
+    parser.add_argument(
+        "--no-ticker-dummies",
+        action="store_true",
+        default=False,
+        help="Disable ticker one-hot encoding. Improves OOD generalization for holdout tickers.",
+    )
     return parser.parse_args()
 
 
@@ -544,6 +611,18 @@ def main() -> int:
     if not train_tickers:
         raise ValueError("Training tickers is empty after holdout split.")
     thresholds = _parse_thresholds(args.fixed_thresholds, fixed_threshold=args.fixed_threshold)
+
+    # calibration method に応じた threshold_buy デフォルト
+    _CAL_DEFAULT_THRESHOLD: Dict[str, float] = {"platt": 0.5, "isotonic": 0.7, "none": 0.9}
+    if args.fixed_threshold is not None:
+        threshold_buy = float(np.clip(args.fixed_threshold, 0.0, 1.0))
+    else:
+        threshold_buy = _CAL_DEFAULT_THRESHOLD.get(args.calibration_method, 0.7)
+
+    # threshold_buy が thresholds リストに含まれていなければ追加して評価対象にする
+    if not any(abs(t - threshold_buy) < 1e-9 for t in thresholds):
+        thresholds = sorted(thresholds + [threshold_buy])
+
     regime_symbols = _parse_symbol_list(args.regime_symbols)
     relative_symbols = _parse_symbol_list(args.relative_symbols)
     sector_symbols = _parse_symbol_list(args.sector_symbols)
@@ -575,7 +654,8 @@ def main() -> int:
         raise RuntimeError("No training frame collected.")
     train_frames = [f for f in frames if str(f["ticker"].iloc[0]).upper() in set(train_tickers)]
     holdout_frames = [f for f in frames if str(f["ticker"].iloc[0]).upper() in set(holdout_tickers)]
-    pooled_train, model_feature_columns, dummy_cols = _build_pooled_dataset(train_frames, feature_cols_ref)
+    use_dummies = not args.no_ticker_dummies
+    pooled_train, model_feature_columns, dummy_cols = _build_pooled_dataset(train_frames, feature_cols_ref, use_ticker_dummies=use_dummies)
 
     fold_cfg = FoldConfig(
         horizon=int(args.horizon),
@@ -587,10 +667,11 @@ def main() -> int:
         embargo_mode=args.embargo_mode,
         embargo_days=int(args.embargo_days),
         embargo_pct=float(args.embargo_pct),
+        calibration_method=args.calibration_method,
     )
     if holdout_frames:
-        pooled_holdout, _, _ = _build_pooled_dataset(holdout_frames, feature_cols_ref)
-        final_fit = _fit_final_model_and_calibrator(svc, pooled_train, model_feature_columns)
+        pooled_holdout, _, _ = _build_pooled_dataset(holdout_frames, feature_cols_ref, use_ticker_dummies=use_dummies)
+        final_fit = _fit_final_model_and_calibrator(svc, pooled_train, model_feature_columns, calibration_method=args.calibration_method)
         x_holdout = _build_inference_matrix_for_pooled(
             pooled=pooled_holdout,
             base_feature_cols=feature_cols_ref,
@@ -610,10 +691,12 @@ def main() -> int:
         }
     else:
         eval_out = _walk_forward_eval(svc, pooled_train, model_feature_columns, fold_cfg)
-        final_fit = _fit_final_model_and_calibrator(svc, pooled_train, model_feature_columns)
+        final_fit = _fit_final_model_and_calibrator(svc, pooled_train, model_feature_columns, calibration_method=args.calibration_method)
 
     fixed = _fixed_threshold_metrics(eval_out["y_true"], eval_out["probs"], eval_out["future_returns"], thresholds)
     p70 = fixed.get("0.7", {"precision": 0.0, "coverage": 0.0, "n_trades": 0, "avg_return": 0.0})
+    _t_key = f"{threshold_buy:g}"
+    p_at_threshold = fixed.get(_t_key, {"precision": 0.0, "coverage": 0.0, "n_trades": 0, "avg_return": 0.0})
     audit = _high_low_miss_audit(
         y_true=eval_out["y_true"],
         probs=eval_out["probs"],
@@ -631,19 +714,29 @@ def main() -> int:
     per_ticker_rows: List[Dict[str, Any]] = []
     for t in sorted(set(eval_out["tickers"])):
         mask = np.asarray([x == t for x in eval_out["tickers"]], dtype=bool)
-        m = _fixed_threshold_metrics(
+        per_t_thresholds = sorted({0.7, threshold_buy})
+        per_t_fixed = _fixed_threshold_metrics(
             y_true=eval_out["y_true"][mask],
             probs=eval_out["probs"][mask],
             future_returns=eval_out["future_returns"][mask],
-            thresholds=[0.7],
-        )["0.7"]
+            thresholds=per_t_thresholds,
+        )
+        m70 = per_t_fixed.get("0.7", {"precision": 0.0, "coverage": 0.0, "n_trades": 0, "avg_return": 0.0})
+        mt = per_t_fixed.get(_t_key, {"precision": 0.0, "coverage": 0.0, "n_trades": 0, "avg_return": 0.0})
         per_ticker_rows.append(
             {
                 "ticker": t,
-                "precision_at_p70": m["precision"],
-                "coverage_at_p70": m["coverage"],
-                "n_trades_at_p70": m["n_trades"],
-                "avg_return_at_p70": m["avg_return"],
+                # 後方互換: p70 系
+                "precision_at_p70": m70["precision"],
+                "coverage_at_p70": m70["coverage"],
+                "n_trades_at_p70": m70["n_trades"],
+                "avg_return_at_p70": m70["avg_return"],
+                # threshold_buy 連動
+                "effective_threshold_buy": threshold_buy,
+                "precision_at_threshold": mt["precision"],
+                "coverage_at_threshold": mt["coverage"],
+                "n_trades_at_threshold": mt["n_trades"],
+                "avg_return_at_threshold": mt["avg_return"],
             }
         )
 
@@ -663,7 +756,7 @@ def main() -> int:
         "feature_set": args.feature_set,
         "horizon": int(args.horizon),
         "target_return": float(args.target_return),
-        "threshold_buy": 0.7,
+        "threshold_buy": threshold_buy,
         "base_feature_columns": feature_cols_ref,
         "ticker_dummy_columns": dummy_cols,
         "model_feature_columns": model_feature_columns,
@@ -679,10 +772,17 @@ def main() -> int:
     eval_payload = {
         "period": {"start": start.isoformat(), "end": end.isoformat(), "asof": asof.isoformat()},
         "metrics": {
+            # 後方互換: p70 系
             "precision_at_p70": p70["precision"],
             "coverage_at_p70": p70["coverage"],
             "n_trades_at_p70": p70["n_trades"],
             "avg_return_at_p70": p70["avg_return"],
+            # threshold_buy 連動
+            "effective_threshold_buy": threshold_buy,
+            "precision_at_threshold": p_at_threshold["precision"],
+            "coverage_at_threshold": p_at_threshold["coverage"],
+            "n_trades_at_threshold": p_at_threshold["n_trades"],
+            "avg_return_at_threshold": p_at_threshold["avg_return"],
             "folds_used": eval_out["folds_used"],
         },
         "diagnostics": {
@@ -719,6 +819,16 @@ def main() -> int:
             n=int(p70["n_trades"]),
             c=float(p70["coverage"]),
             r=float(p70["avg_return"]),
+        )
+    )
+    print(
+        "effective_threshold_buy={tb} precision_at_threshold={p:.4f} n_trades_at_threshold={n} "
+        "coverage_at_threshold={c:.4f} avg_return_at_threshold={r:+.4f}".format(
+            tb=threshold_buy,
+            p=float(p_at_threshold["precision"]),
+            n=int(p_at_threshold["n_trades"]),
+            c=float(p_at_threshold["coverage"]),
+            r=float(p_at_threshold["avg_return"]),
         )
     )
     return 0

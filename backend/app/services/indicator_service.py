@@ -33,12 +33,14 @@ class IndicatorService:
             df['close'] = pd.to_numeric(df['close'])
             df['high'] = pd.to_numeric(df['high'])
             df['low'] = pd.to_numeric(df['low'])
+            df['volume'] = pd.to_numeric(df['volume']).fillna(0)
             df.set_index('date', inplace=True)
             
             # 2. Calculate Indicators using Pandas
             close = df['close']
             high = df['high']
             low = df['low']
+            volume = df['volume']
 
             # SMA
             df['sma5'] = close.rolling(window=5).mean()
@@ -84,6 +86,69 @@ class IndicatorService:
             df['tr3'] = (low - df['prev_close']).abs()
             df['tr'] = df[['tr1', 'tr2', 'tr3']].max(axis=1)
             df['atr14'] = df['tr'].rolling(window=14).mean()
+
+            # Bollinger Bands (20, 2)
+            bb_mid = close.rolling(window=20).mean()
+            bb_std = close.rolling(window=20).std()
+            df['bb_upper20'] = bb_mid + (bb_std * 2.0)
+            df['bb_lower20'] = bb_mid - (bb_std * 2.0)
+            df['bb_width20'] = df['bb_upper20'] - df['bb_lower20']
+            df['bb_percent_b'] = np.where(
+                df['bb_width20'] > 0,
+                (close - df['bb_lower20']) / df['bb_width20'],
+                None,
+            )
+
+            # VWAP (daily-data approximation: 20-day rolling typical-price VWAP)
+            typical_price = (high + low + close) / 3.0
+            pv = typical_price * volume
+            vol_sum20 = volume.rolling(window=20).sum()
+            pv_sum20 = pv.rolling(window=20).sum()
+            df['vwap20'] = np.where(vol_sum20 > 0, pv_sum20 / vol_sum20, None)
+
+            # OBV
+            df['obv'] = (np.sign(close.diff().fillna(0)) * volume).cumsum()
+
+            # MFI (14)
+            prev_tp = typical_price.shift(1)
+            money_flow = typical_price * volume
+            pos_flow = money_flow.where(typical_price > prev_tp, 0.0)
+            neg_flow = money_flow.where(typical_price < prev_tp, 0.0).abs()
+            pos_sum14 = pos_flow.rolling(window=14).sum()
+            neg_sum14 = neg_flow.rolling(window=14).sum()
+            mfi_ratio = pos_sum14 / neg_sum14.replace(0, np.nan)
+            df['mfi14'] = 100 - (100 / (1 + mfi_ratio))
+            df.loc[(neg_sum14 == 0) & (pos_sum14 > 0), 'mfi14'] = 100.0
+
+            # DMI / ADX (14)
+            up_move = high.diff()
+            down_move = -low.diff()
+            plus_dm = pd.Series(
+                np.where((up_move > down_move) & (up_move > 0), up_move, 0.0),
+                index=df.index,
+            )
+            minus_dm = pd.Series(
+                np.where((down_move > up_move) & (down_move > 0), down_move, 0.0),
+                index=df.index,
+            )
+            tr_sum14 = df['tr'].rolling(window=14).sum()
+            plus_dm_sum14 = plus_dm.rolling(window=14).sum()
+            minus_dm_sum14 = minus_dm.rolling(window=14).sum()
+            df['plus_di14'] = 100 * (plus_dm_sum14 / tr_sum14.replace(0, np.nan))
+            df['minus_di14'] = 100 * (minus_dm_sum14 / tr_sum14.replace(0, np.nan))
+            dx = (
+                100
+                * (df['plus_di14'] - df['minus_di14']).abs()
+                / (df['plus_di14'] + df['minus_di14']).replace(0, np.nan)
+            )
+            df['adx14'] = dx.rolling(window=14).mean()
+
+            # Ichimoku (stored aligned to current trading_date; chart can apply shifts)
+            df['ichimoku_tenkan9'] = (high.rolling(window=9).max() + low.rolling(window=9).min()) / 2.0
+            df['ichimoku_kijun26'] = (high.rolling(window=26).max() + low.rolling(window=26).min()) / 2.0
+            df['ichimoku_senkou_a'] = (df['ichimoku_tenkan9'] + df['ichimoku_kijun26']) / 2.0
+            df['ichimoku_senkou_b'] = (high.rolling(window=52).max() + low.rolling(window=52).min()) / 2.0
+            df['ichimoku_chikou'] = close.shift(-26)
 
             # 52W High
             df['high_52w'] = high.rolling(window=252, min_periods=1).max()
@@ -132,13 +197,23 @@ class IndicatorService:
                     sma5, sma20, sma50, sma200, 
                     rsi14, macd, macd_signal, macd_hist, 
                     atr14, high_52w, dist_to_52w_high_pct, 
-                    ema21, pivot, rs_rating, updated_at
+                    ema21, pivot, rs_rating,
+                    vwap20, obv, mfi14,
+                    plus_di14, minus_di14, adx14,
+                    bb_upper20, bb_lower20, bb_width20, bb_percent_b,
+                    ichimoku_tenkan9, ichimoku_kijun26, ichimoku_senkou_a, ichimoku_senkou_b, ichimoku_chikou,
+                    updated_at
                 ) VALUES (
                     %s, %s, 
                     %s, %s, %s, %s, 
                     %s, %s, %s, %s, 
                     %s, %s, %s, 
-                    %s, %s, %s, CURRENT_TIMESTAMP
+                    %s, %s, %s,
+                    %s, %s, %s,
+                    %s, %s, %s,
+                    %s, %s, %s, %s,
+                    %s, %s, %s, %s, %s,
+                    CURRENT_TIMESTAMP
                 )
                 ON CONFLICT (symbol_key, trading_date) DO UPDATE SET
                     sma5 = EXCLUDED.sma5,
@@ -155,6 +230,21 @@ class IndicatorService:
                     ema21 = EXCLUDED.ema21,
                     pivot = EXCLUDED.pivot,
                     rs_rating = EXCLUDED.rs_rating,
+                    vwap20 = EXCLUDED.vwap20,
+                    obv = EXCLUDED.obv,
+                    mfi14 = EXCLUDED.mfi14,
+                    plus_di14 = EXCLUDED.plus_di14,
+                    minus_di14 = EXCLUDED.minus_di14,
+                    adx14 = EXCLUDED.adx14,
+                    bb_upper20 = EXCLUDED.bb_upper20,
+                    bb_lower20 = EXCLUDED.bb_lower20,
+                    bb_width20 = EXCLUDED.bb_width20,
+                    bb_percent_b = EXCLUDED.bb_percent_b,
+                    ichimoku_tenkan9 = EXCLUDED.ichimoku_tenkan9,
+                    ichimoku_kijun26 = EXCLUDED.ichimoku_kijun26,
+                    ichimoku_senkou_a = EXCLUDED.ichimoku_senkou_a,
+                    ichimoku_senkou_b = EXCLUDED.ichimoku_senkou_b,
+                    ichimoku_chikou = EXCLUDED.ichimoku_chikou,
                     updated_at = CURRENT_TIMESTAMP
             """
 
@@ -184,7 +274,14 @@ class IndicatorService:
                    clean_val('sma5'), clean_val('sma20'), clean_val('sma50'), clean_val('sma200'),
                    clean_val('rsi14'), clean_val('macd'), clean_val('macd_signal'), clean_val('macd_hist'),
                    clean_val('atr14'), clean_val('high_52w'), clean_val('dist_to_52w_high_pct'),
-                   clean_val('ema21'), clean_val('pivot'), clean_val('rs_rating')
+                   clean_val('ema21'), clean_val('pivot'), clean_val('rs_rating'),
+                   clean_val('vwap20'),
+                   None if pd.isna(row['obv']) or np.isinf(row['obv']) else int(row['obv']),
+                   clean_val('mfi14'),
+                   clean_val('plus_di14'), clean_val('minus_di14'), clean_val('adx14'),
+                   clean_val('bb_upper20'), clean_val('bb_lower20'), clean_val('bb_width20'), clean_val('bb_percent_b'),
+                   clean_val('ichimoku_tenkan9'), clean_val('ichimoku_kijun26'),
+                   clean_val('ichimoku_senkou_a'), clean_val('ichimoku_senkou_b'), clean_val('ichimoku_chikou')
                 ))
 
             if cleaned_data:

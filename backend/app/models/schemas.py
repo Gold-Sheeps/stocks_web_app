@@ -160,6 +160,21 @@ class Indicators(BaseModel):
     high_52w: Decimal | None = None
     volume_ratio: Decimal | None = None
     pivot: Decimal | None = None
+    vwap20: Decimal | None = None
+    obv: int | None = None
+    mfi14: Decimal | None = None
+    plus_di14: Decimal | None = None
+    minus_di14: Decimal | None = None
+    adx14: Decimal | None = None
+    bb_upper20: Decimal | None = None
+    bb_lower20: Decimal | None = None
+    bb_width20: Decimal | None = None
+    bb_percent_b: Decimal | None = None
+    ichimoku_tenkan9: Decimal | None = None
+    ichimoku_kijun26: Decimal | None = None
+    ichimoku_senkou_a: Decimal | None = None
+    ichimoku_senkou_b: Decimal | None = None
+    ichimoku_chikou: Decimal | None = None
 
 
 # ========== Signal & Analysis Models ==========

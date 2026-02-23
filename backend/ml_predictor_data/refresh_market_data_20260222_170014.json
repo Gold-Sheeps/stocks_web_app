@@ -1,0 +1,95 @@
+{
+  "run_at": "2026-02-22T17:00:13",
+  "source": "yfinance",
+  "db_only_check": false,
+  "start": null,
+  "end": "2026-02-22",
+  "symbols": [
+    {
+      "symbol_key": "US:CRWV",
+      "status": "OK",
+      "db_before": {
+        "rows": 226,
+        "max_date": "2026-02-20"
+      },
+      "db_after": {
+        "rows": 226,
+        "max_date": "2026-02-20"
+      },
+      "fetch": {
+        "from": "2026-02-21",
+        "to": "2026-02-22",
+        "attempts": 1,
+        "source_used": "yahoo_chart_fallback",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1,
+        "inserted": 0,
+        "updated": 1,
+        "skipped_overflow": 0
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:QQQ",
+      "status": "OK",
+      "db_before": {
+        "rows": 5032,
+        "max_date": "2026-02-20"
+      },
+      "db_after": {
+        "rows": 5032,
+        "max_date": "2026-02-20"
+      },
+      "fetch": {
+        "from": "2026-02-21",
+        "to": "2026-02-22",
+        "attempts": 1,
+        "source_used": "yahoo_chart_fallback",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1,
+        "inserted": 0,
+        "updated": 1,
+        "skipped_overflow": 0
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:SPY",
+      "status": "OK",
+      "db_before": {
+        "rows": 5032,
+        "max_date": "2026-02-20"
+      },
+      "db_after": {
+        "rows": 5032,
+        "max_date": "2026-02-20"
+      },
+      "fetch": {
+        "from": "2026-02-21",
+        "to": "2026-02-22",
+        "attempts": 1,
+        "source_used": "yahoo_chart_fallback",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 1,
+        "inserted": 0,
+        "updated": 1,
+        "skipped_overflow": 0
+      },
+      "error": null
+    }
+  ],
+  "totals": {
+    "symbols": 3,
+    "failed": 0,
+    "fetched_rows": 3,
+    "inserted": 0,
+    "updated": 3,
+    "skipped_overflow": 0
+  }
+}

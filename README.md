@@ -1,307 +1,40 @@
-# 株式市場チェッカー（Trading System）
+﻿# stocks_web_app README
 
-PowerSHellで以下を実行 をすることでフロントAPIバックすべてが実行できる
-cd C:\Users\o_van\Desktop\stocks_web_app                                                                      
-.\start_services_visible.cmd 
+この README は、まず最初に「フロント / バックエンド / API を一気に起動する手順」をすぐ実行できるように整理しています。
 
+## 最初にやること（PowerShell / 一括起動）
 
-
-
-総合トレード運用システム - US株のスクリーニング、モニタリング、ポートフォリオ管理
-
-## 📋 目次
-
-- [概要](#概要)
-- [システム構成](#システム構成)
-- [セットアップ](#セットアップ)
-- [毎日の運用](#毎日の運用)
-- [開発](#開発)
-
----
-
-## 概要
-
-このシステムは以下の機能を提供します：
-
-- **Monitor**: 市場全体の監視
-- **Rotation**: セクターローテーション分析
-- **Screener**: CANSLIM戦略ベースの銘柄スクリーニング
-- **Watchlist**: 注目銘柄のトラッキング
-- **Stock Detail**: 個別銘柄の詳細分析
-- **Portfolio**: ポートフォリオ管理
-
----
-
-## システム構成
-
-### バックエンド
-- **言語**: Python 3.11+
-- **フレームワーク**: FastAPI
-- **データベース**: PostgreSQL
-- **API**: RESTful API (OpenAPI/Swagger)
-
-### フロントエンド
-- **言語**: HTML/JavaScript (Vanilla)
-- **サーバー**: Python SimpleHTTPServer
-- **スタイル**: CSS (カスタム)
-
-### データソース
-- **価格データ**: yfinance (Yahoo Finance)
-- **インジケーター**: 自動計算（SMA/EMA/RSI/MACD/RS Score等）
-
----
-
-## セットアップ
-
-### 1. データベース起動
-
-```bash
-# PostgreSQL起動（Dockerの場合）
-docker start postgres_container
-```
-
-### 2. バックエンド起動
-
-```bash
-cd backend
-uv run python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-APIドキュメント: http://localhost:8000/docs
-
-### 3. フロントエンド起動
-
-```bash
-python frontend/server.py
-```
-
-フロントエンド: http://localhost:3000
-
----
-
-## 毎日の運用
-
-### 🔄 毎日実行すべきスクリプト
-
-システムを最新に保つため、以下のスクリプトを **毎日** 実行してください。  
-**Rundeck** または **cron** でスケジュール設定を推奨します。
-
-#### 1. 価格データ更新（必須）
-
-過去2週間の価格データを更新します。
-
-```bash
-cd c:\Users\o_van\Desktop\stocks_market_checker
-python src/update_recent_prices.py
-```
-
-**オプション:**
-
-```bash
-# 特定期間の更新
-python src/update_recent_prices.py --start 2026-02-01 --end 2026-02-09
-
-# API遅延時間を調整（デフォルト: 0.5秒）
-python src/update_recent_prices.py --delay 1.0
-
-# ヘルプ表示
-python src/update_recent_prices.py --help
-```
-
-**推奨実行時間:** 毎日 **朝6:00** （米国市場クローズ後）  
-**所要時間:** 約20〜30分（5,000銘柄）
-
----
-
-#### 2. インジケーター再計算（必須）
-
-価格データ更新後、テクニカル指標を再計算します。
-
-```bash
-cd c:\Users\o_van\Desktop\stocks_market_checker
-python src/calculate_indicators_batch.py
-```
-
-**計算される指標:**
-- SMA (20, 50, 200)
-- EMA (21, 50)
-- RSI (14)
-- MACD (12, 26, 9)
-- ボリンジャーバンド
-- ATR (14)
-- RS Score（相対強度スコア）
-- 52週高値距離
-- 出来高移動平均
-
-**推奨実行時間:** 価格データ更新の **直後**  
-**所要時間:** 約10〜15分（5,000銘柄）
-
----
-
-### 📅 Rundeck/Cron設定例
-
-#### Rundeckジョブ設定
-
-1. **ジョブ1: 価格データ更新**
-   - 名前: `update_us_prices`
-   - スケジュール: `0 6 * * *` （毎日6:00）
-   - コマンド:
-     ```bash
-     cd c:\Users\o_van\Desktop\stocks_market_checker && python src/update_recent_prices.py
-     ```
-
-2. **ジョブ2: インジケーター計算**
-   - 名前: `calculate_indicators`
-   - スケジュール: `30 6 * * *` （毎日6:30）
-   - コマンド:
-     ```bash
-     cd c:\Users\o_van\Desktop\stocks_market_checker && python src/calculate_indicators_batch.py
-     ```
-
-#### Linux Cron設定
-
-```bash
-# crontab -e で編集
-0 6 * * * cd /path/to/stocks_market_checker && python src/update_recent_prices.py >> logs/update_prices.log 2>&1
-30 6 * * * cd /path/to/stocks_market_checker && python src/calculate_indicators_batch.py >> logs/calculate_indicators.log 2>&1
-```
-
----
-
-## 初回セットアップ: データインポート
-
-初めてシステムを構築する場合、以下を実行：
-
-### 1. データベーステーブル作成
-
-```bash
-cd c:\Users\o_van\Desktop\stocks_market_checker
-python src/stocks_price_get_update.py
-```
-
-### 2. US株の初回インポート（10年分）
-
-```bash
-cd c:\Users\o_van\Desktop\stocks_market_checker
-python src/bulk_import_us_stocks.py
-```
-
-**所要時間:** 約1.5〜2時間（5,000銘柄 × 10年）  
-**注意:** このスクリプトは初回のみ実行。日次更新は `update_recent_prices.py` を使用。
-
-### 3. インジケーター初回計算
-
-```bash
-python src/calculate_indicators_batch.py
-```
-
----
-
-## 開発
-
-### API仕様
-
-- **BASE URL**: `http://localhost:8000/api/v1`
-- **認証**: なし（開発環境）
-- **ドキュメント**: http://localhost:8000/docs
-
-### 主要エンドポイント
-
-| エンドポイント | メソッド | 説明 |
-|---------------|---------|------|
-| `/monitor` | GET | 市場全体のモニタリングデータ |
-| `/rotation/sectors` | GET | セクターローテーションデータ |
-| `/screener/scan` | GET | スクリーニング結果（スコア順） |
-| `/stock/{symbol}` | GET | 個別銘柄詳細 |
-| `/portfolio/holdings` | GET | ポートフォリオ保有銘柄 |
-
-### ディレクトリ構造
-
-```
-stocks_market_checker/
-├── backend/
-│   ├── app/
-│   │   ├── main.py              # FastAPIアプリケーション
-│   │   ├── routers/             # APIルーター
-│   │   ├── services/            # ビジネスロジック
-│   │   └── models/              # データモデル
-│   └── requirements.txt
-├── frontend/
-│   ├── monitor.html
-│   ├── rotation.html
-│   ├── screener.html
-│   ├── watchlist.html
-│   ├── stock_detail.html
-│   ├── portfolio.html
-│   └── server.py
-├── src/
-│   ├── bulk_import_us_stocks.py        # 初回インポート（10年分）
-│   ├── update_recent_prices.py         # 日次価格更新
-│   ├── calculate_indicators_batch.py   # インジケーター計算
-│   └── postgresql_connect.py           # DB接続
-└── README.md
-```
-
----
-
-## トラブルシューティング
-
-### データが古い
-
-毎日のスクリプト実行を忘れていないか確認：
-
-```bash
-# 最新データの日付を確認
-python -c "import sys; sys.path.insert(0, 'src'); import postgresql_connect; db = postgresql_connect.PostgreSQLConnect(); db.connect(); result = db.execute('SELECT MAX(trading_date) FROM price_daily'); print(f'Latest date: {result[0][0]}'); db.disconnect()"
-```
-
-### インジケーターが計算されない
-
-```bash
-# indicator_dailyテーブルのレコード数確認
-python -c "import sys; sys.path.insert(0, 'src'); import postgresql_connect; db = postgresql_connect.PostgreSQLConnect(); db.connect(); result = db.execute('SELECT COUNT(*) FROM indicator_daily'); print(f'{result[0][0]} indicator records'); db.disconnect()"
-```
-
-### Screenerに結果が表示されない
-
-1. インジケーターが計算されているか確認
-2. バックエンドが起動しているか確認（http://localhost:8000/docs）
-3. ブラウザのコンソールでエラーを確認
-
----
-
-## ライセンス
-
-Private Project
-
----
-
-## PowerShell Quick Start (Windows)
-
-### 0. Working Directory
+### 1. 作業フォルダへ移動
 
 ```powershell
 cd C:\Users\o_van\Desktop\stocks_web_app
 ```
 
-### 1. Stop All Services
+### 2. 既存プロセス停止（任意だが推奨）
 
 ```powershell
 .\stop_services.cmd
 ```
 
-### 2. Start All Services (Visible Windows)
+### 3. フロント・バック・API を一括起動
 
 ```powershell
 .\start_services_visible.cmd
 ```
 
-This opens 3 separate windows and keeps them visible:
+このコマンドで以下 3 つのウィンドウが起動します。
+
 - `FRONTEND-3000`
 - `BACKEND-8000`
 - `API-8010`
 
-### 3. Health Checks
+### 4. アクセス先
+
+- Frontend: `http://127.0.0.1:3000/screener.html`
+- Backend docs (8000): `http://127.0.0.1:8000/docs`
+- API docs (8010): `http://127.0.0.1:8010/docs`
+
+### 5. 起動確認（任意）
 
 ```powershell
 netstat -ano | findstr :3000
@@ -309,161 +42,185 @@ netstat -ano | findstr :8000
 netstat -ano | findstr :8010
 ```
 
-If each port shows `LISTENING`, services are up.
-
-```powershell
-Invoke-WebRequest -UseBasicParsing http://127.0.0.1:3000/screener.html
-Invoke-WebRequest -UseBasicParsing http://127.0.0.1:8000/health
-Invoke-WebRequest -UseBasicParsing http://127.0.0.1:8010/health
-```
-
-Expected: StatusCode `200`.
-
-### 4. Open in Browser
-
-- Screener: `http://127.0.0.1:3000/screener.html`
-- Stock Detail: `http://127.0.0.1:3000/stock_detail.html`
-
-If UI looks stale, run hard reload: `Ctrl+F5`.
-
-### 5. Manual Start (without scripts)
-
-Open 3 PowerShell windows and run:
-
-Window 1 (Frontend):
-```powershell
-cd C:\Users\o_van\Desktop\stocks_web_app\frontend
-C:\Users\o_van\AppData\Local\Programs\Python\Python312\python.exe -m http.server 3000
-```
-
-Window 2 (Backend 8000):
-```powershell
-cd C:\Users\o_van\Desktop\stocks_web_app\backend
-..\ .venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000
-```
-
-Window 3 (API 8010):
-```powershell
-cd C:\Users\o_van\Desktop\stocks_web_app\backend
-..\ .venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8010
-```
-
-Note: in the two commands above, use `..\.venv\Scripts\python.exe` (no space).
-
+`LISTENING` が出れば起動できています。
 
 ---
 
-## NVDA Backtest (DB-only)
+## Data Update画面での一括更新（まずは運用で使う）
 
-Run from repository root:
+起動後、`Data Update` 画面から更新をまとめて実行できます。
 
-```powershell
-python backend/scripts/run_backtest_nvda.py --asof 2026-02-16 --start 2019-01-01 --end 2026-02-16 --horizon 15 --flat_band 2.0 --calibration sigmoid
-```
+- 画面: `http://127.0.0.1:3000/data_update.html`
+- `全選択` で対象をまとめて選択
+- `Execute Update` で一括実行
 
-Notes:
-- Backtest/prediction features read market data from DB only (`price_daily`).
-- The script runs a DB freshness check (`trade_date <= as_of`) for `US:NVDA`, `US:QQQ`, `US:^SOX`, `US:SMH`.
-- If `max_date` is older than `--asof`, it prints warnings but still runs.
+現在の `Execute Update` は、選択内容に応じて以下をまとめて実行できます。
 
-Output:
-- Console summary (accuracy, macro_f1, logloss, brier, ece, interval_coverage).
-- JSON file: `backend/ml_predictor_data/backtest_nvda_YYYYMMDD.json`.
+- 市況データ更新（指数 / FX / Metals / Crypto）
+- 個別株価格更新（Watchlist / Portfolio 系）
+- 指標再計算（indicator）
+- RS 更新
+- Sector Rotation 更新
+- Fundamentals 更新
+- CANSLIM 更新
+- AI Prediction Batch（チェック時のみ、時間がかかります）
+
+注意:
+- `AI Prediction Batch` は長時間（約 1〜1.5 時間）かかる場合があります。
 
 ---
 
-## Market Data Refresh (External -> DB, then DB-only Inference)
+## 20年分データをDBへ一括投入する（初回・再構築用）
 
-Update DB incrementally from external source (yfinance):
+20年分の価格データを取得し、必要な計算系テーブルもまとめて更新するコマンドです。
+
+### 実行コマンド（まずはこれ）
+
+```powershell
+cd C:\Users\o_van\Desktop\stocks_web_app
+uv run python backend/scripts/update_db_full_20y.py
+```
+
+このコマンドで、デフォルトでは以下を実行します。
+
+- `price_daily` に20年分の価格データを一括更新（yfinanceベース）
+- `indicator_daily` の再計算
+- `rs_ratings` の更新
+- `sector_rotation` の更新
+- `scripts/full_db_refresh.py` 連携（シンボル系 / fundamentals / CANSLIM も含む）
+
+### 重要ポイント
+
+- 価格データの実取得は `backend/scripts/refresh_market_data.py` が担当
+- 20年一括スクリプトは、銘柄をチャンク分割して順次実行
+- バッチ失敗時の再試行制御あり（`--batch-retries`）
+- 銘柄ごとの取得リトライは `refresh_market_data.py` 側で実施（`--max-retries`）
+
+### よく使うオプション
+
+```powershell
+# 10年分だけ
+uv run python backend/scripts/update_db_full_20y.py --years 10
+
+# 対象銘柄を限定
+uv run python backend/scripts/update_db_full_20y.py --symbols "US:NVDA,US:QQQ,US:^SOX,US:SMH"
+
+# バッチ再試行回数を増やす（デフォルト 2）
+uv run python backend/scripts/update_db_full_20y.py --batch-retries 5
+
+# 価格取得側の銘柄リトライ回数を増やす（デフォルト 3）
+uv run python backend/scripts/update_db_full_20y.py --max-retries 5
+
+# CANSLIM をスキップ
+uv run python backend/scripts/update_db_full_20y.py --skip-canslim
+
+# Fundamentals をスキップ
+uv run python backend/scripts/update_db_full_20y.py --skip-fundamentals
+
+# full_db_refresh 連携自体を止める（価格20年+指標/RS/sectorのみ）
+uv run python backend/scripts/update_db_full_20y.py --no-run-full-refresh
+```
+
+### 実行結果の出力先
+
+- 20年一括更新サマリ: `backend/ml_predictor_data/update_db_full_20y_YYYYMMDD_HHMMSS.json`
+- 価格更新サマリ（チャンク毎）: `backend/ml_predictor_data/refresh_market_data_YYYYMMDD_HHMMSS.json`
+
+---
+
+## 日次/通常の更新（DBの最新化）
+
+### 1. Data Update画面から実行（推奨）
+
+普段の更新は `Data Update` 画面の `Execute Update` を使うのが簡単です。
+
+### 2. コマンドで統合更新（CLI）
+
+```powershell
+cd C:\Users\o_van\Desktop\stocks_web_app
+python scripts/full_db_refresh.py
+```
+
+このコマンドは以下を順に実行します（内部で既存スクリプトを呼び出し）。
+
+- ETF / benchmark 更新
+- market indices 更新
+- sector constituents 更新
+- monitor assets 更新
+- individual stock prices 更新
+- indicator 再計算
+- RS 更新
+- fundamentals 更新
+- CANSLIM 更新
+
+---
+
+## 個別コマンド（必要なときだけ）
+
+### 市場価格の増分更新（DB反映）
 
 ```powershell
 python backend/scripts/refresh_market_data.py --symbols "US:NVDA,US:QQQ,US:^SOX,US:SMH" --source yfinance
 ```
 
-Optional:
+### 日次の個別株価格更新（既存フロー）
 
 ```powershell
-python backend/scripts/refresh_market_data.py --symbols "US:NVDA,US:QQQ,US:^SOX,US:SMH" --source yfinance --db-only-check
-python backend/scripts/refresh_market_data.py --symbols "US:NVDA,US:QQQ,US:^SOX,US:SMH" --source yfinance --max-age-days 1
+python src/update_recent_prices.py
 ```
 
-Run backtest (DB-only):
+### 指標再計算
 
 ```powershell
-python backend/scripts/run_backtest_nvda.py --asof 2026-02-16 --start 2019-01-01 --end 2026-02-16 --horizon 15 --flat_band 2.0 --calibration sigmoid --db-check
+python src/calculate_indicators_batch.py
 ```
 
-Policy:
-- External API is used only by `backend/scripts/refresh_market_data.py` for ETL/refresh.
-- Prediction/training/backtest (`prediction_service.py`, `run_backtest_nvda.py`) use DB data only.
+### RS更新
+
+```powershell
+python backend/scripts/update_rs_rating.py
+```
 
 ---
 
-## 20年分DB一括更新（uv run 1コマンド）
+## 手動起動（スクリプトを使わない場合）
 
-20年分の価格データ更新と、更新後の計算結果（`indicator_daily` / `rs_ratings` / `sector_rotation`）を
-まとめてDB反映するための統合スクリプトを追加しています。
+PowerShell を3つ開いて実行します。
 
-### 実行コマンド（推奨）
-
-リポジトリルートで実行:
+### Frontend (3000)
 
 ```powershell
-uv run python backend/scripts/update_db_full_20y.py
+cd C:\Users\o_van\Desktop\stocks_web_app\frontend
+C:\Users\o_van\AppData\Local\Programs\Python\Python312\python.exe -m http.server 3000
 ```
 
-デフォルト挙動:
-- 対象銘柄: `instruments.is_active=true` と `price_daily` 既存キーの和集合
-- 期間: 今日までの過去20年
-- 価格更新: `refresh_market_data.py` をチャンク実行（`--force-start` 付き）
-- 計算更新:
-  - `indicator_daily`（全対象銘柄）
-  - `rs_ratings`
-  - `sector_rotation`
-
-### よく使うオプション
+### Backend (8000)
 
 ```powershell
-# 年数変更（例: 10年）
-uv run python backend/scripts/update_db_full_20y.py --years 10
-
-# 対象銘柄を明示指定
-uv run python backend/scripts/update_db_full_20y.py --symbols "US:NVDA,US:QQQ,US:^SOX,US:SMH"
-
-# 計算系の一部をスキップ
-uv run python backend/scripts/update_db_full_20y.py --skip-sector-rotation
-uv run python backend/scripts/update_db_full_20y.py --skip-rs
-uv run python backend/scripts/update_db_full_20y.py --skip-indicators
+cd C:\Users\o_van\Desktop\stocks_web_app\backend
+..\.venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-### 実行結果の確認
+### API (8010)
 
-- 実行サマリJSON:
-  - `backend/ml_predictor_data/update_db_full_20y_YYYYMMDD_HHMMSS.json`
-- 価格更新の個別サマリJSON（内部で呼ばれる更新処理）:
-  - `backend/ml_predictor_data/refresh_market_data_YYYYMMDD_HHMMSS.json`
+```powershell
+cd C:\Users\o_van\Desktop\stocks_web_app\backend
+..\.venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8010
+```
 
 ---
 
-## 20�N�ꊇ�X�V�i�⑫: CANSLIM/�V���{���X�V���܂߂�j
+## 前提（最小限）
 
-`uv run python backend/scripts/update_db_full_20y.py` �́A�f�t�H���g��
-`scripts/full_db_refresh.py` �����s���܂��B
-���̂��߁A�ȉ����܂Ƃ߂čX�V�ΏۂɂȂ�܂��B
+- Windows + PowerShell
+- PostgreSQL が起動していること
+- `.venv` が作成済みで、バックエンド依存関係が入っていること
+- `uv` を使う場合は `uv` がインストール済みであること
 
-- �V���{���n�X�V�iinstruments�֘A�j
-- �t�@���_�����^���X�V
-- CANSLIM�o�b�`�X�V
+---
 
-�K�v�ɉ����Ď����w�肵�Ă��������B
+## 補足
 
-```powershell
-# CANSLIM���X�L�b�v
-uv run python backend/scripts/update_db_full_20y.py --skip-canslim
-
-# �t�@���_�����^�����X�L�b�v
-uv run python backend/scripts/update_db_full_20y.py --skip-fundamentals
-
-# full_db_refresh�A�g���̂��~�߂�i���i20�N+�w�W/RS/sector�̂݁j
-uv run python backend/scripts/update_db_full_20y.py --no-run-full-refresh
-```
+- `start_services_visible.cmd` は 3000 / 8000 / 8010 の既存リスナーを停止してから起動します。
+- `Data Update` 画面の `Execute Update` は、選択内容に応じて更新処理をまとめて実行します。
+- 初回データ構築や大規模再取得は `backend/scripts/update_db_full_20y.py` を使ってください。

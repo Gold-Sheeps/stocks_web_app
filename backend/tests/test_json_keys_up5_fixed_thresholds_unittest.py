@@ -78,7 +78,7 @@ class _FakePredictionService:
 class TestJsonKeysUp5FixedThresholds(unittest.TestCase):
     def test_fixed_threshold_keys_exist(self) -> None:
         out_name = "tmp_up5_fixed_thresholds.json"
-        out_path = Path("backend/ml_predictor_data") / out_name
+        out_path = Path(__file__).resolve().parents[1] / "ml_predictor_data" / out_name
         if out_path.exists():
             out_path.unlink()
         argv = [
