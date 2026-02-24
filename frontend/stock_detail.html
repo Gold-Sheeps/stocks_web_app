@@ -913,6 +913,8 @@
  /* AI Prediction signal classes */
  .ai-signal-buy { color: #34d399; font-weight: 700; }
  .ai-signal-notrade { color: #9ca3af; }
+ .ai-signal-blocked { color: #f87171; font-weight: 700; }
+ .ai-signal-caution { color: #fbbf24; font-weight: 700; }
  </style>
 </head>
 
@@ -963,6 +965,10 @@
 
  <!-- Tab: Indicators -->
  <section id="tab-indicators" class="tab-panel is-active">
+ <div id="sdManualSummaryMount" class="glass-panel" style="padding: 18px; margin-bottom: 16px;">
+ <div class="panel-title mb-4">Manual Screening Summary</div>
+ <div class="muted" style="padding: 8px 0;">Loading screening summary...</div>
+ </div>
  <div class="grid-3">
  <!-- Trend Card -->
  <div class="glass-panel indicator-card" id="cardTrend">
@@ -1086,6 +1092,8 @@
  <span class="tp-label">判定</span>
  <span class="tp-value" id="tpAiDecision">--</span>
  </div>
+
+ <div id="tpAiGateNote" style="display: none; font-size: 0.75rem; color: #f87171; margin-top: 2px; padding: 2px 4px; background: rgba(239,68,68,0.08); border-radius: 4px;"></div>
 
  <div id="tpAiThresholdNote" class="tp-row" style="display: none;">
  <span class="tp-label" style="font-size: 0.75rem; color: var(--text-muted); font-style: italic;">

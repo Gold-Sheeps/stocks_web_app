@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Market Environment - Trading System</title>
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    .env-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .summary-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .metric-box {
+      background: var(--bg-surface-2);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      text-align: center;
+    }
+    .metric-label {
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .metric-value {
+      font-size: var(--fs-base);
+      font-weight: 700;
+    }
+    .trigger-row {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div id="sidebar-container"></div>
+  <div class="main-content">
+    <div class="container">
+      <div class="page-header">
+        <div class="page-title">Market Environment</div>
+        <div id="lastUpdated" class="text-muted text-sm"></div>
+      </div>
+
+      <div class="glass-panel mb-4" id="mSummary">
+        <div class="panel-header">
+          <div class="panel-title">市場レジーム総合判定</div>
+          <div id="mRegimeBadge"></div>
+        </div>
+        <div id="mSummaryContent"><div class="text-muted">Loading...</div></div>
+      </div>
+
+      <div class="env-grid" id="mSections"></div>
+    </div>
+  </div>
+
+  <script defer src="js/config.js"></script>
+  <script defer src="js/common.js"></script>
+  <script defer src="js/market_dashboard.js"></script>
+</body>
+</html>

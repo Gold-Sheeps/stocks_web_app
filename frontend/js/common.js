@@ -474,7 +474,7 @@ window.Tabs = Tabs;
         const container = document.getElementById("sidebar-container");
         if (!container) return;
 
-        const currentVer = "v20260212_enhanced";
+        const currentVer = "v20260223_market_m";
         const cacheKey = `sidebar_html_${currentVer}`;
 
         // Auto-Clear Old Cache

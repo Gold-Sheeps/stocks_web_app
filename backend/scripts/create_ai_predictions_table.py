@@ -18,17 +18,15 @@ def create_table() -> None:
         with db.connection.cursor() as cur:
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS ai_predictions (
-                    id              SERIAL PRIMARY KEY,
                     symbol_key      TEXT        NOT NULL,
                     asof            DATE        NOT NULL,
                     p_up5           REAL        NOT NULL,
                     threshold_buy   REAL        NOT NULL,
                     decision        TEXT        NOT NULL,
-                    cal_method      TEXT,
+                    cal_method      TEXT        NOT NULL DEFAULT 'none',
                     artifact_path   TEXT,
-                    created_at      TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     updated_at      TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    CONSTRAINT ai_predictions_symbol_asof_uq UNIQUE (symbol_key, asof)
+                    CONSTRAINT ai_predictions_pk PRIMARY KEY (symbol_key, asof, cal_method)
                 )
             """)
             cur.execute("""
@@ -42,6 +40,10 @@ def create_table() -> None:
             cur.execute("""
                 CREATE INDEX IF NOT EXISTS idx_ai_pred_symbol_asof
                     ON ai_predictions (symbol_key, asof DESC)
+            """)
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_ai_pred_symbol_asof_cal
+                    ON ai_predictions (symbol_key, asof DESC, cal_method)
             """)
             cur.execute("""
                 CREATE INDEX IF NOT EXISTS idx_ai_pred_decision

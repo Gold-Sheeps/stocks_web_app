@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import List, Optional, Dict, Any
 from app.db.database import Database
 from app.models.schemas import StockInfo, Indicators, PricePoint, StockDetailResponse
+from app.services.ai_prediction_service import AiPredictionService
+from app.services.market_environment_service import MarketEnvironmentService
 
 class StockDetailService:
     def __init__(self):
@@ -326,12 +328,25 @@ class StockDetailService:
                 latest_indicator_date=latest_ind_date
             )
 
+            extra_sections = self._build_screening_sections(
+                symbol_key=symbol_key,
+                stock_info=stock_info,
+                indicators=indicators,
+                signal_summary=signal_summary.model_dump() if hasattr(signal_summary, "model_dump") else {},
+            )
+
             return StockDetailResponse(
                 stock_info=stock_info,
                 indicators=indicators,
                 signal_summary=signal_summary,
                 data_quality=data_quality,
-                price_history=[] # Empty for summary
+                price_history=[], # Empty for summary
+                trade_decision_summary=extra_sections.get("trade_decision_summary"),
+                canslim_detail=extra_sections.get("canslim_detail"),
+                chart_pattern_detail=extra_sections.get("chart_pattern_detail"),
+                sector_evaluation=extra_sections.get("sector_evaluation"),
+                market_environment_summary=extra_sections.get("market_environment_summary"),
+                ai_screening_summary=extra_sections.get("ai_screening_summary"),
             )
 
         except Exception as e:
@@ -352,8 +367,243 @@ class StockDetailService:
             indicators=Indicators(),
             signal_summary=StockSignalSummary(overall=SignalStatus.NO_DATA, confidence=0, reasons=[]),
             data_quality=DataQuality(price_valid=False, price_reason=f"error: {error_msg}", indicator_missing_count=99),
-            price_history=[]
+            price_history=[],
+            trade_decision_summary=None,
+            canslim_detail=None,
+            chart_pattern_detail=None,
+            sector_evaluation=None,
+            market_environment_summary=None,
+            ai_screening_summary=None,
         )
+
+    def _safe_float(self, v: Any) -> float | None:
+        try:
+            if v is None:
+                return None
+            x = float(v)
+            return x
+        except Exception:
+            return None
+
+    def _derive_ai_three_class(self, p_up5: float | None) -> dict[str, int]:
+        if p_up5 is None:
+            return {"up": 0, "flat": 0, "down": 0}
+        p = max(0.0, min(1.0, p_up5))
+        up = int(round(p * 100))
+        down = int(round((1 - p) * 55))
+        flat = 100 - up - down
+        if flat < 0:
+            flat = 0
+            down = 100 - up
+        total = up + flat + down
+        if total != 100:
+            up += 100 - total
+        return {"up": up, "flat": flat, "down": down}
+
+    def _market_gate_label(self, gate: str) -> str:
+        g = (gate or "").upper()
+        if g == "OFF":
+            return "新規買い停止"
+        if g == "HALF":
+            return "注意"
+        return "買い可"
+
+    def _build_screening_sections(
+        self,
+        symbol_key: str,
+        stock_info: StockInfo,
+        indicators: Indicators,
+        signal_summary: dict[str, Any],
+    ) -> dict[str, Any]:
+        try:
+            market_summary = MarketEnvironmentService().get_summary()
+        except Exception:
+            market_summary = {}
+
+        try:
+            ai_raw = AiPredictionService().get_latest(symbol_key)
+        except Exception:
+            ai_raw = {"has_prediction": False}
+
+        p_up5 = None
+        if ai_raw.get("has_prediction") and ai_raw.get("p_up5") is not None:
+            p_up5 = self._safe_float(ai_raw.get("p_up5"))
+        probs3 = self._derive_ai_three_class(p_up5)
+
+        cp = self._safe_float(getattr(stock_info, "current_price", None))
+        pivot = self._safe_float(getattr(indicators, "pivot", None))
+        sma50 = self._safe_float(getattr(indicators, "ma50", None))
+        sma200 = self._safe_float(getattr(indicators, "sma200", None))
+        rs = getattr(indicators, "rs_rating", None)
+        dist52 = self._safe_float(getattr(indicators, "dist_52w_high_pct", None))
+        rsi = self._safe_float(getattr(indicators, "rsi", None))
+        vol_ratio = self._safe_float(getattr(indicators, "volume_ratio", None))
+
+        market_gate = (market_summary.get("market_gate") or "ON").upper()
+        market_gate_label = self._market_gate_label(market_gate)
+        position_size = 0 if market_gate == "OFF" else (50 if market_gate == "HALF" else 100)
+
+        reasons: list[str] = []
+        if market_gate == "OFF":
+            reasons.extend(list(market_summary.get("triggers") or ["市場ゲートOFF"]))
+        if cp is not None and sma200 is not None and cp < sma200:
+            reasons.append("下落トレンド（SMA200下）")
+        if pivot and cp and cp < pivot:
+            reasons.append("ブレイクポイント未到達")
+        if vol_ratio is not None and vol_ratio < 1.5:
+            reasons.append("ブレイク出来高不足")
+        if rs is not None and int(rs) < 70:
+            reasons.append("主導株性不足（RS弱め）")
+
+        breakout_status = "条件不足"
+        if market_gate == "OFF":
+            breakout_status = "だまし警戒"
+        elif pivot and cp and cp >= pivot:
+            breakout_status = "有効"
+        elif pivot:
+            breakout_status = "条件不足"
+
+        hard_exclusion = False
+        if cp is not None and sma200 is not None and cp < sma200:
+            hard_exclusion = True
+        if vol_ratio is not None and vol_ratio < 1.5:
+            hard_exclusion = True
+
+        ai_pct = (p_up5 * 100.0) if p_up5 is not None else None
+        threshold_buy = 70 if market_gate == "HALF" else 60
+        threshold_watch_low = 55 if market_gate == "HALF" else 45
+
+        if market_gate == "OFF":
+            final_status = "新規買い停止"
+            action = "見送り"
+        elif hard_exclusion:
+            final_status = "見送り"
+            action = "見送り"
+        elif ai_pct is None:
+            final_status = "監視"
+            action = "監視継続"
+            reasons.append("AI予測未取得")
+        elif ai_pct >= threshold_buy and breakout_status == "有効":
+            final_status = "買い"
+            action = "買い"
+        elif ai_pct >= threshold_watch_low:
+            final_status = "監視"
+            action = "監視継続"
+        else:
+            final_status = "見送り"
+            action = "見送り"
+
+        # CAN-SLIM proxy details (non-breaking, uses available DB snapshot + placeholders)
+        c_ok = None
+        a_ok = None
+        n_ok = bool(pivot and cp and cp >= (pivot * 0.98))
+        s_ok = None if vol_ratio is None else (vol_ratio >= 1.5)
+        l_ok = None if rs is None else (int(rs) >= 80)
+        i_ok = None
+        m_ok = market_gate == "ON"
+        canslim_flags = [c_ok, a_ok, n_ok, s_ok, l_ok, i_ok, m_ok]
+        canslim_pass_count = sum(1 for v in canslim_flags if v is True)
+
+        trade_reason_text = (
+            f"市場ゲート{market_gate}、DD={market_summary.get('nasdaq_dd_count_5w', '-')}/"
+            f"{market_summary.get('sp500_dd_count_5w', '-')}, "
+            f"VIX={market_summary.get('vix_mode', 'Unknown')}。"
+        )
+        if ai_pct is not None:
+            trade_reason_text += f" AI +5%確率{ai_pct:.1f}%。"
+        if reasons:
+            trade_reason_text += " " + " / ".join(reasons[:4])
+
+        plus_factors = [
+            "RS強い" if (rs is not None and int(rs) >= 80) else None,
+            "52週高値圏" if (dist52 is not None and dist52 >= -10) else None,
+            "ピボット接近/突破" if (pivot and cp and cp >= pivot) else None,
+        ]
+        minus_factors = [
+            "DD多い" if (market_summary.get("nasdaq_dd_count_5w") or 0) >= 4 else None,
+            "VIX高い" if (market_summary.get("vix_level") or 0) > 20 else None,
+            "HO警戒中" if "点灯" in str(market_summary.get("ho_alert", "")) else None,
+            "RS低下" if (rs is not None and int(rs) < 70) else None,
+            "RSI過熱" if (rsi is not None and rsi > 70) else None,
+        ]
+
+        return {
+            "trade_decision_summary": {
+                "final_decision": final_status,
+                "market_gate": market_gate,
+                "market_gate_label": market_gate_label,
+                "recommended_position_size_pct": position_size,
+                "ai_plus5_probability_2w_pct": round(ai_pct, 1) if ai_pct is not None else None,
+                "ai_3class_probability": probs3,
+                "breakout_judgment": breakout_status,
+                "buy_block_reasons": reasons,
+                "recent_action": action,
+                "reason_template": trade_reason_text,
+            },
+            "canslim_detail": {
+                "pass_count": canslim_pass_count,
+                "total": 7,
+                "items": {
+                    "C": {"status": c_ok, "label": "四半期EPS", "note": "fundamentals未接続時は未判定"},
+                    "A": {"status": a_ok, "label": "年間収益", "note": "fundamentals未接続時は未判定"},
+                    "N": {"status": n_ok, "label": "新要素/新高値", "value": {"pivot": pivot, "price": cp}},
+                    "S": {"status": s_ok, "label": "需給", "value": {"volume_ratio_breakout": vol_ratio}},
+                    "L": {"status": l_ok, "label": "主導株", "value": {"rs_rating": rs}},
+                    "I": {"status": i_ok, "label": "機関投資家", "note": "データ未取得"},
+                    "M": {"status": m_ok, "label": "市場", "value": {"market_gate": market_gate}},
+                },
+            },
+            "chart_pattern_detail": {
+                "base_type": "Unknown",
+                "cup_with_handle": {
+                    "base_type": "その他/未判定",
+                    "cup_depth_pct": None,
+                    "cup_shape": None,
+                    "handle_position": None,
+                    "handle_decline_pct": None,
+                    "handle_volume_dryup": None,
+                    "breakout_point": pivot,
+                    "distance_from_pivot_pct": (((cp - pivot) / pivot) * 100.0) if (cp and pivot) else None,
+                    "breakout_volume_ratio": vol_ratio,
+                    "rule_2_5x_violation": False,
+                },
+                "breakout_judgment": breakout_status,
+            },
+            "sector_evaluation": {
+                "sector_relative_strength": None,
+                "sector_rank": None,
+                "sector_leader_rank": None,
+                "substitution_difficulty_score": None,
+                "ecosystem_dependency_score": None,
+                "market_share_gain_score": None,
+                "note": "セクターデータ連携前のプレースホルダ",
+            },
+            "market_environment_summary": {
+                "m_total_judgment": market_summary.get("m_judgment"),
+                "market_gate": market_summary.get("market_gate"),
+                "ho_status": f"{market_summary.get('ho_alert', '非点灯')}（残り{market_summary.get('ho_days_remaining', 0)}営業日）",
+                "dd_count": {
+                    "nasdaq": market_summary.get("nasdaq_dd_count_5w"),
+                    "sp500": market_summary.get("sp500_dd_count_5w"),
+                },
+                "vix_mode": market_summary.get("vix_mode"),
+                "vix_level": market_summary.get("vix_level"),
+                "m_detail_path": "/market_dashboard.html",
+                "summary": market_summary,
+            },
+            "ai_screening_summary": {
+                "has_prediction": bool(ai_raw.get("has_prediction")),
+                "p_2w_plus_5": p_up5,
+                "p_2w_plus_5_pct": round(ai_pct, 1) if ai_pct is not None else None,
+                "p_up": probs3["up"],
+                "p_flat": probs3["flat"],
+                "p_down": probs3["down"],
+                "display_3class": f"上昇 {probs3['up']}% / 横ばい {probs3['flat']}% / 下落 {probs3['down']}%",
+                "plus_factors": [x for x in plus_factors if x],
+                "minus_factors": [x for x in minus_factors if x],
+                "raw": ai_raw,
+            },
+        }
 
     # Legacy Compatibility (calls summary + history)
     def get_stock_detail(self, symbol: str) -> StockDetailResponse:
@@ -899,4 +1149,3 @@ class StockDetailService:
             return []
         finally:
             self.db.disconnect()
-

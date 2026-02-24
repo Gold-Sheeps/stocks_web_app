@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 
 from app.routers import (
+    market,
     monitor,
     portfolio,
     prediction,
@@ -34,6 +35,7 @@ app.add_middleware(
 
 # ルーター登録
 app.include_router(monitor.router, prefix=settings.api_v1_prefix)
+app.include_router(market.router, prefix=settings.api_v1_prefix)
 app.include_router(prediction.router, prefix=settings.api_v1_prefix)
 app.include_router(stock_detail.router, prefix=settings.api_v1_prefix)
 app.include_router(portfolio.router, prefix=settings.api_v1_prefix)

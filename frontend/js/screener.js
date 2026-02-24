@@ -16,7 +16,8 @@
             maxPrice: null,
             minRS: null,
             minTotalScore: 70,
-            searchQuery: ''
+            searchQuery: '',
+            aiMode: 'balanced'
         }
     };
 
@@ -82,13 +83,15 @@
         const minRS = $("minRS")?.value;
         const minScore = $("minTotalScore")?.value;
         const search = $("searchInput")?.value;
+        const aiMode = $("aiMode")?.value;
 
         state.filters = {
             minPrice: priceMin ? parseFloat(priceMin) : null,
             maxPrice: priceMax ? parseFloat(priceMax) : null,
             minRS: minRS ? parseFloat(minRS) : null,
             minTotalScore: minScore ? parseFloat(minScore) : 70,
-            searchQuery: search ? search.trim() : ''
+            searchQuery: search ? search.trim() : '',
+            aiMode: aiMode || 'balanced'
         };
     }
 
@@ -133,6 +136,23 @@
         return 'text-muted';
     }
 
+    function badgeHtml(text, tone = 'neutral') {
+        const map = {
+            good: 'rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.35);',
+            warn: 'rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.35);',
+            bad: 'rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.35);',
+            neutral: 'rgba(148,163,184,0.12);color:#cbd5e1;border:1px solid rgba(148,163,184,0.25);'
+        };
+        return `<span style="display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:700;${map[tone] || map.neutral}">${text || '-'}</span>`;
+    }
+
+    function mTone(val) {
+        if (val === '買い可') return 'good';
+        if (val === '注意') return 'warn';
+        if (val === '新規買い停止') return 'bad';
+        return 'neutral';
+    }
+
     // Render results table with animations
     function renderTable() {
         const tbody = document.querySelector("#resultsTable tbody");
@@ -144,7 +164,7 @@
         if (!state.items.length) {
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td colspan="10" style="padding: 40px; text-align: center;">
+                    <td colspan="19" style="padding: 40px; text-align: center;">
                     <div style="font-size: 3rem; opacity: 0.3; margin-bottom: 12px;">-</div>
                     <div style="color: var(--text-muted); font-size: 0.95rem;">
                         No data found. Change filters and search again.
@@ -189,6 +209,14 @@
                 : "-";
 
             const distStr = `${distTo52wHigh.toFixed(2)}%`;
+            const mJudgment = row.m_judgment ?? row.market_summary?.m_judgment ?? '-';
+            const ddDisplay = row.dd_count_display ?? '-';
+            const vixMode = row.vix_mode ?? row.market_summary?.vix_mode ?? '-';
+            const breakout = row.breakout_effectiveness ?? '-';
+            const canslim = row.canslim_pass_count_display ?? (row.canslim_pass_count != null ? `${row.canslim_pass_count}/7` : '-');
+            const overall = row.overall_grade ?? '-';
+            const aiP = (row.ai_p_up5_2w != null && Number.isFinite(Number(row.ai_p_up5_2w))) ? `${Number(row.ai_p_up5_2w).toFixed(1)}%` : '-';
+            const ai3 = row.ai_3class_summary ?? '-';
 
             // Score classes
             const totalScoreClass = getScoreColorClass(total);
@@ -230,6 +258,14 @@
                 </td>
                 <td class="text-right">${chgStr}</td>
                 <td class="text-right" style="font-family: var(--font-mono);">${distStr}</td>
+                <td>${badgeHtml(mJudgment, mTone(mJudgment))}</td>
+                <td style="font-family: var(--font-mono);">${ddDisplay}</td>
+                <td>${badgeHtml(vixMode, vixMode === 'RiskOff' ? 'bad' : (vixMode === 'Caution' ? 'warn' : 'good'))}</td>
+                <td>${badgeHtml(breakout, breakout === '有効' ? 'good' : (breakout === 'だまし警戒' ? 'bad' : 'warn'))}</td>
+                <td class="text-right" style="font-family: var(--font-mono);">${canslim}</td>
+                <td>${badgeHtml(overall, overall === 'A' ? 'good' : (overall === '見送り' ? 'bad' : 'warn'))}</td>
+                <td class="text-right" style="font-family: var(--font-mono);">${aiP}</td>
+                <td style="font-family: var(--font-mono); font-size: 0.8rem;">${ai3}</td>
                 <td>${signalsHtml}</td>
             `;
 
@@ -354,6 +390,9 @@
             if (state.filters.searchQuery) {
                 url.searchParams.set("symbol", state.filters.searchQuery);
             }
+            if (state.filters.aiMode && state.filters.aiMode !== "off") {
+                url.searchParams.set("ai_mode", state.filters.aiMode);
+            }
 
             // Fetch with timeout
             const ctrl = new AbortController();
@@ -425,11 +464,12 @@
 
     // Reset filters
     function resetFilters() {
-        const inputs = ['priceMin', 'priceMax', 'minRS', 'minTotalScore', 'searchInput', 'volumeMin', 'rsiFilter'];
+        const inputs = ['priceMin', 'priceMax', 'minRS', 'minTotalScore', 'searchInput', 'volumeMin', 'rsiFilter', 'aiMode'];
         inputs.forEach(id => {
             const el = $(id);
             if (el) {
                 if (el.id === 'rsiFilter') el.value = '';
+                else if (el.id === 'aiMode') el.value = 'balanced';
                 else if (el.id === 'minRS') el.value = '';
                 else if (el.id === 'minTotalScore') el.value = '70';
                 else el.value = '';
@@ -453,7 +493,7 @@
         }
 
         // Columns per requirement: Rank, Symbol, Name, RS, Total, Price, Pivot, Change, Dist52W, Signals
-        const headers = ['Rank', 'Symbol', 'Name', 'RS Rating', 'Total Score', 'Price', 'Pivot', 'Change %', 'Dist 52W High', 'Signals'];
+        const headers = ['Rank', 'Symbol', 'Name', 'RS Rating', 'Total Score', 'Price', 'Pivot', 'Change %', 'Dist 52W High', 'M判定', 'DD', 'VIX', 'Breakout', 'CAN-SLIM', '総合', 'AI +5% (2W)', 'AI 3Class', 'Signals'];
         const rows = state.items.map((row, idx) => {
             const rank = (idx + 1) + (state.page - 1) * state.limit;
             return [
@@ -466,6 +506,14 @@
                 row.pivot ?? '',
                 row.change_pct ? row.change_pct.toFixed(2) : '0.00',
                 row.dist_52w_high_pct ? row.dist_52w_high_pct.toFixed(2) : '0.00',
+                row.m_judgment ?? '',
+                row.dd_count_display ?? '',
+                row.vix_mode ?? '',
+                row.breakout_effectiveness ?? '',
+                row.canslim_pass_count_display ?? (row.canslim_pass_count != null ? `${row.canslim_pass_count}/7` : ''),
+                row.overall_grade ?? '',
+                row.ai_p_up5_2w != null ? Number(row.ai_p_up5_2w).toFixed(1) : '',
+                row.ai_3class_summary ?? '',
                 (row.signals || []).join('; ')
             ];
         });
@@ -621,7 +669,7 @@
         }
 
         // Enter key on inputs
-        const inputs = document.querySelectorAll("#priceMin, #priceMax, #minRS, #minTotalScore, #searchInput");
+        const inputs = document.querySelectorAll("#priceMin, #priceMax, #minRS, #minTotalScore, #searchInput, #aiMode");
         inputs.forEach(input => {
             input.addEventListener("keyup", (e) => {
                 if (e.key === "Enter") {
@@ -638,6 +686,14 @@
                 state.page = 1;
                 fetchScreener();
             }, 500));
+        }
+
+        const aiMode = $("aiMode");
+        if (aiMode) {
+            aiMode.addEventListener("change", () => {
+                state.page = 1;
+                fetchScreener();
+            });
         }
     }
 

@@ -125,6 +125,7 @@ def _collect_ticker_frame(
         regime_symbols=regime_symbols,
         relative_symbols=relative_symbols,
         sector_symbols=sector_symbols,
+        feature_version=feature_set,
     )
     prepared = svc._prepare_dataset(feat, asof, cfg)
     feature_cols = list(prepared["feature_cols"])
@@ -558,7 +559,15 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--asof", required=True, help="As-of date YYYY-MM-DD.")
     parser.add_argument("--start", required=True, help="Start date YYYY-MM-DD.")
     parser.add_argument("--end", required=True, help="End date YYYY-MM-DD.")
-    parser.add_argument("--feature-set", default="v2_ohlcv_ta_relregime_event", choices=["v2_ohlcv_ta_relregime_event", "v3_ohlcv_ta_relregime_event_fundflow"])
+    parser.add_argument(
+        "--feature-set",
+        default="v2_ohlcv_ta_relregime_event",
+        choices=[
+            "v2_ohlcv_ta_relregime_event",
+            "v3_ohlcv_ta_relregime_event_fundflow",
+            "v4_ohlcv_ta_relregime_event_fundflow_signals",
+        ],
+    )
     parser.add_argument("--regime-symbols", default="US:QQQ,US:SPY")
     parser.add_argument("--relative-symbols", default="US:QQQ")
     parser.add_argument("--sector-symbols", default="")

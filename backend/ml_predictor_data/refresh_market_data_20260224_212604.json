@@ -1,0 +1,2721 @@
+{
+  "run_at": "2026-02-24T21:20:35",
+  "source": "yfinance",
+  "db_only_check": false,
+  "start": null,
+  "end": "2026-02-24",
+  "symbols": [
+    {
+      "symbol_key": "US:AAPL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:AAPL: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:MSFT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:MSFT: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:GOOGL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:GOOGL: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:AMZN",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:AMZN: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:META",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 3460,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 3460,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:META: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:TSLA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 3937,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 3937,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:TSLA: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:AMD",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:AMD: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:INTC",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:INTC: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:QCOM",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:QCOM: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:AVGO",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 4162,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 4162,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:AVGO: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:NVDA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:NVDA: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:DJI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 3879,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 3879,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:DJI: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:BAC",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:BAC: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:GOOG",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:GOOG: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:NIO",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1871,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1871,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:NIO: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:PLTR",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1355,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1355,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:PLTR: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:F",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:F: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:SOFI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1290,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1290,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:SOFI: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:OPEN",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1427,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1427,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:OPEN: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:T",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:T: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:PFE",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:PFE: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:CSCO",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:CSCO: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:NU",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1054,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1054,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:NU: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:RIVN",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1074,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1074,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:RIVN: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:SNAP",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2257,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 2257,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:SNAP: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:WMT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:WMT: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:CMG",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:CMG: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:CMCSA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:CMCSA: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:WFC",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:WFC: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:CSX",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:CSX: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:SOUN",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 958,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 958,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:SOUN: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:MU",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:MU: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:VALE",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:VALE: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:CRWV",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 227,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 227,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:CRWV: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:HPQ",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:HPQ: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:UBER",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1706,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1706,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:UBER: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:KVUE",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 703,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 703,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:KVUE: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:C",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:C: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:NOK",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:NOK: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:LRCX",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:LRCX: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:GRAB",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1312,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1312,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:GRAB: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:JPM",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:JPM: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:PBR",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:PBR: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:FCX",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:FCX: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:RGTI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1215,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1215,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:RGTI: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:ORCL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:ORCL: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:BBD",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:BBD: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:EBAY",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:EBAY: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:HOOD",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1147,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1147,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:HOOD: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:XOM",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:XOM: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:BABA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2873,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 2873,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:BABA: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:AAL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:AAL: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:VZ",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:VZ: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:GME",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:GME: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:BITF",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1638,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1638,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:BITF: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:KO",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:KO: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:SHOP",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2706,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 2706,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:SHOP: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:QBTS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1304,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1304,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:QBTS: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:PLUG",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:PLUG: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:BB",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:BB: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:XPEV",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1378,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1378,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:XPEV: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:MARA",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 3470,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 3470,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:MARA: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:RR",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 566,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 566,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:RR: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:RF",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:RF: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:GM",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 3837,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 3837,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:GM: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:B",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:B: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:RIG",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:RIG: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:HPE",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2601,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 2601,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:HPE: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:CCL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:CCL: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:AMAT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:AMAT: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:V",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 4511,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 4511,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:V: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:APLD",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 968,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 968,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:APLD: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:MS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:MS: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:DKNG",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1654,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1654,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:DKNG: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:IXHL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 998,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 998,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:IXHL: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:NBIS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 335,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 335,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:NBIS: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:ORLY",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:ORLY: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:IQ",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1986,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1986,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:IQ: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:DD",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:DD: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:PTON",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1610,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1610,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:PTON: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:HBAN",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:HBAN: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:ACHR",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1299,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1299,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:ACHR: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:INFY",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:INFY: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:SBUX",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:SBUX: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:KMI",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 3779,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 3779,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:KMI: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:MRK",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:MRK: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:MNST",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:MNST: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:HAL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:HAL: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:RBLX",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1245,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1245,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:RBLX: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:RIOT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2489,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 2489,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:RIOT: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:QS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1386,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1386,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:QS: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:CORZ",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 522,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 522,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:CORZ: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:LYFT",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1735,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1735,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:LYFT: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:BYND",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1712,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1712,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:BYND: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:JD",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 2956,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 2956,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:JD: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:PINS",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 1721,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 1721,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:PINS: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:GILD",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:GILD: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:KEY",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:KEY: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:DAL",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 4732,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 4732,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:DAL: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:TSM",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:TSM: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:QQQ",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:QQQ: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:SPY",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:SPY: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:^SOX",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 8004,
+        "max_date": "2026-02-20"
+      },
+      "db_after": {
+        "rows": 8004,
+        "max_date": "2026-02-20"
+      },
+      "fetch": {
+        "from": "2026-02-21",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:^SOX: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    },
+    {
+      "symbol_key": "US:SMH",
+      "status": "FAILED",
+      "db_before": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "db_after": {
+        "rows": 5033,
+        "max_date": "2026-02-23"
+      },
+      "fetch": {
+        "from": "2026-02-24",
+        "to": "2026-02-24",
+        "attempts": 0,
+        "source_used": null,
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": "Fetch failed for US:SMH: <urlopen error [WinError 10013] アクセス許可で禁じられた方法でソケットにアクセスしようとしました。>"
+    }
+  ],
+  "totals": {
+    "symbols": 104,
+    "failed": 104,
+    "fetched_rows": 0,
+    "inserted": 0,
+    "updated": 0,
+    "skipped_overflow": 0
+  }
+}

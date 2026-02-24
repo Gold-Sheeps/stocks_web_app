@@ -372,6 +372,7 @@ class PredictionService:
         regime_symbols: Optional[List[str]] = None,
         relative_symbols: Optional[List[str]] = None,
         sector_symbols: Optional[List[str]] = None,
+        feature_version: Optional[str] = None,
     ) -> pd.DataFrame:
         df = price_df.copy()
         regime_list = self._normalize_symbol_list(regime_symbols, ["US:QQQ"])
@@ -522,6 +523,15 @@ class PredictionService:
         failed_now = close < close.shift(1)
         df["failed_breakout_flag"] = (broke_out_prev & failed_now).astype(float)
 
+        # === v3/v4 extra: Market Environment + Fundamentals ratios + Advanced TA ===
+        _fv = str(feature_version or "v2_ohlcv_ta_relregime_event")
+        if _fv.startswith("v3") or _fv.startswith("v4"):
+            df = self._merge_market_environment_features(df)
+            df = self._merge_fundamentals_ratios(df, ticker)
+            df = self._merge_advanced_ta_from_db(df, ticker)
+        if _fv.startswith("v4"):
+            df = self._add_signal_composite_features(df)
+
         return df
 
     def _load_fundamentals(self, ticker: str, as_of: date) -> Optional[pd.DataFrame]:
@@ -548,6 +558,419 @@ class PredictionService:
         finally:
             db.disconnect()
 
+    # ---- v3 Market Environment features ----
+
+    def _merge_market_environment_features(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        market_environment テーブルから全日次レコードを取得し、
+        df の各日付に asof merge（backward）で結合する。
+        ルックアヘッドバイアス防止: その日以前の最新データのみ使用。
+        """
+        import json as _json
+        db = Database()
+        try:
+            if not db.connect():
+                for col in self._market_env_feature_cols():
+                    df[col] = np.nan
+                return df
+
+            rows = db.execute_query(
+                "SELECT check_date, data FROM market_environment ORDER BY check_date"
+            )
+            if not rows:
+                for col in self._market_env_feature_cols():
+                    df[col] = np.nan
+                return df
+
+            me_records = []
+            for check_date, data_raw in rows:
+                data = data_raw if isinstance(data_raw, dict) else _json.loads(data_raw)
+                r: Dict[str, Any] = {"check_date": pd.Timestamp(check_date)}
+
+                def _sf(v: Any) -> Optional[float]:
+                    try:
+                        return float(v) if v is not None else np.nan
+                    except (TypeError, ValueError):
+                        return np.nan
+
+                r["me_vix"] = _sf(data.get("vix"))
+                r["me_vix_change_pct"] = _sf(data.get("vix_change_pct"))
+                r["me_nasdaq_dd"] = _sf(data.get("nasdaq_dd_count"))
+                r["me_sp500_dd"] = _sf(data.get("sp500_dd_count"))
+                r["me_ad_ratio"] = _sf(data.get("ad_ratio"))
+                r["me_new_highs"] = _sf(data.get("new_highs"))
+                r["me_new_lows"] = _sf(data.get("new_lows"))
+                r["me_hy_oas"] = _sf(data.get("hy_oas"))
+                r["me_yield_spread_2y10y"] = _sf(data.get("yield_spread_2y10y"))
+                r["me_nfci"] = _sf(data.get("nfci"))
+                r["me_fci"] = _sf(data.get("fci"))
+                r["me_erp"] = _sf(data.get("erp"))
+                r["me_skew"] = _sf(data.get("skew"))
+                r["me_put_call_proxy"] = _sf(data.get("put_call_proxy"))
+                r["me_position_limit_pct"] = _sf(data.get("position_limit_pct"))
+                r["me_ho_triggered"] = 1.0 if bool(data.get("ho_triggered")) else 0.0
+                r["me_ho_alert_days_remaining"] = _sf(data.get("ho_alert_days_remaining"))
+                r["me_ho_cluster_count"] = _sf(data.get("ho_cluster_count"))
+                buy_perm = str(data.get("buy_permission", "")).upper()
+                r["me_market_gate_on"] = 1.0 if buy_perm == "ON" else 0.0
+                r["me_market_gate_half"] = 1.0 if buy_perm == "HALF" else 0.0
+                r["me_market_gate_off"] = 1.0 if buy_perm == "OFF" else 0.0
+
+                r["me_regime_score"] = float({
+                    "強気": 2, "注意": 1, "新規買い停止": 0,
+                }.get(str(data.get("regime", "")), np.nan) or np.nan)
+                r["me_qqq_trend_score"] = float({
+                    "uptrend": 2, "sideways": 1, "correction": 0, "downtrend": -1,
+                }.get(str(data.get("qqq_trend", "")), np.nan) or np.nan)
+                r["me_spy_trend_score"] = float({
+                    "uptrend": 2, "sideways": 1, "correction": 0, "downtrend": -1,
+                }.get(str(data.get("spy_trend", "")), np.nan) or np.nan)
+
+                nasdaq_dd = r["me_nasdaq_dd"] if not np.isnan(r["me_nasdaq_dd"]) else 0.0
+                sp500_dd = r["me_sp500_dd"] if not np.isnan(r["me_sp500_dd"]) else 0.0
+                dd_total = nasdaq_dd + sp500_dd
+                r["me_dd_total"] = dd_total
+                r["me_dd_severe"] = 1.0 if dd_total >= 10 else 0.0
+                r["me_nasdaq_dd_ge_4"] = 1.0 if nasdaq_dd >= 4 else 0.0
+                r["me_nasdaq_dd_ge_5"] = 1.0 if nasdaq_dd >= 5 else 0.0
+                r["me_sp500_dd_ge_4"] = 1.0 if sp500_dd >= 4 else 0.0
+                r["me_sp500_dd_ge_5"] = 1.0 if sp500_dd >= 5 else 0.0
+                r["me_dd_gate_risk"] = 1.0 if (nasdaq_dd >= 5 or sp500_dd >= 5) else 0.0
+
+                vix = r["me_vix"]
+                r["me_vix_above_20"] = 1.0 if (not np.isnan(vix) and vix >= 20) else (np.nan if np.isnan(vix) else 0.0)
+                r["me_vix_above_30"] = 1.0 if (not np.isnan(vix) and vix >= 30) else (np.nan if np.isnan(vix) else 0.0)
+                r["me_vix_18_20"] = 1.0 if (not np.isnan(vix) and 18 <= vix <= 20) else (np.nan if np.isnan(vix) else 0.0)
+                r["me_vix_gt_20"] = 1.0 if (not np.isnan(vix) and vix > 20) else (np.nan if np.isnan(vix) else 0.0)
+
+                hy_oas = r["me_hy_oas"]
+                nfci = r["me_nfci"]
+                credit = 0.0
+                if not np.isnan(hy_oas) and hy_oas >= 5.0:
+                    credit += 1.0
+                if not np.isnan(nfci) and nfci > 0.5:
+                    credit += 1.0
+                r["me_credit_stress"] = credit
+
+                me_records.append(r)
+
+            me_df = pd.DataFrame(me_records).set_index("check_date").sort_index()
+
+            df_reset = df.reset_index()
+            date_col = df_reset.columns[0]
+            df_reset[date_col] = pd.to_datetime(df_reset[date_col])
+            df_sorted = df_reset.sort_values(date_col)
+
+            me_reset = me_df.reset_index().rename(columns={"check_date": date_col})
+            me_reset[date_col] = pd.to_datetime(me_reset[date_col])
+            me_reset = me_reset.sort_values(date_col)
+
+            merged = pd.merge_asof(
+                df_sorted,
+                me_reset,
+                on=date_col,
+                direction="backward",
+            )
+            merged.set_index(date_col, inplace=True)
+            merged.index.name = df.index.name
+            merged = merged.reindex(df.index)
+            return merged
+
+        except Exception as e:
+            print(f"[PredictionService] _merge_market_environment_features error: {e}")
+            for col in self._market_env_feature_cols():
+                df[col] = np.nan
+            return df
+        finally:
+            db.disconnect()
+
+    def _market_env_feature_cols(self) -> List[str]:
+        return [
+            "me_vix", "me_vix_change_pct", "me_nasdaq_dd", "me_sp500_dd",
+            "me_ad_ratio", "me_new_highs", "me_new_lows",
+            "me_hy_oas", "me_yield_spread_2y10y", "me_nfci", "me_fci", "me_erp",
+            "me_skew", "me_put_call_proxy", "me_position_limit_pct",
+            "me_ho_triggered", "me_ho_alert_days_remaining", "me_ho_cluster_count",
+            "me_market_gate_on", "me_market_gate_half", "me_market_gate_off",
+            "me_regime_score", "me_qqq_trend_score", "me_spy_trend_score",
+            "me_dd_total", "me_dd_severe",
+            "me_nasdaq_dd_ge_4", "me_nasdaq_dd_ge_5",
+            "me_sp500_dd_ge_4", "me_sp500_dd_ge_5",
+            "me_dd_gate_risk",
+            "me_vix_above_20", "me_vix_above_30", "me_vix_18_20", "me_vix_gt_20",
+            "me_credit_stress",
+        ]
+
+    def _merge_fundamentals_ratios(self, df: pd.DataFrame, ticker: str) -> pd.DataFrame:
+        """
+        fundamentals_ratios_latest から銘柄固有の比率データを追加。
+        1銘柄1行なので全行に同じ値を設定する。
+        """
+        symbol_raw = self._raw_symbol(ticker)
+        db = Database()
+        try:
+            if not db.connect():
+                for col in self._fundamentals_ratio_feature_cols():
+                    df[col] = np.nan
+                return df
+
+            row = db.execute_query("""
+                SELECT pe_ratio, forward_pe, roe_pct, roa_pct, net_margin_pct,
+                       debt_equity, current_ratio, quick_ratio, asset_turnover, equity_ratio_pct
+                FROM fundamentals_ratios_latest
+                WHERE symbol = %s
+            """, (symbol_raw,))
+
+            def _sf(v: Any) -> float:
+                try:
+                    return float(v) if v is not None else np.nan
+                except (TypeError, ValueError):
+                    return np.nan
+
+            if row and row[0]:
+                r = row[0]
+                df["fund_pe"] = _sf(r[0])
+                df["fund_forward_pe"] = _sf(r[1])
+                df["fund_roe"] = _sf(r[2])
+                df["fund_roa"] = _sf(r[3])
+                df["fund_net_margin"] = _sf(r[4])
+                df["fund_debt_equity"] = _sf(r[5])
+                df["fund_current_ratio"] = _sf(r[6])
+                df["fund_quick_ratio"] = _sf(r[7])
+                df["fund_asset_turnover"] = _sf(r[8])
+                df["fund_equity_ratio"] = _sf(r[9])
+            else:
+                for col in self._fundamentals_ratio_feature_cols():
+                    df[col] = np.nan
+            return df
+        except Exception as e:
+            print(f"[PredictionService] _merge_fundamentals_ratios error: {e}")
+            for col in self._fundamentals_ratio_feature_cols():
+                df[col] = np.nan
+            return df
+        finally:
+            db.disconnect()
+
+    def _fundamentals_ratio_feature_cols(self) -> List[str]:
+        return [
+            "fund_pe", "fund_forward_pe", "fund_roe", "fund_roa", "fund_net_margin",
+            "fund_debt_equity", "fund_current_ratio", "fund_quick_ratio",
+            "fund_asset_turnover", "fund_equity_ratio",
+        ]
+
+    def _merge_advanced_ta_from_db(self, df: pd.DataFrame, ticker: str) -> pd.DataFrame:
+        """
+        indicator_daily テーブルの追加テクニカル指標を取得して結合。
+        """
+        symbol_key = self._symbol_key(ticker)
+        db = Database()
+        try:
+            if not db.connect():
+                for col in self._advanced_ta_feature_cols():
+                    df[col] = np.nan
+                return df
+
+            # 実際に存在するカラムのみ取得
+            wanted = [
+                "vwap20", "obv", "mfi14", "adx14", "plus_di14", "minus_di14",
+                "bb_upper20", "bb_lower20", "bb_width20", "bb_percent_b",
+                "ichimoku_tenkan9", "ichimoku_kijun26",
+                "ichimoku_senkou_a", "ichimoku_senkou_b", "ichimoku_chikou",
+            ]
+            existing_rows = db.execute_query(
+                "SELECT column_name FROM information_schema.columns "
+                "WHERE table_name = 'indicator_daily' AND column_name = ANY(%s)",
+                (wanted,),
+            )
+            existing = [r[0] for r in (existing_rows or [])]
+            if not existing:
+                for col in self._advanced_ta_feature_cols():
+                    df[col] = np.nan
+                return df
+
+            col_str = ", ".join(existing)
+            rows = db.execute_query(
+                f"SELECT trading_date, {col_str} FROM indicator_daily "
+                "WHERE symbol_key = %s ORDER BY trading_date",
+                (symbol_key,),
+            )
+            if not rows:
+                for col in self._advanced_ta_feature_cols():
+                    df[col] = np.nan
+                return df
+
+            ta_df = pd.DataFrame(rows, columns=["trading_date"] + existing)
+            ta_df["trading_date"] = pd.to_datetime(ta_df["trading_date"])
+            ta_df.set_index("trading_date", inplace=True)
+            ta_df.columns = [f"ta_{c}" for c in ta_df.columns]
+            for c in ta_df.columns:
+                ta_df[c] = pd.to_numeric(ta_df[c], errors="coerce")
+
+            df = df.join(ta_df, how="left")
+
+            # 不足列は NaN で補完
+            for col in self._advanced_ta_feature_cols():
+                if col not in df.columns:
+                    df[col] = np.nan
+
+            # 派生特徴量
+            if "ta_bb_upper20" in df.columns and "ta_bb_lower20" in df.columns:
+                bb_w = df["ta_bb_upper20"] - df["ta_bb_lower20"]
+                df["ta_bb_derived_width"] = bb_w
+                df["ta_bb_derived_pct_b"] = (
+                    (df["Close"] - df["ta_bb_lower20"]) / bb_w.replace(0, np.nan)
+                )
+            if "ta_plus_di14" in df.columns and "ta_minus_di14" in df.columns:
+                df["ta_di_diff"] = df["ta_plus_di14"] - df["ta_minus_di14"]
+            if "ta_ichimoku_senkou_a" in df.columns and "ta_ichimoku_senkou_b" in df.columns:
+                df["ta_kumo_thickness"] = df["ta_ichimoku_senkou_a"] - df["ta_ichimoku_senkou_b"]
+
+            return df
+        except Exception as e:
+            print(f"[PredictionService] _merge_advanced_ta_from_db error: {e}")
+            for col in self._advanced_ta_feature_cols():
+                df[col] = np.nan
+            return df
+        finally:
+            db.disconnect()
+
+    def _advanced_ta_feature_cols(self) -> List[str]:
+        return [
+            "ta_vwap20", "ta_obv", "ta_mfi14", "ta_adx14",
+            "ta_plus_di14", "ta_minus_di14",
+            "ta_bb_upper20", "ta_bb_lower20", "ta_bb_width20", "ta_bb_percent_b",
+            "ta_ichimoku_tenkan9", "ta_ichimoku_kijun26",
+            "ta_ichimoku_senkou_a", "ta_ichimoku_senkou_b", "ta_ichimoku_chikou",
+            "ta_bb_derived_width", "ta_bb_derived_pct_b",
+            "ta_di_diff", "ta_kumo_thickness",
+        ]
+
+    def _add_signal_composite_features(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Add leak-safe composite features that approximate chart/CANSLIM/market gating signals."""
+        out = df.copy()
+
+        def _safe_num(col: str, default=np.nan) -> pd.Series:
+            if col not in out.columns:
+                return pd.Series(default, index=out.index, dtype=float)
+            return pd.to_numeric(out[col], errors="coerce")
+
+        close = _safe_num("Close")
+        high = _safe_num("High")
+        low = _safe_num("Low")
+        vol = _safe_num("Volume")
+
+        sma50_dist = _safe_num("sma50_dist")
+        sma200_dist = _safe_num("sma200_dist")
+        ema21_dist = _safe_num("ema21_dist")
+        rsi14 = _safe_num("rsi14")
+        macd_hist = _safe_num("macd_hist")
+        atr14_pct = _safe_num("atr14_pct")
+        vol_ratio_20 = _safe_num("vol_ratio_20")
+        rel_qqq_5 = _safe_num("ret_rel_qqq_5")
+        rel_semi_5 = _safe_num("ret_rel_semi_5")
+        qqq_trend_50 = _safe_num("qqq_trend_50")
+        me_regime_score = _safe_num("me_regime_score")
+        me_position_limit_pct = _safe_num("me_position_limit_pct")
+        me_dd_total = _safe_num("me_dd_total")
+        me_vix = _safe_num("me_vix")
+        me_credit_stress = _safe_num("me_credit_stress")
+        me_qqq_trend_score = _safe_num("me_qqq_trend_score")
+        fund_roe = _safe_num("fund_roe")
+        fund_net_margin = _safe_num("fund_net_margin")
+        fund_forward_pe = _safe_num("fund_forward_pe")
+        relative_volume = _safe_num("relative_volume")
+        distribution_day_count_25d = _safe_num("distribution_day_count_25d")
+        vwap_deviation = _safe_num("vwap_deviation")
+        failed_breakout_flag = _safe_num("failed_breakout_flag")
+        ta_adx14 = _safe_num("ta_adx14")
+        ta_mfi14 = _safe_num("ta_mfi14")
+        ta_di_diff = _safe_num("ta_di_diff")
+        ta_kumo_thickness = _safe_num("ta_kumo_thickness")
+
+        # Approximate breakout signal quality (price trend + volume + follow-through + no recent failure).
+        rolling_high_20_prev = high.rolling(20).max().shift(1)
+        breakout_dist = close / rolling_high_20_prev.replace(0.0, np.nan) - 1.0
+        out["sig_breakout_distance"] = breakout_dist
+        out["sig_breakout_near_flag"] = ((breakout_dist >= -0.03) & (breakout_dist <= 0.05)).astype(float)
+        out["sig_breakout_quality"] = (
+            (breakout_dist.clip(-0.1, 0.1).fillna(0.0) * 8.0)
+            + (vol_ratio_20.fillna(1.0) - 1.0).clip(-1.0, 3.0) * 0.8
+            + vwap_deviation.fillna(0.0).clip(-0.2, 0.2) * 2.0
+            + (macd_hist.fillna(0.0) > 0).astype(float) * 0.4
+            - failed_breakout_flag.fillna(0.0) * 1.2
+        )
+
+        # Approximate CANSLIM-style score from growth/leadership/market components.
+        out["sig_canslim_proxy_score"] = (
+            (fund_roe.fillna(0.0) / 20.0).clip(-2.0, 3.0)
+            + (fund_net_margin.fillna(0.0) / 15.0).clip(-2.0, 3.0)
+            + rel_qqq_5.fillna(0.0).clip(-0.2, 0.2) * 6.0
+            + rel_semi_5.fillna(0.0).clip(-0.2, 0.2) * 4.0
+            + (vol_ratio_20.fillna(1.0) - 1.0).clip(-1.0, 2.0) * 0.5
+            + (me_regime_score.fillna(1.0) - 1.0) * 0.8
+        )
+        out["sig_leadership_proxy"] = (
+            rel_qqq_5.fillna(0.0).clip(-0.2, 0.2) * 5.0
+            + rel_semi_5.fillna(0.0).clip(-0.2, 0.2) * 5.0
+            + (sma50_dist.fillna(0.0) > 0).astype(float) * 0.5
+        )
+
+        # Market gate / risk state proxies.
+        out["sig_market_gate_proxy"] = (
+            (me_regime_score.fillna(1.0) - 1.0) * 1.5
+            + (me_qqq_trend_score.fillna(1.0) - 1.0) * 0.8
+            - (me_dd_total.fillna(0.0) / 10.0).clip(0.0, 2.0)
+            - ((me_vix.fillna(15.0) - 20.0) / 10.0).clip(0.0, 2.0)
+            - me_credit_stress.fillna(0.0) * 0.7
+            + (me_position_limit_pct.fillna(50.0) / 100.0 - 0.5) * 1.2
+        )
+        out["sig_risk_off_penalty"] = (
+            ((me_vix.fillna(15.0) - 20.0) / 10.0).clip(lower=0.0)
+            + (me_dd_total.fillna(0.0) / 6.0).clip(lower=0.0, upper=3.0)
+            + me_credit_stress.fillna(0.0)
+            + (distribution_day_count_25d.fillna(0.0) / 8.0).clip(0.0, 2.0)
+        )
+
+        # Trend quality / continuation.
+        out["sig_trend_quality"] = (
+            sma50_dist.fillna(0.0).clip(-0.3, 0.3) * 3.0
+            + sma200_dist.fillna(0.0).clip(-0.5, 0.5) * 2.0
+            + ema21_dist.fillna(0.0).clip(-0.2, 0.2) * 2.0
+            + qqq_trend_50.fillna(0.0).clip(-0.2, 0.2) * 2.0
+            + (ta_adx14.fillna(20.0) - 20.0).clip(-20.0, 30.0) / 20.0
+            + ta_di_diff.fillna(0.0).clip(-50.0, 50.0) / 25.0
+        )
+        out["sig_overheat_penalty"] = (
+            ((rsi14.fillna(50.0) - 70.0) / 10.0).clip(lower=0.0)
+            + ((ta_mfi14.fillna(50.0) - 80.0) / 10.0).clip(lower=0.0)
+            + (atr14_pct.fillna(0.0) / 0.05).clip(0.0, 3.0) * 0.3
+        )
+
+        # Valuation/quality blend and execution readiness.
+        out["sig_quality_value_balance"] = (
+            (fund_roe.fillna(0.0) / 20.0).clip(-2.0, 3.0)
+            + (fund_net_margin.fillna(0.0) / 15.0).clip(-2.0, 3.0)
+            - (fund_forward_pe.fillna(25.0) / 30.0).clip(0.0, 4.0) * 0.5
+        )
+        out["sig_execution_readiness"] = (
+            relative_volume.fillna(1.0).clip(0.0, 5.0) * 0.4
+            + (vol_ratio_20.fillna(1.0).clip(0.0, 5.0)) * 0.4
+            + (vwap_deviation.fillna(0.0).clip(-0.2, 0.2) * 4.0)
+            + (ta_kumo_thickness.fillna(0.0).clip(-20.0, 20.0) / 20.0) * 0.3
+        )
+
+        # Final fused score for model to learn around.
+        out["sig_fused_setup_score"] = (
+            out["sig_breakout_quality"].fillna(0.0) * 0.30
+            + out["sig_canslim_proxy_score"].fillna(0.0) * 0.25
+            + out["sig_trend_quality"].fillna(0.0) * 0.20
+            + out["sig_market_gate_proxy"].fillna(0.0) * 0.15
+            + out["sig_execution_readiness"].fillna(0.0) * 0.10
+            - out["sig_risk_off_penalty"].fillna(0.0) * 0.25
+            - out["sig_overheat_penalty"].fillna(0.0) * 0.15
+        )
+        return out
+
     def _feature_columns_for_version(self, feature_cols_all: List[str], version: str) -> List[str]:
         v = str(version or "v2_ohlcv_ta_relregime_event")
         v3_extra = {
@@ -568,11 +991,20 @@ class PredictionService:
         }
         if v == "v3_ohlcv_ta_relregime_event_fundflow":
             return list(feature_cols_all)
+        if v == "v4_ohlcv_ta_relregime_event_fundflow_signals":
+            return list(feature_cols_all)
         if v == "v2_ohlcv_ta_relregime_event":
-            return [c for c in feature_cols_all if c not in v3_extra]
+            # v3 専用プレフィックス（me_, fund_, ta_）も v2 から除外
+            _v3_prefixes = ("me_", "fund_", "ta_")
+            return [
+                c for c in feature_cols_all
+                if c not in v3_extra
+                and not any(c.startswith(p) for p in _v3_prefixes)
+            ]
         raise ValueError(
             f"Unsupported feature_version={v}. "
-            "Use v2_ohlcv_ta_relregime_event or v3_ohlcv_ta_relregime_event_fundflow."
+            "Use v2_ohlcv_ta_relregime_event, v3_ohlcv_ta_relregime_event_fundflow, "
+            "or v4_ohlcv_ta_relregime_event_fundflow_signals."
         )
 
     def _fetch_benchmark(

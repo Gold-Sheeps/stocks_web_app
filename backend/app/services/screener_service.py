@@ -2,6 +2,7 @@ from typing import Optional
 import math
 from app.db.database import Database
 from app.services.freshness_service import FreshnessService
+from app.services.market_environment_service import MarketEnvironmentService
 
 
 class ScreenerService:
@@ -31,6 +32,134 @@ class ScreenerService:
             )
             """
         )
+
+    def _ensure_ai_predictions_table_exists(self) -> None:
+        self.db.execute_command(
+            """
+            CREATE TABLE IF NOT EXISTS ai_predictions (
+                symbol_key TEXT NOT NULL,
+                asof DATE NOT NULL,
+                p_up5 DOUBLE PRECISION,
+                threshold_buy DOUBLE PRECISION,
+                decision TEXT,
+                cal_method TEXT NOT NULL DEFAULT 'none',
+                artifact_path TEXT,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (symbol_key, asof, cal_method)
+            )
+            """
+        )
+
+    def _get_market_summary_safe(self) -> dict:
+        try:
+            return MarketEnvironmentService().get_summary()
+        except Exception:
+            return {}
+
+    def _get_latest_ai_predictions(self, symbols: list[str]) -> dict[str, dict]:
+        if not symbols:
+            return {}
+        self._ensure_ai_predictions_table_exists()
+        q = """
+            SELECT DISTINCT ON (symbol_key)
+                symbol_key, asof, p_up5, threshold_buy, decision
+            FROM ai_predictions
+            WHERE symbol_key = ANY(%s)
+            ORDER BY symbol_key, asof DESC,
+                CASE LOWER(COALESCE(cal_method, ''))
+                    WHEN 'none' THEN 0
+                    WHEN 'platt' THEN 1
+                    WHEN 'artifact' THEN 2
+                    WHEN 'isotonic' THEN 3
+                    ELSE 9
+                END,
+                updated_at DESC
+        """
+        rows = self.db.execute_query(q, (symbols,)) or []
+        out: dict[str, dict] = {}
+        for r in rows:
+            try:
+                out[str(r[0]).upper()] = {
+                    "asof": str(r[1]) if r[1] is not None else None,
+                    "p_up5": float(r[2]) if r[2] is not None else None,
+                    "threshold_buy": float(r[3]) if r[3] is not None else None,
+                    "decision": str(r[4]) if r[4] is not None else None,
+                }
+            except Exception:
+                continue
+        return out
+
+    def _derive_ai_3class(self, p_up5: Optional[float]) -> dict[str, int]:
+        if p_up5 is None:
+            return {"up": 0, "flat": 0, "down": 0}
+        p = max(0.0, min(1.0, float(p_up5)))
+        up = int(round(p * 100))
+        down = int(round((1.0 - p) * 0.55 * 100))
+        flat = 100 - up - down
+        if flat < 0:
+            flat = 0
+            down = 100 - up
+        s = up + flat + down
+        if s != 100:
+            up += 100 - s
+        return {"up": up, "flat": flat, "down": down}
+
+    def _m_badge(self, market_gate: str) -> str:
+        gate = (market_gate or "").upper()
+        if gate == "OFF":
+            return "新規買い停止"
+        if gate == "HALF":
+            return "注意"
+        return "買い可"
+
+    def _breakout_effectiveness(self, market_gate: str, row: dict) -> str:
+        gate = (market_gate or "").upper()
+        if gate == "OFF":
+            return "だまし警戒"
+        if gate == "HALF":
+            return "注意"
+        pivot = row.get("pivot")
+        price = row.get("price", 0)
+        if pivot and price and float(price) >= float(pivot):
+            return "有効"
+        return "注意"
+
+    def _estimate_canslim_pass_count(self, row: dict, market_gate: str) -> int:
+        count = 0
+        if (row.get("rs_rating") or 0) >= 80:
+            count += 1  # L
+        if row.get("pivot") and (row.get("price") or 0) >= (row.get("pivot") or 0):
+            count += 1  # N/price action proxy
+        if (row.get("dist_52w_high_pct") or -999) >= -10:
+            count += 1  # N proxy
+        if any(s in (row.get("signals") or []) for s in ["High RS", "Perfect Order"]):
+            count += 1  # C/S/L proxy
+        if (row.get("total_score") or 0) >= 80:
+            count += 1  # overall quality proxy
+        if (row.get("rsi") is not None) and 40 <= float(row.get("rsi")) <= 75:
+            count += 1  # momentum quality proxy
+        if (market_gate or "").upper() == "ON":
+            count += 1  # M
+        return min(count, 7)
+
+    def _overall_grade(self, market_gate: str, p_up5: Optional[float], total_score: float) -> str:
+        gate = (market_gate or "").upper()
+        p = p_up5 if p_up5 is not None else 0.0
+        if gate == "OFF":
+            return "見送り"
+        if gate == "HALF":
+            if p >= 0.70 and total_score >= 75:
+                return "A"
+            if p >= 0.55:
+                return "B"
+            return "C"
+        if p >= 0.70 and total_score >= 80:
+            return "A"
+        if p >= 0.60 and total_score >= 70:
+            return "B"
+        if p >= 0.45:
+            return "C"
+        return "見送り"
 
     def _build_filter_clause(
         self,
@@ -75,6 +204,27 @@ class ScreenerService:
 
         return where_sql, params
 
+    def _resolve_ai_mode(self, ai_mode: Optional[str]) -> tuple[str, Optional[float], Optional[str]]:
+        mode = str(ai_mode or "off").strip().lower()
+        aliases = {
+            "off": "off",
+            "all": "off",
+            "balanced": "balanced",
+            "balance": "balanced",
+            "high_precision": "high_precision",
+            "high-precision": "high_precision",
+            "high": "high_precision",
+            "strict": "strict",
+        }
+        m = aliases.get(mode, "off")
+        if m == "balanced":
+            return m, 0.6, None
+        if m == "high_precision":
+            return m, 0.7, None
+        if m == "strict":
+            return m, 0.6, "isotonic"
+        return "off", None, None
+
     def _generate_signals(self, rs_rating, rsi, dist_52w, sma20, sma50, sma200, price):
         signals = []
         if rs_rating and rs_rating >= 80:
@@ -95,6 +245,7 @@ class ScreenerService:
     def scan_stocks(
         self,
         mode: str = "all",
+        ai_mode: str = "off",
         sector: Optional[str] = None,
         limit: int = 20,
         offset: int = 0,
@@ -116,6 +267,23 @@ class ScreenerService:
             rsi_filter=rsi_filter,
             symbol=symbol,
         )
+        ai_mode_used, ai_min_p, ai_cal_method = self._resolve_ai_mode(ai_mode)
+        ai_lateral_filter_sql = ""
+        ai_lateral_filter_params: list = []
+        if ai_mode_used in ("balanced", "high_precision"):
+            ai_lateral_filter_sql = " AND LOWER(COALESCE(cal_method, 'none')) = %s"
+            ai_lateral_filter_params.append("none")
+        elif ai_mode_used == "strict":
+            ai_lateral_filter_sql = " AND LOWER(COALESCE(cal_method, '')) = %s"
+            ai_lateral_filter_params.append("isotonic")
+        ai_filter_sql = ""
+        ai_filter_params: list = []
+        if ai_mode_used != "off":
+            ai_filter_sql = " AND ai_latest.p_up5 IS NOT NULL AND ai_latest.p_up5 >= %s"
+            ai_filter_params.append(float(ai_min_p or 0.0))
+            if ai_cal_method and not ai_lateral_filter_sql:
+                ai_filter_sql += " AND LOWER(COALESCE(ai_latest.cal_method, '')) = %s"
+                ai_filter_params.append(str(ai_cal_method).lower())
 
         cte = f"""
             WITH base AS (
@@ -179,9 +347,18 @@ class ScreenerService:
                 ) ind_rs ON true
                 LEFT JOIN rs_ratings rr
                   ON rr.symbol_key = i.symbol_key
+                LEFT JOIN LATERAL (
+                    SELECT p_up5, threshold_buy, decision, cal_method, asof
+                    FROM ai_predictions
+                    WHERE symbol_key = i.symbol_key
+                      {ai_lateral_filter_sql}
+                    ORDER BY asof DESC, updated_at DESC
+                    LIMIT 1
+                ) ai_latest ON true
                 WHERE i.is_active = true
                   AND ind.symbol_key IS NOT NULL
                   {where_sql}
+                  {ai_filter_sql}
             ),
             scored AS (
                 SELECT
@@ -244,15 +421,16 @@ class ScreenerService:
         try:
             with self.db:
                 self._ensure_rs_table_exists()
+                self._ensure_ai_predictions_table_exists()
                 count_res = self.db.execute_query(
                     count_query,
-                    tuple(where_params + [effective_min_total_score]),
+                    tuple(where_params + ai_lateral_filter_params + ai_filter_params + [effective_min_total_score]),
                 )
                 total_stocks = int(count_res[0][0]) if count_res and count_res[0] else 0
 
                 results = self.db.execute_query(
                     page_query,
-                    tuple(where_params + [effective_min_total_score, limit, offset]),
+                    tuple(where_params + ai_lateral_filter_params + ai_filter_params + [effective_min_total_score, limit, offset]),
                 )
 
                 if not results:
@@ -269,6 +447,7 @@ class ScreenerService:
                     )
 
                 from app.models.schemas import ScreenerResult, ScreenerResponse
+                market_summary = self._get_market_summary_safe()
 
                 items = []
                 for row in results:
@@ -307,6 +486,34 @@ class ScreenerService:
                         )
                     )
 
+                ai_map = self._get_latest_ai_predictions([item.symbol for item in items])
+                gate = (market_summary.get("market_gate") or "ON").upper()
+                for item in items:
+                    ai = ai_map.get((item.symbol or "").upper(), {})
+                    p_up5 = ai.get("p_up5")
+                    probs3 = self._derive_ai_3class(p_up5)
+                    item.m_judgment = self._m_badge(gate)
+                    item.market_gate = gate
+                    item.ho_alert = market_summary.get("ho_alert", "非点灯")
+                    item.ho_days_remaining = market_summary.get("ho_days_remaining", 0)
+                    ndd = market_summary.get("nasdaq_dd_count_5w")
+                    sdd = market_summary.get("sp500_dd_count_5w")
+                    item.dd_count = {"nasdaq": ndd, "sp500": sdd}
+                    item.dd_count_display = f"{ndd if ndd is not None else '-'} / {sdd if sdd is not None else '-'}"
+                    item.vix_mode = market_summary.get("vix_mode", "Unknown")
+                    item.breakout_effectiveness = self._breakout_effectiveness(
+                        gate, item.model_dump()
+                    )
+                    item.canslim_pass_count = self._estimate_canslim_pass_count(
+                        item.model_dump(), gate
+                    )
+                    item.canslim_pass_count_display = f"{item.canslim_pass_count}/7"
+                    item.ai_p_up5_2w = round(p_up5 * 100, 1) if p_up5 is not None else None
+                    item.ai_3class = probs3
+                    item.ai_3class_summary = f"上{probs3['up']}/横{probs3['flat']}/下{probs3['down']}"
+                    item.overall_grade = self._overall_grade(gate, p_up5, float(item.total_score or 0))
+                    item.market_summary = market_summary
+
                 total_pages = math.ceil(total_stocks / limit) if limit > 0 else 0
                 return ScreenerResponse(
                     items=items,
@@ -333,6 +540,7 @@ class ScreenerService:
                     "min_total_score",
                     "volume_min",
                     "rsi_filter",
+                    "ai_mode",
                     "offset",
                     "limit",
                 ],

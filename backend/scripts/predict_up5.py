@@ -65,10 +65,22 @@ def _load_tickers_file(path: str | None) -> List[str]:
 
 def _latest_artifact_path() -> str:
     out_dir = Path(__file__).resolve().parents[1] / "ml_predictor_data"
-    cands = sorted(out_dir.glob("pooled_up5_*_artifact.pkl"), key=lambda p: p.stat().st_mtime, reverse=True)
+    cands = list(out_dir.glob("pooled_up5_*_artifact.pkl"))
     if not cands:
         raise FileNotFoundError("No pooled artifact found under backend/ml_predictor_data.")
-    return str(cands[0])
+
+    def _rank(p: Path) -> tuple[int, float]:
+        # Prefer richer feature sets first (v4 > v3 > older), then recency.
+        name = p.name.lower()
+        rank = 0
+        if "_v4_" in name or name.startswith("pooled_up5_v4"):
+            rank = 2
+        elif "_v3_" in name or name.startswith("pooled_up5_v3"):
+            rank = 1
+        return (rank, p.stat().st_mtime)
+
+    best = max(cands, key=_rank)
+    return str(best)
 
 
 def _build_inference_row(
@@ -85,6 +97,7 @@ def _build_inference_row(
         feature_version=str(artifact.get("feature_set", "v2_ohlcv_ta_relregime_event")),
     )
     raw = svc._load_prices(ticker, as_of=asof)
+    feat_ver = str(artifact.get("feature_set", "v2_ohlcv_ta_relregime_event"))
     feat = svc._build_feature_frame(
         ticker=ticker,
         price_df=raw,
@@ -92,6 +105,7 @@ def _build_inference_row(
         regime_symbols=artifact.get("regime_symbols", []),
         relative_symbols=artifact.get("relative_symbols", []),
         sector_symbols=artifact.get("sector_symbols", []),
+        feature_version=feat_ver,
     )
     prepared = svc._prepare_dataset(feat, asof, cfg)
     pred_row = prepared["pred_row"]
@@ -153,13 +167,22 @@ def _apply_artifact_calibration(artifact: Dict[str, Any], probs: np.ndarray) -> 
 def predict_with_artifact(
     artifact: Dict[str, Any],
     x_df: pd.DataFrame,
+    calibration_method: str | None = "artifact",
 ) -> Dict[str, Any]:
     model = artifact["model"]
     p_raw = float(model.predict_proba(x_df.to_numpy(dtype=float))[0][1])
-    p = float(_apply_artifact_calibration(artifact, np.asarray([p_raw], dtype=float))[0])
+    cal_mode = str(calibration_method or "artifact").strip().lower()
+    if cal_mode in ("artifact", "auto", "platt", "isotonic"):
+        p = float(_apply_artifact_calibration(artifact, np.asarray([p_raw], dtype=float))[0])
+        cal_used = str((artifact.get("calibration") or {}).get("type", "none"))
+    elif cal_mode == "none":
+        p = float(np.clip(p_raw, 1e-6, 1.0 - 1e-6))
+        cal_used = "none"
+    else:
+        raise ValueError(f"Unsupported calibration_method: {calibration_method}")
     threshold = float(artifact.get("threshold_buy", 0.7))
     action = "BUY" if p >= threshold else "NO_TRADE"
-    return {"p_up5": p, "action": action, "threshold_buy": threshold}
+    return {"p_up5": p, "action": action, "threshold_buy": threshold, "cal_method_used": cal_used}
 
 
 def _rank_predictions(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -173,6 +196,12 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--tickers-file", default=None, help="Path to ticker file.")
     parser.add_argument("--asof", required=True, help="As-of date YYYY-MM-DD.")
     parser.add_argument("--artifact", default=None, help="Artifact path. Default: latest pooled artifact.")
+    parser.add_argument(
+        "--calibration-method",
+        default="none",
+        choices=["none", "artifact", "platt", "isotonic"],
+        help="Probability calibration for inference output. Default: none (raw model probability).",
+    )
     return parser.parse_args()
 
 
@@ -194,13 +223,14 @@ def main() -> int:
     rows: List[Dict[str, Any]] = []
     for ticker in tickers:
         x_df, feat_audit = _build_inference_row(svc, ticker, asof, artifact)
-        pred = predict_with_artifact(artifact, x_df)
+        pred = predict_with_artifact(artifact, x_df, calibration_method=args.calibration_method)
         rows.append(
             {
                 "ticker": ticker,
                 "asof": asof.isoformat(),
                 "p_up5": float(pred["p_up5"]),
                 "decision": str(pred["action"]),
+                "cal_method_used": str(pred.get("cal_method_used", "none")),
                 "feature_audit": feat_audit,
             }
         )
@@ -211,6 +241,7 @@ def main() -> int:
                 t=r["ticker"], d=r["asof"], p=float(r["p_up5"]), a=r["decision"]
             )
         )
+        print(f"calibration ticker={r['ticker']} method={r.get('cal_method_used','none')}")
         print(
             "feature_audit ticker={t} n_feature_mismatch={n} active_ticker_onehot_column={c} top_nonzero_features={f}".format(
                 t=r["ticker"],

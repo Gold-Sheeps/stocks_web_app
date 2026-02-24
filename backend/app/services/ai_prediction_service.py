@@ -18,7 +18,7 @@ UPSERT_SQL = """
     INSERT INTO ai_predictions
         (symbol_key, asof, p_up5, threshold_buy, decision, cal_method, artifact_path, updated_at)
     VALUES (%s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
-    ON CONFLICT (symbol_key, asof)
+    ON CONFLICT (symbol_key, asof, cal_method)
     DO UPDATE SET
         p_up5          = EXCLUDED.p_up5,
         threshold_buy  = EXCLUDED.threshold_buy,
@@ -32,7 +32,16 @@ SELECT_LATEST_SQL = """
     SELECT symbol_key, asof, p_up5, threshold_buy, decision, cal_method, artifact_path, updated_at
     FROM ai_predictions
     WHERE symbol_key = %s
-    ORDER BY asof DESC
+    ORDER BY
+        asof DESC,
+        CASE LOWER(COALESCE(cal_method, ''))
+            WHEN 'none' THEN 0
+            WHEN 'platt' THEN 1
+            WHEN 'artifact' THEN 2
+            WHEN 'isotonic' THEN 3
+            ELSE 9
+        END,
+        updated_at DESC
     LIMIT 1
 """
 
@@ -83,7 +92,7 @@ class AiPredictionService:
         自動取得してリトライする。
         """
         symbol_key = symbol_key.upper()
-        asof = datetime.date.today()
+        asof = self._resolve_inference_asof(symbol_key)
         try:
             # 遅延 import（サーバー起動時の重いMLライブラリ読み込みを回避）
             from scripts.predict_up5 import (
@@ -96,7 +105,7 @@ class AiPredictionService:
 
             artifact_path = _latest_artifact_path()
             artifact = _load_artifact(artifact_path)
-            cal_method = str(artifact.get("calibration", {}).get("type", "none"))
+            cal_method = "none"
 
             svc = PredictionService()
 
@@ -104,11 +113,12 @@ class AiPredictionService:
             for attempt in range(max_retries):
                 try:
                     x_df, _ = _build_inference_row(svc, symbol_key, asof, artifact)
-                    pred = predict_with_artifact(artifact, x_df)
+                    pred = predict_with_artifact(artifact, x_df, calibration_method="none")
 
                     p_up5 = float(pred["p_up5"])
                     threshold = float(pred["threshold_buy"])
                     decision = str(pred["action"])
+                    cal_method = str(pred.get("cal_method_used", "none"))
 
                     db = Database()
                     db_saved = False
@@ -122,7 +132,25 @@ class AiPredictionService:
                         finally:
                             db.disconnect()
 
-                    return {
+                    # ★ ハードゲート: 市場環境による最終判定調整
+                    market_env = self._get_latest_market_environment()
+                    market_regime = None
+                    position_limit_pct = None
+                    gate_reason = None
+                    original_decision = decision
+
+                    if market_env:
+                        market_regime = market_env.get("regime", "")
+                        position_limit_pct = market_env.get("position_limit_pct")
+
+                        if market_regime == "新規買い停止" and decision == "BUY":
+                            decision = "GATE_BLOCKED"
+                            gate_reason = "新規買い停止中（市場環境）"
+                        elif market_regime == "注意" and p_up5 < 0.6 and decision == "BUY":
+                            decision = "CAUTION"
+                            gate_reason = "市場環境「注意」のため閾値引き上げ（p<0.6）"
+
+                    result: Dict[str, Any] = {
                         "has_prediction": True,
                         "symbol_key": symbol_key,
                         "asof": str(asof),
@@ -134,6 +162,14 @@ class AiPredictionService:
                         "updated_at": str(datetime.datetime.now()),
                         "db_saved": db_saved,
                     }
+                    if market_regime is not None:
+                        result["market_regime"] = market_regime
+                    if position_limit_pct is not None:
+                        result["position_limit_pct"] = position_limit_pct
+                    if gate_reason is not None:
+                        result["gate_reason"] = gate_reason
+                        result["original_decision"] = original_decision
+                    return result
 
                 except RuntimeError as e:
                     error_msg = str(e)
@@ -141,12 +177,13 @@ class AiPredictionService:
                         f"[AiPredictionService] RuntimeError attempt={attempt}: {error_msg[:120]}",
                         flush=True,
                     )
-                    if "Price data missing" in error_msg and attempt == 0:
+                    if ("Price data missing" in error_msg or "No prediction row available for as_of_date" in error_msg) and attempt == 0:
                         print(
                             f"[AiPredictionService] Calling _fetch_missing_data for {symbol_key}",
                             flush=True,
                         )
                         self._fetch_missing_data(symbol_key)
+                        asof = self._resolve_inference_asof(symbol_key)
                         continue  # リトライ
                     else:
                         if attempt == 1:
@@ -180,6 +217,54 @@ class AiPredictionService:
         except Exception:
             logger.exception("AiPredictionService.run_on_demand failed for symbol=%s", symbol_key)
             raise
+
+    def _get_latest_market_environment(self) -> Dict[str, Any] | None:
+        """market_environment テーブルから最新レコードの data dict を返す。"""
+        import json as _json
+        db = Database()
+        try:
+            if not db.connect():
+                return None
+            rows = db.execute_query(
+                "SELECT data FROM market_environment ORDER BY check_date DESC LIMIT 1"
+            )
+            if rows and rows[0] and rows[0][0]:
+                raw = rows[0][0]
+                return raw if isinstance(raw, dict) else _json.loads(raw)
+        except Exception as e:
+            print(f"[AiPredictionService] _get_latest_market_environment error: {e}", flush=True)
+        finally:
+            db.disconnect()
+        return None
+
+    def _resolve_inference_asof(self, symbol_key: str) -> datetime.date:
+        """Use latest available DB trading date to avoid timezone/trading-day gaps."""
+        today = datetime.date.today()
+        db = Database()
+        try:
+            if not db.connect():
+                return today
+            rows = db.execute_query(
+                """
+                SELECT MAX(trading_date)
+                FROM price_daily
+                WHERE symbol_key = %s AND trading_date <= %s
+                """,
+                (symbol_key, today),
+            )
+            if rows and rows[0] and rows[0][0]:
+                return rows[0][0]
+            rows = db.execute_query(
+                "SELECT MAX(trading_date) FROM price_daily WHERE trading_date <= %s",
+                (today,),
+            )
+            if rows and rows[0] and rows[0][0]:
+                return rows[0][0]
+        except Exception as e:
+            print(f"[AiPredictionService] _resolve_inference_asof error: {e}", flush=True)
+        finally:
+            db.disconnect()
+        return today
 
     def _fetch_missing_data(self, symbol_key: str) -> None:
         """銘柄のデータがDBに無い場合、yfinanceからデータを取得する。"""

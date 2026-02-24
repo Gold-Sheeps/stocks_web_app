@@ -8,6 +8,7 @@ router = APIRouter(prefix="/screener", tags=["screener"])
 @router.get("/scan")
 async def scan_stocks(
     mode: str = Query(default="all", description="Scan mode: 'all', 'sector', 'theme'"),
+    ai_mode: str = Query(default="off", description="AI filter mode: off, balanced, high_precision, strict"),
     sector: Optional[str] = Query(default=None, description="Sector name (for mode='sector')"),
     limit: int = Query(default=20, description="Number of results to return"),
     offset: int = Query(default=0, description="Offset for pagination"),
@@ -24,7 +25,7 @@ async def scan_stocks(
     """
     service = ScreenerService()
     return service.scan_stocks(
-        mode=mode, sector=sector, limit=limit, offset=offset, 
+        mode=mode, ai_mode=ai_mode, sector=sector, limit=limit, offset=offset,
         min_rs=min_rs, min_total_score=min_total_score,
         min_price=min_price, max_price=max_price,
         volume_min=volume_min, rsi_filter=rsi_filter, symbol=symbol

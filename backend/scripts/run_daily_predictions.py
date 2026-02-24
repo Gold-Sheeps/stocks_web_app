@@ -123,7 +123,7 @@ UPSERT_SQL = """
     INSERT INTO ai_predictions
         (symbol_key, asof, p_up5, threshold_buy, decision, cal_method, artifact_path, updated_at)
     VALUES (%s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
-    ON CONFLICT (symbol_key, asof)
+    ON CONFLICT (symbol_key, asof, cal_method)
     DO UPDATE SET
         p_up5          = EXCLUDED.p_up5,
         threshold_buy  = EXCLUDED.threshold_buy,
@@ -143,6 +143,12 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--asof", required=True, help="As-of date YYYY-MM-DD.")
     parser.add_argument("--max-tickers", type=int, default=500, help="Max tickers to process (default 500).")
     parser.add_argument("--artifact", default=None, help="Artifact path. Default: latest pooled artifact.")
+    parser.add_argument(
+        "--calibration-method",
+        default="none",
+        choices=["none", "artifact", "platt", "isotonic"],
+        help="Probability calibration for stored p_up5. Default: none (raw model probability).",
+    )
     parser.add_argument("--dry-run", action="store_true", help="Skip DB writes.")
     return parser.parse_args()
 
@@ -156,7 +162,7 @@ def main() -> int:
     print(f"[INFO] dry-run:  {args.dry_run}")
 
     artifact = _load_artifact(artifact_path)
-    cal_method = str(artifact.get("calibration", {}).get("type", "none"))
+    cal_method = str(args.calibration_method)
 
     db = Database()
     if not db.connect():
@@ -179,10 +185,11 @@ def main() -> int:
     for i, ticker in enumerate(tickers):
         try:
             x_df, _ = _build_inference_row(svc, ticker, asof, artifact)
-            pred = predict_with_artifact(artifact, x_df)
+            pred = predict_with_artifact(artifact, x_df, calibration_method=args.calibration_method)
             p_up5 = float(pred["p_up5"])
             threshold = float(pred["threshold_buy"])
             decision = str(pred["action"])
+            cal_method = str(pred.get("cal_method_used", cal_method))
 
             if args.dry_run:
                 print(f"[DRY-RUN] {ticker}: p_up5={p_up5:.4f} decision={decision}")

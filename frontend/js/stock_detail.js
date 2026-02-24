@@ -22,6 +22,8 @@ class StockDetailApp {
             loading: false,
             fundLoaded: false,
             ratiosLoaded: false,
+            aiPrediction: null,
+            marketEnv: null,
             candleFallback: false,
             drawMode: 'none',
             drawLines: [],
@@ -77,6 +79,7 @@ class StockDetailApp {
 
         await this.fetchSummary();
         this.loadTradePlan();
+        this.fetchMarketEnvironment();
         this.fetchAiPrediction();
 
         await this.loadChartDataAll();
@@ -755,6 +758,7 @@ class StockDetailApp {
             this.renderValidState(info, signals, indicators);
         }
         this.renderTradePanel(data);
+        this.renderManualScreeningSummary();
     }
 
     renderValidState(info, signals, indicators) {
@@ -1062,19 +1066,19 @@ class StockDetailApp {
 
         const rows = Array.isArray(rowsDesc) ? [...rowsDesc].reverse() : [];
         const metrics = [
-            { label: 'Revenue / 売上高', key: 'revenue', digits: 0 },
-            { label: 'Net Income / 純利益', key: 'net_income', digits: 0 },
-            { label: 'EPS (Diluted) / 希薄化後EPS', key: 'eps', digits: 2 },
-            { label: 'Operating Cash Flow / 営業CF', key: 'operating_cash_flow', digits: 0 },
-            { label: 'Investing Cash Flow / 投資CF', key: 'investing_cash_flow', digits: 0 },
-            { label: 'Financing Cash Flow / 財務CF', key: 'financing_cash_flow', digits: 0 },
-            { label: 'CapEx / 設備投資', key: 'capex', digits: 0 },
-            { label: 'Free Cash Flow / フリーCF', key: 'free_cash_flow', digits: 0 }
+            { label: 'Revenue', key: 'revenue', digits: 0 },
+            { label: 'Net Income', key: 'net_income', digits: 0 },
+            { label: 'EPS (Diluted)', key: 'eps', digits: 2 },
+            { label: 'Operating Cash Flow', key: 'operating_cash_flow', digits: 0 },
+            { label: 'Investing Cash Flow', key: 'investing_cash_flow', digits: 0 },
+            { label: 'Financing Cash Flow', key: 'financing_cash_flow', digits: 0 },
+            { label: 'CapEx', key: 'capex', digits: 0 },
+            { label: 'Free Cash Flow', key: 'free_cash_flow', digits: 0 }
         ];
         if (rows.length === 0) {
             thead.innerHTML = `
                 <tr>
-                    <th class="fundamentals-sticky-col">項目 / Metric</th>
+                    <th class="fundamentals-sticky-col">鬆・岼 / Metric</th>
                     <th class="text-right fund-col">No Data</th>
                 </tr>
             `;
@@ -1089,7 +1093,7 @@ class StockDetailApp {
 
         thead.innerHTML = `
             <tr>
-                <th class="fundamentals-sticky-col">項目 / Metric</th>
+                <th class="fundamentals-sticky-col">鬆・岼 / Metric</th>
                 ${rows.map(r => `<th class="text-right fund-col">${r.period_end_date}</th>`).join('')}
             </tr>
         `;
@@ -1136,7 +1140,7 @@ class StockDetailApp {
 
         // YoY label: show comparison period if available
         const yoyPeriod = comparison?.yoy_period || null;
-        const yoyLabel = yoyPeriod ? `YoY vs ${yoyPeriod}` : 'YoY / 前年比';
+        const yoyLabel = yoyPeriod ? `YoY vs ${yoyPeriod}` : 'YoY';
 
         tbody.innerHTML = metrics.map(m => `
             <tr>
@@ -1144,7 +1148,7 @@ class StockDetailApp {
                 ${rows.map(r => `<td class="text-right fund-col">${this.formatFundValue(r[m.key], m.digits)}</td>`).join('')}
             </tr>
             <tr>
-                <td class="fundamentals-sticky-col">${m.label} QoQ / 前期比</td>
+                <td class="fundamentals-sticky-col">${m.label} QoQ</td>
                 ${(() => {
                     const vals = rows.map(r => r[m.key]);
                     return rows.map((_, i) => `<td class="text-right fund-col">${compVal(calcQoq(vals, i), m.digits)}</td>`).join('');
@@ -1321,6 +1325,12 @@ class StockDetailApp {
 
     getSymbolForPlan() { return this.symbol || '--'; }
 
+    getAiSymbolKey() {
+        const raw = (this.symbol || '').trim();
+        if (!raw) return '';
+        return raw.includes(':') ? raw.toUpperCase() : `US:${raw.toUpperCase()}`;
+    }
+
     loadTradePlan() {
         const symbol = this.getSymbolForPlan();
         if (!symbol || symbol === '--') return;
@@ -1367,13 +1377,29 @@ class StockDetailApp {
     async fetchAiPrediction() {
         if (!this.symbol) return;
         try {
-            const url = `${this.API_BASE}/stock/${encodeURIComponent(this.symbol)}/ai-prediction`;
+            const aiSymbol = this.getAiSymbolKey();
+            const url = `${this.API_BASE}/stock/${encodeURIComponent(aiSymbol)}/ai-prediction`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(await getApiErrorMessage(res));
+            const data = await res.json();
+            this.state.aiPrediction = data;
+            this.renderAiPrediction(data);
+            this.renderManualScreeningSummary();
+        } catch (e) {
+            console.warn('[AI] fetchAiPrediction failed:', e);
+        }
+    }
+
+    async fetchMarketEnvironment() {
+        try {
+            const url = `${this.API_BASE}/market/environment`;
             const res = await fetch(url);
             if (!res.ok) throw new Error(`API ${res.status}`);
             const data = await res.json();
-            this.renderAiPrediction(data);
+            this.state.marketEnv = data;
+            this.renderManualScreeningSummary();
         } catch (e) {
-            console.warn('[AI] fetchAiPrediction failed:', e);
+            console.warn('[Market] fetchMarketEnvironment failed:', e);
         }
     }
 
@@ -1383,18 +1409,22 @@ class StockDetailApp {
         const dateEl        = document.getElementById('tpAiDate');
         const thresholdNote = document.getElementById('tpAiThresholdNote');
         const thresholdPct  = document.getElementById('tpAiThresholdPct');
+        const gateNoteEl    = document.getElementById('tpAiGateNote');
 
         if (!data || !data.has_prediction) {
             if (probEl)        { probEl.textContent = '--'; probEl.className = 'tp-value'; }
             if (decisionEl) {
+                decisionEl.className = 'tp-value';
                 if (data && data.message) {
-                    decisionEl.textContent = 'Data not available';
+                    decisionEl.textContent = data.message;
                     decisionEl.style.fontSize = '0.8rem';
                 } else {
                     decisionEl.textContent = 'No data';
+                    decisionEl.style.fontSize = '';
                 }
             }
             if (dateEl)        dateEl.textContent = '--';
+            if (gateNoteEl)    gateNoteEl.style.display = 'none';
             if (thresholdNote) thresholdNote.style.display = 'none';
             return;
         }
@@ -1403,7 +1433,7 @@ class StockDetailApp {
         const threshold = data.threshold_buy || 0.5;
         const thresholdPctVal = (threshold * 100).toFixed(0);
 
-        // 確率表示（色分け）
+        // 遒ｺ邇・｡ｨ遉ｺ・郁牡蛻・￠・・
         if (probEl) {
             probEl.textContent = `${pct}%`;
             probEl.className = 'tp-value';
@@ -1416,24 +1446,172 @@ class StockDetailApp {
             }
         }
 
-        // 判定表示
+        // 蛻､螳夊｡ｨ遉ｺ
         if (decisionEl) {
             decisionEl.className = 'tp-value';
+            decisionEl.style.fontSize = '';
             if (data.decision === 'BUY') {
-                decisionEl.textContent = '🟢 BUY';
+                decisionEl.textContent = 'BUY';
                 decisionEl.classList.add('ai-signal-buy');
+            } else if (data.decision === 'GATE_BLOCKED') {
+                decisionEl.textContent = 'GATE BLOCKED';
+                decisionEl.classList.add('ai-signal-blocked');
+            } else if (data.decision === 'CAUTION') {
+                decisionEl.textContent = 'CAUTION';
+                decisionEl.classList.add('ai-signal-caution');
             } else {
-                decisionEl.textContent = '⚪ NO TRADE';
+                decisionEl.textContent = 'NO TRADE';
                 decisionEl.classList.add('ai-signal-notrade');
             }
         }
 
-        // threshold 補足（常に表示）
+        // Gate note (GATE_BLOCKED / CAUTION)
+        if (gateNoteEl) {
+            if (data.gate_reason) {
+                gateNoteEl.textContent = data.gate_reason;
+                gateNoteEl.style.display = 'block';
+            } else {
+                gateNoteEl.style.display = 'none';
+            }
+        }
+
+        // threshold 陬懆ｶｳ・亥ｸｸ縺ｫ陦ｨ遉ｺ・・
         if (thresholdNote) thresholdNote.style.display = 'flex';
         if (thresholdPct)  thresholdPct.textContent = thresholdPctVal;
 
-        // 予測日
+        // 莠域ｸｬ譌･
         if (dateEl) dateEl.textContent = data.asof || '--';
+    }
+    renderManualScreeningSummary() {
+        const mount = document.getElementById('sdManualSummaryMount');
+        if (!mount) return;
+
+        const summary = this.state.summary || {};
+        const trade = summary.trade_decision_summary || {};
+        const canslim = summary.canslim_detail || {};
+        const chart = summary.chart_pattern_detail || {};
+        const sector = summary.sector_evaluation || {};
+        const msum = summary.market_environment_summary || this.state.marketEnv?.summary || {};
+        const ai = summary.ai_screening_summary || {};
+        const aiLive = this.state.aiPrediction || {};
+
+        const finalDecision = trade.final_decision || '-';
+        const gate = trade.market_gate || msum.market_gate || '-';
+        const posSize = trade.recommended_position_size_pct;
+        const aiP = (trade.ai_plus5_probability_2w_pct ?? ai.p_2w_plus_5_pct);
+        const ai3 = trade.ai_3class_probability || ai.ai_3class_probability || ai;
+        const ai3Text = ai.display_3class || (
+            ai3 && (ai3.up != null)
+                ? `Up ${ai3.up}% / Flat ${ai3.flat}% / Down ${ai3.down}%`
+                : '-'
+        );
+        const breakout = trade.breakout_judgment || chart.breakout_judgment || '-';
+        const reasons = Array.isArray(trade.buy_block_reasons) ? trade.buy_block_reasons : [];
+        const plus = Array.isArray(ai.plus_factors) ? ai.plus_factors : [];
+        const minus = Array.isArray(ai.minus_factors) ? ai.minus_factors : [];
+        const canslimItems = canslim.items || {};
+        const canslimRows = ['C', 'A', 'N', 'S', 'L', 'I', 'M'].map((k) => {
+            const item = canslimItems[k] || {};
+            const st = item.status;
+            const badge = st === true
+                ? '<span style="color:#34d399;font-weight:700;">PASS</span>'
+                : (st === false
+                    ? '<span style="color:#f87171;font-weight:700;">FAIL</span>'
+                    : '<span style="color:#cbd5e1;">N/A</span>');
+            const note = item.note || (item.value ? JSON.stringify(item.value) : '');
+            return `
+                <div class="kv-item">
+                    <span class="kv-key">${k} (${item.label || '-'})</span>
+                    <span class="kv-value">${badge}${note ? ` <span style="font-weight:400;color:var(--text-muted);font-size:12px;">${note}</span>` : ''}</span>
+                </div>
+            `;
+        }).join('');
+
+        const decisionTone = finalDecision === '買い' ? '#34d399' : (finalDecision === '新規買い停止' ? '#f87171' : '#fbbf24');
+        const gateTone = gate === 'ON' ? '#34d399' : (gate === 'OFF' ? '#f87171' : '#fbbf24');
+        const mJudgment = msum.m_total_judgment || this.state.marketEnv?.summary?.m_judgment || '-';
+        const mVix = msum.vix_mode || this.state.marketEnv?.summary?.vix_mode || '-';
+        const mDdNas = msum.dd_count?.nasdaq ?? this.state.marketEnv?.summary?.nasdaq_dd_count_5w;
+        const mDdSp = msum.dd_count?.sp500 ?? this.state.marketEnv?.summary?.sp500_dd_count_5w;
+        const livePUp5 = aiLive?.has_prediction && aiLive?.p_up5 != null ? `${(Number(aiLive.p_up5) * 100).toFixed(1)}%` : null;
+
+        mount.innerHTML = `
+            <div class="panel-header mb-4">
+                <div class="panel-title">Final Screening Decision</div>
+                <a class="btn btn-ghost btn-sm" href="market_dashboard.html" style="text-decoration:none;">Market Dashboard</a>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:14px;">
+                <div class="indicator-card" style="padding:14px;">
+                    <div class="kv-key">Final Decision</div>
+                    <div class="kv-value" style="font-size:1.3rem;color:${decisionTone};">${finalDecision}</div>
+                    <div class="kv-key" style="margin-top:6px;">Recent Action: ${trade.recent_action || '-'}</div>
+                </div>
+                <div class="indicator-card" style="padding:14px;">
+                    <div class="kv-key">Market Gate / Size</div>
+                    <div class="kv-value" style="color:${gateTone};">${gate}</div>
+                    <div class="kv-key" style="margin-top:6px;">Recommended Position: ${posSize != null ? `${posSize}%` : '-'}</div>
+                </div>
+                <div class="indicator-card" style="padding:14px;">
+                    <div class="kv-key">AI +5% Prob (2W)</div>
+                    <div class="kv-value">${aiP != null ? `${Number(aiP).toFixed(1)}%` : '--'}</div>
+                    <div class="kv-key" style="margin-top:6px;">${ai3Text}</div>
+                    ${livePUp5 ? `<div class="kv-key" style="margin-top:6px;">DB AI (Live): ${livePUp5}</div>` : ''}
+                </div>
+                <div class="indicator-card" style="padding:14px;">
+                    <div class="kv-key">Breakout Judgment</div>
+                    <div class="kv-value">${breakout}</div>
+                    <div class="kv-key" style="margin-top:6px;">Reason: ${(reasons[0] || 'none')}</div>
+                </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:12px;">
+                <div class="indicator-card" style="padding:14px;">
+                    <div class="panel-title" style="font-size:0.95rem;margin-bottom:8px;">CAN-SLIM (${canslim.pass_count ?? 0}/${canslim.total ?? 7})</div>
+                    <div class="kv-list">${canslimRows}</div>
+                </div>
+                <div style="display:grid;grid-template-rows:auto auto auto;gap:12px;">
+                    <div class="indicator-card" style="padding:14px;">
+                        <div class="panel-title" style="font-size:0.95rem;margin-bottom:8px;">Chart Pattern</div>
+                        <div class="kv-list">
+                            <div class="kv-item"><span class="kv-key">Base Type</span><span class="kv-value">${chart?.cup_with_handle?.base_type || chart.base_type || '-'}</span></div>
+                            <div class="kv-item"><span class="kv-key">Breakout Point</span><span class="kv-value">${chart?.cup_with_handle?.breakout_point ?? '-'}</span></div>
+                            <div class="kv-item"><span class="kv-key">Distance from Pivot</span><span class="kv-value">${chart?.cup_with_handle?.distance_from_pivot_pct != null ? Number(chart.cup_with_handle.distance_from_pivot_pct).toFixed(2) + '%' : '-'}</span></div>
+                            <div class="kv-item"><span class="kv-key">Breakout Volume Ratio</span><span class="kv-value">${chart?.cup_with_handle?.breakout_volume_ratio ?? '-'}</span></div>
+                            <div class="kv-item"><span class="kv-key">2.5x Rule</span><span class="kv-value">${chart?.cup_with_handle?.rule_2_5x_violation ? 'Violation' : 'N/A or Not judged'}</span></div>
+                        </div>
+                    </div>
+                    <div class="indicator-card" style="padding:14px;">
+                        <div class="panel-title" style="font-size:0.95rem;margin-bottom:8px;">Sector Evaluation</div>
+                        <div class="kv-list">
+                            <div class="kv-item"><span class="kv-key">Relative Strength</span><span class="kv-value">${sector.sector_relative_strength ?? '-'}</span></div>
+                            <div class="kv-item"><span class="kv-key">Leader Rank</span><span class="kv-value">${sector.sector_leader_rank ?? '-'}</span></div>
+                            <div class="kv-item"><span class="kv-key">Substitution Difficulty</span><span class="kv-value">${sector.substitution_difficulty_score ?? '-'}</span></div>
+                            <div class="kv-item"><span class="kv-key">Ecosystem Dependency</span><span class="kv-value">${sector.ecosystem_dependency_score ?? '-'}</span></div>
+                            <div class="kv-item"><span class="kv-key">Share Gain Score</span><span class="kv-value">${sector.market_share_gain_score ?? '-'}</span></div>
+                        </div>
+                    </div>
+                    <div class="indicator-card" style="padding:14px;">
+                        <div class="panel-title" style="font-size:0.95rem;margin-bottom:8px;">Market Environment Summary</div>
+                        <div class="kv-list">
+                            <div class="kv-item"><span class="kv-key">M Judgment</span><span class="kv-value">${mJudgment}</span></div>
+                            <div class="kv-item"><span class="kv-key">DD Count</span><span class="kv-value">NASDAQ ${mDdNas ?? '-'} / SP500 ${mDdSp ?? '-'}</span></div>
+                            <div class="kv-item"><span class="kv-key">VIX</span><span class="kv-value">${mVix}${this.state.marketEnv?.summary?.vix_level != null ? ` (${this.state.marketEnv.summary.vix_level})` : ''}</span></div>
+                            <div class="kv-item"><span class="kv-key">HO</span><span class="kv-value">${msum.ho_status || this.state.marketEnv?.summary?.ho_alert || '-'}</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top:12px; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="indicator-card" style="padding:14px;">
+                    <div class="panel-title" style="font-size:0.95rem;margin-bottom:8px;">AI Positive Factors</div>
+                    <ul class="bullets" style="margin:0;">${(plus.length ? plus : ['-']).map(x => `<li>${x}</li>`).join('')}</ul>
+                </div>
+                <div class="indicator-card" style="padding:14px;">
+                    <div class="panel-title" style="font-size:0.95rem;margin-bottom:8px;">AI Negative / Block Reasons</div>
+                    <ul class="bullets" style="margin:0;">${([...(minus.length ? minus : []), ...(reasons || [])].slice(0,6).length ? [...(minus || []), ...(reasons || [])].slice(0,6) : ['-']).map(x => `<li>${x}</li>`).join('')}</ul>
+                </div>
+            </div>
+            <div class="muted" style="padding:10px 0 0 0;">${trade.reason_template || 'Additional decision summary will be shown after API response.'}</div>
+        `;
     }
 
     showFatal(msg) {
@@ -1447,6 +1625,27 @@ class StockDetailApp {
 }
 
 window.StockDetailApp = StockDetailApp;
+
+async function getApiErrorMessage(res) {
+    try {
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+            const payload = await res.json();
+            if (payload && typeof payload.message === 'string' && payload.message.trim()) {
+                return payload.message;
+            }
+            if (payload && typeof payload.error === 'string' && payload.error.trim()) {
+                return payload.error;
+            }
+        } else {
+            const text = await res.text();
+            if (text && text.trim()) return text.trim();
+        }
+    } catch (e) {
+        console.warn('[API] failed to parse error payload:', e);
+    }
+    return `API ${res.status}`;
+}
 
 // ---- Hotfix: Trade Panel toggle (minimal, global) ----
 (function registerTradePanelToggle() {
@@ -1471,12 +1670,26 @@ async function runAiPrediction() {
         loading.innerHTML = '<span>Computing prediction... (may take 30s if fetching data)</span>';
     }
     try {
-        const url = `${window.app.API_BASE}/stock/${encodeURIComponent(window.app.symbol)}/ai-prediction/run`;
+        const aiSymbol = (typeof window.app.getAiSymbolKey === 'function')
+            ? window.app.getAiSymbolKey()
+            : ((window.app.symbol || '').includes(':')
+                ? String(window.app.symbol).toUpperCase()
+                : `US:${String(window.app.symbol || '').toUpperCase()}`);
+        const url = `${window.app.API_BASE}/stock/${encodeURIComponent(aiSymbol)}/ai-prediction/run`;
         const res = await fetch(url, { method: 'POST' });
-        if (!res.ok) throw new Error(`API ${res.status}`);
+        if (!res.ok) throw new Error(await getApiErrorMessage(res));
         const data = await res.json();
+        window.app.state.aiPrediction = data;
         window.app.renderAiPrediction(data);
-        if (window.UI) window.UI.showToast('AI prediction updated', 'success');
+        if (typeof window.app.renderManualScreeningSummary === 'function') {
+            window.app.renderManualScreeningSummary();
+        }
+        if (data && data.has_prediction) {
+            if (window.UI) window.UI.showToast('AI prediction updated', 'success');
+        } else {
+            const msg = (data && data.message) ? data.message : 'Prediction data not available';
+            if (window.UI) window.UI.showToast(msg, 'error');
+        }
     } catch (e) {
         console.error('[AI] runAiPrediction failed:', e);
         if (window.UI) window.UI.showToast('Prediction failed: ' + e.message, 'error');
@@ -1486,5 +1699,6 @@ async function runAiPrediction() {
     }
 }
 
-// グローバルに明示エクスポート（defer 読み込みでも onclick から参照可能にする）
+// 繧ｰ繝ｭ繝ｼ繝舌Ν縺ｫ譏守､ｺ繧ｨ繧ｯ繧ｹ繝昴・繝茨ｼ・efer 隱ｭ縺ｿ霎ｼ縺ｿ縺ｧ繧・onclick 縺九ｉ蜿ら・蜿ｯ閭ｽ縺ｫ縺吶ｋ・・
 window.runAiPrediction = runAiPrediction;
+

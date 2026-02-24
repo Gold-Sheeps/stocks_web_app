@@ -216,7 +216,11 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--feature-set",
         default="v2_ohlcv_ta_relregime_event",
-        choices=["v2_ohlcv_ta_relregime_event", "v3_ohlcv_ta_relregime_event_fundflow"],
+        choices=[
+            "v2_ohlcv_ta_relregime_event",
+            "v3_ohlcv_ta_relregime_event_fundflow",
+            "v4_ohlcv_ta_relregime_event_fundflow_signals",
+        ],
         help="Feature set version to use (default: v2_ohlcv_ta_relregime_event).",
     )
     parser.add_argument(

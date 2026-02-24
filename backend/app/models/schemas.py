@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Optional, List
+from typing import Optional, List, Any
 from pydantic import BaseModel
 
 
@@ -211,7 +211,13 @@ class StockDetailResponse(BaseModel):
     indicators: Indicators
     signal_summary: StockSignalSummary
     data_quality: DataQuality
-    price_history: list[PricePoint] = [] 
+    price_history: list[PricePoint] = []
+    trade_decision_summary: dict[str, Any] | None = None
+    canslim_detail: dict[str, Any] | None = None
+    chart_pattern_detail: dict[str, Any] | None = None
+    sector_evaluation: dict[str, Any] | None = None
+    market_environment_summary: dict[str, Any] | None = None
+    ai_screening_summary: dict[str, Any] | None = None
 
 
 # ========== Trade Models ==========
@@ -318,6 +324,21 @@ class ScreenerResult(BaseModel):
     pivot: Optional[float] = None
     signals: list[str] = []
     ma_cross: Optional[str] = None
+    m_judgment: Optional[str] = None
+    market_gate: Optional[str] = None
+    ho_alert: Optional[str] = None
+    ho_days_remaining: Optional[int] = None
+    dd_count: Optional[dict[str, Any]] = None
+    dd_count_display: Optional[str] = None
+    vix_mode: Optional[str] = None
+    breakout_effectiveness: Optional[str] = None
+    canslim_pass_count: Optional[int] = None
+    canslim_pass_count_display: Optional[str] = None
+    overall_grade: Optional[str] = None
+    ai_p_up5_2w: Optional[float] = None
+    ai_3class: Optional[dict[str, int]] = None
+    ai_3class_summary: Optional[str] = None
+    market_summary: Optional[dict[str, Any]] = None
 
 
 class ScreenerResponse(BaseModel):

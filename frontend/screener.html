@@ -597,6 +597,8 @@
  <span>Screener</span> Stock Screener
  <button id="btnDiag" class="btn btn-ghost btn-sm"
  style="margin-left: 8px; font-size: 0.7rem; opacity: 0.7;">Diagnostics</button>
+ <a href="market_dashboard.html" class="btn btn-ghost btn-sm"
+ style="margin-left: 8px; font-size: 0.75rem; text-decoration:none;">Market Dashboard</a>
  </div>
  <div class="search-container">
  <div class="search-input-wrapper">
@@ -661,6 +663,16 @@
  <label>Minimum Volume</label>
  <input type="number" id="volumeMin" placeholder="Min Volume">
  </div>
+
+ <div class="input-group">
+ <label>AI Prediction Mode</label>
+ <select id="aiMode">
+ <option value="balanced">Balanced (Precision ~54% / more trades)</option>
+ <option value="high_precision">High Precision (Precision ~62% / fewer trades)</option>
+ <option value="strict">Strict / Isotonic (Precision ~95% / very few trades)</option>
+ <option value="off">Off (no AI filter)</option>
+ </select>
+ </div>
  </div>
  </div>
 
@@ -697,6 +709,14 @@
  <th class="text-right">Pivot</th>
  <th class="text-right">Change</th>
  <th class="text-right">52W Dist</th>
+ <th>M判定</th>
+ <th>DD</th>
+ <th>VIX</th>
+ <th>ブレイク</th>
+ <th class="text-right">CAN-SLIM</th>
+ <th>総合</th>
+ <th class="text-right">AI +5%(2W)</th>
+ <th>AI 3分類</th>
  <th>Signals</th>
  </tr>
  </thead>

@@ -121,6 +121,7 @@ class DataService:
             has_sector = "Sector" in selected
             has_canslim = "CANSLIM" in selected
             has_fundamentals = "Fundamentals" in selected
+            has_market_env = "MarketEnvironment" in selected
             has_ai_prediction = ("AI" in selected) or ("AI Prediction" in selected)
 
             cmd = [
@@ -187,6 +188,19 @@ class DataService:
                         "[DataService] fetch_fundamentals exited "
                         f"{fund_result['returncode']}: {fund_result['output_tail']}"
                     )
+
+            if has_market_env:
+                me_script = Path(__file__).resolve().parents[1] / "scripts" / "fetch_market_environment.py"
+                me_result = self._run_script(
+                    [sys.executable, str(me_script)],
+                    cwd=repo_root,
+                    timeout=120,
+                )
+                me_result["step"] = "fetch_market_environment"
+                me_result["status"] = "success" if me_result["returncode"] == 0 else "failed"
+                post_steps.append(me_result)
+                if me_result["returncode"] != 0:
+                    print(f"[DataService] fetch_market_environment exited {me_result['returncode']}: {me_result['output_tail']}")
 
             if has_ai_prediction:
                 ai_result = self._run_ai_prediction_batch(repo_root, max_tickers=500)
