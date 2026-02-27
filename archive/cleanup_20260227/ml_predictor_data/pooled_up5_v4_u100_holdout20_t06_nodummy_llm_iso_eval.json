@@ -1,0 +1,1577 @@
+{
+  "period": {
+    "start": "2024-01-01",
+    "end": "2026-02-21",
+    "asof": "2026-02-24"
+  },
+  "metrics": {
+    "precision_at_p70": 0.6928104575163399,
+    "coverage_at_p70": 0.07616247995724211,
+    "n_trades_at_p70": 14535,
+    "avg_return_at_p70": 0.16934696940120564,
+    "effective_threshold_buy": 0.6,
+    "precision_at_threshold": 0.6772082878953108,
+    "coverage_at_threshold": 0.09129541715136082,
+    "n_trades_at_threshold": 17423,
+    "avg_return_at_threshold": 0.15894593888224381,
+    "folds_used": 0
+  },
+  "diagnostics": {
+    "fixed_threshold_metrics": {
+      "0.5": {
+        "precision": 0.6538181818181819,
+        "coverage": 0.13689334632837635,
+        "n_trades": 26125,
+        "avg_return": 0.14812389282265923,
+        "confusion_matrix": [
+          [
+            121481,
+            9044
+          ],
+          [
+            43236,
+            17081
+          ]
+        ]
+      },
+      "0.6": {
+        "precision": 0.6772082878953108,
+        "coverage": 0.09129541715136082,
+        "n_trades": 17423,
+        "avg_return": 0.15894593888224381,
+        "confusion_matrix": [
+          [
+            124901,
+            5624
+          ],
+          [
+            48518,
+            11799
+          ]
+        ]
+      },
+      "0.7": {
+        "precision": 0.6928104575163399,
+        "coverage": 0.07616247995724211,
+        "n_trades": 14535,
+        "avg_return": 0.16934696940120564,
+        "confusion_matrix": [
+          [
+            126060,
+            4465
+          ],
+          [
+            50247,
+            10070
+          ]
+        ]
+      }
+    },
+    "confidence_bins": [
+      {
+        "bin": "[0.5,0.6)",
+        "lo": 0.5,
+        "hi": 0.6,
+        "n": 8702,
+        "win_rate": 0.6069868995633187,
+        "avg_return": 0.12645617178196256
+      },
+      {
+        "bin": "[0.6,0.7)",
+        "lo": 0.6,
+        "hi": 0.7,
+        "n": 2888,
+        "win_rate": 0.5986842105263158,
+        "avg_return": 0.10659864712562678
+      },
+      {
+        "bin": "[0.7,0.8)",
+        "lo": 0.7,
+        "hi": 0.8,
+        "n": 3838,
+        "win_rate": 0.693069306930693,
+        "avg_return": 0.15856337477308693
+      },
+      {
+        "bin": "[0.8,0.9)",
+        "lo": 0.8,
+        "hi": 0.9,
+        "n": 4541,
+        "win_rate": 0.6820083682008368,
+        "avg_return": 0.18349297583206567
+      },
+      {
+        "bin": "[0.9,1.0]",
+        "lo": 0.9,
+        "hi": 1.0,
+        "n": 6156,
+        "win_rate": 0.7006172839506173,
+        "avg_return": 0.1656352119256019
+      }
+    ],
+    "probability_audit": {
+      "pre_calibration_summary": {
+        "n": 190842,
+        "min": 0.026940613985061646,
+        "max": 0.9465646147727966,
+        "mean": 0.5739945850313618,
+        "std": 0.17969864281122078,
+        "quantiles": {
+          "0.1": 0.31578829884529114,
+          "0.25": 0.44121626019477844,
+          "0.5": 0.6063942313194275,
+          "0.75": 0.7098420262336731,
+          "0.9": 0.7921875715255737,
+          "0.95": 0.8341290950775146,
+          "0.99": 0.8906190395355225
+        }
+      },
+      "post_calibration_summary": {
+        "n": 190842,
+        "min": 1e-06,
+        "max": 0.999999,
+        "mean": 0.3326916350564864,
+        "std": 0.19402205660907076,
+        "quantiles": {
+          "0.1": 0.17964071856287425,
+          "0.25": 0.2083780880773362,
+          "0.5": 0.26303317535545023,
+          "0.75": 0.36909871244635195,
+          "0.9": 0.5909090909090909,
+          "0.95": 0.82,
+          "0.99": 0.999999
+        }
+      }
+    },
+    "prob_calibration_audit": {
+      "high_confidence_miss": {
+        "threshold": 0.7,
+        "count": 4465,
+        "top_misses": [
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-19",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": 0.0,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-01-23",
+            "ticker": "US:CIFR",
+            "probability": 0.999999,
+            "realized_return": -0.05474452554744536,
+            "actual": 0
+          },
+          {
+            "date": "2024-04-05",
+            "ticker": "US:APLD",
+            "probability": 0.999999,
+            "realized_return": -0.17114093959731533,
+            "actual": 0
+          },
+          {
+            "date": "2024-04-05",
+            "ticker": "US:APLD",
+            "probability": 0.999999,
+            "realized_return": -0.17114093959731533,
+            "actual": 0
+          },
+          {
+            "date": "2024-04-05",
+            "ticker": "US:APLD",
+            "probability": 0.999999,
+            "realized_return": -0.17114093959731533,
+            "actual": 0
+          },
+          {
+            "date": "2024-04-05",
+            "ticker": "US:APLD",
+            "probability": 0.999999,
+            "realized_return": -0.17114093959731533,
+            "actual": 0
+          },
+          {
+            "date": "2024-04-05",
+            "ticker": "US:APLD",
+            "probability": 0.999999,
+            "realized_return": -0.17114093959731533,
+            "actual": 0
+          },
+          {
+            "date": "2024-04-05",
+            "ticker": "US:APLD",
+            "probability": 0.999999,
+            "realized_return": -0.17114093959731533,
+            "actual": 0
+          },
+          {
+            "date": "2024-04-05",
+            "ticker": "US:APLD",
+            "probability": 0.999999,
+            "realized_return": -0.17114093959731533,
+            "actual": 0
+          },
+          {
+            "date": "2024-04-05",
+            "ticker": "US:APLD",
+            "probability": 0.999999,
+            "realized_return": -0.17114093959731533,
+            "actual": 0
+          },
+          {
+            "date": "2024-04-05",
+            "ticker": "US:APLD",
+            "probability": 0.999999,
+            "realized_return": -0.17114093959731533,
+            "actual": 0
+          },
+          {
+            "date": "2024-04-05",
+            "ticker": "US:APLD",
+            "probability": 0.999999,
+            "realized_return": -0.17114093959731533,
+            "actual": 0
+          },
+          {
+            "date": "2024-04-05",
+            "ticker": "US:APLD",
+            "probability": 0.999999,
+            "realized_return": -0.17114093959731533,
+            "actual": 0
+          },
+          {
+            "date": "2024-04-05",
+            "ticker": "US:APLD",
+            "probability": 0.999999,
+            "realized_return": -0.17114093959731533,
+            "actual": 0
+          }
+        ]
+      },
+      "low_confidence_miss": {
+        "threshold": 0.7,
+        "count": 50247,
+        "top_misses": [
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-21",
+            "ticker": "US:VZ",
+            "probability": 1e-06,
+            "realized_return": 0.07717492984097296,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-21",
+            "ticker": "US:VZ",
+            "probability": 1e-06,
+            "realized_return": 0.07717492984097296,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-21",
+            "ticker": "US:VZ",
+            "probability": 1e-06,
+            "realized_return": 0.07717492984097296,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-21",
+            "ticker": "US:VZ",
+            "probability": 1e-06,
+            "realized_return": 0.07717492984097296,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-21",
+            "ticker": "US:VZ",
+            "probability": 1e-06,
+            "realized_return": 0.07717492984097296,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-21",
+            "ticker": "US:VZ",
+            "probability": 1e-06,
+            "realized_return": 0.07717492984097296,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-21",
+            "ticker": "US:VZ",
+            "probability": 1e-06,
+            "realized_return": 0.07717492984097296,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-21",
+            "ticker": "US:VZ",
+            "probability": 1e-06,
+            "realized_return": 0.07717492984097296,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-21",
+            "ticker": "US:VZ",
+            "probability": 1e-06,
+            "realized_return": 0.07717492984097296,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-21",
+            "ticker": "US:VZ",
+            "probability": 1e-06,
+            "realized_return": 0.07717492984097296,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-21",
+            "ticker": "US:VZ",
+            "probability": 1e-06,
+            "realized_return": 0.07717492984097296,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-21",
+            "ticker": "US:VZ",
+            "probability": 1e-06,
+            "realized_return": 0.07717492984097296,
+            "actual": 1
+          }
+        ],
+        "top_misses_dedup": [
+          {
+            "date": "2025-02-13",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.0694498634412799,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07151140316969462,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-21",
+            "ticker": "US:VZ",
+            "probability": 1e-06,
+            "realized_return": 0.07717492984097296,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-24",
+            "ticker": "US:VZ",
+            "probability": 1e-06,
+            "realized_return": 0.07317636195752542,
+            "actual": 1
+          },
+          {
+            "date": "2025-03-18",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.07027433295753482,
+            "actual": 1
+          },
+          {
+            "date": "2025-06-23",
+            "ticker": "US:ORCL",
+            "probability": 1e-06,
+            "realized_return": 0.13263137557959825,
+            "actual": 1
+          },
+          {
+            "date": "2025-06-24",
+            "ticker": "US:ORCL",
+            "probability": 1e-06,
+            "realized_return": 0.09541506015701205,
+            "actual": 1
+          },
+          {
+            "date": "2026-02-02",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.09049429657794672,
+            "actual": 1
+          },
+          {
+            "date": "2026-02-06",
+            "ticker": "US:VZ",
+            "probability": 1e-06,
+            "realized_return": 0.07277045994385656,
+            "actual": 1
+          },
+          {
+            "date": "2026-02-06",
+            "ticker": "US:T",
+            "probability": 1e-06,
+            "realized_return": 0.05123479542941389,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-11",
+            "ticker": "US:T",
+            "probability": 0.05555555555555555,
+            "realized_return": 0.05646123260437386,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-12",
+            "ticker": "US:T",
+            "probability": 0.05555555555555555,
+            "realized_return": 0.06072555205047325,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-13",
+            "ticker": "US:VZ",
+            "probability": 0.05555555555555555,
+            "realized_return": 0.05019493177387924,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-14",
+            "ticker": "US:VZ",
+            "probability": 0.05555555555555555,
+            "realized_return": 0.07026103927787264,
+            "actual": 1
+          },
+          {
+            "date": "2025-03-14",
+            "ticker": "US:T",
+            "probability": 0.05555555555555555,
+            "realized_return": 0.0601956358164033,
+            "actual": 1
+          },
+          {
+            "date": "2025-03-17",
+            "ticker": "US:T",
+            "probability": 0.05555555555555555,
+            "realized_return": 0.05404398061871052,
+            "actual": 1
+          },
+          {
+            "date": "2025-03-20",
+            "ticker": "US:T",
+            "probability": 0.05555555555555555,
+            "realized_return": 0.06756252332960067,
+            "actual": 1
+          },
+          {
+            "date": "2025-05-05",
+            "ticker": "US:ORCL",
+            "probability": 0.05555555555555555,
+            "realized_return": 0.06932815325875819,
+            "actual": 1
+          },
+          {
+            "date": "2025-05-19",
+            "ticker": "US:ORCL",
+            "probability": 0.05555555555555555,
+            "realized_return": 0.05950889501378098,
+            "actual": 1
+          },
+          {
+            "date": "2025-06-12",
+            "ticker": "US:ORCL",
+            "probability": 0.05555555555555555,
+            "realized_return": 0.05193635544881414,
+            "actual": 1
+          },
+          {
+            "date": "2025-06-25",
+            "ticker": "US:ORCL",
+            "probability": 0.05555555555555555,
+            "realized_return": 0.11522399392558856,
+            "actual": 1
+          },
+          {
+            "date": "2025-06-26",
+            "ticker": "US:ORCL",
+            "probability": 0.05555555555555555,
+            "realized_return": 0.08335682736584914,
+            "actual": 1
+          },
+          {
+            "date": "2026-01-30",
+            "ticker": "US:T",
+            "probability": 0.05555555555555555,
+            "realized_return": 0.09462037390309043,
+            "actual": 1
+          },
+          {
+            "date": "2026-02-09",
+            "ticker": "US:VZ",
+            "probability": 0.05555555555555555,
+            "realized_return": 0.06039982985963421,
+            "actual": 1
+          },
+          {
+            "date": "2025-06-09",
+            "ticker": "US:ORCL",
+            "probability": 0.05703689323837546,
+            "realized_return": 0.2151848715777589,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-06",
+            "ticker": "US:AVGO",
+            "probability": 0.09090909090909091,
+            "realized_return": 0.2298223138194173,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-11",
+            "ticker": "US:VZ",
+            "probability": 0.09090909090909091,
+            "realized_return": 0.06643615707582118,
+            "actual": 1
+          },
+          {
+            "date": "2025-06-06",
+            "ticker": "US:ORCL",
+            "probability": 0.09090909090909091,
+            "realized_return": 0.18974830479255256,
+            "actual": 1
+          },
+          {
+            "date": "2025-06-10",
+            "ticker": "US:ORCL",
+            "probability": 0.09090909090909091,
+            "realized_return": 0.18728870858688307,
+            "actual": 1
+          },
+          {
+            "date": "2025-01-30",
+            "ticker": "US:T",
+            "probability": 0.09375,
+            "realized_return": 0.06702747710241463,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-10",
+            "ticker": "US:T",
+            "probability": 0.09375,
+            "realized_return": 0.07200321802091714,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-10",
+            "ticker": "US:VZ",
+            "probability": 0.09375,
+            "realized_return": 0.0941176470588234,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-12",
+            "ticker": "US:VZ",
+            "probability": 0.09375,
+            "realized_return": 0.06760424377004703,
+            "actual": 1
+          },
+          {
+            "date": "2025-04-24",
+            "ticker": "US:AVGO",
+            "probability": 0.09375,
+            "realized_return": 0.10427850119585447,
+            "actual": 1
+          },
+          {
+            "date": "2025-05-01",
+            "ticker": "US:ORCL",
+            "probability": 0.09375,
+            "realized_return": 0.095607945563269,
+            "actual": 1
+          },
+          {
+            "date": "2025-05-02",
+            "ticker": "US:ORCL",
+            "probability": 0.09375,
+            "realized_return": 0.06475154249319992,
+            "actual": 1
+          },
+          {
+            "date": "2026-01-15",
+            "ticker": "US:VZ",
+            "probability": 0.09375,
+            "realized_return": 0.13109756097560976,
+            "actual": 1
+          },
+          {
+            "date": "2026-01-30",
+            "ticker": "US:VZ",
+            "probability": 0.09375,
+            "realized_return": 0.10085354896675636,
+            "actual": 1
+          },
+          {
+            "date": "2025-02-05",
+            "ticker": "US:VZ",
+            "probability": 0.1441621950100899,
+            "realized_return": 0.05880887116870159,
+            "actual": 1
+          },
+          {
+            "date": "2024-01-08",
+            "ticker": "US:VZ",
+            "probability": 0.15217391304347827,
+            "realized_return": 0.05311720698254363,
+            "actual": 1
+          },
+          {
+            "date": "2024-01-09",
+            "ticker": "US:VZ",
+            "probability": 0.15217391304347827,
+            "realized_return": 0.05737704918032782,
+            "actual": 1
+          },
+          {
+            "date": "2024-01-10",
+            "ticker": "US:VZ",
+            "probability": 0.15217391304347827,
+            "realized_return": 0.0821392016376663,
+            "actual": 1
+          },
+          {
+            "date": "2024-06-12",
+            "ticker": "US:AVGO",
+            "probability": 0.15217391304347827,
+            "realized_return": 0.06094910766226902,
+            "actual": 1
+          },
+          {
+            "date": "2024-07-23",
+            "ticker": "US:T",
+            "probability": 0.15217391304347827,
+            "realized_return": 0.05381658429434388,
+            "actual": 1
+          },
+          {
+            "date": "2024-10-03",
+            "ticker": "US:ORCL",
+            "probability": 0.15217391304347827,
+            "realized_return": 0.052858683926644945,
+            "actual": 1
+          },
+          {
+            "date": "2024-11-12",
+            "ticker": "US:VZ",
+            "probability": 0.15217391304347827,
+            "realized_return": 0.09826732673267324,
+            "actual": 1
+          },
+          {
+            "date": "2024-11-14",
+            "ticker": "US:VZ",
+            "probability": 0.15217391304347827,
+            "realized_return": 0.08490335209199905,
+            "actual": 1
+          },
+          {
+            "date": "2024-11-15",
+            "ticker": "US:VZ",
+            "probability": 0.15217391304347827,
+            "realized_return": 0.05282112845138065,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-09",
+            "ticker": "US:AVGO",
+            "probability": 0.15217391304347827,
+            "realized_return": 0.2984799374091873,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-11",
+            "ticker": "US:AVGO",
+            "probability": 0.15217391304347827,
+            "realized_return": 0.33930131004366837,
+            "actual": 1
+          }
+        ]
+      }
+    }
+  },
+  "meta": {
+    "run_params": {
+      "label_mode": "up5_2w",
+      "horizon": 10,
+      "target_return": 0.05,
+      "fixed_thresholds": [
+        0.5,
+        0.6,
+        0.7
+      ],
+      "feature_set": "v4_ohlcv_ta_relregime_event_fundflow_signals",
+      "feature_set_version": "xgb_base_plus_llm_v1",
+      "include_llm_features": true,
+      "tickers_file": "backend/ml_predictor_data/universe_100.txt",
+      "n_tickers": 100,
+      "train_tickers": [
+        "US:AAPL",
+        "US:GOOGL",
+        "US:AMZN",
+        "US:META",
+        "US:TSLA",
+        "US:AMD",
+        "US:INTC",
+        "US:QCOM",
+        "US:OPEN",
+        "US:NVDA",
+        "US:PLUG",
+        "US:BYND",
+        "US:F",
+        "US:SOFI",
+        "US:ONDS",
+        "US:AAL",
+        "US:SNAP",
+        "US:NIO",
+        "US:PLTR",
+        "US:IXHL",
+        "US:RGTI",
+        "US:BITF",
+        "US:PFE",
+        "US:WBD",
+        "US:DVLT",
+        "US:NU",
+        "US:MARA",
+        "US:GRAB",
+        "US:ACHR",
+        "US:QBTS",
+        "US:BTG",
+        "US:WULF",
+        "US:RIG",
+        "US:GPUS",
+        "US:RIVN",
+        "US:BBD",
+        "US:CAN",
+        "US:BAC",
+        "US:VALE",
+        "US:HOOD",
+        "US:BTBT",
+        "US:QS",
+        "US:JOBY",
+        "US:NOK",
+        "US:SMCI",
+        "US:RXRX",
+        "US:RIOT",
+        "US:CMCSA",
+        "US:HIMS",
+        "US:RR",
+        "US:CLSK",
+        "US:RKT",
+        "US:BTE",
+        "US:QUBT",
+        "US:CLF",
+        "US:ATCH",
+        "US:PCG",
+        "US:HL",
+        "US:HPE",
+        "US:RKLB",
+        "US:PBR",
+        "US:CGC",
+        "US:LAC",
+        "US:AMC",
+        "US:CCL",
+        "US:WMT",
+        "US:SBET",
+        "US:CSCO",
+        "US:KEY",
+        "US:SMR",
+        "US:PSTV",
+        "US:PATH",
+        "US:NGD",
+        "US:UBER",
+        "US:AUR",
+        "US:RZLV",
+        "US:MRVL",
+        "US:EOSE",
+        "US:OSCR",
+        "US:CDE"
+      ],
+      "holdout_tickers": [
+        "US:MSFT",
+        "US:AVGO",
+        "US:DJI",
+        "US:DNN",
+        "US:SOUN",
+        "US:T",
+        "US:CIFR",
+        "US:APLD",
+        "US:IREN",
+        "US:KVUE",
+        "US:NVTS",
+        "US:HBAN",
+        "US:MU",
+        "US:VZ",
+        "US:GOOG",
+        "US:IONQ",
+        "US:ORCL",
+        "US:AG",
+        "US:JBLU",
+        "US:CMG"
+      ]
+    }
+  },
+  "per_ticker": [
+    {
+      "ticker": "US:AG",
+      "precision_at_p70": 0.5961538461538461,
+      "coverage_at_p70": 0.09842598127116955,
+      "n_trades_at_p70": 988,
+      "avg_return_at_p70": 0.11723854926154063,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.5757575757575758,
+      "coverage_at_threshold": 0.12492528392109982,
+      "n_trades_at_threshold": 1254,
+      "avg_return_at_threshold": 0.11011964790969744
+    },
+    {
+      "ticker": "US:APLD",
+      "precision_at_p70": 0.5948275862068966,
+      "coverage_at_p70": 0.21956565052799362,
+      "n_trades_at_p70": 2204,
+      "avg_return_at_p70": 0.12209780379403637,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.5675675675675675,
+      "coverage_at_threshold": 0.2801354851564057,
+      "n_trades_at_threshold": 2812,
+      "avg_return_at_threshold": 0.11340782761684692
+    },
+    {
+      "ticker": "US:AVGO",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:CIFR",
+      "precision_at_p70": 0.7582417582417582,
+      "coverage_at_p70": 0.17224546722454673,
+      "n_trades_at_p70": 1729,
+      "avg_return_at_p70": 0.22736156972270588,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.780952380952381,
+      "coverage_at_threshold": 0.19874476987447698,
+      "n_trades_at_threshold": 1995,
+      "avg_return_at_threshold": 0.22243503237344597
+    },
+    {
+      "ticker": "US:CMG",
+      "precision_at_p70": 0.2,
+      "coverage_at_p70": 0.0473201833034469,
+      "n_trades_at_p70": 475,
+      "avg_return_at_p70": 0.025414092760221815,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.19230769230769232,
+      "coverage_at_threshold": 0.04921299063558478,
+      "n_trades_at_threshold": 494,
+      "avg_return_at_threshold": 0.023820619950422874
+    },
+    {
+      "ticker": "US:DJI",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:DNN",
+      "precision_at_p70": 0.627906976744186,
+      "coverage_at_p70": 0.08139071528192868,
+      "n_trades_at_p70": 817,
+      "avg_return_at_p70": 0.07856139810868448,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.6206896551724138,
+      "coverage_at_threshold": 0.10978282526399681,
+      "n_trades_at_threshold": 1102,
+      "avg_return_at_threshold": 0.08327776603369673
+    },
+    {
+      "ticker": "US:GOOG",
+      "precision_at_p70": 0.4444444444444444,
+      "coverage_at_p70": 0.017035265989240884,
+      "n_trades_at_p70": 171,
+      "avg_return_at_p70": 0.029762768552752762,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.4444444444444444,
+      "coverage_at_threshold": 0.017035265989240884,
+      "n_trades_at_threshold": 171,
+      "avg_return_at_threshold": 0.029762768552752762
+    },
+    {
+      "ticker": "US:HBAN",
+      "precision_at_p70": 0.9473684210526315,
+      "coverage_at_p70": 0.035963339310619645,
+      "n_trades_at_p70": 361,
+      "avg_return_at_p70": 0.09230957235820893,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.95,
+      "coverage_at_threshold": 0.03785614664275752,
+      "n_trades_at_threshold": 380,
+      "avg_return_at_threshold": 0.09125592169728773
+    },
+    {
+      "ticker": "US:IONQ",
+      "precision_at_p70": 0.8108108108108109,
+      "coverage_at_p70": 0.21010161386730425,
+      "n_trades_at_p70": 2109,
+      "avg_return_at_p70": 0.21964969034171525,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.7769230769230769,
+      "coverage_at_threshold": 0.2460649531779239,
+      "n_trades_at_threshold": 2470,
+      "avg_return_at_threshold": 0.20679218555889853
+    },
+    {
+      "ticker": "US:IREN",
+      "precision_at_p70": 0.8522727272727273,
+      "coverage_at_p70": 0.1665670452281331,
+      "n_trades_at_p70": 1672,
+      "avg_return_at_p70": 0.213366951681433,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.8365384615384616,
+      "coverage_at_threshold": 0.1968519625423391,
+      "n_trades_at_threshold": 1976,
+      "avg_return_at_threshold": 0.20183413566680092
+    },
+    {
+      "ticker": "US:JBLU",
+      "precision_at_p70": 0.6666666666666666,
+      "coverage_at_p70": 0.0397489539748954,
+      "n_trades_at_p70": 399,
+      "avg_return_at_p70": 0.0969233463339706,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.6785714285714286,
+      "coverage_at_threshold": 0.05299860529986053,
+      "n_trades_at_threshold": 532,
+      "avg_return_at_threshold": 0.09357669795847424
+    },
+    {
+      "ticker": "US:KVUE",
+      "precision_at_p70": 0.4444444444444444,
+      "coverage_at_p70": 0.017035265989240884,
+      "n_trades_at_p70": 171,
+      "avg_return_at_p70": 0.0495426922977905,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.3333333333333333,
+      "coverage_at_threshold": 0.022713687985654513,
+      "n_trades_at_threshold": 228,
+      "avg_return_at_threshold": 0.0448317561434732
+    },
+    {
+      "ticker": "US:MSFT",
+      "precision_at_p70": 0.9,
+      "coverage_at_p70": 0.01892807332137876,
+      "n_trades_at_p70": 190,
+      "avg_return_at_p70": 0.14484604799747128,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.9,
+      "coverage_at_threshold": 0.01892807332137876,
+      "n_trades_at_threshold": 190,
+      "avg_return_at_threshold": 0.14484604799747128
+    },
+    {
+      "ticker": "US:MU",
+      "precision_at_p70": 0.8,
+      "coverage_at_p70": 0.06624825662482567,
+      "n_trades_at_p70": 665,
+      "avg_return_at_p70": 0.12238310861261413,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.7948717948717948,
+      "coverage_at_threshold": 0.07381948595337717,
+      "n_trades_at_threshold": 741,
+      "avg_return_at_threshold": 0.12162852635991678
+    },
+    {
+      "ticker": "US:NVTS",
+      "precision_at_p70": 0.5540540540540541,
+      "coverage_at_p70": 0.14006774257820284,
+      "n_trades_at_p70": 1406,
+      "avg_return_at_p70": 0.3204522327836467,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.5348837209302325,
+      "coverage_at_threshold": 0.16278143056385735,
+      "n_trades_at_threshold": 1634,
+      "avg_return_at_threshold": 0.28475785272169196
+    },
+    {
+      "ticker": "US:ORCL",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:SOUN",
+      "precision_at_p70": 0.7419354838709677,
+      "coverage_at_p70": 0.11735405459254832,
+      "n_trades_at_p70": 1178,
+      "avg_return_at_p70": 0.1206697311127731,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.7368421052631579,
+      "coverage_at_threshold": 0.14385335724247858,
+      "n_trades_at_threshold": 1444,
+      "avg_return_at_threshold": 0.11960593705587351
+    },
+    {
+      "ticker": "US:T",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:VZ",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    }
+  ],
+  "artifact_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\pooled_up5_v4_u100_holdout20_t06_nodummy_llm_iso_artifact.pkl"
+}
