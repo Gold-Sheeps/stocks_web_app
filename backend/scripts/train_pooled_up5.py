@@ -15,9 +15,18 @@ import pandas as pd
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from app.services.prediction_service import PredictionService, PredictorConfig
+from app.db.database import Database
 
 
 DEFAULT_THRESHOLDS = [0.7]
+DEFAULT_LLM_FEATURE_COLUMNS = [
+    "llm_earnings_tone_score",
+    "llm_regulatory_risk_score",
+    "llm_supply_chain_disruption_score",
+    "llm_sector_sentiment_score",
+    "llm_event_recency_decay_weight",
+    "llm_low_evidence_flag",
+]
 
 
 @dataclass
@@ -109,6 +118,7 @@ def _collect_ticker_frame(
     relative_symbols: List[str],
     sector_symbols: List[str],
     target_return: float,
+    include_llm_features: bool = False,
 ) -> Tuple[pd.DataFrame, List[str]]:
     cfg = PredictorConfig(
         flat_band_pct=2.0,
@@ -136,7 +146,81 @@ def _collect_ticker_frame(
         (model_df["target_return_pct_h"].astype(float) / 100.0) >= float(target_return)
     ).astype(int)
     model_df["future_return"] = model_df["target_return_pct_h"].astype(float) / 100.0
+    if include_llm_features:
+        model_df, feature_cols = _attach_llm_feature_timeseries(
+            ticker=ticker,
+            model_df=model_df,
+            feature_cols=feature_cols,
+        )
     return model_df, feature_cols
+
+
+def _attach_llm_feature_timeseries(
+    ticker: str,
+    model_df: pd.DataFrame,
+    feature_cols: List[str],
+) -> Tuple[pd.DataFrame, List[str]]:
+    """
+    Attach PIT-safe LLM feature snapshots keyed by (symbol_key, asof=date).
+    Missing rows default to zero so training remains backward-compatible.
+    """
+    out = model_df.copy()
+    for c in DEFAULT_LLM_FEATURE_COLUMNS:
+        if c not in out.columns:
+            out[c] = 0.0
+
+    db = Database()
+    if not db.connect():
+        new_cols = list(feature_cols) + [c for c in DEFAULT_LLM_FEATURE_COLUMNS if c not in feature_cols]
+        return out, new_cols
+    try:
+        rows = db.execute_query(
+            """
+            SELECT asof, llm_features_json, point_in_time_ok
+            FROM llm_signal_feature_sets
+            WHERE symbol_key = %s
+              AND extraction_status = 'success'
+            ORDER BY asof
+            """,
+            (ticker,),
+        ) or []
+        by_date: Dict[str, Dict[str, Any]] = {}
+        for r in rows:
+            asof_val = r[0]
+            pit_ok = bool(r[2]) if r[2] is not None else True
+            if not pit_ok or asof_val is None:
+                continue
+            raw = r[1]
+            payload: Dict[str, Any] = {}
+            if isinstance(raw, dict):
+                payload = raw
+            elif isinstance(raw, str) and raw.strip():
+                try:
+                    payload = json.loads(raw)
+                except Exception:
+                    payload = {}
+            by_date[str(asof_val)] = payload
+        if by_date:
+            for idx in out.index:
+                key = str(idx.date()) if hasattr(idx, "date") else str(idx)
+                p = by_date.get(key)
+                if not p:
+                    continue
+                for c in DEFAULT_LLM_FEATURE_COLUMNS:
+                    try:
+                        out.at[idx, c] = float(p.get(c, 0.0))
+                    except Exception:
+                        out.at[idx, c] = 0.0
+    except Exception:
+        pass
+    finally:
+        db.disconnect()
+
+    new_cols = list(feature_cols)
+    for c in DEFAULT_LLM_FEATURE_COLUMNS:
+        if c not in new_cols:
+            new_cols.append(c)
+    return out, new_cols
 
 
 def _build_pooled_dataset(
@@ -599,6 +683,12 @@ def _parse_args() -> argparse.Namespace:
         default=False,
         help="Disable ticker one-hot encoding. Improves OOD generalization for holdout tickers.",
     )
+    parser.add_argument(
+        "--include-llm-features",
+        action="store_true",
+        default=False,
+        help="Include pre-extracted LLM structured features (zero-filled when missing).",
+    )
     return parser.parse_args()
 
 
@@ -652,6 +742,7 @@ def main() -> int:
             relative_symbols=relative_symbols,
             sector_symbols=sector_symbols,
             target_return=float(args.target_return),
+            include_llm_features=bool(args.include_llm_features),
         )
         if feature_cols_ref is None:
             feature_cols_ref = feature_cols
@@ -763,6 +854,8 @@ def main() -> int:
         "train_tickers": train_tickers,
         "holdout_tickers": holdout_tickers,
         "feature_set": args.feature_set,
+        "feature_set_version": ("xgb_base_plus_llm_v1" if bool(args.include_llm_features) else "xgb_only_v1"),
+        "llm_feature_columns": (list(DEFAULT_LLM_FEATURE_COLUMNS) if bool(args.include_llm_features) else []),
         "horizon": int(args.horizon),
         "target_return": float(args.target_return),
         "threshold_buy": threshold_buy,
@@ -807,6 +900,8 @@ def main() -> int:
                 "target_return": float(args.target_return),
                 "fixed_thresholds": thresholds,
                 "feature_set": args.feature_set,
+                "feature_set_version": ("xgb_base_plus_llm_v1" if bool(args.include_llm_features) else "xgb_only_v1"),
+                "include_llm_features": bool(args.include_llm_features),
                 "tickers_file": args.tickers_file,
                 "n_tickers": len(tickers),
                 "train_tickers": train_tickers,

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Predict VIX - Trading System</title>
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    .vix-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+    .vix-layout > div { min-width: 0; }
+    .glass-panel { min-width: 0; }
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .field label {
+      display: block;
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .field input, .field select {
+      width: 100%;
+      background: var(--bg-surface-2);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+    .run-btn {
+      width: 100%;
+      padding: 12px 14px;
+      font-weight: 700;
+      border: none;
+      border-radius: var(--radius-sm);
+      color: white;
+      background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .run-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .mini-card {
+      background: var(--bg-surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+    .mini-card .label { color: var(--text-muted); font-size: var(--fs-xs); }
+    .mini-card .value { font-weight: 700; margin-top: 4px; font-family: var(--font-mono); }
+    table.vix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .92rem;
+    }
+    .vix-table th, .vix-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    .vix-table th { color: var(--text-muted); font-size: var(--fs-xs); text-transform: uppercase; }
+    .text-right { text-align: right; }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: .75rem;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+    }
+    .code-box {
+      background: rgba(0,0,0,.25);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: .8rem;
+      white-space: pre-wrap;
+      max-height: 280px;
+      overflow: auto;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    .code-inline {
+      display: inline-block;
+      max-width: 100%;
+      vertical-align: top;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      white-space: normal;
+      font-family: var(--font-mono);
+      font-size: .78rem;
+    }
+    #newsUsageWrap {
+      min-width: 0;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    #newsUsageWrap ul {
+      padding-right: 4px;
+    }
+    #newsUsageWrap li {
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      line-height: 1.35;
+    }
+    #horizonCompareWrap, #errorRankingWrap, #featureDiffWrap, #predictionTableWrap, #backtestSummary {
+      min-width: 0;
+      overflow-x: auto;
+    }
+    .vix-table {
+      min-width: 720px;
+    }
+    .history-list {
+      display: grid;
+      gap: 8px;
+      max-height: 320px;
+      overflow: auto;
+    }
+    .history-item {
+      border: 1px solid var(--border);
+      background: var(--bg-surface-2);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      cursor: pointer;
+    }
+    .history-item.active {
+      border-color: rgba(239,68,68,.45);
+      box-shadow: inset 0 0 0 1px rgba(239,68,68,.25);
+    }
+    .history-item .row1 {
+      display: flex; justify-content: space-between; gap: 8px; font-weight: 700;
+    }
+    .history-item .row2 {
+      margin-top: 4px; color: var(--text-muted); font-size: .8rem;
+    }
+    .history-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .history-actions button {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      color: var(--text-main);
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-size: .75rem;
+      cursor: pointer;
+    }
+    @media (max-width: 960px) {
+      .vix-layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="sidebar-container"></div>
+  <div class="main-content">
+    <div class="container">
+      <div class="page-header">
+        <div class="page-title">Predict VIX</div>
+        <div id="runMeta" class="text-muted text-sm">No run yet</div>
+      </div>
+
+      <div class="vix-layout">
+        <div>
+          <div class="glass-panel mb-4">
+            <div class="panel-header">
+              <div class="panel-title">Run Forecast (1-5 Business Days)</div>
+            </div>
+            <div class="text-muted text-sm">RAG/news + market data + bias-gap correction (3-year backtest summary)</div>
+            <div class="controls-grid">
+              <div class="field">
+                <label>As-Of Date</label>
+                <input type="date" id="asofDate">
+              </div>
+              <div class="field">
+                <label>Horizon Days</label>
+                <select id="horizonDays">
+                  <option value="5" selected>5</option>
+                  <option value="3">3</option>
+                  <option value="7">7</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Backtest Years</label>
+                <select id="backtestYears">
+                  <option value="3" selected>3</option>
+                  <option value="2">2</option>
+                  <option value="4">4</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>News Refresh</label>
+                <select id="refreshNews">
+                  <option value="true" selected>Refresh + Use (Recommended)</option>
+                  <option value="false">Use DB Only</option>
+                </select>
+              </div>
+            </div>
+            <button id="runBtn" class="run-btn">Run Predict VIX</button>
+          </div>
+
+          <div class="glass-panel mb-4">
+            <div class="panel-header">
+              <div class="panel-title">5-Day Forecast Result</div>
+              <span id="modelBadge" class="pill">model: --</span>
+            </div>
+            <div id="predictionTableWrap" class="text-muted">No prediction data</div>
+          </div>
+
+          <div class="glass-panel">
+            <div class="panel-header">
+              <div class="panel-title">Backtest & Gap Analysis</div>
+            </div>
+            <div id="backtestSummary" class="text-muted">No backtest data</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="glass-panel mb-4">
+            <div class="panel-header">
+              <div class="panel-title">Feature Snapshot</div>
+            </div>
+            <div id="featureCards" class="mini-grid"></div>
+          </div>
+
+          <div class="glass-panel mb-4">
+            <div class="panel-header">
+              <div class="panel-title">RAG / News Features</div>
+            </div>
+            <div id="newsFeaturesBox" class="code-box">No data</div>
+          </div>
+
+          <div class="glass-panel mb-4">
+            <div class="panel-header">
+              <div class="panel-title">News Used / Queries</div>
+            </div>
+            <div id="newsUsageWrap" class="text-muted text-sm">No data</div>
+          </div>
+
+          <div class="glass-panel mb-4">
+            <div class="panel-header">
+              <div class="panel-title">Run History</div>
+              <div style="display:flex; gap:8px;">
+                <button id="backfillActualsBtn" class="btn btn-ghost btn-sm">Backfill Actuals</button>
+                <button id="refreshRunsBtn" class="btn btn-ghost btn-sm">Refresh</button>
+              </div>
+            </div>
+            <div id="runCompareSummary" class="text-muted text-sm mb-4">Select a previous run to compare with current.</div>
+            <div id="horizonCompareWrap" class="mb-4 text-muted text-sm">No compare run selected.</div>
+            <div id="runHistoryList" class="history-list">
+              <div class="text-muted">No runs</div>
+            </div>
+          </div>
+
+          <div class="glass-panel mb-4">
+            <div class="panel-header">
+              <div class="panel-title">Realized Error Ranking</div>
+              <button id="analyzeErrorsBtn" class="btn btn-ghost btn-sm">Analyze</button>
+            </div>
+            <div class="text-muted text-sm mb-4">
+              直近履歴Runのうち、`actual_vix` が入っている予測を集計して誤差の大きい順に表示
+            </div>
+            <div id="errorRankingWrap" class="text-muted text-sm">Click Analyze to build ranking.</div>
+          </div>
+
+          <div class="glass-panel mb-4">
+            <div class="panel-header">
+              <div class="panel-title">Feature Diff (Current vs Compare)</div>
+            </div>
+            <div id="featureDiffWrap" class="text-muted text-sm">Select a compare run to inspect feature/news diffs.</div>
+          </div>
+
+          <div class="glass-panel">
+            <div class="panel-header">
+              <div class="panel-title">Raw Backtest JSON (excerpt)</div>
+            </div>
+            <div id="backtestJsonBox" class="code-box">No data</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script defer src="js/config.js"></script>
+  <script defer src="js/common.js"></script>
+  <script defer src="js/predict_vix.js"></script>
+</body>
+</html>

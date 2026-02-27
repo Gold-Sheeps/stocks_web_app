@@ -69,6 +69,16 @@ def _latest_artifact_path() -> str:
     if not cands:
         raise FileNotFoundError("No pooled artifact found under backend/ml_predictor_data.")
 
+    def _llm_rank(p: Path) -> int:
+        # Prefer artifacts that actually include LLM feature columns.
+        try:
+            with p.open("rb") as f:
+                art = pickle.load(f)
+            llm_cols = art.get("llm_feature_columns") or []
+            return 1 if len(llm_cols) > 0 else 0
+        except Exception:
+            return 0
+
     def _rank(p: Path) -> tuple[int, float]:
         # Prefer richer feature sets first (v4 > v3 > older), then recency.
         name = p.name.lower()
@@ -77,7 +87,7 @@ def _latest_artifact_path() -> str:
             rank = 2
         elif "_v3_" in name or name.startswith("pooled_up5_v3"):
             rank = 1
-        return (rank, p.stat().st_mtime)
+        return (_llm_rank(p), rank, p.stat().st_mtime)
 
     best = max(cands, key=_rank)
     return str(best)
@@ -110,7 +120,9 @@ def _build_inference_row(
     prepared = svc._prepare_dataset(feat, asof, cfg)
     pred_row = prepared["pred_row"]
     base_cols: List[str] = list(artifact["base_feature_columns"])
-    x_base = pred_row[base_cols].astype(float).to_dict()
+    # Hybrid artifacts may include LLM columns in base_feature_columns; inference row
+    # starts from price-derived features only, so missing columns are zero-filled here.
+    x_base = pred_row.reindex(base_cols, fill_value=0.0).astype(float).to_dict()
 
     row = dict(x_base)
     for c in artifact.get("ticker_dummy_columns", []):

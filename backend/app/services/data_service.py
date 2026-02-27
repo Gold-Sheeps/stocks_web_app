@@ -39,6 +39,19 @@ class DataService:
         finally:
             self.db.disconnect()
 
+    def _log_update_step(
+        self,
+        job_id: str,
+        step: str,
+        status: str,
+        message: str,
+        details: dict | None = None,
+    ) -> None:
+        payload = {"job_id": job_id, "step": step}
+        if details:
+            payload.update(details)
+        self.log_system_event("Data Update", status, message, payload)
+
     def _get_symbol_key(self, raw_symbol: str) -> str:
         """Raw Symbolから統一Symbol Keyを生成 (US/JPのみ)"""
         # Rule based unification
@@ -67,6 +80,83 @@ class DataService:
             "output_tail": tail_lines,
         }
 
+    def _resolve_script_path(self, repo_root: Path, script_name: str) -> tuple[Path | None, List[str]]:
+        """
+        Resolve script path across known layouts.
+        Prefer pathlib + repo-root-relative lookup to avoid cwd/path separator issues.
+        """
+        candidates = [
+            repo_root / "backend" / "app" / "scripts" / script_name,
+            repo_root / "backend" / "scripts" / script_name,
+            repo_root / "scripts" / script_name,
+        ]
+        for p in candidates:
+            if p.exists():
+                return p, [str(c) for c in candidates]
+        return None, [str(c) for c in candidates]
+
+    def _run_resolved_script(
+        self,
+        repo_root: Path,
+        step_name: str,
+        script_name: str,
+        args: List[str] | None = None,
+        timeout: int | None = None,
+        missing_status: str = "failed",
+    ) -> dict:
+        script_path, searched = self._resolve_script_path(repo_root, script_name)
+        if script_path is None:
+            msg = (
+                f"[DataService] post-step script not found step={step_name} "
+                f"script={script_name} repo_root={repo_root} searched={searched}"
+            )
+            print(msg)
+            return {
+                "returncode": 2,
+                "command": [sys.executable, f"<unresolved:{script_name}>", *(args or [])],
+                "output_tail": [msg],
+                "step": step_name,
+                "status": missing_status,
+                "script_name": script_name,
+                "searched_paths": searched,
+                "repo_root": str(repo_root),
+            }
+
+        return self._run_script(
+            [sys.executable, str(script_path), *(args or [])],
+            cwd=repo_root,
+            timeout=timeout,
+        )
+
+    def _post_step_preflight(self, repo_root: Path, targets: List[str]) -> List[dict]:
+        selected = set(targets or [])
+        checks: List[tuple[str, str]] = []
+        if "Fundamentals" in selected:
+            checks.append(("fetch_fundamentals_watchlist_portfolio", "fetch_fundamentals.py"))
+        if "MarketEnvironment" in selected:
+            checks.append(("fetch_market_environment", "fetch_market_environment.py"))
+        if ("AI" in selected) or ("AI Prediction" in selected):
+            checks.append(("llm_signal_extraction_batch", "run_llm_signal_extraction_batch.py"))
+            checks.append(("ai_prediction_batch", "run_daily_predictions.py"))
+        out: List[dict] = []
+        for step_name, script_name in checks:
+            p, searched = self._resolve_script_path(repo_root, script_name)
+            out.append(
+                {
+                    "step": step_name,
+                    "script_name": script_name,
+                    "found": bool(p),
+                    "resolved_path": str(p) if p else None,
+                    "searched_paths": searched,
+                }
+            )
+            if not p:
+                print(
+                    f"[DataService] preflight missing post-step script step={step_name} "
+                    f"script={script_name} repo_root={repo_root} searched={searched}"
+                )
+        return out
+
     def _get_latest_price_date(self):
         self.db.connect()
         try:
@@ -83,24 +173,42 @@ class DataService:
                 "reason": "No price_daily data",
             }
 
-        script_path = Path(__file__).resolve().parents[1] / "scripts" / "run_daily_predictions.py"
-        cmd = [
-            sys.executable,
-            str(script_path),
-            "--asof",
-            latest_date.isoformat(),
-            "--max-tickers",
-            str(int(max_tickers)),
-        ]
-        result = self._run_script(cmd, cwd=repo_root, timeout=7200)
+        result = self._run_resolved_script(
+            repo_root=repo_root,
+            step_name="ai_prediction_batch",
+            script_name="run_daily_predictions.py",
+            args=["--asof", latest_date.isoformat(), "--max-tickers", str(int(max_tickers))],
+            timeout=7200,
+            missing_status="failed",
+        )
         result["asof"] = latest_date.isoformat()
         result["status"] = "success" if result["returncode"] == 0 else "failed"
         return result
 
-    def update_all_data(self, range_days: int = 14, targets: List[str] = None):
+    def _run_llm_signal_extraction_batch(self, repo_root: Path, max_symbols: int = 500) -> dict:
+        latest_date = self._get_latest_price_date()
+        if latest_date is None:
+            return {
+                "status": "skipped",
+                "reason": "No price_daily data",
+            }
+        result = self._run_resolved_script(
+            repo_root=repo_root,
+            step_name="llm_signal_extraction_batch",
+            script_name="run_llm_signal_extraction_batch.py",
+            args=["--asof", latest_date.isoformat(), "--max-symbols", str(int(max_symbols))],
+            timeout=3600,
+            missing_status="warning",
+        )
+        result["asof"] = latest_date.isoformat()
+        # Do not fail the whole update flow on LLM feature extraction failure; prediction can degrade safely.
+        result["status"] = "success" if result["returncode"] == 0 else "warning"
+        return result
+
+    def update_all_data(self, range_days: int = 14, targets: List[str] = None, job_id: str | None = None):
         """Data Update画面から統合バッチ(full_db_refresh.py)を実行"""
         targets = targets or []
-        job_id = f"update_{int(time.time())}"
+        job_id = job_id or f"update_{int(time.time())}"
         self.log_system_event(
             "Data Update",
             "RUNNING",
@@ -113,6 +221,7 @@ class DataService:
             script_path = repo_root / "scripts" / "full_db_refresh.py"
             if not script_path.exists():
                 raise FileNotFoundError(f"Batch script not found: {script_path}")
+            post_step_preflight = self._post_step_preflight(repo_root, targets)
 
             # Map UI targets to unified batch skip flags.
             selected = set(targets)
@@ -143,13 +252,36 @@ class DataService:
             if not has_canslim:
                 cmd.append("--skip-canslim")
 
+            self._log_update_step(
+                job_id,
+                "main_refresh",
+                "RUNNING",
+                "Main unified refresh started",
+                {"command": cmd, "targets": targets, "range_days": range_days},
+            )
             main_result = self._run_script(cmd, cwd=repo_root)
             tail_lines = main_result["output_tail"]
+
+            self._log_update_step(
+                job_id,
+                "main_refresh",
+                "SUCCESS" if main_result["returncode"] == 0 else "FAILED",
+                (
+                    "Main unified refresh completed"
+                    if main_result["returncode"] == 0
+                    else f"Main unified refresh failed (exit={main_result['returncode']})"
+                ),
+                {
+                    "returncode": main_result["returncode"],
+                    "output_tail": tail_lines[-20:],
+                },
+            )
 
             if main_result["returncode"] != 0:
                 details = {
                     "job_id": job_id,
                     "main_refresh": main_result,
+                    "post_step_preflight": post_step_preflight,
                 }
                 self.log_system_event("Data Update", "FAILED", "Unified refresh failed", details)
                 return {
@@ -162,8 +294,15 @@ class DataService:
 
             # Sector rotation computation (DB-side) after price refresh.
             if has_sector:
+                self._log_update_step(job_id, "sector_rotation", "RUNNING", "Sector rotation calculation started")
                 try:
                     ok = self.calculate_sector_rotation()
+                    self._log_update_step(
+                        job_id,
+                        "sector_rotation",
+                        "SUCCESS" if ok else "FAILED",
+                        "Sector rotation calculation completed" if ok else "Sector rotation calculation failed",
+                    )
                     post_steps.append(
                         {
                             "step": "sector_rotation",
@@ -171,17 +310,37 @@ class DataService:
                         }
                     )
                 except Exception as e:
+                    self._log_update_step(
+                        job_id, "sector_rotation", "FAILED", "Sector rotation calculation exception", {"error": str(e)}
+                    )
                     post_steps.append({"step": "sector_rotation", "status": "failed", "error": str(e)})
 
             # Run fetch_fundamentals.py for watchlist/portfolio symbols when requested.
             if has_fundamentals:
-                fund_script = Path(__file__).resolve().parents[1] / "scripts" / "fetch_fundamentals.py"
-                fund_result = self._run_script(
-                    [sys.executable, str(fund_script), "--max-symbols", "200"],
-                    cwd=repo_root,
+                self._log_update_step(
+                    job_id,
+                    "fetch_fundamentals_watchlist_portfolio",
+                    "RUNNING",
+                    "Fundamentals update started",
+                )
+                fund_result = self._run_resolved_script(
+                    repo_root=repo_root,
+                    step_name="fetch_fundamentals_watchlist_portfolio",
+                    script_name="fetch_fundamentals.py",
+                    args=["--max-symbols", "200"],
                 )
                 fund_result["step"] = "fetch_fundamentals_watchlist_portfolio"
                 fund_result["status"] = "success" if fund_result["returncode"] == 0 else "failed"
+                self._log_update_step(
+                    job_id,
+                    "fetch_fundamentals_watchlist_portfolio",
+                    "SUCCESS" if fund_result["returncode"] == 0 else "FAILED",
+                    "Fundamentals update completed" if fund_result["returncode"] == 0 else "Fundamentals update failed",
+                    {
+                        "returncode": fund_result["returncode"],
+                        "output_tail": (fund_result.get("output_tail") or [])[-20:],
+                    },
+                )
                 post_steps.append(fund_result)
                 if fund_result["returncode"] != 0:
                     print(
@@ -190,26 +349,82 @@ class DataService:
                     )
 
             if has_market_env:
-                me_script = Path(__file__).resolve().parents[1] / "scripts" / "fetch_market_environment.py"
-                me_result = self._run_script(
-                    [sys.executable, str(me_script)],
-                    cwd=repo_root,
+                self._log_update_step(
+                    job_id,
+                    "fetch_market_environment",
+                    "RUNNING",
+                    "Market Environment update started",
+                )
+                me_result = self._run_resolved_script(
+                    repo_root=repo_root,
+                    step_name="fetch_market_environment",
+                    script_name="fetch_market_environment.py",
+                    args=[],
                     timeout=120,
                 )
                 me_result["step"] = "fetch_market_environment"
                 me_result["status"] = "success" if me_result["returncode"] == 0 else "failed"
+                self._log_update_step(
+                    job_id,
+                    "fetch_market_environment",
+                    "SUCCESS" if me_result["returncode"] == 0 else "FAILED",
+                    "Market Environment update completed" if me_result["returncode"] == 0 else "Market Environment update failed",
+                    {
+                        "returncode": me_result["returncode"],
+                        "output_tail": (me_result.get("output_tail") or [])[-20:],
+                    },
+                )
                 post_steps.append(me_result)
                 if me_result["returncode"] != 0:
                     print(f"[DataService] fetch_market_environment exited {me_result['returncode']}: {me_result['output_tail']}")
 
             if has_ai_prediction:
+                self._log_update_step(
+                    job_id,
+                    "llm_signal_extraction_batch",
+                    "RUNNING",
+                    "LLM signal extraction batch started",
+                )
+                llm_result = self._run_llm_signal_extraction_batch(repo_root, max_symbols=500)
+                llm_result["step"] = "llm_signal_extraction_batch"
+                self._log_update_step(
+                    job_id,
+                    "llm_signal_extraction_batch",
+                    "SUCCESS" if llm_result.get("status") == "success" else "FAILED",
+                    "LLM signal extraction batch completed" if llm_result.get("status") == "success" else "LLM signal extraction batch failed",
+                    {
+                        "returncode": llm_result.get("returncode"),
+                        "status": llm_result.get("status"),
+                        "output_tail": (llm_result.get("output_tail") or [])[-20:],
+                    },
+                )
+                post_steps.append(llm_result)
+                self._log_update_step(
+                    job_id,
+                    "ai_prediction_batch",
+                    "RUNNING",
+                    "AI prediction batch started",
+                )
                 ai_result = self._run_ai_prediction_batch(repo_root, max_tickers=500)
                 ai_result["step"] = "ai_prediction_batch"
+                self._log_update_step(
+                    job_id,
+                    "ai_prediction_batch",
+                    "SUCCESS" if ai_result.get("status") == "success" else "FAILED",
+                    "AI prediction batch completed" if ai_result.get("status") == "success" else "AI prediction batch failed",
+                    {
+                        "returncode": ai_result.get("returncode"),
+                        "status": ai_result.get("status"),
+                        "asof": ai_result.get("asof"),
+                        "output_tail": (ai_result.get("output_tail") or [])[-20:],
+                    },
+                )
                 post_steps.append(ai_result)
 
             details = {
                 "job_id": job_id,
                 "main_refresh": main_result,
+                "post_step_preflight": post_step_preflight,
                 "post_steps": post_steps,
             }
             failed_post = [s for s in post_steps if s.get("status") in ("failed", "error")]
@@ -473,29 +688,61 @@ class DataService:
             
             sector_metrics.sort(key=lambda x: (x["return"], x["rs"]), reverse=True)
             
-            # Upsert into sector_rotation (using etf_symbol_key)
+            # Upsert into sector_rotation.
+            # NOTE:
+            # - Current table PK is (symbol, trading_date)
+            # - etf_symbol_key is supplemental key used by newer code paths
             query_upsert = """
-                INSERT INTO sector_rotation (etf_symbol_key, trading_date, current_return, momentum, relative_strength, rank, updated_at)
-                VALUES (%s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
-                ON CONFLICT (etf_symbol_key, trading_date) DO UPDATE SET
+                INSERT INTO sector_rotation (symbol, etf_symbol_key, trading_date, current_return, momentum, relative_strength, rank, updated_at)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+                ON CONFLICT (symbol, trading_date) DO UPDATE SET
+                    etf_symbol_key = EXCLUDED.etf_symbol_key,
                     current_return = EXCLUDED.current_return,
                     momentum = EXCLUDED.momentum,
                     relative_strength = EXCLUDED.relative_strength,
                     rank = EXCLUDED.rank,
                     updated_at = CURRENT_TIMESTAMP
             """
-            
+
+            success_count = 0
+            failed_count = 0
             for rank, item in enumerate(sector_metrics, 1):
-                self.db.execute_command(query_upsert, (
-                    item["symbol_key"],
-                    latest_date,
-                    Decimal(str(item["return"])),
-                    Decimal(str(item["momentum"])),
-                    Decimal(str(item["rs"])),
-                    rank
-                ))
-            
-            self.log_system_event("Sector Rotation", "SUCCESS", f"Calculated for {latest_date}")
+                # Keep both legacy symbol (e.g. XLK) and normalized key (US:XLK).
+                legacy_symbol = item["symbol_key"].split(":", 1)[1] if ":" in item["symbol_key"] else item["symbol_key"]
+                ok = self.db.execute_command(
+                    query_upsert,
+                    (
+                        legacy_symbol,
+                        item["symbol_key"],
+                        latest_date,
+                        Decimal(str(item["return"])),
+                        Decimal(str(item["momentum"])),
+                        Decimal(str(item["rs"])),
+                        rank,
+                    ),
+                )
+                if ok:
+                    success_count += 1
+                else:
+                    failed_count += 1
+
+            if success_count == 0:
+                self.log_system_event(
+                    "Sector Rotation",
+                    "FAILED",
+                    f"Insert failed for all sectors (latest_date={latest_date}, failed={failed_count})",
+                )
+                return False
+
+            if failed_count > 0:
+                self.log_system_event(
+                    "Sector Rotation",
+                    "FAILED",
+                    f"Partial failure (latest_date={latest_date}, success={success_count}, failed={failed_count})",
+                )
+                return False
+
+            self.log_system_event("Sector Rotation", "SUCCESS", f"Calculated for {latest_date} ({success_count} sectors)")
             return True
                 
         except Exception as e:

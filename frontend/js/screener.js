@@ -17,7 +17,7 @@
             minRS: null,
             minTotalScore: 70,
             searchQuery: '',
-            aiMode: 'balanced'
+            aiMode: 'off'
         }
     };
 
@@ -91,7 +91,7 @@
             minRS: minRS ? parseFloat(minRS) : null,
             minTotalScore: minScore ? parseFloat(minScore) : 70,
             searchQuery: search ? search.trim() : '',
-            aiMode: aiMode || 'balanced'
+            aiMode: aiMode || 'off'
         };
     }
 
@@ -469,7 +469,7 @@
             const el = $(id);
             if (el) {
                 if (el.id === 'rsiFilter') el.value = '';
-                else if (el.id === 'aiMode') el.value = 'balanced';
+                else if (el.id === 'aiMode') el.value = 'off';
                 else if (el.id === 'minRS') el.value = '';
                 else if (el.id === 'minTotalScore') el.value = '70';
                 else el.value = '';

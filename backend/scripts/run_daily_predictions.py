@@ -7,6 +7,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -16,7 +17,12 @@ from typing import List
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.db.database import Database
+from app.services.ai_prediction_service import AiPredictionService
+from app.services.explanation_summary_service import ExplanationSummaryService
+from app.services.feature_fusion_service import FeatureFusionService
+from app.services.llm_signal_extraction_service import LlmSignalExtractionService
 from app.services.prediction_service import PredictionService
+from app.services.rag_retrieval_service import RagRetrievalService
 from scripts.predict_up5 import (
     _build_inference_row,
     _latest_artifact_path,
@@ -115,6 +121,61 @@ def _build_ticker_list(db: Database, max_tickers: int) -> List[str]:
     return out[:max_tickers]
 
 
+def _best_effort_refresh_external_news_and_llm(
+    ticker: str,
+    asof,
+    llm_extract_svc: LlmSignalExtractionService,
+    rag_retrieval_svc: RagRetrievalService,
+) -> dict:
+    out = {"attempted": True, "news_ingest": "skipped", "llm_extract": "skipped", "months_back": 12}
+    try:
+        backend_dir = Path(__file__).resolve().parents[1]
+        script_path = backend_dir / "scripts" / "ingest_external_news_rss_backfill.py"
+        if script_path.exists():
+            proc = subprocess.run(
+                [
+                    sys.executable,
+                    str(script_path),
+                    "--asof",
+                    asof.isoformat(),
+                    "--months-back",
+                    "12",
+                    "--symbol",
+                    ticker,
+                    "--timeout",
+                    "8",
+                ],
+                cwd=str(backend_dir.parent),
+                capture_output=True,
+                text=True,
+                timeout=20,
+            )
+            out["news_ingest"] = "success" if proc.returncode == 0 else "warning"
+    except Exception as e:
+        out["news_ingest"] = "warning"
+        out["news_ingest_error"] = f"{type(e).__name__}: {e}"
+    try:
+        docs = rag_retrieval_svc.get_documents_for_asof(ticker, asof=asof, limit=20) or []
+        out["docs_for_asof"] = len(docs)
+        if docs:
+            ext = llm_extract_svc.extract_structured_features(ticker, asof, docs)
+            save = llm_extract_svc.save_structured_features(
+                symbol_key=ticker,
+                asof=asof,
+                llm_features=dict(ext.get("llm_features") or {}),
+                evidence_items=list(ext.get("evidence_items") or []),
+                quality_metrics=dict(ext.get("quality_metrics") or {}),
+                extraction_status="success",
+                point_in_time_ok=bool(ext.get("point_in_time_ok", True)),
+            )
+            out["llm_extract"] = "success" if bool(save.get("ok")) else "warning"
+    except Exception as e:
+        out["llm_extract"] = "warning"
+        out["llm_extract_error"] = f"{type(e).__name__}: {e}"
+    return out
+
+
+
 # ---------------------------------------------------------------------------
 # UPSERT SQL
 # ---------------------------------------------------------------------------
@@ -179,12 +240,55 @@ def main() -> int:
         return 0
 
     svc = PredictionService()
+    ai_meta_svc = AiPredictionService()
+    llm_extract_svc = LlmSignalExtractionService()
+    rag_retrieval_svc = RagRetrievalService()
+    fusion_svc = FeatureFusionService()
+    expl_svc = ExplanationSummaryService()
     succeeded: List[str] = []
     failed: List[tuple] = []
 
     for i, ticker in enumerate(tickers):
         try:
+            external_news_refresh = _best_effort_refresh_external_news_and_llm(
+                ticker=ticker,
+                asof=asof,
+                llm_extract_svc=llm_extract_svc,
+                rag_retrieval_svc=rag_retrieval_svc,
+            )
+            llm_payload = None
+            llm_features = {}
+            llm_degraded_mode = False
+            llm_features_used = False
+            feature_set_version = "xgb_only_v1"
+            evidence_set_id = None
+            explanation_summary = None
+            llm_error_message = None
+            llm_degraded_reason = None
+            llm_feature_usage = {}
+            try:
+                llm_payload = llm_extract_svc.get_latest_structured_features(ticker, asof)
+                if llm_payload and llm_payload.get("point_in_time_ok", True):
+                    llm_features = dict(llm_payload.get("llm_features") or {})
+                    feature_set_version = str(llm_payload.get("feature_set_version") or "xgb_base_plus_llm_v1")
+                    evidence_set_id = llm_payload.get("evidence_set_id")
+                    explanation_summary = expl_svc.summarize_evidence(llm_payload.get("evidence_items") or [])
+                elif llm_payload and not llm_payload.get("point_in_time_ok", True):
+                    llm_degraded_mode = True
+                    llm_degraded_reason = "point_in_time_violation"
+            except Exception as llm_exc:
+                llm_degraded_mode = True
+                llm_error_message = str(llm_exc)
+                llm_degraded_reason = "llm_feature_lookup_error"
+                print(f"[WARN] LLM degraded for {ticker}: {llm_error_message}")
+
             x_df, _ = _build_inference_row(svc, ticker, asof, artifact)
+            x_df, llm_feature_usage = fusion_svc.merge_inference_features(
+                x_df,
+                list(artifact.get("model_feature_columns", [])),
+                llm_features,
+            )
+            llm_features_used = bool(llm_feature_usage.get("llm_features_used"))
             pred = predict_with_artifact(artifact, x_df, calibration_method=args.calibration_method)
             p_up5 = float(pred["p_up5"])
             threshold = float(pred["threshold_buy"])
@@ -198,7 +302,45 @@ def main() -> int:
                     UPSERT_SQL,
                     (ticker, asof, p_up5, threshold, decision, cal_method, artifact_path),
                 )
+                ai_meta_svc._ensure_prediction_aux_tables(db)
+                ai_meta_svc._save_prediction_run_meta(
+                    db=db,
+                    symbol_key=ticker,
+                    asof=asof,
+                    cal_method=cal_method,
+                    llm_features_used=bool(llm_features_used),
+                    llm_degraded_mode=bool(llm_degraded_mode),
+                    feature_set_version=feature_set_version,
+                    evidence_set_id=evidence_set_id,
+                    feature_usage=llm_feature_usage,
+                    explanation_summary=explanation_summary,
+                    llm_error_message=llm_error_message,
+                    llm_degraded_reason=llm_degraded_reason,
+                    extraction_meta=(
+                        {
+                            "extractor_version": llm_payload.get("extractor_version"),
+                            "updated_at": llm_payload.get("updated_at"),
+                            "quality_metrics": llm_payload.get("quality_metrics"),
+                            "point_in_time_ok": llm_payload.get("point_in_time_ok"),
+                            "extraction_status": llm_payload.get("extraction_status"),
+                            "extraction_error": llm_payload.get("extraction_error"),
+                            "external_news_refresh": external_news_refresh,
+                        }
+                        if llm_payload else None
+                    ),
+                )
+                if llm_payload and evidence_set_id:
+                    ai_meta_svc._save_prediction_evidence_snapshot(
+                        db=db,
+                        symbol_key=ticker,
+                        asof=asof,
+                        cal_method=cal_method,
+                        evidence_set_id=evidence_set_id,
+                        evidence_items=list(llm_payload.get("evidence_items") or []),
+                    )
             succeeded.append(ticker)
+            if external_news_refresh.get("news_ingest") != "success" or external_news_refresh.get("llm_extract") != "success":
+                print(f"[WARN] pre-llm refresh {ticker}: {external_news_refresh}")
         except Exception as e:
             failed.append((ticker, str(e)))
             print(f"[FAIL] {ticker}: {e}")

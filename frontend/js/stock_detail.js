@@ -1384,6 +1384,7 @@ class StockDetailApp {
             const data = await res.json();
             this.state.aiPrediction = data;
             this.renderAiPrediction(data);
+            this.refreshAiAnalytics().catch(e => console.warn('[AI] refreshAiAnalytics failed:', e));
             this.renderManualScreeningSummary();
         } catch (e) {
             console.warn('[AI] fetchAiPrediction failed:', e);
@@ -1410,6 +1411,12 @@ class StockDetailApp {
         const thresholdNote = document.getElementById('tpAiThresholdNote');
         const thresholdPct  = document.getElementById('tpAiThresholdPct');
         const gateNoteEl    = document.getElementById('tpAiGateNote');
+        const newsPanelEl   = document.getElementById('tpAiNewsPanel');
+        const newsUsageEl   = document.getElementById('tpAiNewsUsage');
+        const realizedRowEl = document.getElementById('tpAiRealizedRow');
+        const realizedEl    = document.getElementById('tpAiRealized');
+        const errRowEl      = document.getElementById('tpAiErrorRow');
+        const errEl         = document.getElementById('tpAiProbError');
 
         if (!data || !data.has_prediction) {
             if (probEl)        { probEl.textContent = '--'; probEl.className = 'tp-value'; }
@@ -1426,6 +1433,10 @@ class StockDetailApp {
             if (dateEl)        dateEl.textContent = '--';
             if (gateNoteEl)    gateNoteEl.style.display = 'none';
             if (thresholdNote) thresholdNote.style.display = 'none';
+            if (newsPanelEl)   newsPanelEl.style.display = 'none';
+            if (newsUsageEl)   newsUsageEl.textContent = '--';
+            if (realizedRowEl) realizedRowEl.style.display = 'none';
+            if (errRowEl)      errRowEl.style.display = 'none';
             return;
         }
 
@@ -1481,6 +1492,147 @@ class StockDetailApp {
 
         // 莠域ｸｬ譌･
         if (dateEl) dateEl.textContent = data.asof || '--';
+        if (realizedRowEl && realizedEl) {
+            if (data.actual_up5 != null || data.actual_return_pct_h != null) {
+                const up5 = (data.actual_up5 === true) ? 'YES' : (data.actual_up5 === false ? 'NO' : 'n/a');
+                const ret = (data.actual_return_pct_h != null) ? `${Number(data.actual_return_pct_h).toFixed(2)}%` : '--';
+                realizedEl.textContent = `${up5} (${ret})`;
+                realizedRowEl.style.display = 'flex';
+            } else {
+                realizedRowEl.style.display = 'none';
+            }
+        }
+        if (errRowEl && errEl) {
+            if (data.prob_error_up5 != null || data.brier_component != null) {
+                const pe = (data.prob_error_up5 != null) ? Number(data.prob_error_up5).toFixed(3) : '--';
+                const br = (data.brier_component != null) ? Number(data.brier_component).toFixed(3) : '--';
+                errEl.textContent = `${pe} (brier=${br})`;
+                errRowEl.style.display = 'flex';
+            } else {
+                errRowEl.style.display = 'none';
+            }
+        }
+        this.renderAiPredictionNewsUsage(data);
+    }
+    async refreshAiAnalytics() {
+        const panelEl = document.getElementById('tpAiAnalyticsPanel');
+        const rankEl = document.getElementById('tpAiErrorRanking');
+        const srcEl = document.getElementById('tpAiSourceReport');
+        if (!panelEl || !rankEl || !srcEl) return;
+        if (!this.symbol) {
+            panelEl.style.display = 'none';
+            return;
+        }
+        const aiSymbol = this.getAiSymbolKey();
+        const [rankRes, srcRes] = await Promise.all([
+            fetch(`${this.API_BASE}/prediction/stock-ai/error-ranking?limit=20&min_realized=2`),
+            fetch(`${this.API_BASE}/prediction/stock-ai/source-report?symbol_key=${encodeURIComponent(aiSymbol)}&limit=12&min_obs=2&days_back=${365 * 3}`),
+        ]);
+        const rank = rankRes.ok ? await rankRes.json() : { items: [] };
+        const src = srcRes.ok ? await srcRes.json() : { items: [] };
+        panelEl.style.display = 'block';
+        this.renderAiSymbolErrorRanking(rank, aiSymbol);
+        this.renderAiSourceReport(src, aiSymbol);
+    }
+    renderAiSymbolErrorRanking(payload, currentSymbol) {
+        const el = document.getElementById('tpAiErrorRanking');
+        if (!el) return;
+        const items = Array.isArray(payload?.items) ? payload.items : [];
+        if (!items.length) {
+            el.innerHTML = '<div style="color:var(--text-muted);">Symbol Error Ranking: no realized records yet</div>';
+            return;
+        }
+        const top = items.slice(0, 8);
+        const current = items.find(x => String(x.symbol_key || '').toUpperCase() === String(currentSymbol || '').toUpperCase());
+        const rows = top.map((x, i) => {
+            const isCur = String(x.symbol_key || '').toUpperCase() === String(currentSymbol || '').toUpperCase();
+            return `<tr${isCur ? ' style="background:rgba(139,92,246,0.12);"' : ''}>
+              <td>${i + 1}</td>
+              <td>${x.symbol_key || ''}</td>
+              <td>${x.realized_count ?? 0}</td>
+              <td>${x.avg_brier != null ? Number(x.avg_brier).toFixed(3) : '--'}</td>
+              <td>${x.mae_prob != null ? Number(x.mae_prob).toFixed(3) : '--'}</td>
+              <td>${x.calibration_gap != null ? Number(x.calibration_gap).toFixed(3) : '--'}</td>
+            </tr>`;
+        }).join('');
+        el.innerHTML = `
+          <div style="margin-bottom:4px;"><b>Symbol Error Ranking</b>${current ? ` <span style="color:var(--text-muted);">| Current: ${current.symbol_key} brier=${current.avg_brier != null ? Number(current.avg_brier).toFixed(3) : '--'}</span>` : ''}</div>
+          <div style="overflow:auto; max-height:180px;">
+            <table style="width:100%; border-collapse:collapse; font-size:0.72rem;">
+              <thead><tr style="text-align:left; color:var(--text-muted);"><th>#</th><th>Symbol</th><th>N</th><th>Brier</th><th>MAE</th><th>CalGap</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+    }
+    renderAiSourceReport(payload, currentSymbol) {
+        const el = document.getElementById('tpAiSourceReport');
+        if (!el) return;
+        const items = Array.isArray(payload?.items) ? payload.items : [];
+        if (!items.length) {
+            el.innerHTML = '<div style="color:var(--text-muted);">News Source Contribution: no realized evidence rows yet</div>';
+            return;
+        }
+        const rows = items.slice(0, 8).map((x) => `
+          <tr>
+            <td>${x.source_domain || x.source_type || ''}</td>
+            <td>${x.mentions ?? 0}</td>
+            <td>${x.unique_runs ?? 0}</td>
+            <td>${x.avg_brier != null ? Number(x.avg_brier).toFixed(3) : '--'}</td>
+            <td>${x.avg_abs_prob_error != null ? Number(x.avg_abs_prob_error).toFixed(3) : '--'}</td>
+            <td>${x.calibration_gap != null ? Number(x.calibration_gap).toFixed(3) : '--'}</td>
+          </tr>
+        `).join('');
+        el.innerHTML = `
+          <div style="margin-bottom:4px;"><b>News Source Performance (Current Symbol)</b> <span style="color:var(--text-muted);">${currentSymbol || ''}</span></div>
+          <div style="overflow:auto; max-height:190px;">
+            <table style="width:100%; border-collapse:collapse; font-size:0.72rem;">
+              <thead><tr style="text-align:left; color:var(--text-muted);"><th>Source</th><th>Mentions</th><th>Runs</th><th>Brier</th><th>MAE</th><th>CalGap</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+          <div style="margin-top:4px; color:var(--text-muted);">CalGap = actual_up5_rate - avg_pred_prob (source appeared in evidence rows)</div>
+        `;
+    }
+    renderAiPredictionNewsUsage(data) {
+        const panelEl = document.getElementById('tpAiNewsPanel');
+        const el = document.getElementById('tpAiNewsUsage');
+        if (!panelEl || !el) return;
+
+        const refresh = data?.external_news_refresh || {};
+        const usage = data?.news_usage || {};
+        const queries = Array.isArray(refresh.queries) ? refresh.queries : [];
+        const docs = Array.isArray(usage.docs_sample) ? usage.docs_sample : [];
+        const docsBySource = usage.docs_by_source_type || {};
+        const docsBySymbol = usage.docs_by_symbol || {};
+        const usageError = usage.error || '';
+        const llmUsed = (data?.llm_features_used === true) ? 'Yes' : ((data?.llm_features_used === false) ? 'No' : 'n/a');
+        const featVer = data?.feature_set_version || 'n/a';
+        const fmtDt = (v) => {
+            if (!v) return '--';
+            const d = new Date(v);
+            if (Number.isNaN(d.getTime())) return String(v);
+            return d.toLocaleString('ja-JP');
+        };
+
+        panelEl.style.display = 'block';
+        el.innerHTML = `
+            <div><b>News Refresh:</b> ${refresh.attempted ? 'attempted' : 'n/a'} / ingest=${refresh.news_ingest || 'n/a'} / llm=${refresh.llm_extract || 'n/a'}</div>
+            <div style="margin-top:4px;"><b>LLM Features Used:</b> ${llmUsed} <span style="color:var(--text-muted);">(feature_set=${featVer})</span></div>
+            <div style="margin-top:4px;"><b>Docs Used (display, last ${usage.window_days || 7}d):</b> ${usage.docs_used_count ?? 0}</div>
+            <div style="margin-top:4px;"><b>Docs for As-Of (${usage.asof_date || (data?.asof || '--')}):</b> ${usage.docs_for_asof_count ?? refresh.docs_for_asof ?? 0}${usage.doc_limit ? ` / max ${usage.doc_limit}` : ''}</div>
+            <div style="margin-top:4px;"><b>Docs by Symbol:</b> <span style="color:var(--text-muted);">${JSON.stringify(docsBySymbol)}</span></div>
+            <div style="margin-top:4px;"><b>Docs by Source:</b> <span style="color:var(--text-muted);">${JSON.stringify(docsBySource)}</span></div>
+            ${usageError ? `<div style="margin-top:4px;color:#fca5a5;"><b>News usage error:</b> ${usageError}</div>` : ''}
+            <div style="margin-top:6px;"><b>Queries used for refresh:</b></div>
+            ${queries.length
+                ? `<ul style="margin:4px 0 0 16px; padding:0;">${queries.map(q => `<li><b>${q.symbol_key || ''}</b> [${q.label || 'news'}] : ${q.query || ''}</li>`).join('')}</ul>`
+                : '<div style="color:var(--text-muted); margin-top:2px;">No refresh query info</div>'}
+            <div style="margin-top:6px;"><b>Sample docs used:</b></div>
+            ${docs.length
+                ? `<ul style="margin:4px 0 0 16px; padding:0; max-height:180px; overflow:auto;">${docs.map(d => `<li>${fmtDt(d.published_at)} | <b>${d.symbol_key || ''}</b> | ${d.title || '(no title)'}</li>`).join('')}</ul>`
+                : '<div style="color:var(--text-muted); margin-top:2px;">No sample docs found</div>'}
+        `;
     }
     renderManualScreeningSummary() {
         const mount = document.getElementById('sdManualSummaryMount');
@@ -1681,11 +1833,27 @@ async function runAiPrediction() {
         const data = await res.json();
         window.app.state.aiPrediction = data;
         window.app.renderAiPrediction(data);
+        if (typeof window.app.refreshAiAnalytics === 'function') {
+            window.app.refreshAiAnalytics().catch(e => console.warn('[AI] refreshAiAnalytics failed:', e));
+        }
         if (typeof window.app.renderManualScreeningSummary === 'function') {
             window.app.renderManualScreeningSummary();
         }
         if (data && data.has_prediction) {
             if (window.UI) window.UI.showToast('AI prediction updated', 'success');
+            const refresh = data.external_news_refresh || {};
+            const newsIngestOk = refresh.news_ingest === 'success';
+            const llmExtractOk = refresh.llm_extract === 'success';
+            // Prefer action-time warning: user just pressed Run Now and can immediately
+            // understand whether external news was actually fetched/used.
+            if (refresh.attempted && (!newsIngestOk || !llmExtractOk)) {
+                const parts = [];
+                if (!newsIngestOk) parts.push('external news fetch failed');
+                if (!llmExtractOk) parts.push('news signal extraction failed');
+                if (window.UI) window.UI.showToast(`Warning: ${parts.join(' / ')} (prediction continued)`, 'warning');
+            } else if (data.llm_features_used === false) {
+                if (window.UI) window.UI.showToast('Warning: prediction updated without news features', 'warning');
+            }
         } else {
             const msg = (data && data.message) ? data.message : 'Prediction data not available';
             if (window.UI) window.UI.showToast(msg, 'error');
@@ -1699,6 +1867,33 @@ async function runAiPrediction() {
     }
 }
 
+async function backfillAiPredictionActuals() {
+    if (!window.app || !window.app.symbol) return;
+    const btn = document.getElementById('tpAiBackfillBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Backfilling...'; }
+    try {
+        const aiSymbol = (typeof window.app.getAiSymbolKey === 'function')
+            ? window.app.getAiSymbolKey()
+            : ((window.app.symbol || '').includes(':')
+                ? String(window.app.symbol).toUpperCase()
+                : `US:${String(window.app.symbol || '').toUpperCase()}`);
+        const url = `${window.app.API_BASE}/stock/${encodeURIComponent(aiSymbol)}/ai-prediction/backfill-actuals?horizon_days=10&limit=500`;
+        const res = await fetch(url, { method: 'POST' });
+        if (!res.ok) throw new Error(await getApiErrorMessage(res));
+        const data = await res.json();
+        if (window.UI) window.UI.showToast(`Backfill completed: ${data?.updated ?? 0} updated`, 'success');
+        if (typeof window.app.fetchAiPrediction === 'function') {
+            await window.app.fetchAiPrediction();
+        }
+    } catch (e) {
+        console.error('[AI] backfillAiPredictionActuals failed:', e);
+        if (window.UI) window.UI.showToast('Backfill failed: ' + e.message, 'error');
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Backfill'; }
+    }
+}
+
 // 繧ｰ繝ｭ繝ｼ繝舌Ν縺ｫ譏守､ｺ繧ｨ繧ｯ繧ｹ繝昴・繝茨ｼ・efer 隱ｭ縺ｿ霎ｼ縺ｿ縺ｧ繧・onclick 縺九ｉ蜿ら・蜿ｯ閭ｽ縺ｫ縺吶ｋ・・
 window.runAiPrediction = runAiPrediction;
+window.backfillAiPredictionActuals = backfillAiPredictionActuals;
 

@@ -1077,10 +1077,16 @@
  <div class="tp-section" id="tpAiSection" style="border-left-color: #8b5cf6;">
  <div class="tp-section-title" style="display: flex; justify-content: space-between; align-items: center;">
  <span> AI Prediction</span>
+ <div style="display:flex; gap:6px;">
+ <button class="btn btn-ghost btn-sm" id="tpAiBackfillBtn" onclick="backfillAiPredictionActuals()"
+ style="font-size: 0.7rem; padding: 4px 8px;">
+ Backfill
+ </button>
  <button class="btn btn-ghost btn-sm" id="tpAiRunBtn" onclick="runAiPrediction()"
  style="font-size: 0.7rem; padding: 4px 10px;">
  Run Now
  </button>
+ </div>
  </div>
 
  <div class="tp-row">
@@ -1105,9 +1111,34 @@
  <span class="tp-label">予測日</span>
  <span class="tp-value" id="tpAiDate" style="font-size: 0.8rem;">--</span>
  </div>
+ <div class="tp-row" id="tpAiRealizedRow" style="display:none;">
+ <span class="tp-label">10営業日後実績</span>
+ <span class="tp-value" id="tpAiRealized">--</span>
+ </div>
+ <div class="tp-row" id="tpAiErrorRow" style="display:none;">
+ <span class="tp-label">予測誤差 (prob)</span>
+ <span class="tp-value" id="tpAiProbError">--</span>
+ </div>
 
  <div id="tpAiLoading" style="display: none; text-align: center; padding: 12px; color: var(--text-muted);">
  <span>Computing prediction...</span>
+ </div>
+
+ <div id="tpAiNewsPanel" style="margin-top:10px; display:none; border-top:1px solid rgba(255,255,255,0.08); padding-top:10px;">
+ <div style="font-size:0.72rem; font-weight:700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom:6px;">
+ News Used / Queries
+ </div>
+ <div id="tpAiNewsUsage" style="font-size:0.74rem; line-height:1.45; color: var(--text); word-break: break-word; overflow-wrap: anywhere;">
+ --
+ </div>
+ </div>
+
+ <div id="tpAiAnalyticsPanel" style="margin-top:10px; display:none; border-top:1px solid rgba(255,255,255,0.08); padding-top:10px;">
+ <div style="font-size:0.72rem; font-weight:700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom:6px;">
+ Error Analytics
+ </div>
+ <div id="tpAiErrorRanking" style="font-size:0.74rem; line-height:1.45; color: var(--text); word-break: break-word; overflow-wrap: anywhere; margin-bottom:8px;">--</div>
+ <div id="tpAiSourceReport" style="font-size:0.74rem; line-height:1.45; color: var(--text); word-break: break-word; overflow-wrap: anywhere;">--</div>
  </div>
  </div>
 

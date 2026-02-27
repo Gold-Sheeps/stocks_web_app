@@ -36,6 +36,60 @@ class PredictionService:
         self._meta_origins: Dict[str, str] = {}
         self._db_freshness_by_symbol: Dict[str, Dict[str, Any]] = {}
 
+    def _normalize_optional_feature_map(self, extra_features: Optional[Dict[str, Any]]) -> Dict[str, float]:
+        out: Dict[str, float] = {}
+        for key, value in (extra_features or {}).items():
+            if key is None:
+                continue
+            name = str(key).strip()
+            if not name:
+                continue
+            try:
+                out[name] = float(value)
+            except Exception:
+                continue
+        return out
+
+    def merge_optional_inference_features(
+        self,
+        x_df: pd.DataFrame,
+        model_feature_columns: Optional[List[str]] = None,
+        extra_features: Optional[Dict[str, Any]] = None,
+    ) -> Tuple[pd.DataFrame, Dict[str, Any]]:
+        """
+        Best-effort inference-time feature fusion for external features (e.g., LLM signals).
+        If supplied features are absent from model columns, they are ignored without error.
+        """
+        normalized = self._normalize_optional_feature_map(extra_features)
+        if x_df is None or x_df.empty:
+            return x_df, self.build_feature_usage_breakdown([], normalized)
+        out = x_df.copy()
+        for col, val in normalized.items():
+            out[col] = val
+        if model_feature_columns:
+            out = out.reindex(columns=list(model_feature_columns), fill_value=0.0).astype(float)
+        usage = self.build_feature_usage_breakdown(list(out.columns), normalized)
+        return out, usage
+
+    def build_feature_usage_breakdown(
+        self,
+        model_feature_columns: List[str],
+        extra_features: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        normalized = self._normalize_optional_feature_map(extra_features)
+        model_cols = list(model_feature_columns or [])
+        supplied = sorted(list(normalized.keys()))
+        applied = sorted([c for c in supplied if c in model_cols])
+        ignored = sorted([c for c in supplied if c not in model_cols])
+        return {
+            "base_feature_count": int(len(model_cols)),
+            "extra_feature_count_supplied": int(len(supplied)),
+            "extra_feature_count_applied": int(len(applied)),
+            "extra_feature_count_ignored": int(len(ignored)),
+            "extra_feature_columns_applied": applied,
+            "extra_feature_columns_ignored": ignored,
+        }
+
     def _load_ml_dependencies(self) -> None:
         try:
             import xgboost as xgb  # type: ignore
@@ -82,6 +136,7 @@ class PredictionService:
         relative_symbols: Optional[List[str]] = None,
         sector_symbols: Optional[List[str]] = None,
         sample_csv_path: Optional[str] = None,
+        extra_features: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         self._reset_data_context()
         cfg = PredictorConfig(
@@ -103,7 +158,7 @@ class PredictionService:
             sector_symbols=sector_symbols,
         )
         prepared = self._prepare_dataset(feat, as_of, cfg)
-        return self._fit_predict(
+        result = self._fit_predict(
             prepared,
             cfg,
             as_of,
@@ -113,6 +168,14 @@ class PredictionService:
             t_down=t_down,
             t_up=t_up,
         )
+        if isinstance(result, dict):
+            meta = result.get("meta")
+            if isinstance(meta, dict):
+                meta["feature_breakdown"] = self.build_feature_usage_breakdown(
+                    prepared.get("feature_cols", []),
+                    extra_features=extra_features,
+                )
+        return result
 
     def backtest(
         self,

@@ -120,3 +120,21 @@ async def run_ai_prediction(symbol: str):
     except Exception as exc:
         return _build_ai_prediction_error_response(symbol, exc)
 
+
+@router.post("/{symbol}/ai-prediction/backfill-actuals")
+async def backfill_ai_prediction_actuals(symbol: str, horizon_days: int = 10, limit: int = 500):
+    symbol_key = symbol.upper()
+    if not _SYMBOL_KEY_PATTERN.match(symbol_key):
+        return JSONResponse(
+            status_code=400,
+            content={
+                "error": "invalid_input",
+                "message": "Invalid ticker format. Expected format like US:AAPL",
+                "symbol": symbol_key,
+            },
+        )
+    service = AiPredictionService()
+    result = service.backfill_actuals(symbol_key=symbol_key, horizon_days=horizon_days, limit=limit)
+    status = 200 if result.get("ok") else 500
+    return JSONResponse(status_code=status, content=result)
+

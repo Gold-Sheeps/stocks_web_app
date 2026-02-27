@@ -15,8 +15,10 @@ from __future__ import annotations
 
 import argparse
 import os
+import subprocess
 import sys
 import time
+from datetime import date
 from pathlib import Path
 
 # Resolve repo root (backend/scripts -> backend -> repo_root)
@@ -24,6 +26,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Add src/ to sys.path so we can import update_fundamentals_eps
 sys.path.insert(0, str(REPO_ROOT / "src"))
+sys.path.insert(0, str(REPO_ROOT / "backend"))
 
 # yfinance timezone cache fix before yfinance import
 _YF_CACHE_DIR = REPO_ROOT / ".cache" / "yfinance"
@@ -41,6 +44,8 @@ from update_fundamentals_eps import (
     upsert_fundamental,
     upsert_ratios_latest,
 )
+from app.services.rag_retrieval_service import RagRetrievalService
+from app.services.rag_fundamentals_fill_service import RagFundamentalsFillService
 
 DB_CONNINFO = "host=localhost port=5432 dbname=postgres user=postgres password=test"
 
@@ -96,6 +101,52 @@ def parse_explicit_symbols(symbols_str: str) -> list[str]:
         if raw and is_equity_symbol(raw):
             result.append(raw)
     return result
+
+
+def _best_effort_rag_fill_for_symbol(raw_symbol: str, asof: date) -> dict:
+    symbol_key = f"US:{raw_symbol.upper()}"
+    out = {"attempted": True, "symbol_key": symbol_key, "news_ingest": "skipped", "fill_status": "skipped"}
+    try:
+        script_path = REPO_ROOT / "backend" / "scripts" / "ingest_external_news_rss_backfill.py"
+        if script_path.exists():
+            proc = subprocess.run(
+                [
+                    sys.executable,
+                    str(script_path),
+                    "--asof",
+                    asof.isoformat(),
+                    "--months-back",
+                    "12",
+                    "--symbol",
+                    symbol_key,
+                    "--timeout",
+                    "8",
+                ],
+                cwd=str(REPO_ROOT),
+                capture_output=True,
+                text=True,
+                timeout=20,
+            )
+            out["news_ingest"] = "success" if proc.returncode == 0 else "warning"
+    except Exception as e:
+        out["news_ingest"] = "warning"
+        out["news_ingest_error"] = f"{type(e).__name__}: {e}"
+
+    try:
+        docs = RagRetrievalService().get_documents_for_asof(symbol_key, asof=asof, limit=20) or []
+        out["docs_for_asof"] = len(docs)
+        if not docs:
+            return out
+        fill = RagFundamentalsFillService().fill_missing_from_documents(symbol_key=symbol_key, asof=asof, documents=docs)
+        out["fill_status"] = "success"
+        out["updated_fields"] = list(fill.get("updated_fields") or [])
+        out["row_found"] = bool(fill.get("row_found"))
+        if fill.get("candidates"):
+            out["candidate_fields"] = sorted(list((fill.get("candidates") or {}).keys()))
+    except Exception as e:
+        out["fill_status"] = "warning"
+        out["fill_error"] = f"{type(e).__name__}: {e}"
+    return out
 
 
 def main() -> int:
@@ -189,6 +240,13 @@ def main() -> int:
                         f"latest={latest['period_end_date']} "
                         f"eps={latest['eps']} revenue={latest['revenue']}"
                     )
+
+                # RAG fallback fill for Yahoo-missed/null fields (best-effort, NULL-only updates).
+                rag_fill = _best_effort_rag_fill_for_symbol(raw_symbol, asof=date.today())
+                if rag_fill.get("fill_status") == "success" and rag_fill.get("updated_fields"):
+                    print(f"[{idx}/{total}] {raw_symbol}: RAG fundamentals filled {rag_fill['updated_fields']}")
+                elif rag_fill.get("fill_status") == "warning" or rag_fill.get("news_ingest") == "warning":
+                    print(f"[{idx}/{total}] {raw_symbol}: RAG fallback warning {rag_fill}")
 
             except Exception as e:
                 conn.rollback()

@@ -231,7 +231,52 @@
  }
 
  .logs-panel:hover {
- border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
+ }
+
+ .freshness-panel {
+  background: linear-gradient(135deg,
+  rgba(16, 185, 129, 0.08) 0%,
+  rgba(16, 185, 129, 0.02) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 24px;
+ }
+
+ .freshness-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+ }
+
+ .freshness-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+ }
+
+ .freshness-card-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+ }
+
+ .freshness-card-value {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  line-height: 1.35;
+ }
+
+ .freshness-card-sub {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
  }
 
  .panel-header {
@@ -500,13 +545,35 @@
  Data Update
  </div>
  <div class="last-run-info">
- <span class="last-run-label">Last Run:</span>
- <span id="lastStats" class="last-run-value">-</span>
+  <span class="last-run-label">Last Run:</span>
+  <span id="lastStats" class="last-run-value">-</span>
  </div>
  </div>
 
- <!-- Update Settings -->
- <div class="settings-panel fade-in stagger-1">
+  <!-- Data Freshness Summary -->
+  <div class="freshness-panel fade-in stagger-1">
+   <div class="panel-header" style="margin-bottom: 14px;">
+    <div class="panel-title">
+     <span class="badge" style="background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.25);">Freshness</span>
+     Latest Data Snapshot
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="fetchDataFreshness()">
+     Refresh
+    </button>
+   </div>
+   <div id="freshnessSummaryNote" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+    Loading latest dataset timestamps...
+   </div>
+   <div id="freshnessGrid" class="freshness-grid">
+    <div class="freshness-card">
+     <div class="freshness-card-title">Loading</div>
+     <div class="freshness-card-value">Please wait...</div>
+    </div>
+   </div>
+  </div>
+
+  <!-- Update Settings -->
+  <div class="settings-panel fade-in stagger-1">
  <div class="panel-header">
  <div class="panel-title">
  <span class="badge badge-primary">Settings</span> Update Settings
@@ -528,6 +595,15 @@
  <button id="updateBtn" class="execute-btn">
  Execute Update
  </button>
+ <div id="updateProgressWrap" style="display:none; margin-top:10px;">
+ <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted); margin-bottom:6px;">
+ <span id="updateProgressLabel">Waiting...</span>
+ <span id="updateProgressPct">0%</span>
+ </div>
+ <div style="height:8px; background:rgba(255,255,255,0.08); border-radius:999px; overflow:hidden;">
+ <div id="updateProgressBar" style="height:100%; width:0%; background:linear-gradient(90deg, var(--primary), #22c55e); transition:width .25s ease;"></div>
+ </div>
+ </div>
  </div>
 
  <div class="input-group">
@@ -637,13 +713,150 @@
  </div>
  </div>
 
- <script src="js/config.js"></script>
- <script src="js/common.js"></script>
- <script>
- // Backend Integration
- async function fetchLogs() {
- try {
- const res = await fetch(`${CONFIG.API_BASE}/system/logs?limit=20`);
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+  let fastLogPollTimer = null;
+  let isDataUpdateRunning = false;
+  let currentUpdateJobId = null;
+
+  function startFastLogPolling() {
+  if (fastLogPollTimer) return;
+  fastLogPollTimer = setInterval(() => {
+  fetchLogs();
+  if (isDataUpdateRunning) {
+  fetchDataFreshness();
+  fetchUpdateProgress();
+  }
+  }, 4000);
+  }
+
+  function stopFastLogPolling() {
+  if (!fastLogPollTimer) return;
+  clearInterval(fastLogPollTimer);
+  fastLogPollTimer = null;
+  }
+
+  // Backend Integration
+  function formatDateTimeLocal(value) {
+  if (!value) return '--';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return String(value);
+  return d.toLocaleString('ja-JP', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit'
+  });
+  }
+
+ function renderFreshnessCard(title, primary, secondary) {
+  return `
+  <div class="freshness-card">
+   <div class="freshness-card-title">${title}</div>
+   <div class="freshness-card-value">${primary || '--'}</div>
+   ${secondary ? `<div class="freshness-card-sub">${secondary}</div>` : ''}
+  </div>
+  `;
+  }
+
+  function setUpdateProgressUI(pct, label) {
+  const wrap = document.getElementById('updateProgressWrap');
+  const bar = document.getElementById('updateProgressBar');
+  const p = document.getElementById('updateProgressPct');
+  const l = document.getElementById('updateProgressLabel');
+  if (!wrap || !bar || !p || !l) return;
+  wrap.style.display = 'block';
+  const safePct = Math.max(0, Math.min(100, Number(pct || 0)));
+  bar.style.width = `${safePct}%`;
+  p.textContent = `${safePct}%`;
+  l.textContent = label || 'Running...';
+  }
+
+  async function fetchUpdateProgress() {
+  if (!currentUpdateJobId) return null;
+  const res = await fetch(`${CONFIG.API_BASE}/system/update-data/status/${currentUpdateJobId}`);
+  if (!res.ok) throw new Error(`status API ${res.status}`);
+  const st = await res.json();
+  if (st.status === 'not_found') return st;
+  const step = st.current_step ? `Running: ${st.current_step}` : (st.status === 'running' ? 'Running...' : st.status);
+  setUpdateProgressUI(st.progress_pct || 0, step);
+  return st;
+  }
+
+  async function fetchDataFreshness() {
+  const grid = document.getElementById('freshnessGrid');
+  const note = document.getElementById('freshnessSummaryNote');
+  try {
+  const res = await fetch(`${CONFIG.API_BASE}/system/data-freshness`);
+  if (!res.ok) throw new Error(`API ${res.status}`);
+  const data = await res.json();
+  const ds = data.datasets || {};
+  const pf = data.price_freshness_active || {};
+
+  const expected = pf.expected_latest_date || '--';
+  const latestMax = pf.latest_date_max || ds?.price_daily?.latest_trading_date || '--';
+  const stale = Number(pf.symbols_stale || 0);
+  const total = Number(pf.symbols_total || 0);
+  const statusText = (pf.error)
+  ? `Freshness check error: ${pf.error}`
+  : `Expected market date: ${expected} | Latest price_daily: ${latestMax} | Active symbols stale: ${stale}/${total}`;
+  note.textContent = statusText;
+  note.style.color = pf.error ? 'var(--danger)' : (stale > 0 ? 'var(--warning)' : 'var(--success)');
+
+  grid.innerHTML = [
+  renderFreshnessCard(
+  'Price Daily',
+  ds?.price_daily?.latest_trading_date || '--',
+  `updated_at: ${formatDateTimeLocal(ds?.price_daily?.latest_updated_at)}`
+  ),
+  renderFreshnessCard(
+  'Indicator Daily',
+  ds?.indicator_daily?.latest_trading_date || '--',
+  `updated_at: ${formatDateTimeLocal(ds?.indicator_daily?.latest_updated_at)}`
+  ),
+  renderFreshnessCard(
+  'RS Ratings',
+  formatDateTimeLocal(ds?.rs_ratings?.latest_updated_at),
+  ''
+  ),
+  renderFreshnessCard(
+  'Sector Rotation',
+  ds?.sector_rotation?.latest_trading_date || '--',
+  `updated_at: ${formatDateTimeLocal(ds?.sector_rotation?.latest_updated_at)}`
+  ),
+  renderFreshnessCard(
+  'Market Environment',
+  ds?.market_environment?.latest_trading_date || '--',
+  `updated_at: ${formatDateTimeLocal(ds?.market_environment?.latest_updated_at)}`
+  ),
+  renderFreshnessCard(
+  'Fundamentals',
+  formatDateTimeLocal(ds?.fundamentals?.latest_updated_at),
+  ''
+  ),
+  renderFreshnessCard(
+  'AI Predictions',
+  ds?.ai_predictions?.latest_asof || '--',
+  `updated_at: ${formatDateTimeLocal(ds?.ai_predictions?.latest_updated_at)}`
+  ),
+  renderFreshnessCard(
+  'System Jobs',
+  `DataUpdate: ${formatDateTimeLocal(ds?.system_logs?.last_data_update_success_at)}`,
+  `AI batch: ${formatDateTimeLocal(ds?.system_logs?.last_ai_batch_success_at)}`
+  )
+  ].join('');
+  } catch (e) {
+  note.textContent = `Failed to load freshness snapshot: ${e.message}`;
+  note.style.color = 'var(--danger)';
+  grid.innerHTML = renderFreshnessCard('Error', e.message, 'Check backend /system/data-freshness');
+  }
+  }
+
+  async function fetchLogs() {
+  try {
+  const res = await fetch(`${CONFIG.API_BASE}/system/logs?limit=20`);
  if (!res.ok) return;
  const logs = await res.json();
  renderLogs(logs);
@@ -681,16 +894,16 @@
  second: '2-digit'
  });
 
- return `
- <div class="log-entry">
- <div class="log-timestamp">[${timestamp}]</div>
- <div class="log-status ${statusClass}">${status.toUpperCase()}</div>
- <div class="log-message">
- <div class="log-message-text">${log.message || ''}</div>
- ${log.details ? `<div class="log-details">${typeof log.details === 'string' ? log.details : JSON.stringify(log.details, null, 2)}</div>` : ''}
- </div>
- </div>
- `;
+  return `
+  <div class="log-entry">
+  <div class="log-timestamp">[${timestamp}]</div>
+  <div class="log-status ${statusClass}">${status.toUpperCase()}</div>
+  <div class="log-message">
+  <div class="log-message-text">${log.details?.step ? `[${log.details.step}] ` : ''}${log.message || ''}</div>
+  ${log.details ? `<div class="log-details">${typeof log.details === 'string' ? log.details : JSON.stringify(log.details, null, 2)}</div>` : ''}
+  </div>
+  </div>
+  `;
  }).join('');
 
  // Keep viewport at top so newest entries are visible.
@@ -717,8 +930,13 @@
  return;
  }
 
- btn.disabled = true;
- btn.innerHTML = '<span class="spinner"></span> <span style="margin-left: 8px;">Updating...</span>';
+  btn.disabled = true;
+  isDataUpdateRunning = true;
+  currentUpdateJobId = null;
+  startFastLogPolling();
+  fetchLogs();
+  btn.innerHTML = '<span class="spinner"></span> <span style="margin-left: 8px;">Updating...</span>';
+  setUpdateProgressUI(1, 'Starting job...');
 
  // Show starting log
  document.getElementById('logContainer').innerHTML = `
@@ -739,7 +957,7 @@
  `;
 
  try {
- const res = await fetch(`${CONFIG.API_BASE}/system/update-data`, {
+ const res = await fetch(`${CONFIG.API_BASE}/system/update-data/start`, {
  method: 'POST',
  headers: { 'Content-Type': 'application/json' },
  body: JSON.stringify({
@@ -747,27 +965,73 @@
  targets: targets
  })
  });
-
- const result = await res.json();
-
- if (result.status === 'success') {
- 
- UI.showToast(`Update Complete! Processed: ${result.processed}`, 'success');
- document.getElementById('lastStats').textContent = `Success (${result.processed})`;
+ if (res.status === 404) {
+  // Backward compatibility: older backend without async endpoints
+  const legacyRes = await fetch(`${CONFIG.API_BASE}/system/update-data`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+  range_days: parseInt(range),
+  targets: targets
+  })
+  });
+  const legacy = await legacyRes.json();
+  if (legacy.status === 'success') {
+  UI.showToast(`Update Complete! Processed: ${legacy.processed}`, 'success');
+  document.getElementById('lastStats').textContent = `Success (${legacy.processed})`;
+  setUpdateProgressUI(100, 'Completed (legacy mode)');
+  } else {
+  UI.showToast(`Update Failed: ${legacy.message || 'unknown error'}`, 'error');
+  document.getElementById('lastStats').textContent = 'Failed';
+  setUpdateProgressUI(100, 'Failed (legacy mode)');
+  }
  } else {
- UI.showToast(`Update Failed: ${result.message}`, 'error');
- document.getElementById('lastStats').textContent = 'Failed';
+  const startResult = await res.json();
+  if (startResult.status !== 'started' && startResult.status !== 'already_running') {
+  throw new Error(startResult.message || 'Failed to start update job');
+  }
+  currentUpdateJobId = startResult.job_id;
+  setUpdateProgressUI(2, `Job started: ${currentUpdateJobId}`);
+
+  let finalStatus = null;
+  while (isDataUpdateRunning && currentUpdateJobId) {
+  const st = await fetchUpdateProgress();
+  if (!st) break;
+  if (st.status === 'completed' || st.status === 'failed') {
+  finalStatus = st;
+  break;
+  }
+  await new Promise(r => setTimeout(r, 3000));
+  }
+
+  if (finalStatus && finalStatus.status === 'completed') {
+  UI.showToast('Update Complete!', 'success');
+  document.getElementById('lastStats').textContent = 'Success';
+  setUpdateProgressUI(100, 'Completed');
+  } else if (finalStatus && finalStatus.status === 'failed') {
+  const msg = finalStatus?.result?.message || 'One or more steps failed';
+  UI.showToast(`Update Failed: ${msg}`, 'error');
+  document.getElementById('lastStats').textContent = 'Failed';
+  setUpdateProgressUI(100, 'Failed');
+  } else {
+  UI.showToast('Update status is unknown. Check logs.', 'warning');
+  document.getElementById('lastStats').textContent = 'Unknown';
+  }
  }
 
  } catch (e) {
  UI.showToast(`Error: ${e.message}`, 'error');
  document.getElementById('lastStats').textContent = 'Error';
- } finally {
- btn.disabled = false;
- btn.innerHTML = 'Execute Update';
- fetchLogs(); // Refresh logs
- }
- });
+  } finally {
+  isDataUpdateRunning = false;
+  stopFastLogPolling();
+  btn.disabled = false;
+  btn.innerHTML = 'Execute Update';
+  currentUpdateJobId = null;
+  fetchLogs(); // Refresh logs
+  fetchDataFreshness();
+  }
+  });
 
  // === AI Prediction Batch ===
 
@@ -868,21 +1132,25 @@
  statusMsg.style.color = 'var(--danger)';
  statusMsg.textContent = ` Error: ${e.message}`;
  if (typeof UI !== 'undefined') UI.showToast(`Error: ${e.message}`, 'error');
- } finally {
- btn.disabled = false;
- btn.innerHTML = ' Run AI Prediction (500 tickers)';
- fetchLogs();
- checkAiPredictionStatus();
- }
- });
+  } finally {
+  btn.disabled = false;
+  btn.innerHTML = ' Run AI Prediction (500 tickers)';
+  fetchLogs();
+  checkAiPredictionStatus();
+  fetchDataFreshness();
+  }
+  });
 
- // Initial status check
- checkAiPredictionStatus();
+  // Initial status check
+  checkAiPredictionStatus();
+  fetchDataFreshness();
 
- // Initial log fetch
- fetchLogs();
- // Poll logs every 5 minutes
- setInterval(fetchLogs, 300000);
+  // Initial log fetch
+  fetchLogs();
+  // Poll logs every 5 minutes
+  setInterval(fetchLogs, 300000);
+  // Refresh freshness snapshot periodically
+  setInterval(fetchDataFreshness, 300000);
 
  </script>
 </body>

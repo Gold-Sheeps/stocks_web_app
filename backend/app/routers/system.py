@@ -1,16 +1,23 @@
 
-from fastapi import APIRouter, Header, HTTPException, Body
+from fastapi import APIRouter, Header, HTTPException, Body, BackgroundTasks
 from typing import List, Optional
 from datetime import datetime
 from pathlib import Path
 from pydantic import BaseModel
 import sys
 import os
+import time
+import threading
+import uuid
+import json
 
 from app.services.data_service import DataService
+from app.services.freshness_service import FreshnessService
 from app.db.database import Database
 
 router = APIRouter(prefix="/system", tags=["System"])
+_UPDATE_JOBS: dict[str, dict] = {}
+_UPDATE_JOBS_LOCK = threading.Lock()
 
 class DataUpdateRequest(BaseModel):
     range_days: int = 14
@@ -24,6 +31,134 @@ class DataUpdateRequest(BaseModel):
             }
         }
 
+
+def _plan_update_steps(targets: List[str]) -> list[str]:
+    selected = set(targets or [])
+    steps = ["main_refresh"]
+    if "Sector" in selected:
+        steps.append("sector_rotation")
+    if "Fundamentals" in selected:
+        steps.append("fetch_fundamentals_watchlist_portfolio")
+    if "MarketEnvironment" in selected:
+        steps.append("fetch_market_environment")
+    if ("AI" in selected) or ("AI Prediction" in selected):
+        steps.append("llm_signal_extraction_batch")
+        steps.append("ai_prediction_batch")
+    return steps
+
+
+def _read_job_logs(job_id: str) -> list[dict]:
+    db = Database()
+    db.connect()
+    try:
+        rows = db.execute_query(
+            """
+            SELECT status, message, details, created_at
+            FROM system_logs
+            WHERE job_name = 'Data Update'
+              AND details->>'job_id' = %s
+            ORDER BY created_at ASC
+            """,
+            (job_id,),
+        )
+    finally:
+        db.disconnect()
+    logs = []
+    for r in rows or []:
+        details = r[2]
+        if isinstance(details, str):
+            try:
+                details = json.loads(details)
+            except Exception:
+                details = {}
+        logs.append(
+            {
+                "status": str(r[0] or "").upper(),
+                "message": r[1],
+                "details": details if isinstance(details, dict) else {},
+                "created_at": r[3],
+            }
+        )
+    return logs
+
+
+def _compute_job_progress(job_id: str) -> dict:
+    with _UPDATE_JOBS_LOCK:
+        meta = dict(_UPDATE_JOBS.get(job_id) or {})
+
+    if not meta:
+        return {"status": "not_found", "job_id": job_id}
+
+    planned_steps: list[str] = list(meta.get("planned_steps") or [])
+    step_status = {s: "pending" for s in planned_steps}
+    step_messages = {s: None for s in planned_steps}
+    logs = _read_job_logs(job_id)
+
+    terminal = None
+    for e in logs:
+        details = e.get("details") or {}
+        step = details.get("step")
+        status = e.get("status")
+        if step in step_status:
+            if status == "RUNNING":
+                step_status[step] = "running"
+            elif status == "SUCCESS":
+                step_status[step] = "success"
+            elif status in ("FAILED", "ERROR"):
+                step_status[step] = "failed"
+            step_messages[step] = e.get("message")
+        elif step is None and status in ("SUCCESS", "FAILED", "ERROR"):
+            terminal = status
+
+    done_count = sum(1 for s in step_status.values() if s in ("success", "failed"))
+    total = len(planned_steps) or 1
+    progress_pct = int((done_count / total) * 100)
+    running_steps = [k for k, v in step_status.items() if v == "running"]
+    current_step = running_steps[-1] if running_steps else None
+
+    job_status = meta.get("status", "running")
+    if terminal in ("SUCCESS", "FAILED", "ERROR"):
+        job_status = "completed" if terminal == "SUCCESS" else "failed"
+        progress_pct = 100
+
+    if job_status in ("completed", "failed"):
+        progress_pct = 100
+
+    return {
+        "status": job_status,
+        "job_id": job_id,
+        "range_days": meta.get("range_days"),
+        "targets": meta.get("targets", []),
+        "started_at": meta.get("started_at"),
+        "finished_at": meta.get("finished_at"),
+        "current_step": current_step,
+        "progress_pct": progress_pct,
+        "steps": [
+            {"step": s, "status": step_status[s], "message": step_messages[s]}
+            for s in planned_steps
+        ],
+        "result": meta.get("result"),
+    }
+
+
+def _run_update_job(job_id: str, range_days: int, targets: List[str]) -> None:
+    service = DataService()
+    try:
+        result = service.update_all_data(range_days, targets, job_id=job_id)
+        with _UPDATE_JOBS_LOCK:
+            entry = _UPDATE_JOBS.get(job_id, {})
+            entry["status"] = "completed" if result.get("status") == "success" else "failed"
+            entry["finished_at"] = datetime.utcnow().isoformat() + "Z"
+            entry["result"] = result
+            _UPDATE_JOBS[job_id] = entry
+    except Exception as e:
+        with _UPDATE_JOBS_LOCK:
+            entry = _UPDATE_JOBS.get(job_id, {})
+            entry["status"] = "failed"
+            entry["finished_at"] = datetime.utcnow().isoformat() + "Z"
+            entry["result"] = {"status": "error", "message": str(e)}
+            _UPDATE_JOBS[job_id] = entry
+
 @router.post("/update-data")
 def update_data(request: DataUpdateRequest):
     """データ更新を実行"""
@@ -33,6 +168,49 @@ def update_data(request: DataUpdateRequest):
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/update-data/start")
+def start_update_data(request: DataUpdateRequest, background_tasks: BackgroundTasks):
+    """Start Data Update as background job and return job_id immediately."""
+    with _UPDATE_JOBS_LOCK:
+        running = [
+            j for j in _UPDATE_JOBS.values()
+            if j.get("status") == "running"
+        ]
+        if running:
+            return {
+                "status": "already_running",
+                "message": "Another Data Update job is running",
+                "job_id": running[-1].get("job_id"),
+            }
+
+    job_id = f"update_{int(time.time())}_{uuid.uuid4().hex[:8]}"
+    planned_steps = _plan_update_steps(request.targets)
+    with _UPDATE_JOBS_LOCK:
+        _UPDATE_JOBS[job_id] = {
+            "job_id": job_id,
+            "status": "running",
+            "started_at": datetime.utcnow().isoformat() + "Z",
+            "finished_at": None,
+            "range_days": int(request.range_days),
+            "targets": list(request.targets or []),
+            "planned_steps": planned_steps,
+            "result": None,
+        }
+
+    background_tasks.add_task(_run_update_job, job_id, int(request.range_days), list(request.targets or []))
+    return {
+        "status": "started",
+        "job_id": job_id,
+        "planned_steps": planned_steps,
+    }
+
+
+@router.get("/update-data/status/{job_id}")
+def get_update_data_status(job_id: str):
+    """Get current progress for a Data Update job."""
+    return _compute_job_progress(job_id)
 
 @router.get("/logs")
 def get_system_logs(limit: int = 50):
@@ -72,6 +250,104 @@ def _table_exists(db, table_name: str) -> bool:
         return bool(rows)
     except Exception:
         return False
+
+
+def _safe_scalar(db: Database, query: str):
+    """Run a scalar query and return the first column, swallowing errors."""
+    try:
+        rows = db.execute_query(query)
+        if rows and rows[0]:
+            return rows[0][0]
+    except Exception:
+        return None
+    return None
+
+
+def _to_iso(value):
+    if value is None:
+        return None
+    try:
+        return value.isoformat()
+    except Exception:
+        return str(value)
+
+
+@router.get("/data-freshness")
+def get_data_freshness():
+    """Return latest dates/timestamps for key datasets used by the app."""
+    db = Database()
+    db.connect()
+    try:
+        datasets = {
+            "price_daily": {
+                "latest_trading_date": _to_iso(_safe_scalar(db, "SELECT MAX(trading_date) FROM price_daily")),
+                "latest_updated_at": _to_iso(_safe_scalar(db, "SELECT MAX(updated_at) FROM price_daily")),
+            },
+            "indicator_daily": {
+                "latest_trading_date": _to_iso(_safe_scalar(db, "SELECT MAX(trading_date) FROM indicator_daily")),
+                "latest_updated_at": _to_iso(_safe_scalar(db, "SELECT MAX(updated_at) FROM indicator_daily")),
+            },
+            "rs_ratings": {
+                "latest_updated_at": _to_iso(_safe_scalar(db, "SELECT MAX(updated_at) FROM rs_ratings")),
+            },
+            "sector_rotation": {
+                "latest_trading_date": _to_iso(_safe_scalar(db, "SELECT MAX(trading_date) FROM sector_rotation")),
+                "latest_updated_at": _to_iso(_safe_scalar(db, "SELECT MAX(updated_at) FROM sector_rotation")),
+            },
+            "market_environment": {
+                "latest_trading_date": _to_iso(
+                    _safe_scalar(db, "SELECT MAX(trading_date) FROM market_environment")
+                ) or _to_iso(
+                    _safe_scalar(db, "SELECT MAX(check_date) FROM market_environment")
+                ),
+                "latest_updated_at": _to_iso(_safe_scalar(db, "SELECT MAX(updated_at) FROM market_environment")),
+            },
+            "fundamentals": {
+                "latest_updated_at": _to_iso(_safe_scalar(db, "SELECT MAX(updated_at) FROM fundamentals")),
+            },
+            "ai_predictions": {
+                "latest_asof": _to_iso(_safe_scalar(db, "SELECT MAX(asof) FROM ai_predictions")),
+                "latest_updated_at": _to_iso(_safe_scalar(db, "SELECT MAX(updated_at) FROM ai_predictions")),
+            },
+            "system_logs": {
+                "last_data_update_success_at": _to_iso(
+                    _safe_scalar(
+                        db,
+                        """
+                        SELECT MAX(created_at)
+                        FROM system_logs
+                        WHERE job_name = 'Data Update' AND UPPER(status) = 'SUCCESS'
+                        """,
+                    )
+                ),
+                "last_ai_batch_success_at": _to_iso(
+                    _safe_scalar(
+                        db,
+                        """
+                        SELECT MAX(created_at)
+                        FROM system_logs
+                        WHERE job_name = 'ai_prediction_batch' AND UPPER(status) = 'SUCCESS'
+                        """,
+                    )
+                ),
+            },
+        }
+    finally:
+        db.disconnect()
+
+    freshness = None
+    try:
+        freshness = FreshnessService().price_freshness_for_active_instruments(
+            scope="all_active_instruments"
+        ).model_dump(mode="json")
+    except Exception as e:
+        freshness = {"error": str(e)}
+
+    return {
+        "server_time": datetime.utcnow().isoformat() + "Z",
+        "datasets": datasets,
+        "price_freshness_active": freshness,
+    }
 
 
 @router.get("/ai-prediction/status")
