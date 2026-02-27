@@ -211,29 +211,123 @@ class OverrideService:
     # Preview (Phase 1: diff 縺ｮ縺ｿ縲Ｇorecast_impact 縺ｯ null)
     # ------------------------------------------------------------------
     def preview(self, data: dict) -> dict:
-        """Return simple diff preview (Phase 1)."""
+        """Return diff preview with heuristic impact estimation (Phase 2-lite)."""
         before = data.get("original_value")
         after = data.get("override_value")
+        category = (data.get("category") or "").strip().lower()
+        field_name = (data.get("field_name") or "").strip()
 
         change_pct = None
+        before_num = None
+        after_num = None
         if before is not None and after is not None:
             try:
-                b = float(before)
-                a = float(after)
-                if b != 0:
-                    change_pct = round(((a - b) / abs(b)) * 100, 2)
+                before_num = float(before)
+                after_num = float(after)
+                if before_num != 0:
+                    change_pct = round(((after_num - before_num) / abs(before_num)) * 100, 2)
             except (ValueError, TypeError):
                 pass
 
+        affected_features = self._estimate_affected_features(category, field_name)
+        forecast_impact = self._estimate_forecast_impact(
+            category=category,
+            field_name=field_name,
+            before=before,
+            after=after,
+            change_pct=change_pct,
+            before_num=before_num,
+            after_num=after_num,
+            affected_features=affected_features,
+        )
+
         return {
             "diff": {
-                "field": data.get("field_name"),
+                "field": field_name,
                 "before": before,
                 "after": after,
                 "change_pct": change_pct,
             },
-            "affected_features": [],       # TODO Phase 2
-            "forecast_impact": None,        # TODO Phase 2
+            "affected_features": affected_features,
+            "forecast_impact": forecast_impact,
+        }
+
+    def _estimate_affected_features(self, category: str, field_name: str) -> list[str]:
+        field = field_name.lower()
+
+        if category == "fundamentals":
+            if field in {"eps_diluted_q", "revenue_q", "net_income_q"}:
+                return ["growth_score", "earnings_quality", "canslim_c", "canslim_a"]
+            if field in {"roe_ttm", "gross_margin_q", "operating_margin_q"}:
+                return ["profitability_score", "quality_score", "canslim_a"]
+            if field in {"ocf_q", "fcf_q"}:
+                return ["cashflow_quality", "quality_score"]
+            if field in {"shares_float", "inst_ownership_pct"}:
+                return ["liquidity_profile", "position_sizing", "canslim_s"]
+
+        if category == "market":
+            if field in {"vix", "dxy", "us10y_yield"}:
+                return ["market_regime", "risk_appetite", "position_sizing"]
+            if field in {"wti_crude", "gold_spot"}:
+                return ["macro_pressure", "sector_rotation"]
+
+        if category == "model":
+            if field in {"decay_lambda", "upper_barrier_pct", "lower_barrier_pct"}:
+                return ["prediction_engine", "label_generation", "backtest_metrics"]
+            if field in {"trading_fee_pct", "slippage_bps"}:
+                return ["execution_cost_model", "net_return_estimate"]
+
+        if category == "metadata":
+            if field in {"sector", "industry"}:
+                return ["peer_grouping", "sector_rotation", "universe_filters"]
+            if field in {"country", "currency"}:
+                return ["macro_exposure", "risk_normalization"]
+            if field == "shares_outstanding":
+                return ["liquidity_profile", "market_cap_bucket"]
+
+        return ["manual_review"]
+
+    def _estimate_forecast_impact(
+        self,
+        *,
+        category: str,
+        field_name: str,
+        before,
+        after,
+        change_pct: Optional[float],
+        before_num: Optional[float],
+        after_num: Optional[float],
+        affected_features: list[str],
+    ) -> dict:
+        if change_pct is not None:
+            abs_pct = abs(change_pct)
+            if abs_pct >= 20:
+                level = "high"
+            elif abs_pct >= 5:
+                level = "medium"
+            else:
+                level = "low"
+
+            direction = "up" if (after_num or 0) > (before_num or 0) else "down"
+            return {
+                "level": level,
+                "confidence": "heuristic",
+                "direction": direction,
+                "estimated_change_pct": change_pct,
+                "summary": f"{category}.{field_name} changed by {change_pct}%, affects {', '.join(affected_features[:3])}",
+            }
+
+        changed = before != after
+        return {
+            "level": "medium" if changed else "low",
+            "confidence": "heuristic",
+            "direction": "n/a",
+            "estimated_change_pct": None,
+            "summary": (
+                f"{category}.{field_name} changed (non-numeric), affects {', '.join(affected_features[:3])}"
+                if changed
+                else f"{category}.{field_name} unchanged"
+            ),
         }
 
     # ------------------------------------------------------------------
@@ -725,4 +819,3 @@ class OverrideService:
             results.append({"table": item["table"], "symbol": item["symbol"], "result": r})
 
         return {"status": "ok", "applied": len(batch), "results": results}
-
