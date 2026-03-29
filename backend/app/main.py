@@ -14,6 +14,9 @@ from app.routers import (
     watchlist,
     system,
     override,
+    earnings,
+    alerts,
+    backtest,
 )
 
 app = FastAPI(
@@ -45,6 +48,9 @@ app.include_router(sector.router, prefix=settings.api_v1_prefix)
 app.include_router(watchlist.router, prefix=settings.api_v1_prefix)
 app.include_router(system.router, prefix=settings.api_v1_prefix)
 app.include_router(override.router, prefix=settings.api_v1_prefix)
+app.include_router(earnings.router, prefix=settings.api_v1_prefix)
+app.include_router(alerts.router, prefix=settings.api_v1_prefix)
+app.include_router(backtest.router, prefix=settings.api_v1_prefix)
 
 
 @app.on_event("startup")

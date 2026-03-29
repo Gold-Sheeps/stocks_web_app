@@ -63,14 +63,25 @@ def _load_tickers_file(path: str | None) -> List[str]:
     return out
 
 
-def _latest_artifact_path() -> str:
+def _latest_artifact_path(market: str = "US") -> str:
+    """Return the best artifact for the given market ("US" or "JP").
+
+    Selection priority:
+    1. Market-specific artifacts (name contains "_us_" / "_jp_") are preferred
+       over generic ones when the market is specified.
+    2. Among candidates: LLM features > feature-set richness (v4>v3>other) > recency.
+    """
     out_dir = Path(__file__).resolve().parents[1] / "ml_predictor_data"
-    cands = list(out_dir.glob("pooled_up5_*_artifact.pkl"))
-    if not cands:
+    all_cands = list(out_dir.glob("pooled_up5_*_artifact.pkl"))
+    if not all_cands:
         raise FileNotFoundError("No pooled artifact found under backend/ml_predictor_data.")
 
+    market_tag = f"_{market.lower()}_"
+    market_cands = [p for p in all_cands if market_tag in p.name.lower()]
+    # Fall back to all artifacts if no market-specific ones exist yet.
+    cands = market_cands if market_cands else all_cands
+
     def _llm_rank(p: Path) -> int:
-        # Prefer artifacts that actually include LLM feature columns.
         try:
             with p.open("rb") as f:
                 art = pickle.load(f)
@@ -79,15 +90,17 @@ def _latest_artifact_path() -> str:
         except Exception:
             return 0
 
-    def _rank(p: Path) -> tuple[int, float]:
-        # Prefer richer feature sets first (v4 > v3 > older), then recency.
+    def _rank(p: Path) -> tuple[int, int, int, float]:
         name = p.name.lower()
-        rank = 0
+        # 1: market-specific match (higher = better)
+        market_match = 1 if market_tag in name else 0
+        # 2: feature-set richness
+        fs_rank = 0
         if "_v4_" in name or name.startswith("pooled_up5_v4"):
-            rank = 2
+            fs_rank = 2
         elif "_v3_" in name or name.startswith("pooled_up5_v3"):
-            rank = 1
-        return (_llm_rank(p), rank, p.stat().st_mtime)
+            fs_rank = 1
+        return (_llm_rank(p), market_match, fs_rank, p.stat().st_mtime)
 
     best = max(cands, key=_rank)
     return str(best)

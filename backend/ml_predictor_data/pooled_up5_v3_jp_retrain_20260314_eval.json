@@ -1,0 +1,1657 @@
+{
+  "period": {
+    "start": "2024-01-01",
+    "end": "2026-03-13",
+    "asof": "2026-03-13"
+  },
+  "metrics": {
+    "precision_at_p70": 0.0,
+    "coverage_at_p70": 0.0,
+    "n_trades_at_p70": 0,
+    "avg_return_at_p70": 0.0,
+    "effective_threshold_buy": 0.6,
+    "precision_at_threshold": 0.0,
+    "coverage_at_threshold": 0.0,
+    "n_trades_at_threshold": 0,
+    "avg_return_at_threshold": 0.0,
+    "folds_used": 100
+  },
+  "diagnostics": {
+    "fixed_threshold_metrics": {
+      "0.5": {
+        "precision": 0.0,
+        "coverage": 0.002,
+        "n_trades": 5,
+        "avg_return": 0.0452380952380953,
+        "confusion_matrix": [
+          [
+            2215,
+            5
+          ],
+          [
+            280,
+            0
+          ]
+        ]
+      },
+      "0.6": {
+        "precision": 0.0,
+        "coverage": 0.0,
+        "n_trades": 0,
+        "avg_return": 0.0,
+        "confusion_matrix": [
+          [
+            2220,
+            0
+          ],
+          [
+            280,
+            0
+          ]
+        ]
+      },
+      "0.7": {
+        "precision": 0.0,
+        "coverage": 0.0,
+        "n_trades": 0,
+        "avg_return": 0.0,
+        "confusion_matrix": [
+          [
+            2220,
+            0
+          ],
+          [
+            280,
+            0
+          ]
+        ]
+      }
+    },
+    "confidence_bins": [
+      {
+        "bin": "[0.5,0.6)",
+        "lo": 0.5,
+        "hi": 0.6,
+        "n": 5,
+        "win_rate": 0.0,
+        "avg_return": 0.0452380952380953
+      },
+      {
+        "bin": "[0.6,0.7)",
+        "lo": 0.6,
+        "hi": 0.7,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      },
+      {
+        "bin": "[0.7,0.8)",
+        "lo": 0.7,
+        "hi": 0.8,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      },
+      {
+        "bin": "[0.8,0.9)",
+        "lo": 0.8,
+        "hi": 0.9,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      },
+      {
+        "bin": "[0.9,1.0]",
+        "lo": 0.9,
+        "hi": 1.0,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      }
+    ],
+    "probability_audit": {
+      "pre_calibration_summary": {
+        "n": 2500,
+        "min": 1e-06,
+        "max": 0.9382498860359192,
+        "mean": 0.41278113710174175,
+        "std": 0.30644363345066333,
+        "quantiles": {
+          "0.1": 0.024777513183653354,
+          "0.25": 0.13646436110138893,
+          "0.5": 0.3762298822402954,
+          "0.75": 0.69259412586689,
+          "0.9": 0.845026683807372,
+          "0.95": 0.9155464172363281,
+          "0.99": 0.9375457364320753
+        }
+      },
+      "post_calibration_summary": {
+        "n": 2500,
+        "min": 1e-06,
+        "max": 0.5086291804140516,
+        "mean": 0.11027562420261357,
+        "std": 0.0772879214382844,
+        "quantiles": {
+          "0.1": 0.029271465396002155,
+          "0.25": 0.05433725489837442,
+          "0.5": 0.09565096895308858,
+          "0.75": 0.15293676985008386,
+          "0.9": 0.20402449124949124,
+          "0.95": 0.24338011580419228,
+          "0.99": 0.45464862717141796
+        }
+      }
+    },
+    "prob_calibration_audit": {
+      "high_confidence_miss": {
+        "threshold": 0.7,
+        "count": 0,
+        "top_misses": []
+      },
+      "low_confidence_miss": {
+        "threshold": 0.7,
+        "count": 280,
+        "top_misses": [
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-07-08",
+            "ticker": "JP:1333",
+            "probability": 0.0975102289803268,
+            "realized_return": 0.0835734870317002,
+            "actual": 1
+          },
+          {
+            "date": "2024-07-08",
+            "ticker": "JP:1333",
+            "probability": 0.0975102289803268,
+            "realized_return": 0.0835734870317002,
+            "actual": 1
+          },
+          {
+            "date": "2024-07-08",
+            "ticker": "JP:1333",
+            "probability": 0.0975102289803268,
+            "realized_return": 0.0835734870317002,
+            "actual": 1
+          },
+          {
+            "date": "2024-07-08",
+            "ticker": "JP:1333",
+            "probability": 0.0975102289803268,
+            "realized_return": 0.0835734870317002,
+            "actual": 1
+          },
+          {
+            "date": "2024-07-08",
+            "ticker": "JP:1333",
+            "probability": 0.0975102289803268,
+            "realized_return": 0.0835734870317002,
+            "actual": 1
+          }
+        ],
+        "top_misses_dedup": [
+          {
+            "date": "2025-09-29",
+            "ticker": "JP:1326",
+            "probability": 0.042270721211562376,
+            "realized_return": 0.09789674952198846,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-22",
+            "ticker": "JP:1469",
+            "probability": 0.07784447539294721,
+            "realized_return": 0.050960118168389856,
+            "actual": 1
+          },
+          {
+            "date": "2024-07-08",
+            "ticker": "JP:1333",
+            "probability": 0.0975102289803268,
+            "realized_return": 0.0835734870317002,
+            "actual": 1
+          },
+          {
+            "date": "2024-07-16",
+            "ticker": "JP:1459",
+            "probability": 0.1298068256415833,
+            "realized_return": 0.13759689922480622,
+            "actual": 1
+          },
+          {
+            "date": "2026-02-19",
+            "ticker": "JP:1436",
+            "probability": 0.13746417411288647,
+            "realized_return": 0.06060606060606055,
+            "actual": 1
+          },
+          {
+            "date": "2025-12-30",
+            "ticker": "JP:1473",
+            "probability": 0.1381135071201374,
+            "realized_return": 0.05969722936303912,
+            "actual": 1
+          },
+          {
+            "date": "2025-01-15",
+            "ticker": "JP:1367",
+            "probability": 0.1388752524777404,
+            "realized_return": 0.06151645207439205,
+            "actual": 1
+          },
+          {
+            "date": "2025-04-09",
+            "ticker": "JP:1325",
+            "probability": 0.14961978565601153,
+            "realized_return": 0.05260416666666656,
+            "actual": 1
+          },
+          {
+            "date": "2024-08-30",
+            "ticker": "JP:1366",
+            "probability": 0.17063345885996262,
+            "realized_return": 0.10365853658536593,
+            "actual": 1
+          },
+          {
+            "date": "2025-04-24",
+            "ticker": "JP:1401",
+            "probability": 0.17372146159758087,
+            "realized_return": 0.12266666666666669,
+            "actual": 1
+          },
+          {
+            "date": "2024-09-13",
+            "ticker": "JP:1311",
+            "probability": 0.1851408009934345,
+            "realized_return": 0.0547945205479452,
+            "actual": 1
+          },
+          {
+            "date": "2024-09-06",
+            "ticker": "JP:1333",
+            "probability": 0.21685758532058086,
+            "realized_return": 0.06483508342553468,
+            "actual": 1
+          },
+          {
+            "date": "2024-02-13",
+            "ticker": "JP:1429",
+            "probability": 0.24338011580419228,
+            "realized_return": 0.05647517039922101,
+            "actual": 1
+          },
+          {
+            "date": "2025-04-17",
+            "ticker": "JP:1498",
+            "probability": 0.2690940476427672,
+            "realized_return": 0.06909453729109494,
+            "actual": 1
+          }
+        ]
+      }
+    }
+  },
+  "meta": {
+    "run_params": {
+      "label_mode": "up5_2w",
+      "horizon": 10,
+      "target_return": 0.05,
+      "fixed_thresholds": [
+        0.5,
+        0.6,
+        0.7
+      ],
+      "feature_set": "v3_ohlcv_ta_relregime_event_fundflow",
+      "feature_set_version": "xgb_only_v1",
+      "include_llm_features": false,
+      "tickers_file": "backend/config/universe_jp_sample100.txt",
+      "n_tickers": 100,
+      "train_tickers": [
+        "JP:1301",
+        "JP:1305",
+        "JP:1306",
+        "JP:1308",
+        "JP:1309",
+        "JP:1311",
+        "JP:1319",
+        "JP:1320",
+        "JP:1321",
+        "JP:1322",
+        "JP:1325",
+        "JP:1326",
+        "JP:1328",
+        "JP:1329",
+        "JP:1330",
+        "JP:1332",
+        "JP:1333",
+        "JP:1343",
+        "JP:1345",
+        "JP:1346",
+        "JP:1348",
+        "JP:1349",
+        "JP:1356",
+        "JP:1357",
+        "JP:1358",
+        "JP:1360",
+        "JP:1364",
+        "JP:1365",
+        "JP:1366",
+        "JP:1367",
+        "JP:1368",
+        "JP:1369",
+        "JP:1375",
+        "JP:1376",
+        "JP:1377",
+        "JP:1379",
+        "JP:1380",
+        "JP:1381",
+        "JP:1382",
+        "JP:1383",
+        "JP:1384",
+        "JP:1397",
+        "JP:1398",
+        "JP:1399",
+        "JP:1401",
+        "JP:1407",
+        "JP:1414",
+        "JP:1417",
+        "JP:1418",
+        "JP:1419",
+        "JP:1420",
+        "JP:1429",
+        "JP:1430",
+        "JP:1431",
+        "JP:1432",
+        "JP:1433",
+        "JP:1434",
+        "JP:1435",
+        "JP:1436",
+        "JP:1438",
+        "JP:1443",
+        "JP:1444",
+        "JP:1445",
+        "JP:1446",
+        "JP:1447",
+        "JP:1450",
+        "JP:1452",
+        "JP:1456",
+        "JP:1457",
+        "JP:1458",
+        "JP:1459",
+        "JP:1466",
+        "JP:1469",
+        "JP:1472",
+        "JP:1473",
+        "JP:1474",
+        "JP:1475",
+        "JP:1476",
+        "JP:1477",
+        "JP:1478",
+        "JP:1479",
+        "JP:1480",
+        "JP:1481",
+        "JP:1482",
+        "JP:1483",
+        "JP:1484",
+        "JP:1485",
+        "JP:1486",
+        "JP:1487",
+        "JP:1488",
+        "JP:1489",
+        "JP:1490",
+        "JP:1491",
+        "JP:1493",
+        "JP:1494",
+        "JP:1495",
+        "JP:1496",
+        "JP:1497",
+        "JP:1498",
+        "JP:1499"
+      ],
+      "holdout_tickers": []
+    }
+  },
+  "per_ticker": [
+    {
+      "ticker": "JP:1301",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1305",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1306",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1308",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1309",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1311",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1319",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1320",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1321",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1322",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1325",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1326",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1328",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1329",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1330",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1333",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1348",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1349",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1357",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1358",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1360",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1365",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1366",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1367",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1368",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1369",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1376",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1379",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1380",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1381",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1382",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1383",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1397",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1398",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1399",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1401",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1407",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1414",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1417",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1418",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1420",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1429",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1430",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1432",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1433",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1435",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1436",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1438",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1443",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1444",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1445",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1446",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1447",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1450",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1456",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1458",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1459",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1469",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1473",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1474",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1475",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1478",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1480",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1481",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1482",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1483",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1484",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1485",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1486",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1488",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1489",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1490",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1491",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1494",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1495",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1496",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "JP:1498",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    }
+  ],
+  "artifact_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\pooled_up5_v3_jp_retrain_20260314_artifact.pkl"
+}

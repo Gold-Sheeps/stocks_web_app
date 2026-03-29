@@ -7,6 +7,7 @@ from typing import List, Optional
 from app.db.database import Database
 from app.models.schemas import WatchlistRequest, WatchlistItem, StockInfo
 from app.services.monitor_service import MonitorService
+from app.services.ai_prediction_service import _compute_action_label, _compute_ai_signal_strength
 
 class WatchlistService:
     def __init__(self):
@@ -120,6 +121,31 @@ class WatchlistService:
                     'date': row[11]
                 }
 
+            # 5a. Bulk fetch AI predictions
+            ai_query = f"""
+                SELECT DISTINCT ON (symbol_key)
+                    symbol_key, p_up5, threshold_buy, decision
+                FROM ai_predictions
+                WHERE symbol_key IN ({placeholders})
+                  AND COALESCE(cal_method, 'none') != 'class15'
+                ORDER BY symbol_key, asof DESC
+            """
+            ai_rows = self.db.execute_query(ai_query, query_params) or []
+            ai_map = {row[0]: {'p_up5': row[1], 'threshold_buy': row[2], 'decision': row[3]} for row in ai_rows}
+
+            # 5b. Latest market regime for gate logic
+            env_row = self.db.execute_query(
+                "SELECT regime FROM market_environment ORDER BY date DESC LIMIT 1"
+            )
+            market_regime = (env_row[0][0] if env_row else None) or ""
+            # Translate regime → gate state used by screener (ON/HALF/OFF)
+            if market_regime == "新規買い停止":
+                gate = "OFF"
+            elif market_regime == "注意":
+                gate = "HALF"
+            else:
+                gate = "ON"
+
             # 5. Build Result List
             for item_data in row_map:
                 s_key = item_data['symbol_key']
@@ -181,6 +207,27 @@ class WatchlistService:
                      if pivot_val <= current_price <= (pivot_val * Decimal('1.05')):
                          is_buy_zone = True
 
+                # AI enrichment
+                ai_info = ai_map.get(s_key, {})
+                p_up5 = float(ai_info['p_up5']) if ai_info.get('p_up5') is not None else None
+                threshold_buy = float(ai_info.get('threshold_buy') or 0.5)
+                raw_decision = (ai_info.get('decision') or "").upper()
+                gate_reason = None
+                gate_reasons: list[str] = []
+                dec = raw_decision
+                if p_up5 is not None:
+                    if gate == "OFF" and dec == "BUY":
+                        dec = "GATE_BLOCKED"
+                        gate_reason = "新規買い停止中（市場環境）"
+                        gate_reasons.append("market_regime_blocked")
+                    elif gate == "HALF" and p_up5 < 0.6 and dec == "BUY":
+                        dec = "CAUTION"
+                        gate_reason = "市場環境「注意」のため閾値引き上げ（p<0.6）"
+                        gate_reasons.append("market_regime_caution")
+                        gate_reasons.append("prob_below_caution_threshold")
+                action_label = _compute_action_label(dec, gate_reason) if p_up5 is not None else None
+                ai_signal_strength = _compute_ai_signal_strength(p_up5, action_label, gate_reasons) if action_label is not None else None
+
                 item = WatchlistItem(
                     id=item_data['id'],
                     symbol=item_data['symbol'], # Display Symbol (Legacy)
@@ -209,7 +256,11 @@ class WatchlistService:
                     entry_price=entry_price,
                     entry_date=item_data['entry_date'],
                     change_from_entry=change_from_entry,
-                    change_pct_from_entry=change_pct_from_entry
+                    change_pct_from_entry=change_pct_from_entry,
+                    action_label=action_label,
+                    gate_reasons=gate_reasons if gate_reasons else [],
+                    ai_signal_strength=ai_signal_strength,
+                    p_up5=p_up5,
                 )
                 watchlist_items.append(item)
                 

@@ -57,6 +57,18 @@
       </div>
 
       <div class="env-grid" id="mSections"></div>
+
+      <!-- Phase 1: 複数API個別パネル（集約APIはPhase 2） -->
+      <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div class="glass-panel">
+          <div class="panel-header"><div class="panel-title">スクリーナー上位10</div></div>
+          <div id="mTopPicks"><div class="text-muted text-sm">Loading...</div></div>
+        </div>
+        <div class="glass-panel">
+          <div class="panel-header"><div class="panel-title">VIX予測</div></div>
+          <div id="mVixPanel"><div class="text-muted text-sm">Loading...</div></div>
+        </div>
+      </div>
     </div>
   </div>
 

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - Stocks Market Checker</title>
+    <link rel="stylesheet" href="/css/common.css?v=20260211">
+    <style>
+        .pricing-hero {
+            text-align: center;
+            padding: 3rem 1rem 2rem;
+        }
+
+        .pricing-hero h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.75rem;
+        }
+
+        .pricing-hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        /* Toggle */
+        .billing-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin: 2rem 0;
+        }
+
+        .billing-toggle span {
+            font-size: var(--fs-sm);
+            color: var(--text-muted);
+        }
+
+        .billing-toggle span.active {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-track {
+            position: absolute;
+            inset: 0;
+            background: var(--bg-surface-2);
+            border-radius: 999px;
+            transition: background 0.25s;
+            border: 1px solid var(--border);
+        }
+
+        .toggle-switch input:checked + .toggle-track {
+            background: var(--primary);
+        }
+
+        .toggle-knob {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.25s;
+            pointer-events: none;
+        }
+
+        .toggle-switch input:checked ~ .toggle-knob {
+            transform: translateX(24px);
+        }
+
+        .save-badge {
+            background: var(--success);
+            color: white;
+            font-size: var(--fs-xs);
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        /* Cards */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1rem 3rem;
+        }
+
+        .pricing-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px var(--primary), var(--shadow-md);
+        }
+
+        .featured-badge {
+            position: absolute;
+            top: -13px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            font-size: var(--fs-xs);
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 4px 16px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .plan-name {
+            font-size: var(--fs-sm);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-price {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .price-currency {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-main);
+            line-height: 2;
+        }
+
+        .price-amount {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1;
+        }
+
+        .price-period {
+            font-size: var(--fs-sm);
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .price-annual-note {
+            font-size: var(--fs-xs);
+            color: var(--text-faint);
+            margin-bottom: 1.5rem;
+            min-height: 1.2em;
+        }
+
+        .plan-desc {
+            font-size: var(--fs-sm);
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 2rem;
+        }
+
+        .plan-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            font-size: var(--fs-sm);
+            color: var(--text-muted);
+            padding: 0.375rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .plan-features li:last-child {
+            border-bottom: none;
+        }
+
+        .feat-icon {
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            margin-top: 1px;
+        }
+
+        .feat-icon.check { color: var(--success); }
+        .feat-icon.dash  { color: var(--text-faint); }
+
+        .btn-plan {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            font-size: var(--fs-sm);
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.2s, transform 0.1s;
+            text-decoration: none;
+        }
+
+        .btn-plan:hover { opacity: 0.88; transform: scale(1.01); }
+        .btn-plan:active { transform: scale(0.99); }
+
+        .btn-plan.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-plan.secondary {
+            background: var(--bg-surface-2);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        .btn-plan.accent {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+        }
+
+        /* FAQ */
+        .faq-section {
+            max-width: 680px;
+            margin: 0 auto 4rem;
+            padding: 0 1rem;
+        }
+
+        .faq-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+        }
+
+        .faq-q {
+            font-size: var(--fs-sm);
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 0.4rem;
+        }
+
+        .faq-a {
+            font-size: var(--fs-sm);
+            color: var(--text-muted);
+            line-height: 1.65;
+        }
+
+        /* Guarantee */
+        .guarantee {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(16, 185, 129, 0.07);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: var(--radius-lg);
+            max-width: 480px;
+            margin: 0 auto 3rem;
+        }
+
+        .guarantee-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+        .guarantee h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--success);
+            margin-bottom: 0.4rem;
+        }
+
+        .guarantee p {
+            font-size: var(--fs-sm);
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+        <!-- Hero -->
+        <div class="pricing-hero">
+            <h1>Simple, Transparent Pricing</h1>
+            <p>Professional-grade market intelligence with AI-powered signals — built for serious investors.</p>
+        </div>
+
+        <!-- Billing Toggle -->
+        <div class="billing-toggle">
+            <span id="lbl-monthly" class="active">Monthly</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="billing-toggle-input">
+                <div class="toggle-track"></div>
+                <div class="toggle-knob"></div>
+            </label>
+            <span id="lbl-annual">Annual</span>
+            <span class="save-badge">Save 35%</span>
+        </div>
+
+        <!-- Pricing Cards -->
+        <div class="pricing-grid">
+
+            <!-- Free -->
+            <div class="pricing-card">
+                <div class="plan-name">Free</div>
+                <div class="plan-price">
+                    <span class="price-currency">$</span>
+                    <span class="price-amount">0</span>
+                </div>
+                <div class="price-period">forever</div>
+                <div class="price-annual-note">&nbsp;</div>
+                <div class="plan-desc">Get started with basic market monitoring. No credit card required.</div>
+                <ul class="plan-features">
+                    <li>
+                        <svg class="feat-icon check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        Market Monitor (indices & FX)
+                    </li>
+                    <li>
+                        <svg class="feat-icon check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        Sector Rotation View
+                    </li>
+                    <li>
+                        <svg class="feat-icon check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        5 Watchlist Stocks
+                    </li>
+                    <li>
+                        <svg class="feat-icon dash" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+                        <span style="color:var(--text-faint)">Stock Screener (locked)</span>
+                    </li>
+                    <li>
+                        <svg class="feat-icon dash" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+                        <span style="color:var(--text-faint)">AI Predictions (locked)</span>
+                    </li>
+                    <li>
+                        <svg class="feat-icon dash" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+                        <span style="color:var(--text-faint)">Fundamentals Data (locked)</span>
+                    </li>
+                </ul>
+                <a href="#" class="btn-plan secondary">Get Started Free</a>
+            </div>
+
+            <!-- Pro Monthly -->
+            <div class="pricing-card featured">
+                <div class="featured-badge">Most Popular</div>
+                <div class="plan-name">Pro</div>
+                <div class="plan-price">
+                    <span class="price-currency">$</span>
+                    <span class="price-amount" id="pro-amount">19</span>
+                </div>
+                <div class="price-period" id="pro-period">/ month</div>
+                <div class="price-annual-note" id="pro-annual-note">&nbsp;</div>
+                <div class="plan-desc">Full access to all features. Ideal for active investors and traders.</div>
+                <ul class="plan-features">
+                    <li>
+                        <svg class="feat-icon check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        Everything in Free
+                    </li>
+                    <li>
+                        <svg class="feat-icon check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        Unlimited Watchlist
+                    </li>
+                    <li>
+                        <svg class="feat-icon check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        Full Stock Screener (CANSLIM + filters)
+                    </li>
+                    <li>
+                        <svg class="feat-icon check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        AI Buy/Sell Predictions (US &amp; JP)
+                    </li>
+                    <li>
+                        <svg class="feat-icon check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        Fundamentals &amp; Ratios (EPS, ROE, PE…)
+                    </li>
+                    <li>
+                        <svg class="feat-icon check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        Market Environment Dashboard
+                    </li>
+                    <li>
+                        <svg class="feat-icon check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        VIX Prediction &amp; Earnings Calendar
+                    </li>
+                    <li>
+                        <svg class="feat-icon check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        Price Alerts
+                    </li>
+                    <li>
+                        <svg class="feat-icon check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        Daily Data Updates
+                    </li>
+                </ul>
+                <a href="#" class="btn-plan primary">Start Pro Plan</a>
+            </div>
+
+            <!-- Lifetime -->
+            <div class="pricing-card">
+                <div class="plan-name">Lifetime</div>
+                <div class="plan-price">
+                    <span class="price-currency">$</span>
+                    <span class="price-amount">299</span>
+                </div>
+                <div class="price-period">one-time</div>
+                <div class="price-annual-note">Pay once, own it forever</div>
+                <div class="plan-desc">Everything in Pro — no recurring charges, no surprises. Best long-term value.</div>
+                <ul class="plan-features">
+                    <li>
+                        <svg class="feat-icon check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        All Pro features, forever
+                    </li>
+                    <li>
+                        <svg class="feat-icon check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        All future feature updates
+                    </li>
+                    <li>
+                        <svg class="feat-icon check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        No subscription, no renewal
+                    </li>
+                    <li>
+                        <svg class="feat-icon check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        Priority support
+                    </li>
+                    <li>
+                        <svg class="feat-icon check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        Equivalent to ~16 months Pro
+                    </li>
+                </ul>
+                <a href="#" class="btn-plan accent">Get Lifetime Access</a>
+            </div>
+
+        </div>
+
+        <!-- Guarantee -->
+        <div class="guarantee">
+            <div class="guarantee-icon">🛡️</div>
+            <h3>14-Day Money-Back Guarantee</h3>
+            <p>Not satisfied? Get a full refund within 14 days — no questions asked.</p>
+        </div>
+
+        <!-- FAQ -->
+        <div class="faq-section">
+            <h2>Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <div class="faq-q">What markets are supported?</div>
+                <div class="faq-a">US stocks (NYSE, NASDAQ) and Japanese stocks (TSE) are fully supported, including AI predictions for both markets.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">Can I cancel my subscription anytime?</div>
+                <div class="faq-a">Yes. Cancel anytime from your account settings. Your access continues until the end of the current billing period.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">How does the annual plan work?</div>
+                <div class="faq-a">You pay $149 upfront for 12 months of Pro access — that's $12.42/month, saving you 35% versus the monthly plan.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">What is the Lifetime plan?</div>
+                <div class="faq-a">A one-time payment of $299 gives you permanent access to all features including future updates. No recurring charges ever.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">Is my data safe?</div>
+                <div class="faq-a">All data is stored locally in your own PostgreSQL database. No trading data or portfolio information is sent to external servers.</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Sidebar loader
+        fetch('/components/sidebar.html')
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById('sidebar-container').innerHTML = html;
+                const links = document.querySelectorAll('.nav-menu a');
+                links.forEach(a => {
+                    if (a.getAttribute('href') === 'pricing.html') a.classList.add('active');
+                });
+            });
+
+        // Billing toggle
+        const toggle = document.getElementById('billing-toggle-input');
+        const lblMonthly = document.getElementById('lbl-monthly');
+        const lblAnnual = document.getElementById('lbl-annual');
+        const proAmount = document.getElementById('pro-amount');
+        const proPeriod = document.getElementById('pro-period');
+        const proNote = document.getElementById('pro-annual-note');
+
+        toggle.addEventListener('change', () => {
+            if (toggle.checked) {
+                // Annual
+                lblMonthly.classList.remove('active');
+                lblAnnual.classList.add('active');
+                proAmount.textContent = '149';
+                proPeriod.textContent = '/ year';
+                proNote.textContent = 'Billed annually · $12.42/mo';
+            } else {
+                // Monthly
+                lblMonthly.classList.add('active');
+                lblAnnual.classList.remove('active');
+                proAmount.textContent = '19';
+                proPeriod.textContent = '/ month';
+                proNote.textContent = '\u00a0';
+            }
+        });
+    </script>
+</body>
+</html>

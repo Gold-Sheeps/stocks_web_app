@@ -39,6 +39,8 @@ def _plan_update_steps(targets: List[str]) -> list[str]:
         steps.append("sector_rotation")
     if "Fundamentals" in selected:
         steps.append("fetch_fundamentals_watchlist_portfolio")
+    if "FundamentalsAll" in selected:
+        steps.append("fetch_fundamentals_all")
     if "MarketEnvironment" in selected:
         steps.append("fetch_market_environment")
     if ("AI" in selected) or ("AI Prediction" in selected):
@@ -296,8 +298,6 @@ def get_data_freshness():
             },
             "market_environment": {
                 "latest_trading_date": _to_iso(
-                    _safe_scalar(db, "SELECT MAX(trading_date) FROM market_environment")
-                ) or _to_iso(
                     _safe_scalar(db, "SELECT MAX(check_date) FROM market_environment")
                 ),
                 "latest_updated_at": _to_iso(_safe_scalar(db, "SELECT MAX(updated_at) FROM market_environment")),

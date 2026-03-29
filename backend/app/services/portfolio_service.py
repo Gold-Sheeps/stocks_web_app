@@ -11,6 +11,7 @@ from app.models.schemas import (
     TradeCreate,
     PortfolioSummary,
 )
+from app.services.ai_prediction_service import _compute_action_label, _compute_ai_signal_strength
 
 
 class PortfolioService:
@@ -437,6 +438,63 @@ class PortfolioService:
                     currency="JPY",
                 )
             )
+
+        # Bulk AI enrichment (Watchlist と同一ロジック)
+        if holdings:
+            symbol_keys = [
+                r[6] if r[6] else f"{r[1] or 'US'}:{r[0]}"
+                for r in rows
+            ]
+            if symbol_keys:
+                placeholders = ', '.join(['%s'] * len(symbol_keys))
+                ai_rows = self.db.execute_query(
+                    f"SELECT DISTINCT ON (symbol_key) symbol_key, p_up5, threshold_buy, decision "
+                    f"FROM ai_predictions WHERE symbol_key IN ({placeholders}) "
+                    f"AND COALESCE(cal_method, 'none') != 'class15' ORDER BY symbol_key, asof DESC",
+                    tuple(symbol_keys)
+                ) or []
+                ai_map = {r[0]: {'p_up5': r[1], 'threshold_buy': r[2], 'decision': r[3]} for r in ai_rows}
+
+                env_row = self.db.execute_query(
+                    "SELECT regime FROM market_environment ORDER BY date DESC LIMIT 1"
+                )
+                market_regime = (env_row[0][0] if env_row else None) or ""
+                if market_regime == "新規買い停止":
+                    gate = "OFF"
+                elif market_regime == "注意":
+                    gate = "HALF"
+                else:
+                    gate = "ON"
+
+                # Enrich each holding — match by symbol_key (candidates)
+                for h in holdings:
+                    # Try to find AI data by trying candidate keys
+                    ai_info = None
+                    for cand in self._candidate_symbol_keys(h.symbol, None, h.market):
+                        if cand in ai_map:
+                            ai_info = ai_map[cand]
+                            break
+                    if not ai_info:
+                        continue
+                    p_up5 = float(ai_info['p_up5']) if ai_info.get('p_up5') is not None else None
+                    if p_up5 is None:
+                        continue
+                    dec = (ai_info.get('decision') or "").upper()
+                    gate_reason = None
+                    gate_reasons: list[str] = []
+                    if gate == "OFF" and dec == "BUY":
+                        dec = "GATE_BLOCKED"
+                        gate_reason = "新規買い停止中（市場環境）"
+                        gate_reasons.append("market_regime_blocked")
+                    elif gate == "HALF" and p_up5 < 0.6 and dec == "BUY":
+                        dec = "CAUTION"
+                        gate_reason = "市場環境「注意」のため閾値引き上げ（p<0.6）"
+                        gate_reasons.append("market_regime_caution")
+                        gate_reasons.append("prob_below_caution_threshold")
+                    h.action_label = _compute_action_label(dec, gate_reason)
+                    h.gate_reasons = gate_reasons
+                    h.ai_signal_strength = _compute_ai_signal_strength(p_up5, h.action_label, gate_reasons)
+                    h.p_up5 = p_up5
 
         return holdings
 

@@ -1,0 +1,69 @@
+{
+  "run_at": "2026-03-24T20:37:52",
+  "source": "yfinance",
+  "db_only_check": false,
+  "start": "2018-01-01",
+  "end": "2026-03-24",
+  "symbols": [
+    {
+      "symbol_key": "US:^VVIX",
+      "status": "OK",
+      "db_before": {
+        "rows": 0,
+        "max_date": null
+      },
+      "db_after": {
+        "rows": 2058,
+        "max_date": "2026-03-23"
+      },
+      "fetch": {
+        "from": "2018-01-01",
+        "to": "2026-03-24",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2058,
+        "inserted": 2058,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "US:^VIX3M",
+      "status": "OK",
+      "db_before": {
+        "rows": 0,
+        "max_date": null
+      },
+      "db_after": {
+        "rows": 2066,
+        "max_date": "2026-03-23"
+      },
+      "fetch": {
+        "from": "2018-01-01",
+        "to": "2026-03-24",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 2066,
+        "inserted": 2066,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": null
+    }
+  ],
+  "totals": {
+    "symbols": 2,
+    "failed": 0,
+    "fetched_rows": 4124,
+    "inserted": 4124,
+    "updated": 0,
+    "skipped_overflow": 0
+  }
+}

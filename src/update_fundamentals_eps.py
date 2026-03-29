@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import time
 from datetime import datetime
 from pathlib import Path
@@ -48,8 +49,12 @@ def is_equity_symbol(raw_symbol: str) -> bool:
 
 
 def normalize_to_yf_symbol(raw_symbol: str) -> str:
-    # yfinance uses BRK-B style for class share symbols.
-    return raw_symbol.replace(".", "-").strip()
+    raw = raw_symbol.strip()
+    # Japanese 4-digit stock codes require .T suffix on Yahoo Finance (e.g., 7203 → 7203.T).
+    if re.fullmatch(r"\d{4}", raw):
+        return f"{raw}.T"
+    # US: yfinance uses BRK-B style for class share symbols.
+    return raw.replace(".", "-")
 
 
 def collect_symbols(conn: psycopg.Connection, universe: str) -> list[str]:

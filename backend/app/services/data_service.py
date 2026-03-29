@@ -8,6 +8,7 @@ import json
 import traceback
 from typing import List, Dict, Optional
 import re
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -69,6 +70,8 @@ class DataService:
             cwd=str(cwd),
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            env={**os.environ, "PYTHONIOENCODING": "utf-8"},
             timeout=timeout,
         )
         stdout = (proc.stdout or "").strip()
@@ -230,8 +233,10 @@ class DataService:
             has_sector = "Sector" in selected
             has_canslim = "CANSLIM" in selected
             has_fundamentals = "Fundamentals" in selected
+            has_fundamentals_all = "FundamentalsAll" in selected
             has_market_env = "MarketEnvironment" in selected
             has_ai_prediction = ("AI" in selected) or ("AI Prediction" in selected)
+            has_jp_stocks = "JP Stocks" in selected
 
             cmd = [
                 sys.executable,
@@ -347,6 +352,70 @@ class DataService:
                         "[DataService] fetch_fundamentals exited "
                         f"{fund_result['returncode']}: {fund_result['output_tail']}"
                     )
+
+            # 全銘柄 Financial Statements 更新
+            if has_fundamentals_all:
+                self._log_update_step(
+                    job_id,
+                    "fetch_fundamentals_all",
+                    "RUNNING",
+                    "Financial Statements 全銘柄更新を開始します (NULLあり銘柄優先)",
+                )
+                fund_all_result = self._run_resolved_script(
+                    repo_root=repo_root,
+                    step_name="fetch_fundamentals_all",
+                    script_name="fetch_fundamentals.py",
+                    args=["--universe", "all_missing", "--max-symbols", "2000", "--delay", "0.3", "--skip-rag"],
+                    timeout=7200,  # 2h max for large universe
+                )
+                fund_all_result["step"] = "fetch_fundamentals_all"
+                fund_all_result["status"] = "success" if fund_all_result["returncode"] == 0 else "failed"
+                self._log_update_step(
+                    job_id,
+                    "fetch_fundamentals_all",
+                    "SUCCESS" if fund_all_result["returncode"] == 0 else "FAILED",
+                    "Financial Statements 全銘柄更新完了" if fund_all_result["returncode"] == 0 else "全銘柄更新失敗",
+                    {
+                        "returncode": fund_all_result["returncode"],
+                        "output_tail": (fund_all_result.get("output_tail") or [])[-20:],
+                    },
+                )
+                post_steps.append(fund_all_result)
+
+            # JP株価データ更新
+            if has_jp_stocks:
+                self._log_update_step(job_id, "jp_stocks_refresh", "RUNNING", "JP Stocks price refresh started")
+                try:
+                    universe_path = repo_root / "backend" / "config" / "universe_jp.txt"
+                    jp_symbols = []
+                    if universe_path.exists():
+                        for line in universe_path.read_text(encoding="utf-8").splitlines():
+                            s = line.strip()
+                            if s:
+                                jp_symbols.append(s)
+                    BATCH = 100
+                    jp_results = []
+                    for i in range(0, min(len(jp_symbols), 500), BATCH):
+                        batch = jp_symbols[i:i + BATCH]
+                        symbols_arg = ",".join(batch)
+                        r = self._run_resolved_script(
+                            repo_root=repo_root,
+                            step_name=f"jp_stocks_refresh_batch_{i // BATCH}",
+                            script_name="refresh_market_data.py",
+                            args=["--symbols", symbols_arg],
+                            timeout=300,
+                        )
+                        jp_results.append(r)
+                    ok = all(r["returncode"] == 0 for r in jp_results)
+                    self._log_update_step(
+                        job_id, "jp_stocks_refresh",
+                        "SUCCESS" if ok else "FAILED",
+                        f"JP Stocks refresh completed ({len(jp_symbols)} symbols, {len(jp_results)} batches)",
+                    )
+                    post_steps.append({"step": "jp_stocks_refresh", "status": "success" if ok else "failed", "batches": len(jp_results)})
+                except Exception as e:
+                    self._log_update_step(job_id, "jp_stocks_refresh", "FAILED", f"JP Stocks refresh error: {e}")
+                    post_steps.append({"step": "jp_stocks_refresh", "status": "failed", "error": str(e)})
 
             if has_market_env:
                 self._log_update_step(

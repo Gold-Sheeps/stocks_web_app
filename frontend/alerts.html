@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alerts - Trading System</title>
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .page-title { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.02em; }
+    .alert-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+    .input-group { display: flex; flex-direction: column; gap: 6px; }
+    .input-group label {
+      font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--text-muted);
+    }
+    .input-group input,
+    .input-group select {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius-sm);
+      padding: 9px 12px;
+      font-size: 0.9rem;
+      color: white;
+      transition: border-color 0.2s;
+    }
+    .input-group input:focus,
+    .input-group select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+    }
+    .alerts-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .alerts-table thead th {
+      background: rgba(255,255,255,0.04);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .alerts-table tbody tr {
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: background 0.15s;
+    }
+    .alerts-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+    .alerts-table tbody td { padding: 14px 16px; font-size: 0.88rem; }
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em;
+    }
+    .status-active {
+      background: rgba(16,185,129,0.15); color: #10b981;
+      border: 1px solid rgba(16,185,129,0.3);
+    }
+    .status-triggered {
+      background: rgba(239,68,68,0.15); color: #ef4444;
+      border: 1px solid rgba(239,68,68,0.3);
+    }
+    .status-checking {
+      background: rgba(245,158,11,0.15); color: #f59e0b;
+      border: 1px solid rgba(245,158,11,0.3);
+    }
+    .delete-btn {
+      width: 28px; height: 28px; border-radius: 6px;
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2);
+      color: var(--danger); font-size: 1rem; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .delete-btn:hover {
+      background: var(--danger); border-color: var(--danger); color: white;
+    }
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px; margin-bottom: 24px;
+    }
+    .summary-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-md);
+      padding: 20px; text-align: center;
+    }
+    .summary-card .val { font-size: 2rem; font-weight: 700; font-family: var(--font-mono); }
+    .summary-card .lbl { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-top: 4px; }
+    .check-btn-wrap { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <div id="sidebar-container"></div>
+  <div class="main-content">
+    <div class="container">
+
+      <div class="page-header">
+        <div class="page-title">Alerts</div>
+        <div class="check-btn-wrap">
+          <button class="btn btn-primary" id="btnCheckAll">Check Now</button>
+          <button class="btn btn-ghost" id="btnClearTriggered">Clear Triggered</button>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="summary-cards">
+        <div class="summary-card">
+          <div class="val" id="cntTotal" style="color: var(--primary);">0</div>
+          <div class="lbl">Total Alerts</div>
+        </div>
+        <div class="summary-card">
+          <div class="val" id="cntActive" style="color: #10b981;">0</div>
+          <div class="lbl">Active</div>
+        </div>
+        <div class="summary-card">
+          <div class="val" id="cntTriggered" style="color: #ef4444;">0</div>
+          <div class="lbl">Triggered</div>
+        </div>
+      </div>
+
+      <!-- Add Alert Form -->
+      <div class="glass-panel mb-6" style="padding: 20px;">
+        <div class="panel-title mb-4">Add Alert</div>
+        <div class="alert-form-grid">
+          <div class="input-group">
+            <label>Symbol (e.g. US:NVDA)</label>
+            <input type="text" id="newSymbol" placeholder="US:NVDA" style="text-transform:uppercase;">
+          </div>
+          <div class="input-group">
+            <label>Condition</label>
+            <select id="newCondition">
+              <option value="price_above">Price Above</option>
+              <option value="price_below">Price Below</option>
+              <option value="rs_above">RS Rating Above</option>
+              <option value="score_above">Total Score Above</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Value</label>
+            <input type="number" id="newValue" placeholder="150.00" step="any">
+          </div>
+          <div class="input-group">
+            <label>Note (optional)</label>
+            <input type="text" id="newNote" placeholder="Breakout level...">
+          </div>
+          <div class="input-group" style="justify-content: flex-end;">
+            <label>&nbsp;</label>
+            <button class="btn btn-primary" id="btnAddAlert">Add Alert</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notification Settings -->
+      <div class="glass-panel mb-6" style="padding: 20px;" id="notifSettingsPanel">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+          <div class="panel-title">Notifications</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-ghost" id="btnToggleEmail" style="font-size:0.8rem; padding:6px 14px;">Email ▼</button>
+            <button class="btn btn-ghost" id="btnToggleSlack" style="font-size:0.8rem; padding:6px 14px;">Slack ▼</button>
+          </div>
+        </div>
+
+        <!-- Email settings -->
+        <div id="emailSection" style="display:none; margin-top:16px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08);">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px; flex-wrap:wrap;">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.88rem; color:var(--text-muted);">
+              <input type="checkbox" id="emailEnabled" style="width:16px; height:16px; accent-color:var(--primary);">
+              Enable Email Notifications
+            </label>
+          </div>
+          <div class="alert-form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+            <div class="input-group">
+              <label>To Email</label>
+              <input type="email" id="emailTo" placeholder="you@example.com">
+            </div>
+            <div class="input-group">
+              <label>SMTP Host</label>
+              <input type="text" id="smtpHost" placeholder="smtp.gmail.com" value="smtp.gmail.com">
+            </div>
+            <div class="input-group">
+              <label>SMTP Port</label>
+              <input type="number" id="smtpPort" placeholder="587" value="587">
+            </div>
+            <div class="input-group">
+              <label>SMTP User</label>
+              <input type="email" id="smtpUser" placeholder="you@gmail.com">
+            </div>
+            <div class="input-group">
+              <label>SMTP Password</label>
+              <input type="password" id="smtpPassword" placeholder="App password">
+            </div>
+            <div class="input-group">
+              <label>Security</label>
+              <select id="smtpTls">
+                <option value="true">STARTTLS (port 587)</option>
+                <option value="false">SSL/TLS (port 465)</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" id="btnSaveEmail" style="margin-top:12px; font-size:0.85rem; padding:8px 20px;">Save Email Settings</button>
+        </div>
+
+        <!-- Slack settings -->
+        <div id="slackSection" style="display:none; margin-top:16px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08);">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px; flex-wrap:wrap;">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.88rem; color:var(--text-muted);">
+              <input type="checkbox" id="slackEnabled" style="width:16px; height:16px; accent-color:var(--primary);">
+              Enable Slack Notifications
+            </label>
+          </div>
+          <div class="input-group" style="max-width:560px;">
+            <label>Slack Incoming Webhook URL</label>
+            <input type="text" id="slackWebhookUrl" placeholder="https://hooks.slack.com/services/...">
+          </div>
+          <div style="margin-top:8px; font-size:0.78rem; color:var(--text-muted);">
+            Slack Apps → Incoming Webhooks でURLを取得できます
+          </div>
+          <button class="btn btn-primary" id="btnSaveSlack" style="margin-top:12px; font-size:0.85rem; padding:8px 20px;">Save Slack Settings</button>
+        </div>
+      </div>
+
+      <!-- Alerts Table -->
+      <div class="glass-panel">
+        <div class="panel-header" style="padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+          <div class="panel-title">Active Alerts</div>
+          <div id="lastChecked" style="font-size: 0.78rem; color: var(--text-muted);"></div>
+        </div>
+        <div class="table-container">
+          <table class="alerts-table">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Condition</th>
+                <th>Target</th>
+                <th>Current Value</th>
+                <th>Status</th>
+                <th>Note</th>
+                <th>Created</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="alertsBody">
+              <tr><td colspan="8" style="text-align:center; padding:40px; color:var(--text-muted);">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    const API_BASE = window.CONFIG?.API_BASE || 'http://localhost:8010/api/v1';
+    const NOTIF_SETTINGS_KEY = 'alert_notif_settings_v2';
+
+    // ─── Notification Settings ────────────────────────────────────────────────
+
+    function loadNotifSettings() {
+      return JSON.parse(localStorage.getItem(NOTIF_SETTINGS_KEY) || 'null') || {};
+    }
+    function saveEmailSettings() {
+      const s = loadNotifSettings();
+      s.email = {
+        enabled: document.getElementById('emailEnabled').checked,
+        to_email: document.getElementById('emailTo').value.trim(),
+        smtp_host: document.getElementById('smtpHost').value.trim(),
+        smtp_port: parseInt(document.getElementById('smtpPort').value, 10) || 587,
+        smtp_user: document.getElementById('smtpUser').value.trim(),
+        smtp_password: document.getElementById('smtpPassword').value,
+        use_tls: document.getElementById('smtpTls').value === 'true',
+      };
+      localStorage.setItem(NOTIF_SETTINGS_KEY, JSON.stringify(s));
+      UI.showToast('Email settings saved', 'success');
+    }
+    function saveSlackSettings() {
+      const s = loadNotifSettings();
+      s.slack = {
+        enabled: document.getElementById('slackEnabled').checked,
+        webhook_url: document.getElementById('slackWebhookUrl').value.trim(),
+      };
+      localStorage.setItem(NOTIF_SETTINGS_KEY, JSON.stringify(s));
+      UI.showToast('Slack settings saved', 'success');
+    }
+    function applyNotifSettings() {
+      const s = loadNotifSettings();
+      const e = s.email || {};
+      document.getElementById('emailEnabled').checked = !!e.enabled;
+      document.getElementById('emailTo').value = e.to_email || '';
+      document.getElementById('smtpHost').value = e.smtp_host || 'smtp.gmail.com';
+      document.getElementById('smtpPort').value = e.smtp_port || 587;
+      document.getElementById('smtpUser').value = e.smtp_user || '';
+      document.getElementById('smtpPassword').value = e.smtp_password || '';
+      document.getElementById('smtpTls').value = e.use_tls === false ? 'false' : 'true';
+
+      const sl = s.slack || {};
+      document.getElementById('slackEnabled').checked = !!sl.enabled;
+      document.getElementById('slackWebhookUrl').value = sl.webhook_url || '';
+    }
+
+    async function sendEmailNotification(triggeredAlerts) {
+      const s = (loadNotifSettings().email) || {};
+      if (!s.enabled || !s.to_email || !s.smtp_user || !s.smtp_password) return;
+      try {
+        const res = await fetch(`${API_BASE}/alerts/notify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to_email: s.to_email,
+            smtp_host: s.smtp_host || 'smtp.gmail.com',
+            smtp_port: s.smtp_port || 587,
+            smtp_user: s.smtp_user,
+            smtp_password: s.smtp_password,
+            use_tls: s.use_tls !== false,
+            alerts: triggeredAlerts,
+          }),
+        });
+        const data = await res.json();
+        if (data.success) UI.showToast(`Email sent to ${data.sent_to}`, 'success', 6000);
+        else UI.showToast(`Email failed: ${data.error}`, 'error', 8000);
+      } catch (e) {
+        UI.showToast(`Email failed: ${e.message}`, 'error', 8000);
+      }
+    }
+
+    async function sendSlackNotification(triggeredAlerts) {
+      const s = (loadNotifSettings().slack) || {};
+      if (!s.enabled || !s.webhook_url) return;
+      try {
+        const res = await fetch(`${API_BASE}/alerts/notify-slack`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ webhook_url: s.webhook_url, alerts: triggeredAlerts }),
+        });
+        const data = await res.json();
+        if (data.success) UI.showToast('Slack notification sent', 'success', 5000);
+        else UI.showToast(`Slack failed: ${data.error}`, 'error', 8000);
+      } catch (e) {
+        UI.showToast(`Slack failed: ${e.message}`, 'error', 8000);
+      }
+    }
+
+    // ─── DB API ───────────────────────────────────────────────────────────────
+
+    let _alerts = [];
+
+    async function fetchAlerts() {
+      try {
+        const res = await fetch(`${API_BASE}/alerts`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        _alerts = await res.json();
+      } catch (e) {
+        console.error('[Alerts] fetch failed', e);
+        _alerts = [];
+      }
+      renderAlerts();
+    }
+
+    async function addAlertApi(symbol, condition, value, note) {
+      const res = await fetch(`${API_BASE}/alerts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ symbol, condition, value, note }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    }
+
+    async function deleteAlertApi(id) {
+      const res = await fetch(`${API_BASE}/alerts/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    }
+
+    async function updateAlertApi(id, status, currentValue) {
+      await fetch(`${API_BASE}/alerts/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status, current_value: currentValue }),
+      });
+    }
+
+    // ─── Render ───────────────────────────────────────────────────────────────
+
+    const CONDITION_LABELS = {
+      price_above: 'Price >',
+      price_below: 'Price <',
+      rs_above: 'RS >',
+      score_above: 'Score >',
+    };
+
+    function renderAlerts() {
+      document.getElementById('cntTotal').textContent = _alerts.length;
+      document.getElementById('cntActive').textContent = _alerts.filter(a => a.status === 'active').length;
+      document.getElementById('cntTriggered').textContent = _alerts.filter(a => a.status === 'triggered').length;
+
+      const tbody = document.getElementById('alertsBody');
+      if (_alerts.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px; color:var(--text-muted);">No alerts yet. Add one above.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = _alerts.map(a => {
+        const statusClass = a.status === 'triggered' ? 'status-triggered' : (a.status === 'checking' ? 'status-checking' : 'status-active');
+        const statusLabel = a.status === 'triggered' ? 'TRIGGERED' : (a.status === 'checking' ? 'CHECKING...' : 'ACTIVE');
+        const currentVal = a.currentValue != null ? Number(a.currentValue).toFixed(2) : '--';
+        const condLabel = CONDITION_LABELS[a.condition] || a.condition;
+        return `<tr>
+          <td style="font-family:var(--font-mono); font-weight:700; color:var(--primary);">
+            <a href="stock_detail.html?symbol=${encodeURIComponent(a.symbol)}" style="color:inherit; text-decoration:none;">${a.symbol}</a>
+          </td>
+          <td style="color:var(--text-muted);">${condLabel}</td>
+          <td style="font-family:var(--font-mono); font-weight:600;">${Number(a.value).toLocaleString()}</td>
+          <td style="font-family:var(--font-mono); font-weight:600; color:${a.status === 'triggered' ? '#ef4444' : 'inherit'};">${currentVal}</td>
+          <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+          <td style="color:var(--text-muted); font-size:0.82rem;">${a.note || '-'}</td>
+          <td style="color:var(--text-muted); font-size:0.78rem;">${a.createdAt || '-'}</td>
+          <td><button class="delete-btn" onclick="deleteAlert(${a.id})" title="Delete">x</button></td>
+        </tr>`;
+      }).join('');
+    }
+
+    // ─── Actions ──────────────────────────────────────────────────────────────
+
+    async function addAlert() {
+      const symbol = document.getElementById('newSymbol').value.trim().toUpperCase();
+      const condition = document.getElementById('newCondition').value;
+      const value = parseFloat(document.getElementById('newValue').value);
+      const note = document.getElementById('newNote').value.trim();
+
+      if (!symbol) { UI.showToast('Symbol is required', 'warning'); return; }
+      if (isNaN(value)) { UI.showToast('Value is required', 'warning'); return; }
+
+      try {
+        await addAlertApi(symbol, condition, value, note);
+        document.getElementById('newSymbol').value = '';
+        document.getElementById('newValue').value = '';
+        document.getElementById('newNote').value = '';
+        UI.showToast(`Alert added for ${symbol}`, 'success');
+        await fetchAlerts();
+      } catch (e) {
+        UI.showToast(`Failed to add alert: ${e.message}`, 'error');
+      }
+    }
+
+    async function deleteAlert(id) {
+      try {
+        await deleteAlertApi(id);
+        UI.showToast('Alert deleted', 'info');
+        await fetchAlerts();
+      } catch (e) {
+        UI.showToast(`Failed to delete: ${e.message}`, 'error');
+      }
+    }
+
+    async function fetchCurrentValue(alert) {
+      try {
+        if (alert.condition === 'price_above' || alert.condition === 'price_below') {
+          const res = await fetch(`${API_BASE}/stock/${encodeURIComponent(alert.symbol)}/summary`);
+          if (!res.ok) return null;
+          const data = await res.json();
+          return data.stock_info?.current_price ?? null;
+        } else if (alert.condition === 'rs_above' || alert.condition === 'score_above') {
+          const res = await fetch(`${API_BASE}/screener/?market=ALL&limit=500`);
+          if (!res.ok) return null;
+          const data = await res.json();
+          const items = data.items ?? data.results ?? [];
+          const match = items.find(s => s.symbol === alert.symbol || s.symbol_key === alert.symbol);
+          return alert.condition === 'rs_above' ? (match?.rs_rating ?? null) : (match?.total_score ?? null);
+        }
+      } catch (e) {
+        console.warn('[Alerts] fetch failed for', alert.symbol, e);
+      }
+      return null;
+    }
+
+    function isTriggered(alert) {
+      if (alert.currentValue == null) return false;
+      const cv = Number(alert.currentValue);
+      const tv = Number(alert.value);
+      if (alert.condition === 'price_above') return cv >= tv;
+      if (alert.condition === 'price_below') return cv <= tv;
+      if (alert.condition === 'rs_above') return cv >= tv;
+      if (alert.condition === 'score_above') return cv >= tv;
+      return false;
+    }
+
+    async function checkAll() {
+      const btn = document.getElementById('btnCheckAll');
+      btn.disabled = true;
+      btn.textContent = 'Checking...';
+
+      // Mark all active as checking (local only for display)
+      _alerts = _alerts.map(a => a.status !== 'triggered' ? { ...a, status: 'checking' } : a);
+      renderAlerts();
+
+      const newlyTriggered = [];
+      for (const alert of _alerts) {
+        if (alert.status === 'triggered') continue;
+        const cv = await fetchCurrentValue(alert);
+        alert.currentValue = cv;
+        const triggered = isTriggered(alert);
+        const newStatus = triggered ? 'triggered' : 'active';
+        alert.status = newStatus;
+        await updateAlertApi(alert.id, newStatus, cv);
+        if (triggered) newlyTriggered.push(alert);
+        renderAlerts();
+      }
+
+      document.getElementById('lastChecked').textContent = `Last checked: ${new Date().toLocaleTimeString()}`;
+      btn.disabled = false;
+      btn.textContent = 'Check Now';
+
+      if (newlyTriggered.length > 0) {
+        UI.showToast(`${newlyTriggered.length} alert(s) triggered!`, 'warning', 5000);
+        await Promise.all([
+          sendEmailNotification(newlyTriggered),
+          sendSlackNotification(newlyTriggered),
+        ]);
+      } else {
+        UI.showToast('All alerts checked — no triggers', 'success');
+      }
+    }
+
+    async function clearTriggered() {
+      const triggered = _alerts.filter(a => a.status === 'triggered');
+      for (const a of triggered) {
+        await deleteAlertApi(a.id);
+      }
+      UI.showToast('Triggered alerts cleared', 'info');
+      await fetchAlerts();
+    }
+
+    // ─── Prefill from URL params ───────────────────────────────────────────────
+    function applyUrlPrefill() {
+      const params = new URLSearchParams(window.location.search);
+      const symbol = params.get('symbol');
+      const condition = params.get('condition');
+      const value = params.get('value');
+      if (symbol) document.getElementById('newSymbol').value = symbol.toUpperCase();
+      if (condition && document.getElementById('newCondition').querySelector(`option[value="${condition}"]`)) {
+        document.getElementById('newCondition').value = condition;
+      }
+      if (value) document.getElementById('newValue').value = value;
+    }
+
+    // ─── Toggle panels ────────────────────────────────────────────────────────
+    function toggleSection(sectionId, btnId, label) {
+      const el = document.getElementById(sectionId);
+      const btn = document.getElementById(btnId);
+      const open = el.style.display !== 'none';
+      el.style.display = open ? 'none' : 'block';
+      btn.textContent = open ? `${label} ▼` : `${label} ▲`;
+    }
+
+    // ─── Event Listeners ──────────────────────────────────────────────────────
+    document.getElementById('btnAddAlert').addEventListener('click', addAlert);
+    document.getElementById('btnCheckAll').addEventListener('click', checkAll);
+    document.getElementById('btnClearTriggered').addEventListener('click', clearTriggered);
+    document.getElementById('newSymbol').addEventListener('keydown', e => { if (e.key === 'Enter') addAlert(); });
+    document.getElementById('btnSaveEmail').addEventListener('click', saveEmailSettings);
+    document.getElementById('btnSaveSlack').addEventListener('click', saveSlackSettings);
+    document.getElementById('btnToggleEmail').addEventListener('click', () => toggleSection('emailSection', 'btnToggleEmail', 'Email'));
+    document.getElementById('btnToggleSlack').addEventListener('click', () => toggleSection('slackSection', 'btnToggleSlack', 'Slack'));
+
+    // ─── Init ─────────────────────────────────────────────────────────────────
+    applyNotifSettings();
+    applyUrlPrefill();
+    fetchAlerts();
+  </script>
+</body>
+</html>

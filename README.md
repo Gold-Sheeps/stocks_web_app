@@ -31,6 +31,7 @@ cd C:\Users\o_van\Desktop\stocks_web_app
 ### 4. アクセス先
 
 - Frontend: `http://127.0.0.1:3000/screener.html`
+- JP Screener (preset): `http://127.0.0.1:3000/screener_jp.html`
 - Backend docs (8000): `http://127.0.0.1:8000/docs`
 - API docs (8010): `http://127.0.0.1:8010/docs`
 
@@ -105,6 +106,12 @@ uv run python backend/scripts/update_db_full_20y.py --years 10
 # 対象銘柄を限定
 uv run python backend/scripts/update_db_full_20y.py --symbols "US:NVDA,US:QQQ,US:^SOX,US:SMH"
 
+# 日本株（4桁コード）はプレフィックス省略でもJPとして解釈
+uv run python backend/scripts/update_db_full_20y.py --symbols "7203,6758,JP:9984"
+
+# 日本株リストファイル（1行1銘柄）を使う
+uv run python backend/scripts/update_db_full_20y.py --symbols-file backend/config/universe_jp.txt --default-market JP
+
 # バッチ再試行回数を増やす（デフォルト 2）
 uv run python backend/scripts/update_db_full_20y.py --batch-retries 5
 
@@ -161,6 +168,9 @@ python scripts/full_db_refresh.py
 
 ```powershell
 python backend/scripts/refresh_market_data.py --symbols "US:NVDA,US:QQQ,US:^SOX,US:SMH" --source yfinance
+
+# 日本株（4桁コード）も指定可能
+python backend/scripts/refresh_market_data.py --symbols "7203,6758,JP:9984" --source yfinance
 ```
 
 ### 日次の個別株価格更新（既存フロー）

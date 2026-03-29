@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import html as html_lib
 import json
+import re
 import sys
 import urllib.parse
 import urllib.request
@@ -185,6 +187,16 @@ def _first_text(parent: ET.Element, tags: Iterable[str]) -> str | None:
     return None
 
 
+def _strip_html(text: str | None) -> str:
+    """Remove HTML tags and decode HTML entities, returning clean plain text."""
+    if not text:
+        return ""
+    text = html_lib.unescape(text)
+    text = re.sub(r"<[^>]+>", " ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
 def _rss_or_atom_entries(xml_bytes: bytes) -> List[Dict[str, Any]]:
     root = ET.fromstring(xml_bytes)
     entries: List[Dict[str, Any]] = []
@@ -196,7 +208,7 @@ def _rss_or_atom_entries(xml_bytes: bytes) -> List[Dict[str, Any]]:
         for item in rss_items:
             link = _first_text(item, ["link"])
             title = _first_text(item, ["title"])
-            desc = _first_text(item, ["description"])
+            desc = _strip_html(_first_text(item, ["description"]))
             pub = _first_text(item, ["pubDate"])
             entries.append(
                 {
@@ -213,7 +225,7 @@ def _rss_or_atom_entries(xml_bytes: bytes) -> List[Dict[str, Any]]:
     if atom_entries:
         for ent in atom_entries:
             title = _first_text(ent, ["{http://www.w3.org/2005/Atom}title"])
-            summary = _first_text(ent, ["{http://www.w3.org/2005/Atom}summary"])
+            summary = _strip_html(_first_text(ent, ["{http://www.w3.org/2005/Atom}summary"]))
             published = _first_text(
                 ent,
                 [

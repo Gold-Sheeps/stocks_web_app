@@ -93,6 +93,13 @@ async def get_stock_ratios(symbol: str):
     return service.get_ratios(symbol)
 
 
+@router.get("/{symbol}/news")
+async def get_stock_news(symbol: str, limit: int = 20):
+    """銘柄の最新ニュース一覧を rag_documents から返す"""
+    service = StockDetailService()
+    return service.get_news(symbol, limit=limit)
+
+
 @router.get("/{symbol}/ai-prediction")
 async def get_ai_prediction(symbol: str):
     """DB から最新の AI 推論結果を返す。"""

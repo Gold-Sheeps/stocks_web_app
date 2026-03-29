@@ -4,6 +4,7 @@ import argparse
 import json
 import math
 import os
+import re
 import sys
 import time
 import urllib.parse
@@ -102,11 +103,21 @@ def _normalize_symbol_key(raw: str) -> str:
         return s
     if ":" in s:
         return s
+    if re.fullmatch(r"\d{4}", s):
+        return f"JP:{s}"
     return f"US:{s}"
 
 
 def _to_yf_symbol(symbol_key: str) -> str:
-    raw = symbol_key.split(":", 1)[1] if ":" in symbol_key else symbol_key
+    if ":" in symbol_key:
+        market, raw = symbol_key.split(":", 1)
+        market = market.strip().upper()
+    else:
+        market, raw = "US", symbol_key
+    raw = raw.strip()
+    if market == "JP" and re.fullmatch(r"\d{4}", raw):
+        # Yahoo Finance JP equities use the .T suffix (e.g. 7203.T).
+        return f"{raw}.T"
     return raw.replace(".", "-")
 
 

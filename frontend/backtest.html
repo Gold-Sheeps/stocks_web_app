@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backtest - Trading System</title>
+  <link rel="stylesheet" href="/css/common.css?v=20260211">
+  <style>
+    .page-title { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 24px; }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+    .input-group { display: flex; flex-direction: column; gap: 6px; }
+    .input-group label {
+      font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--text-muted);
+    }
+    .input-group input, .input-group select {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius-sm);
+      padding: 9px 12px; font-size: 0.9rem; color: white;
+      transition: border-color 0.2s;
+    }
+    .input-group input:focus, .input-group select:focus {
+      outline: none; border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+    }
+    .input-group select option { background: #1e293b; }
+
+    /* Summary cards */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px; margin-bottom: 24px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-md);
+      padding: 16px; text-align: center;
+    }
+    .stat-card .val {
+      font-size: 1.6rem; font-weight: 800;
+      font-family: var(--font-mono); margin-bottom: 4px;
+    }
+    .stat-card .lbl {
+      font-size: 0.68rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-muted);
+    }
+
+    /* Chart */
+    .chart-container {
+      width: 100%; height: 260px; position: relative;
+      background: rgba(0,0,0,0.2); border-radius: var(--radius-md);
+      overflow: hidden; margin-bottom: 24px;
+    }
+    canvas { width: 100% !important; height: 100% !important; display: block; }
+
+    /* Trades table */
+    .trades-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .trades-table thead th {
+      background: rgba(255,255,255,0.04); padding: 10px 14px;
+      text-align: left; font-size: 0.68rem; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--text-muted); font-weight: 600;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .trades-table tbody td {
+      padding: 10px 14px; font-size: 0.85rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .trades-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+    .positive { color: var(--success); }
+    .negative { color: var(--danger); }
+
+    .error-box {
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+      border-radius: var(--radius-md); padding: 16px;
+      color: var(--danger); font-size: 0.9rem;
+    }
+    #resultsSection { display: none; }
+    #loadingSection { display: none; text-align: center; padding: 40px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <div id="sidebar-container"></div>
+  <div class="main-content">
+    <div class="container">
+      <div class="page-title">Backtest</div>
+
+      <!-- How to use -->
+      <div class="glass-panel mb-6" style="padding: 20px;">
+        <div class="panel-title mb-3" style="cursor:pointer; user-select:none;" onclick="toggleHelp()">
+          使い方 <span id="helpToggle" style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">▼ 展開</span>
+        </div>
+        <div id="helpContent" style="display:none; font-size:0.88rem; line-height:1.8; color:var(--text-secondary);">
+          <div style="display:grid; gap:16px;">
+
+            <div>
+              <div style="font-weight:600; margin-bottom:6px; color:var(--text-primary);">📌 Symbol の入力形式</div>
+              <div>US株は <code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px;">US:AAPL</code>、日本株は <code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px;">JP:7203</code> のように入力します。</div>
+            </div>
+
+            <div>
+              <div style="font-weight:600; margin-bottom:8px; color:var(--text-primary);">📊 戦略の説明と必要条件</div>
+              <table style="width:100%; border-collapse:collapse; font-size:0.82rem;">
+                <thead>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
+                    <th style="text-align:left; padding:8px 12px; color:var(--text-muted); font-weight:600; width:160px;">戦略</th>
+                    <th style="text-align:left; padding:8px 12px; color:var(--text-muted); font-weight:600;">ロジック</th>
+                    <th style="text-align:left; padding:8px 12px; color:var(--text-muted); font-weight:600; width:200px;">必要条件</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <td style="padding:10px 12px; font-weight:600; color:var(--primary);">AI Signals</td>
+                    <td style="padding:10px 12px;">AIのBUYシグナル翌日に全額買い、SELLシグナルまたは最大20日後に売却</td>
+                    <td style="padding:10px 12px; color:var(--warning, #f59e0b);">⚠ その銘柄のAI予測データが必要<br><span style="font-size:0.78rem; color:var(--text-muted);">Data UpdateでAI Predictionを実行済みの銘柄のみ有効</span></td>
+                  </tr>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <td style="padding:10px 12px; font-weight:600; color:var(--accent);">MA Cross 50/200</td>
+                    <td style="padding:10px 12px;">50日MAが200日MAを上抜け（ゴールデンクロス）で買い、下抜け（デッドクロス）で売り</td>
+                    <td style="padding:10px 12px; color:var(--warning, #f59e0b);">⚠ 200日以上の価格データが必要<br><span style="font-size:0.78rem; color:var(--text-muted);">Start Dateを十分に遡らせること（例: 2020-01-01〜）</span></td>
+                  </tr>
+                  <tr>
+                    <td style="padding:10px 12px; font-weight:600; color:var(--success);">52W Breakout</td>
+                    <td style="padding:10px 12px;">終値が52週高値を更新した翌日に買い、20日後に売却</td>
+                    <td style="padding:10px 12px; color:var(--warning, #f59e0b);">⚠ 252日以上の価格データが必要<br><span style="font-size:0.78rem; color:var(--text-muted);">Start Dateを2022年以前に設定推奨</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div>
+              <div style="font-weight:600; margin-bottom:6px; color:var(--text-primary);">📈 表示される指標</div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:8px;">
+                <div><span style="color:var(--text-muted);">Total Return</span> — 期間全体のリターン</div>
+                <div><span style="color:var(--text-muted);">Ann. Return</span> — 年率換算リターン</div>
+                <div><span style="color:var(--text-muted);">Max Drawdown</span> — 最大の資産下落幅</div>
+                <div><span style="color:var(--text-muted);">Sharpe Ratio</span> — リスク調整済みリターン（高いほど良い）</div>
+                <div><span style="color:var(--text-muted);">Sortino Ratio</span> — 下落リスクのみ考慮したリターン（Sharpeより保守的）</div>
+                <div><span style="color:var(--text-muted);">Win Rate</span> — 勝率（利益が出たトレードの割合）</div>
+                <div><span style="color:var(--text-muted);">Total Trades</span> — トレード回数</div>
+              </div>
+            </div>
+
+            <div style="background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2); border-radius:8px; padding:12px; font-size:0.82rem;">
+              <strong>例: NVDAのAI Signalsバックテスト</strong><br>
+              Symbol: <code style="background:rgba(255,255,255,0.08); padding:1px 5px; border-radius:3px;">US:NVDA</code>、Strategy: AI Signals、Start: 2022-01-01、Capital: $10,000
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="glass-panel mb-6" style="padding: 20px;">
+        <div class="panel-title mb-4">Strategy Settings</div>
+        <div class="form-grid">
+          <div class="input-group">
+            <label>Symbol</label>
+            <input type="text" id="btSymbol" placeholder="US:AAPL" style="text-transform:uppercase;">
+          </div>
+          <div class="input-group">
+            <label>Strategy</label>
+            <select id="btStrategy">
+              <option value="ai_signals">AI Signals (BUY/SELL)</option>
+              <option value="ma_cross">MA Cross (50/200)</option>
+              <option value="breakout_52w">52-Week Breakout</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Start Date</label>
+            <input type="date" id="btStart" value="2022-01-01">
+          </div>
+          <div class="input-group">
+            <label>End Date</label>
+            <input type="date" id="btEnd">
+          </div>
+          <div class="input-group">
+            <label>Initial Capital ($)</label>
+            <input type="number" id="btCapital" value="10000" min="100">
+          </div>
+          <div class="input-group" style="justify-content: flex-end;">
+            <label>&nbsp;</label>
+            <button class="btn btn-primary" id="btnRun">Run Backtest</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div id="loadingSection">
+        <div style="font-size: 1rem; margin-bottom: 8px;">Running backtest...</div>
+        <div style="font-size: 0.8rem;">Fetching historical data</div>
+      </div>
+
+      <!-- Error -->
+      <div id="errorSection" style="display:none; margin-bottom:16px;"></div>
+
+      <!-- Results -->
+      <div id="resultsSection">
+        <!-- Summary cards -->
+        <div class="summary-grid" id="summaryCards"></div>
+
+        <!-- Equity curve -->
+        <div class="glass-panel mb-6" style="padding: 20px;">
+          <div class="panel-title mb-3">Equity Curve</div>
+          <div class="chart-container">
+            <canvas id="equityChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Trades table -->
+        <div class="glass-panel">
+          <div class="panel-header" style="padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div class="panel-title">Trades <span id="tradeCount" style="font-size:0.8rem; font-weight:400; color:var(--text-muted);"></span></div>
+          </div>
+          <div class="table-container">
+            <table class="trades-table">
+              <thead>
+                <tr>
+                  <th>Entry Date</th>
+                  <th>Exit Date</th>
+                  <th>Entry Price</th>
+                  <th>Exit Price</th>
+                  <th>Return %</th>
+                  <th>P&amp;L</th>
+                </tr>
+              </thead>
+              <tbody id="tradesBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/common.js"></script>
+  <script>
+    const API_BASE = window.CONFIG?.API_BASE || 'http://localhost:8010/api/v1';
+
+    function toggleHelp() {
+      const c = document.getElementById('helpContent');
+      const t = document.getElementById('helpToggle');
+      const open = c.style.display === 'block';
+      c.style.display = open ? 'none' : 'block';
+      t.textContent = open ? '▼ 展開' : '▲ 閉じる';
+    }
+
+    // Set default end date to today
+    document.getElementById('btEnd').value = new Date().toISOString().slice(0, 10);
+
+    function colorVal(val, pct = true) {
+      const n = parseFloat(val);
+      const suffix = pct ? '%' : '';
+      const cls = n >= 0 ? 'positive' : 'negative';
+      return `<span class="${cls}">${n >= 0 ? '+' : ''}${n.toFixed(2)}${suffix}</span>`;
+    }
+
+    function renderSummary(data) {
+      const cards = [
+        { label: 'Total Return', val: colorVal(data.total_return_pct), mono: true },
+        { label: 'Ann. Return', val: colorVal(data.annualized_return_pct), mono: true },
+        { label: 'Max Drawdown', val: `<span class="negative">-${data.max_drawdown_pct.toFixed(2)}%</span>`, mono: true },
+        { label: 'Sharpe Ratio', val: `<span style="color:var(--accent)">${data.sharpe_ratio.toFixed(2)}</span>`, mono: true },
+        { label: 'Sortino Ratio', val: `<span style="color:var(--accent)">${(data.sortino_ratio ?? 0).toFixed(2)}</span>`, mono: true },
+        { label: 'Win Rate', val: `${data.win_rate_pct.toFixed(1)}%`, mono: true },
+        { label: 'Total Trades', val: data.total_trades, mono: false },
+        { label: 'Final Capital', val: `$${data.final_capital.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`, mono: true },
+      ];
+      document.getElementById('summaryCards').innerHTML = cards.map(c =>
+        `<div class="stat-card">
+          <div class="val" style="${c.mono ? 'font-family:var(--font-mono);font-size:1.3rem;' : ''}">${c.val}</div>
+          <div class="lbl">${c.label}</div>
+        </div>`
+      ).join('');
+    }
+
+    function drawEquityChart(equityCurve, initialCapital) {
+      const canvas = document.getElementById('equityChart');
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      const W = rect.width, H = rect.height;
+      const pad = { t: 16, r: 16, b: 32, l: 60 };
+      const w = W - pad.l - pad.r, h = H - pad.t - pad.b;
+
+      const values = equityCurve.map(p => p.value);
+      const minV = Math.min(...values, initialCapital) * 0.98;
+      const maxV = Math.max(...values, initialCapital) * 1.02;
+      const xStep = w / (values.length - 1 || 1);
+
+      const toX = i => pad.l + i * xStep;
+      const toY = v => pad.t + h - (v - minV) / (maxV - minV) * h;
+
+      // Grid lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = pad.t + (h / 4) * i;
+        ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + w, y); ctx.stroke();
+        const val = maxV - (maxV - minV) * (i / 4);
+        ctx.fillStyle = 'rgba(203,213,225,0.5)';
+        ctx.font = '10px monospace'; ctx.textAlign = 'right';
+        ctx.fillText('$' + val.toFixed(0), pad.l - 6, y + 4);
+      }
+
+      // Baseline (initial capital)
+      const baseY = toY(initialCapital);
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(pad.l, baseY); ctx.lineTo(pad.l + w, baseY); ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Fill
+      const gradient = ctx.createLinearGradient(0, pad.t, 0, pad.t + h);
+      const lastVal = values[values.length - 1];
+      const isPos = lastVal >= initialCapital;
+      gradient.addColorStop(0, isPos ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)');
+      gradient.addColorStop(1, 'rgba(0,0,0,0)');
+
+      ctx.beginPath();
+      ctx.moveTo(toX(0), toY(values[0]));
+      values.forEach((v, i) => ctx.lineTo(toX(i), toY(v)));
+      ctx.lineTo(toX(values.length - 1), pad.t + h);
+      ctx.lineTo(toX(0), pad.t + h);
+      ctx.closePath();
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      // Line
+      ctx.beginPath();
+      ctx.moveTo(toX(0), toY(values[0]));
+      values.forEach((v, i) => ctx.lineTo(toX(i), toY(v)));
+      ctx.strokeStyle = isPos ? '#10b981' : '#ef4444';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // X-axis labels (5 evenly spaced)
+      ctx.fillStyle = 'rgba(203,213,225,0.5)';
+      ctx.font = '10px monospace'; ctx.textAlign = 'center';
+      const labelCount = 5;
+      for (let i = 0; i <= labelCount; i++) {
+        const idx = Math.round((values.length - 1) * (i / labelCount));
+        const dateStr = equityCurve[idx]?.date?.slice(0, 7) || '';
+        ctx.fillText(dateStr, toX(idx), H - 6);
+      }
+    }
+
+    function renderTrades(trades) {
+      document.getElementById('tradeCount').textContent = `(${trades.length} shown)`;
+      if (!trades.length) {
+        document.getElementById('tradesBody').innerHTML =
+          '<tr><td colspan="6" style="text-align:center; padding:32px; color:var(--text-muted);">No trades executed in this period.</td></tr>';
+        return;
+      }
+      document.getElementById('tradesBody').innerHTML = trades.map(t => {
+        const cls = t.return_pct >= 0 ? 'positive' : 'negative';
+        return `<tr>
+          <td style="font-family:var(--font-mono); color:var(--text-muted);">${t.entry_date}</td>
+          <td style="font-family:var(--font-mono); color:var(--text-muted);">${t.exit_date}</td>
+          <td style="font-family:var(--font-mono);">$${t.entry_price.toLocaleString()}</td>
+          <td style="font-family:var(--font-mono);">$${t.exit_price.toLocaleString()}</td>
+          <td class="${cls}" style="font-family:var(--font-mono); font-weight:700;">
+            ${t.return_pct >= 0 ? '+' : ''}${t.return_pct.toFixed(2)}%
+          </td>
+          <td class="${cls}" style="font-family:var(--font-mono);">
+            ${t.pnl >= 0 ? '+' : ''}$${t.pnl.toFixed(2)}
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    async function runBacktest() {
+      const symbol = document.getElementById('btSymbol').value.trim().toUpperCase();
+      const strategy = document.getElementById('btStrategy').value;
+      const start = document.getElementById('btStart').value;
+      const end = document.getElementById('btEnd').value;
+      const capital = parseFloat(document.getElementById('btCapital').value) || 10000;
+
+      if (!symbol) { UI.showToast('Symbol is required', 'warning'); return; }
+
+      document.getElementById('resultsSection').style.display = 'none';
+      document.getElementById('errorSection').style.display = 'none';
+      document.getElementById('loadingSection').style.display = 'block';
+
+      try {
+        const params = new URLSearchParams({ symbol, strategy, initial_capital: capital });
+        if (start) params.append('start_date', start);
+        if (end) params.append('end_date', end);
+
+        const res = await fetch(`${API_BASE}/backtest?${params}`);
+        const data = await res.json();
+
+        document.getElementById('loadingSection').style.display = 'none';
+
+        if (!res.ok || data.error) {
+          document.getElementById('errorSection').innerHTML =
+            `<div class="error-box">Error: ${data.detail || data.error || 'Unknown error'}</div>`;
+          document.getElementById('errorSection').style.display = 'block';
+          return;
+        }
+
+        renderSummary(data);
+        document.getElementById('resultsSection').style.display = 'block';
+        setTimeout(() => drawEquityChart(data.equity_curve, data.initial_capital), 50);
+        renderTrades(data.trades);
+
+      } catch (e) {
+        document.getElementById('loadingSection').style.display = 'none';
+        document.getElementById('errorSection').innerHTML =
+          `<div class="error-box">Network error: ${e.message}</div>`;
+        document.getElementById('errorSection').style.display = 'block';
+      }
+    }
+
+    document.getElementById('btnRun').addEventListener('click', runBacktest);
+    document.getElementById('btSymbol').addEventListener('keydown', e => {
+      if (e.key === 'Enter') runBacktest();
+    });
+
+    // Sidebar loader
+    fetch('/components/sidebar.html')
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('sidebar-container').innerHTML = html;
+        document.querySelectorAll('.nav-menu a').forEach(a => {
+          if (a.getAttribute('href') === 'backtest.html') a.classList.add('active');
+        });
+      });
+  </script>
+</body>
+</html>

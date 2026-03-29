@@ -29,6 +29,8 @@ class VixPredictionService:
     VIX_SYMBOLS = ("US:^VIX", "US:VIX")
     SPX_SYMBOLS = ("US:^GSPC", "US:SPY")
     NDX_SYMBOLS = ("US:^IXIC", "US:QQQ")
+    VVIX_SYMBOLS = ("US:^VVIX",)
+    VIX3M_SYMBOLS = ("US:^VIX3M",)
 
     def __init__(self) -> None:
         self.db = Database()
@@ -71,12 +73,38 @@ class VixPredictionService:
                 "liquidity", "funding stress", "bank run", "default", "downgrade",
                 "credit spread", "yield spike", "repo", "margin call"
             ],
+            "jobless_claims": [
+                "jobless claims", "initial claims", "weekly claims", "unemployment claims",
+                "unemployment insurance", "continuing claims", "labor market", "layoffs",
+                "job cuts", "job losses", "mass layoffs", "workers filed", "filed for unemployment",
+                "nonfarm payroll", "payrolls", "jobs report", "job openings", "jolts",
+                "labor department", "department of labor", "dol report"
+            ],
             "event_week": [
                 "this week", "next week", "tomorrow", "upcoming", "scheduled", "meeting",
                 "earnings", "guidance", "cpi", "fomc", "powell", "jobs report"
             ],
             "risk_tone": [
                 "panic", "crisis", "shock", "volatile", "uncertainty", "risk-off", "selloff", "plunge"
+            ],
+            "war_conflict": [
+                "war", "warfare", "armed conflict", "military strike", "airstrike", "air strike",
+                "bombardment", "shelling", "troops deployed", "ground offensive", "counteroffensive",
+                "warship", "nuclear threat", "ballistic missile", "hypersonic", "escalation",
+                "nato", "alliance", "ceasefire", "truce", "casualties", "civilian", "frontline",
+                "proxy war", "invasion", "occupation", "annexed", "territory", "no-fly zone",
+                "ukraine war", "middle east war", "israel war", "gaza", "west bank", "hezbollah",
+                "hamas", "houthi", "iran attack", "china taiwan", "south china sea", "strait"
+            ],
+            "frb_central_bank": [
+                "federal reserve", "fed reserve", "fomc", "jerome powell", "powell speech",
+                "rate decision", "rate cut", "rate hike", "basis points", "bps cut", "bps hike",
+                "quantitative tightening", "qt", "quantitative easing", "qe", "balance sheet",
+                "fed minutes", "dot plot", "fed funds rate", "overnight rate", "terminal rate",
+                "pivot", "dovish", "hawkish", "data dependent", "blackout period",
+                "beige book", "fed speak", "waller", "kugler", "goolsbee", "barkin", "daly",
+                "ecb", "boj", "bank of england", "boe", "lagarde", "ueda", "central bank",
+                "interest rate path", "neutral rate", "r-star", "inflation target"
             ],
         }
 
@@ -103,10 +131,15 @@ class VixPredictionService:
             asof = datetime.strptime(asof_date, "%Y-%m-%d").date() if asof_date else latest_db_date
             if asof > latest_db_date:
                 asof = latest_db_date
+            # run_date = actual execution date (may be weekend/holiday after last VIX close)
+            # News fetching and feature loading use run_date so weekend/holiday news is captured.
+            run_date = date.today()
+            if run_date < asof:
+                run_date = asof
 
             news_refresh = None
             if bool(refresh_news):
-                news_refresh = self._refresh_news_for_vix_context(asof)
+                news_refresh = self._refresh_news_for_vix_context(run_date)
 
             cfg = VixRunConfig(asof_date=asof, horizon_days=horizon_days, backtest_years=backtest_years)
             df = self._load_feature_frame(end_date=asof)
@@ -121,13 +154,13 @@ class VixPredictionService:
 
             backtest = self._run_backtest(df.copy(), cfg, feature_cols)
             backtest["auto_news_weights"] = auto_news_weights
-            current_news = self._load_news_features(asof)
+            current_news = self._load_news_features(asof, news_end_date=run_date)
             current_news["news_refresh"] = news_refresh
             current_news["auto_news_weights"] = auto_news_weights
             current_news["rag_auto_weighted_risk_score_7d"] = self._score_current_news_with_auto_weights(
                 current_news, auto_news_weights
             )
-            current_news["news_usage"] = self._load_news_usage_details(asof)
+            current_news["news_usage"] = self._load_news_usage_details(asof, news_end_date=run_date)
             current_row = self._build_current_row(df, asof, current_news)
             forecasts = self._predict_multi_horizon(df.copy(), current_row, cfg, feature_cols, backtest)
 
@@ -364,7 +397,7 @@ class VixPredictionService:
             SELECT symbol_key, trading_date, close
             FROM price_daily
             WHERE trading_date BETWEEN %s AND %s
-              AND symbol_key IN ('US:^VIX','US:VIX','US:^GSPC','US:SPY','US:^IXIC','US:QQQ')
+              AND symbol_key IN ('US:^VIX','US:VIX','US:^GSPC','US:SPY','US:^IXIC','US:QQQ','US:^VVIX','US:^VIX3M')
             ORDER BY trading_date ASC
             """,
             (start_date, end_date),
@@ -387,6 +420,8 @@ class VixPredictionService:
         vix = pick_symbol(self.VIX_SYMBOLS)
         spx = pick_symbol(self.SPX_SYMBOLS)
         ndx = pick_symbol(self.NDX_SYMBOLS)
+        vvix = pick_symbol(self.VVIX_SYMBOLS)
+        vix3m = pick_symbol(self.VIX3M_SYMBOLS)
         if vix is None:
             return pd.DataFrame()
 
@@ -412,6 +447,23 @@ class VixPredictionService:
         for lag in range(1, 6):
             base[f"vix_ret_lag{lag}"] = base["vix_ret_1d"].shift(lag)
             base[f"spx_ret_lag{lag}"] = base["spx_ret_1d"].shift(lag) if "spx_ret_1d" in base else np.nan
+
+        # VVIX features (VIX of VIX — tail-spike leading indicator)
+        if vvix is not None:
+            base["vvix_close"] = vvix.reindex(base.index).ffill()
+            base["vvix_ma5"] = base["vvix_close"].rolling(5).mean()
+            base["vvix_ret_1d"] = base["vvix_close"].pct_change()
+            base["vvix_mr5"] = (base["vvix_close"] / base["vvix_ma5"]) - 1.0
+
+        # VIX term structure features (VIX vs VIX3M — contango/backwardation)
+        # Negative spread = VIX < VIX3M = contango (VIX expected to rise toward VIX3M)
+        # Positive spread = VIX > VIX3M = backwardation (VIX elevated, expected to revert down)
+        if vix3m is not None:
+            base["vix3m_close"] = vix3m.reindex(base.index).ffill()
+            base["vix_vix3m_spread"] = base["vix_close"] - base["vix3m_close"]
+            base["vix_vix3m_ratio"] = base["vix_close"] / base["vix3m_close"].replace(0, np.nan)
+            base["vix3m_ma5"] = base["vix3m_close"].rolling(5).mean()
+            base["ts_slope_5d"] = base["vix_vix3m_spread"].rolling(5).mean()
 
         # Market environment features (best effort)
         me_rows = self.db.execute_query(
@@ -490,6 +542,9 @@ class VixPredictionService:
                     "news_credit_liquidity_score": float(scored.get("news_credit_liquidity_score", 0.0)),
                     "news_event_week_score": float(scored.get("news_event_week_score", 0.0)),
                     "news_risk_tone_score": float(scored.get("news_risk_tone_score", 0.0)),
+                    "news_war_conflict_score": float(scored.get("news_war_conflict_score", 0.0)),
+                    "news_frb_central_bank_score": float(scored.get("news_frb_central_bank_score", 0.0)),
+                    "news_jobless_claims_score": float(scored.get("news_jobless_claims_score", 0.0)),
                     "news_weighted_risk_score": float(scored.get("news_weighted_risk_score", 0.0)),
                 }
             )
@@ -508,13 +563,17 @@ class VixPredictionService:
             "news_credit_liquidity_score",
             "news_event_week_score",
             "news_risk_tone_score",
+            "news_war_conflict_score",
+            "news_frb_central_bank_score",
+            "news_jobless_claims_score",
             "news_weighted_risk_score",
         ]:
             news_df[f"{c}_5d_mean"] = news_df[c].rolling(5, min_periods=1).mean()
         return news_df
 
-    def _load_news_features(self, asof: date) -> dict[str, Any]:
+    def _load_news_features(self, asof: date, news_end_date: date | None = None) -> dict[str, Any]:
         features: dict[str, Any] = {}
+        end = news_end_date if news_end_date is not None else asof
         rows = self.db.execute_query(
             """
             SELECT COUNT(*),
@@ -524,7 +583,7 @@ class VixPredictionService:
               AND DATE(published_at) BETWEEN %s AND %s
               AND symbol_key IN ('US:^VIX','US:VIX','US:^GSPC','US:SPY','US:^IXIC','US:QQQ')
             """,
-            (asof - timedelta(days=7), asof),
+            (end - timedelta(days=7), end),
         ) or []
         if rows and rows[0]:
             features["rag_doc_count_7d"] = int(rows[0][0] or 0)
@@ -543,6 +602,9 @@ class VixPredictionService:
             features["rag_credit_liquidity_score_7d"] = float(scored7.get("news_credit_liquidity_score", 0.0))
             features["rag_event_week_score_7d"] = float(scored7.get("news_event_week_score", 0.0))
             features["rag_risk_tone_score_7d"] = float(scored7.get("news_risk_tone_score", 0.0))
+            features["rag_war_conflict_score_7d"] = float(scored7.get("news_war_conflict_score", 0.0))
+            features["rag_frb_central_bank_score_7d"] = float(scored7.get("news_frb_central_bank_score", 0.0))
+            features["rag_jobless_claims_score_7d"] = float(scored7.get("news_jobless_claims_score", 0.0))
             features["rag_weighted_risk_score_7d"] = float(scored7.get("news_weighted_risk_score", 0.0))
 
         llm_rows = self.db.execute_query(
@@ -590,7 +652,8 @@ class VixPredictionService:
 
         return features
 
-    def _load_news_usage_details(self, asof: date) -> dict[str, Any]:
+    def _load_news_usage_details(self, asof: date, news_end_date: date | None = None) -> dict[str, Any]:
+        end = news_end_date if news_end_date is not None else asof
         rows = self.db.execute_query(
             """
             SELECT symbol_key, source_type, source_ref, published_at, title
@@ -601,7 +664,7 @@ class VixPredictionService:
             ORDER BY published_at DESC
             LIMIT 50
             """,
-            (asof - timedelta(days=7), asof),
+            (end - timedelta(days=7), end),
         ) or []
         items = []
         by_symbol: dict[str, int] = {}
@@ -644,6 +707,12 @@ class VixPredictionService:
             {"symbol_key": "US:QQQ", "label": "US tech risk", "query": "Nasdaq QQQ tech selloff earnings guidance volatility"},
             {"symbol_key": "US:^GSPC", "label": "SPX options flow", "query": "S&P 500 options flow put call ratio gamma dealer hedging skew"},
             {"symbol_key": "US:^VIX", "label": "Geo risk", "query": "US market geopolitical risk sanctions war oil shock volatility"},
+            # Dedicated war/conflict feed — escalation events directly spike VIX
+            {"symbol_key": "US:^VIX", "label": "War conflict", "query": "war military strike airstrike troops invasion escalation ceasefire nuclear NATO Ukraine Gaza Iran Taiwan"},
+            # Dedicated FRB/Fed feed — rate-path surprises are the single biggest VIX driver
+            {"symbol_key": "US:^VIX", "label": "FRB Fed policy", "query": "Federal Reserve FOMC Powell rate decision rate cut rate hike basis points hawkish dovish dot plot quantitative tightening balance sheet"},
+            # Jobless claims — weekly labor market shock (pivotal variable for 5-day horizon)
+            {"symbol_key": "US:^VIX", "label": "Jobless claims", "query": "jobless claims initial claims unemployment claims weekly claims labor department layoffs job cuts mass layoffs nonfarm payroll jobs report"},
         ]
         specs = []
         for q in queries:
@@ -717,14 +786,35 @@ class VixPredictionService:
             "news_credit_liquidity_score",
             "news_event_week_score",
             "news_risk_tone_score",
+            "news_war_conflict_score",
+            "news_frb_central_bank_score",
             "news_weighted_risk_score",
             "news_auto_weighted_risk_score",
             "news_weighted_risk_score_5d_mean",
             "news_options_put_call_flow_score_5d_mean",
+            "news_war_conflict_score_5d_mean",
+            "news_frb_central_bank_score_5d_mean",
+            # jobless claims
+            "news_jobless_claims_score",
+            "news_jobless_claims_score_5d_mean",
+            # VVIX (VIX of VIX — tail-spike leading indicator)
+            "vvix_close",
+            "vvix_ma5",
+            "vvix_ret_1d",
+            "vvix_mr5",
+            # VIX term structure (contango / backwardation)
+            "vix3m_close",
+            "vix_vix3m_spread",
+            "vix_vix3m_ratio",
+            "ts_slope_5d",
+            # PTI overrides (point-in-time)
             "news_risk_score_pti",
             "news_event_week_score_pti",
             "news_geo_score_pti",
             "news_options_put_call_flow_score_pti",
+            "news_war_conflict_score_pti",
+            "news_frb_central_bank_score_pti",
+            "news_jobless_claims_score_pti",
             "llm_risk_signal_mean_pti",
             "llm_geo_risk_signal_pti",
             "llm_policy_risk_signal_pti",
@@ -745,6 +835,9 @@ class VixPredictionService:
         row["news_event_week_score_pti"] = float(current_news.get("rag_event_week_score_7d", 0.0))
         row["news_geo_score_pti"] = float(current_news.get("rag_geo_score_7d", 0.0))
         row["news_options_put_call_flow_score_pti"] = float(current_news.get("rag_options_put_call_flow_score_7d", 0.0))
+        row["news_war_conflict_score_pti"] = float(current_news.get("rag_war_conflict_score_7d", 0.0))
+        row["news_frb_central_bank_score_pti"] = float(current_news.get("rag_frb_central_bank_score_7d", 0.0))
+        row["news_jobless_claims_score_pti"] = float(current_news.get("rag_jobless_claims_score_7d", 0.0))
         row["llm_risk_signal_mean_pti"] = float(current_news.get("llm_risk_signal_mean", 0.0))
         row["llm_geo_risk_signal_pti"] = float(current_news.get("llm_geo_risk_signal", 0.0))
         row["llm_policy_risk_signal_pti"] = float(current_news.get("llm_policy_risk_signal", 0.0))
@@ -762,6 +855,8 @@ class VixPredictionService:
         df["news_event_week_score_pti"] = df.get("news_event_week_score", 0.0).fillna(0.0)
         df["news_geo_score_pti"] = df.get("news_geo_score", 0.0).fillna(0.0)
         df["news_options_put_call_flow_score_pti"] = df.get("news_options_put_call_flow_score", 0.0).fillna(0.0)
+        df["news_war_conflict_score_pti"] = df.get("news_war_conflict_score", pd.Series(0.0, index=df.index)).fillna(0.0)
+        df["news_frb_central_bank_score_pti"] = df.get("news_frb_central_bank_score", pd.Series(0.0, index=df.index)).fillna(0.0)
         df["llm_risk_signal_mean_pti"] = 0.0  # historical LLM coverage may be sparse; safe default
         df["llm_geo_risk_signal_pti"] = 0.0
         df["llm_policy_risk_signal_pti"] = 0.0
@@ -1131,13 +1226,16 @@ class VixPredictionService:
             1.55 * cat_scores.get("news_global_macro_geo_score", 0.0) +
             0.90 * cat_scores.get("news_earnings_guidance_score", 0.0) +
             1.45 * cat_scores.get("news_options_put_call_flow_score", 0.0) +
-            1.6 * cat_scores.get("news_geo_score", 0.0) +
-            1.2 * cat_scores.get("news_policy_score", 0.0) +
-            1.1 * cat_scores.get("news_inflation_macro_score", 0.0) +
-            1.3 * cat_scores.get("news_trade_sanction_score", 0.0) +
-            1.5 * cat_scores.get("news_credit_liquidity_score", 0.0) +
-            1.7 * cat_scores.get("news_event_week_score", 0.0) +
-            1.4 * cat_scores.get("news_risk_tone_score", 0.0)
+            1.6  * cat_scores.get("news_geo_score", 0.0) +
+            1.2  * cat_scores.get("news_policy_score", 0.0) +
+            1.1  * cat_scores.get("news_inflation_macro_score", 0.0) +
+            1.3  * cat_scores.get("news_trade_sanction_score", 0.0) +
+            1.5  * cat_scores.get("news_credit_liquidity_score", 0.0) +
+            1.7  * cat_scores.get("news_event_week_score", 0.0) +
+            1.4  * cat_scores.get("news_risk_tone_score", 0.0) +
+            # New dedicated categories — high weights because they are direct VIX movers
+            1.8  * cat_scores.get("news_war_conflict_score", 0.0) +
+            1.65 * cat_scores.get("news_frb_central_bank_score", 0.0)
         )
         out = dict(cat_scores)
         out["news_risk_hits"] = float(total_hits)
@@ -1167,6 +1265,8 @@ class VixPredictionService:
             "credit_liquidity": "news_credit_liquidity_score",
             "event_week": "news_event_week_score",
             "risk_tone": "news_risk_tone_score",
+            "war_conflict": "news_war_conflict_score",
+            "frb_central_bank": "news_frb_central_bank_score",
         }
 
     def _derive_auto_news_weights(self, df: pd.DataFrame, cfg: VixRunConfig) -> dict[str, float]:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 import time
@@ -27,6 +28,17 @@ def _parse_args() -> argparse.Namespace:
         "--symbols",
         default=None,
         help='Optional comma-separated symbol keys. Example: "US:NVDA,US:QQQ".',
+    )
+    parser.add_argument(
+        "--symbols-file",
+        default=None,
+        help="Optional path to symbols list file (one symbol per line).",
+    )
+    parser.add_argument(
+        "--default-market",
+        default="US",
+        choices=["US", "JP"],
+        help="Default market prefix for symbols without prefix (default: US).",
     )
     parser.add_argument(
         "--include-inactive",
@@ -114,14 +126,38 @@ def _start_date_from_years(end_date: date, years: int) -> date:
         return end_date.replace(year=target_year, month=2, day=28)
 
 
-def _normalize_symbol_key(raw: str) -> str:
+def _normalize_symbol_key(raw: str, default_market: str = "US") -> str:
     s = str(raw).strip().upper()
     if not s:
         return s
-    return s if ":" in s else f"US:{s}"
+    if ":" in s:
+        return s
+    if re.fullmatch(r"\d{4}", s):
+        return f"JP:{s}"
+    return f"{default_market}:{s}"
 
 
-def _load_symbols_from_db(include_inactive: bool, include_existing_price_keys: bool) -> List[str]:
+def _load_symbols_from_file(path: Path, default_market: str) -> List[str]:
+    if not path.exists():
+        raise RuntimeError(f"symbols file not found: {path}")
+    out: List[str] = []
+    seen: Set[str] = set()
+    for line in path.read_text(encoding="utf-8").splitlines():
+        raw = line.strip()
+        if not raw or raw.startswith("#"):
+            continue
+        norm = _normalize_symbol_key(raw, default_market=default_market)
+        if norm and norm not in seen:
+            seen.add(norm)
+            out.append(norm)
+    return out
+
+
+def _load_symbols_from_db(
+    include_inactive: bool,
+    include_existing_price_keys: bool,
+    default_market: str,
+) -> List[str]:
     db = Database()
     if not db.connect():
         raise RuntimeError("DB connect failed while loading symbols.")
@@ -137,13 +173,13 @@ def _load_symbols_from_db(include_inactive: bool, include_existing_price_keys: b
             )
             rows = db.execute_query(q_inst) or []
         for r in rows:
-            out.add(_normalize_symbol_key(r[0]))
+            out.add(_normalize_symbol_key(r[0], default_market=default_market))
 
         if include_existing_price_keys:
             q_price = "SELECT DISTINCT symbol_key FROM price_daily WHERE symbol_key IS NOT NULL"
             rows_p = db.execute_query(q_price) or []
             for r in rows_p:
-                out.add(_normalize_symbol_key(r[0]))
+                out.add(_normalize_symbol_key(r[0], default_market=default_market))
     finally:
         db.disconnect()
     return sorted([s for s in out if s])
@@ -294,11 +330,23 @@ def main() -> int:
     start_date = _start_date_from_years(end_date, int(args.years))
 
     if args.symbols:
-        symbols = sorted({_normalize_symbol_key(s) for s in str(args.symbols).split(",") if s.strip()})
+        symbols = sorted(
+            {
+                _normalize_symbol_key(s, default_market=str(args.default_market).upper())
+                for s in str(args.symbols).split(",")
+                if s.strip()
+            }
+        )
+    elif args.symbols_file:
+        symbols = _load_symbols_from_file(
+            path=Path(str(args.symbols_file)),
+            default_market=str(args.default_market).upper(),
+        )
     else:
         symbols = _load_symbols_from_db(
             include_inactive=bool(args.include_inactive),
             include_existing_price_keys=bool(args.include_existing_price_keys),
+            default_market=str(args.default_market).upper(),
         )
     if not symbols:
         raise RuntimeError("No symbols resolved. Check instruments/price_daily or pass --symbols explicitly.")

@@ -103,6 +103,12 @@ class WatchlistItem(BaseModel):
     
     last_updated: Optional[datetime] = None
 
+    # AI判定 (DB非保存、API算出 — Screener と同一ロジック)
+    action_label: Optional[str] = None        # "BUY"|"HOLD"|"SELL"|"WATCH"|"BLOCKED"
+    gate_reasons: Optional[list[str]] = None  # [] = ゲート非発動
+    ai_signal_strength: Optional[float] = None  # 0-100 (p_up5×100、gate調整後)
+    p_up5: Optional[float] = None             # AI上昇確率 (生値)
+
     class Config:
         from_attributes = True
 
@@ -260,6 +266,12 @@ class Holding(BaseModel):
     gain_loss_pct: Decimal
     currency: str
 
+    # AI判定 (DB非保存、API算出 — Watchlist/Screener と同一ロジック)
+    action_label: Optional[str] = None        # "BUY"|"HOLD"|"SELL"|"WATCH"|"BLOCKED"
+    gate_reasons: Optional[list[str]] = None  # [] = ゲート非発動
+    ai_signal_strength: Optional[float] = None  # 0-100 (gate調整後)
+    p_up5: Optional[float] = None             # AI上昇確率 (生値)
+
 
 class TradeHistory(BaseModel):
     """取引履歴"""
@@ -334,11 +346,26 @@ class ScreenerResult(BaseModel):
     breakout_effectiveness: Optional[str] = None
     canslim_pass_count: Optional[int] = None
     canslim_pass_count_display: Optional[str] = None
+    canslim_criteria: Optional[dict[str, bool]] = None
     overall_grade: Optional[str] = None
     ai_p_up5_2w: Optional[float] = None
     ai_3class: Optional[dict[str, int]] = None
     ai_3class_summary: Optional[str] = None
+    # Phase 2: action_label / gate_reasons / predicted_class / final_rank_score (DB非保存、API算出)
+    action_label: Optional[str] = None           # "BUY"|"HOLD"|"SELL"|"WATCH"|"BLOCKED"
+    gate_reasons: Optional[list[str]] = None     # [] = ゲート非発動
+    predicted_class: Optional[int] = None        # 0=下落 / 1=フラット / 2=上昇 (up5閾値から導出)
+    final_rank_score: Optional[float] = None     # 総合ランクスコア (0-100): tech*0.5 + AI*0.3 + CANSLIM*0.2 + gate調整
+    # Phase 3-1: 15営業日3クラス予測 (class15, DB保存済み分を表示)
+    class15: Optional[dict[str, Any]] = None     # {"direction": "Up"|"Flat"|"Down", "prob_up": float, ...}
+    sector: Optional[str] = None
     market_summary: Optional[dict[str, Any]] = None
+    # Institutional: 機関投資家フットプリント (2層構造)
+    institutional_footprint_score: Optional[float] = None  # price/volume代替スコア (0-100)
+    institutional_evidence_score: Optional[float] = None   # 直接証拠スコア (将来用, 常にNone)
+    institutional_score: Optional[float] = None            # 採用スコア (evidence優先 → footprint)
+    institutional_score_source: Optional[str] = None       # "evidence"|"footprint"|"none"
+    institutional_flags: list[str] = []                    # breakout_volume_confirmed等
 
 
 class ScreenerResponse(BaseModel):
@@ -349,6 +376,7 @@ class ScreenerResponse(BaseModel):
     limit: int
     total_pages: int
     freshness: "DataFreshness | None" = None
+    usd_jpy_rate: float | None = None
 
 
 # ========== Rotation Models ==========

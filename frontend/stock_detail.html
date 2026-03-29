@@ -915,6 +915,43 @@
  .ai-signal-notrade { color: #9ca3af; }
  .ai-signal-blocked { color: #f87171; font-weight: 700; }
  .ai-signal-caution { color: #fbbf24; font-weight: 700; }
+
+ /* News Tab */
+ .news-item {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  transition: background 0.2s ease;
+ }
+ .news-item:last-child { border-bottom: none; }
+ .news-item:hover { background: rgba(255,255,255,0.03); }
+ .news-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 6px;
+ }
+ .news-title a {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color 0.2s;
+ }
+ .news-title a:hover { color: var(--primary); }
+ .news-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+ }
+ .news-source-badge {
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(99,102,241,0.12);
+  border: 1px solid rgba(99,102,241,0.2);
+  color: var(--primary);
+  font-size: 0.7rem;
+  font-weight: 600;
+ }
  </style>
 </head>
 
@@ -961,6 +998,7 @@
  <button class="tab" data-tab="chart">Chart</button>
  <button class="tab" data-tab="fundamentals">Fundamentals</button>
  <button class="tab" data-tab="ratios">Ratios</button>
+ <button class="tab" data-tab="news">News</button>
  </nav>
 
  <!-- Tab: Indicators -->
@@ -1035,12 +1073,11 @@
  </button>
  </div>
 
- <div class="chart-container" style="position: relative;">
- <canvas id="mainPriceChart"></canvas>
- </div>
+ <!-- LightweightCharts: price + volume integrated -->
+ <div id="lwChartContainer" style="position: relative; width: 100%; height: 420px; border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.2);"></div>
 
  <!-- Chart Controls -->
- <div style="margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
+ <div style="margin-top: 12px; margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
  <button class="btn btn-primary btn-sm tf-btn active" data-tf="1d">Daily</button>
  <button class="btn btn-ghost btn-sm tf-btn" data-tf="1w">Weekly</button>
  <div style="width: 1px; background: rgba(255,255,255,0.12); margin: 0 4px;"></div>
@@ -1052,15 +1089,6 @@
  <button class="btn btn-ghost btn-sm chart-period-btn" data-period="1Y">1Y</button>
  <button class="btn btn-ghost btn-sm chart-period-btn" data-period="5Y">5Y</button>
  <button class="btn btn-ghost btn-sm chart-period-btn" data-period="MAX">MAX</button>
- </div>
-
- <!-- Price Chart Container -->
- <div style="background: rgba(0, 0, 0, 0.3); border-radius: 8px; padding: 20px;">
- <div
- style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
- Volume
- </div>
- <canvas id="volumeChart" style="max-height: 150px;"></canvas>
  </div>
  </div>
 
@@ -1089,17 +1117,38 @@
  </div>
  </div>
 
- <div class="tp-row">
- <span class="tp-label">2週間以内に+5%上昇する確率</span>
- <span class="tp-value" id="tpAiProbUp5" style="font-size: 1.4rem; font-weight: 800;">--</span>
+ <!-- AI Action Label + Signal Strength (computed at API time, not DB-stored) -->
+ <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+   <span id="tpAiActionLabel" style="display:none; font-size:0.85rem; font-weight:700; padding:3px 10px; border-radius:999px;"></span>
+   <span class="tp-value" id="tpAiDecision" style="font-size:0.9rem; color:var(--text-muted);">--</span>
  </div>
 
- <div class="tp-row">
- <span class="tp-label">判定</span>
- <span class="tp-value" id="tpAiDecision">--</span>
+ <!-- Gate reasons バッジ (Screener と統一デザイン) -->
+ <div id="tpAiGateReasons" style="display:none; margin-bottom:8px;"></div>
+ <!-- Legacy gate note (フォールバック用) -->
+ <div id="tpAiGateNote" style="display: none; font-size: 0.75rem; color: #f87171; margin-bottom:8px; padding: 2px 6px; background: rgba(239,68,68,0.08); border-radius: 4px;"></div>
+
+ <!-- AI Signal Strength bar (p_up5 + gate調整) -->
+ <div class="tp-row" style="flex-direction:column; align-items:flex-start; gap:4px; margin-bottom:4px;">
+   <div style="display:flex; justify-content:space-between; width:100%;">
+     <span class="tp-label">AIシグナル強度（市場ゲート反映後）</span>
+     <span id="tpAiSignalStrength" style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">--</span>
+   </div>
+   <div style="width:100%; background:rgba(255,255,255,0.08); border-radius:4px; height:6px; overflow:hidden;">
+     <div id="tpAiSignalBar" style="height:100%; width:0%; border-radius:4px; background:#6366f1; transition:width 0.4s;"></div>
+   </div>
  </div>
 
- <div id="tpAiGateNote" style="display: none; font-size: 0.75rem; color: #f87171; margin-top: 2px; padding: 2px 4px; background: rgba(239,68,68,0.08); border-radius: 4px;"></div>
+ <!-- Prob bar: 上昇確率 (5営業日) -->
+ <div class="tp-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+   <div style="display:flex; justify-content:space-between; width:100%;">
+     <span class="tp-label">上昇確率 (5営業日 &gt;+5%)</span>
+     <span class="tp-value" id="tpAiProbUp5" style="font-size:1.0rem; font-weight:800; min-width:48px; text-align:right;">--</span>
+   </div>
+   <div style="width:100%; background:rgba(255,255,255,0.08); border-radius:4px; height:8px; overflow:hidden;">
+     <div id="tpAiProbBar" style="height:100%; width:0%; border-radius:4px; background:#6366f1; transition:width 0.4s;"></div>
+   </div>
+ </div>
 
  <div id="tpAiThresholdNote" class="tp-row" style="display: none;">
  <span class="tp-label" style="font-size: 0.75rem; color: var(--text-muted); font-style: italic;">
@@ -1141,6 +1190,39 @@
  <div id="tpAiSourceReport" style="font-size:0.74rem; line-height:1.45; color: var(--text); word-break: break-word; overflow-wrap: anywhere;">--</div>
  </div>
  </div>
+
+<!-- Class15: 15営業日3クラス予測 (Phase 3-1) -->
+<div class="tp-section" id="tpClass15Section" style="border-left-color: #06b6d4;">
+<div class="tp-section-title">15営業日予測 (3クラス)</div>
+<div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+  <span id="tpClass15Direction" style="font-size:0.85rem; font-weight:700; padding:3px 10px; border-radius:999px; background:rgba(148,163,184,0.1); color:#94a3b8; border:1px solid rgba(148,163,184,0.3);">未計算</span>
+  <span id="tpClass15Asof" style="font-size:0.75rem; color:var(--text-muted);"></span>
+</div>
+<div style="display:flex; gap:6px; margin-bottom:6px;">
+  <div style="flex:1; text-align:center;">
+    <div style="font-size:0.7rem; color:#4ade80; margin-bottom:3px;">Up</div>
+    <div style="background:rgba(255,255,255,0.08); border-radius:4px; height:6px; overflow:hidden; margin-bottom:2px;">
+      <div id="tpClass15BarUp" style="height:100%; width:0%; border-radius:4px; background:#22c55e; transition:width 0.4s;"></div>
+    </div>
+    <div id="tpClass15PctUp" style="font-size:0.75rem; font-weight:700; color:#4ade80;">--</div>
+  </div>
+  <div style="flex:1; text-align:center;">
+    <div style="font-size:0.7rem; color:#94a3b8; margin-bottom:3px;">Flat</div>
+    <div style="background:rgba(255,255,255,0.08); border-radius:4px; height:6px; overflow:hidden; margin-bottom:2px;">
+      <div id="tpClass15BarFlat" style="height:100%; width:0%; border-radius:4px; background:#94a3b8; transition:width 0.4s;"></div>
+    </div>
+    <div id="tpClass15PctFlat" style="font-size:0.75rem; font-weight:700; color:#94a3b8;">--</div>
+  </div>
+  <div style="flex:1; text-align:center;">
+    <div style="font-size:0.7rem; color:#f87171; margin-bottom:3px;">Down</div>
+    <div style="background:rgba(255,255,255,0.08); border-radius:4px; height:6px; overflow:hidden; margin-bottom:2px;">
+      <div id="tpClass15BarDown" style="height:100%; width:0%; border-radius:4px; background:#ef4444; transition:width 0.4s;"></div>
+    </div>
+    <div id="tpClass15PctDown" style="font-size:0.75rem; font-weight:700; color:#f87171;">--</div>
+  </div>
+</div>
+<div style="font-size:0.7rem; color:var(--text-muted); font-style:italic;">※ flat band ±3%、暫定変換値</div>
+</div>
 
  <!-- A. Forecast / Probabilities (Display Only) -->
  <div class="tp-section">
@@ -1199,6 +1281,14 @@
  <span class="tp-label">Buy Range</span>
  <span class="tp-value" id="tpBuyRange">--</span>
  </div>
+ </div>
+
+ <!-- Volume × Price Pattern Analysis -->
+ <div class="tp-section" id="tpVolSection" style="border-left-color: #a78bfa;">
+  <div class="tp-section-title" style="color: #a78bfa;">Volume × Price パターン</div>
+  <div id="tpVolPricePattern">
+   <div class="tp-label" style="padding:8px 0;">チャートデータ読み込み中...</div>
+  </div>
  </div>
 
  <!-- C. Position / Risk Plan (Input + Save) -->
@@ -1334,20 +1424,25 @@
  </div>
  </section>
 
+
+ <!-- Tab: News -->
+ <section id="tab-news" class="tab-panel">
+  <div class="glass-panel" style="padding: 24px;">
+   <div class="panel-title mb-4">Latest News</div>
+   <div id="newsLoading" style="display:none; text-align:center; padding:20px; color:var(--text-muted);">Loading news...</div>
+   <div id="newsList"></div>
+  </div>
+ </section>
+
  </div>
  </main>
 
- <!-- Scripts (Strict Order) -->
- <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
- <script defer src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
- <script defer
- src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
- <script defer
- src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@3.3.0/dist/chartjs-chart-financial.min.js"></script>
+ <!-- Scripts -->
+ <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
 
  <script defer src="/js/config.js?v=20260211-neo-01"></script>
  <script defer src="/js/common.js?v=20260211-neo-01"></script>
- <script defer src="/js/stock_detail.js?v=20260223-yoy1"></script>
+ <script defer src="/js/stock_detail.js?v=20260307-lw1"></script>
 
  <script>
  // Tab Navigation & App Initialization

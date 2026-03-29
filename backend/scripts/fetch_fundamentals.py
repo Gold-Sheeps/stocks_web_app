@@ -90,6 +90,72 @@ def collect_watchlist_portfolio_symbols(conn: psycopg.Connection) -> list[str]:
     return sorted(symbols)
 
 
+def collect_all_instruments_symbols(conn: psycopg.Connection, only_missing: bool = False) -> list[str]:
+    """
+    Get raw ticker symbols for ALL active instruments.
+    If only_missing=True, restrict to symbols with NULL fields in fundamentals table.
+    """
+    symbols: set[str] = set()
+    with conn.cursor() as cur:
+        try:
+            cur.execute(
+                """
+                SELECT DISTINCT symbol_key FROM instruments
+                WHERE is_active = true AND symbol_key IS NOT NULL
+                """
+            )
+            for (sk,) in cur.fetchall():
+                raw = _extract_raw(sk)
+                if raw and is_equity_symbol(raw):
+                    symbols.add(raw)
+        except Exception as e:
+            print(f"[WARN] instruments query failed: {e}")
+
+        # Also include any instruments found in price_daily but not in instruments table
+        try:
+            cur.execute(
+                """
+                SELECT DISTINCT symbol_key FROM price_daily
+                WHERE symbol_key IS NOT NULL
+                  AND trading_date >= CURRENT_DATE - INTERVAL '30 days'
+                """
+            )
+            for (sk,) in cur.fetchall():
+                raw = _extract_raw(sk)
+                if raw and is_equity_symbol(raw):
+                    symbols.add(raw)
+        except Exception as e:
+            print(f"[WARN] price_daily query failed: {e}")
+
+    if only_missing:
+        # Filter to symbols that have NULL fields in fundamentals
+        missing: set[str] = set()
+        null_cols = ["eps", "revenue", "net_income", "operating_cash_flow", "free_cash_flow", "capex"]
+        with conn.cursor() as cur:
+            for col in null_cols:
+                try:
+                    cur.execute(
+                        f"SELECT DISTINCT symbol FROM fundamentals WHERE {col} IS NULL"
+                    )
+                    for (sym,) in cur.fetchall():
+                        missing.add((sym or "").upper())
+                except Exception:
+                    pass
+        # Also include symbols with NO row at all in fundamentals
+        try:
+            with conn.cursor() as cur:
+                cur.execute("SELECT DISTINCT UPPER(symbol) FROM fundamentals")
+                has_data = {r[0] for r in cur.fetchall()}
+            for s in list(symbols):
+                if s.upper() not in has_data:
+                    missing.add(s.upper())
+        except Exception:
+            pass
+        symbols = {s for s in symbols if s.upper() in missing}
+
+    return sorted(symbols)
+
+
 def parse_explicit_symbols(symbols_str: str) -> list[str]:
     """Parse 'US:AAPL,US:MSFT' -> ['AAPL', 'MSFT'] (raw yfinance tickers)."""
     result: list[str] = []
@@ -103,8 +169,15 @@ def parse_explicit_symbols(symbols_str: str) -> list[str]:
     return result
 
 
+def _is_jp_raw(raw: str) -> bool:
+    """Return True if raw is a 4-digit Japanese stock code (e.g., '7203')."""
+    import re
+    return bool(re.fullmatch(r"\d{4}", raw.strip()))
+
+
 def _best_effort_rag_fill_for_symbol(raw_symbol: str, asof: date) -> dict:
-    symbol_key = f"US:{raw_symbol.upper()}"
+    market = "JP" if _is_jp_raw(raw_symbol) else "US"
+    symbol_key = f"{market}:{raw_symbol.upper()}"
     out = {"attempted": True, "symbol_key": symbol_key, "news_ingest": "skipped", "fill_status": "skipped"}
     try:
         script_path = REPO_ROOT / "backend" / "scripts" / "ingest_external_news_rss_backfill.py"
@@ -160,6 +233,16 @@ def main() -> int:
         help="Comma-separated symbol keys, e.g. US:AAPL,US:MSFT. Default: watchlist+portfolio from DB",
     )
     parser.add_argument(
+        "--universe",
+        type=str,
+        default="watchlist_portfolio",
+        choices=["watchlist_portfolio", "all", "all_missing"],
+        help=(
+            "Symbol universe: 'watchlist_portfolio' (default), "
+            "'all' (全アクティブ銘柄), 'all_missing' (NULLフィールドがある銘柄のみ)"
+        ),
+    )
+    parser.add_argument(
         "--max-symbols",
         type=int,
         default=200,
@@ -182,6 +265,11 @@ def main() -> int:
         action="store_true",
         help="Print symbols that would be fetched without making API calls or DB writes",
     )
+    parser.add_argument(
+        "--skip-rag",
+        action="store_true",
+        help="Skip RAG fallback fill (faster for large universe runs)",
+    )
     args = parser.parse_args()
 
     conn = psycopg.connect(DB_CONNINFO)
@@ -192,6 +280,12 @@ def main() -> int:
 
         if args.symbols:
             symbols = parse_explicit_symbols(args.symbols)
+        elif args.universe == "all":
+            print("[FUND] universe=all: 全アクティブ銘柄を対象にします")
+            symbols = collect_all_instruments_symbols(conn, only_missing=False)
+        elif args.universe == "all_missing":
+            print("[FUND] universe=all_missing: NULL項目がある銘柄のみ対象にします")
+            symbols = collect_all_instruments_symbols(conn, only_missing=True)
         else:
             symbols = collect_watchlist_portfolio_symbols(conn)
 
@@ -242,11 +336,12 @@ def main() -> int:
                     )
 
                 # RAG fallback fill for Yahoo-missed/null fields (best-effort, NULL-only updates).
-                rag_fill = _best_effort_rag_fill_for_symbol(raw_symbol, asof=date.today())
-                if rag_fill.get("fill_status") == "success" and rag_fill.get("updated_fields"):
-                    print(f"[{idx}/{total}] {raw_symbol}: RAG fundamentals filled {rag_fill['updated_fields']}")
-                elif rag_fill.get("fill_status") == "warning" or rag_fill.get("news_ingest") == "warning":
-                    print(f"[{idx}/{total}] {raw_symbol}: RAG fallback warning {rag_fill}")
+                if not args.skip_rag:
+                    rag_fill = _best_effort_rag_fill_for_symbol(raw_symbol, asof=date.today())
+                    if rag_fill.get("fill_status") == "success" and rag_fill.get("updated_fields"):
+                        print(f"[{idx}/{total}] {raw_symbol}: RAG fundamentals filled {rag_fill['updated_fields']}")
+                    elif rag_fill.get("fill_status") == "warning" or rag_fill.get("news_ingest") == "warning":
+                        print(f"[{idx}/{total}] {raw_symbol}: RAG fallback warning {rag_fill}")
 
             except Exception as e:
                 conn.rollback()

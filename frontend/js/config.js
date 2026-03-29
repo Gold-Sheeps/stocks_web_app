@@ -10,8 +10,8 @@ window.CONFIG = {
 
     // Sidebar settings
     SIDEBAR_PATH: '/components/sidebar.html',
-    SIDEBAR_VERSION: 'v20260211',
-    UI_VERSION: '20260211-neo-01',
+    SIDEBAR_VERSION: 'v20260302',
+    UI_VERSION: '20260302-neo-01',
 
     // Debug flag
     DEBUG: false

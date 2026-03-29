@@ -17,27 +17,22 @@ class StockDetailApp {
             selectedPeriod: '3M',
             timeframe: '1d',
             chartType: 'line',
-            chartInstance: null,
-            volumeInstance: null,
+            lwChart: null,
+            lwMainSeries: null,
+            lwVolumeSeries: null,
             loading: false,
             fundLoaded: false,
             ratiosLoaded: false,
             aiPrediction: null,
             marketEnv: null,
-            candleFallback: false,
+            newsLoaded: false,
             drawMode: 'none',
-            drawLines: [],
-            draftLine: null,
-            isDrawing: false,
-            fallbackViewStart: null,
-            fallbackViewEnd: null,
-            isPanningFallback: false,
-            panStartX: 0,
-            panStartStart: 0,
-            panStartEnd: 0
+            drawPriceLines: [],
+            trendLines: [],
+            trendLineStart: null
         };
 
-        this.API_BASE = window.CONFIG?.API_BASE || 'http://localhost:8000/api/v1';
+        this.API_BASE = window.CONFIG?.API_BASE || 'http://localhost:8010/api/v1';
 
         // Initialize DOM display
         this.updateSymbolDisplay();
@@ -124,225 +119,175 @@ class StockDetailApp {
         }
     }
 
-    initMainChartLine(data) {
-        const ctx = document.getElementById('mainPriceChart');
-        if (!ctx || !data || data.length === 0) return;
+    initLwChart(data) {
+        const container = document.getElementById('lwChartContainer');
+        if (!container || !data || data.length === 0) return;
 
-        if (this.state.chartInstance) this.state.chartInstance.destroy();
+        // Destroy previous chart
+        if (this.state.lwChart) {
+            try { this.state.lwChart.remove(); } catch (e) {}
+            this.state.lwChart = null;
+            this.state.lwMainSeries = null;
+            this.state.lwVolumeSeries = null;
+        }
+        if (this._lwResizeObserver) {
+            this._lwResizeObserver.disconnect();
+            this._lwResizeObserver = null;
+        }
 
-        const labels = data.map(d => d.date);
-        const closes = data.map(d => Number(d.close));
-
-        this.state.chartInstance = new window.Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Price',
-                    data: closes,
-                    borderColor: 'rgba(99, 102, 241, 1)',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.1,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { intersect: false, mode: 'index' },
-                scales: {
-                    x: { grid: { display: false } },
-                    y: { position: 'left' }
-                },
-                plugins: {
-                    zoom: {
-                        zoom: { wheel: { enabled: true }, mode: 'x' },
-                        pan: { enabled: true, mode: 'x' }
-                    }
-                }
-            }
-        });
-    }
-
-    initMainChartCandle(data) {
-        const ctx = document.getElementById('mainPriceChart');
-        if (!ctx || !data || data.length === 0) return;
-
-        if (this.state.chartInstance) this.state.chartInstance.destroy();
-
-        // Try native financial plugin first.
-        if (!window.financialReady) {
-            this.drawCandlestickFallback(data);
+        const LW = window.LightweightCharts;
+        if (!LW) {
+            console.error('[Chart] LightweightCharts not loaded');
             return;
         }
 
-        const labels = data.map(d => d.date);
-        const candleData = data.map(d => ({
-            o: Number(d.open),
-            h: Number(d.high),
-            l: Number(d.low),
-            c: Number(d.close)
-        }));
-        try {
-            this.state.chartInstance = new window.Chart(ctx, {
-                type: 'candlestick',
-                data: {
-                    labels,
-                    datasets: [{
-                        label: 'Price',
-                        data: candleData
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: { type: 'category' },
-                        y: { position: 'left' }
-                    },
-                    plugins: {
-                        zoom: {
-                            zoom: { wheel: { enabled: true }, mode: 'x' },
-                            pan: { enabled: true, mode: 'x' }
-                        }
-                    }
-                }
-            });
-            this.state.candleFallback = false;
-        } catch (e) {
-            console.warn('[Chart] Candlestick plugin failed, using canvas fallback:', e);
-            this.drawCandlestickFallback(data);
-        }
-    }
-
-    drawCandlestickFallback(data) {
-        const canvas = document.getElementById('mainPriceChart');
-        if (!canvas || !data || data.length === 0) return;
-        if (this.state.chartInstance) {
-            this.state.chartInstance.destroy();
-            this.state.chartInstance = null;
-        }
-        const parent = canvas.parentElement;
-        const width = Math.max(320, parent ? parent.clientWidth - 8 : 900);
-        const height = 380;
-        canvas.width = width;
-        canvas.height = height;
-        canvas.style.width = '100%';
-        canvas.style.height = `${height}px`;
-
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        ctx.clearRect(0, 0, width, height);
-
-        const pad = { left: 56, right: 16, top: 20, bottom: 28 };
-        const plotW = width - pad.left - pad.right;
-        const plotH = height - pad.top - pad.bottom;
-
-        const highs = data.map(d => Number(d.high));
-        const lows = data.map(d => Number(d.low));
-        const maxP = Math.max(...highs);
-        const minP = Math.min(...lows);
-        const span = Math.max(0.0001, maxP - minP);
-        const yOf = (p) => pad.top + ((maxP - p) / span) * plotH;
-
-        // Grid
-        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-        ctx.lineWidth = 1;
-        for (let i = 0; i <= 4; i++) {
-            const y = pad.top + (plotH * i) / 4;
-            ctx.beginPath();
-            ctx.moveTo(pad.left, y);
-            ctx.lineTo(width - pad.right, y);
-            ctx.stroke();
-        }
-
-        // Candles
-        const n = data.length;
-        const step = plotW / Math.max(1, n);
-        const bodyW = Math.max(2, Math.min(12, step * 0.65));
-
-        for (let i = 0; i < n; i++) {
-            const d = data[i];
-            const x = pad.left + step * i + step / 2;
-            const o = Number(d.open);
-            const h = Number(d.high);
-            const l = Number(d.low);
-            const c = Number(d.close);
-            const up = c >= o;
-            const color = up ? '#10b981' : '#ef4444';
-
-            // wick
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(x, yOf(h));
-            ctx.lineTo(x, yOf(l));
-            ctx.stroke();
-
-            // body
-            const yTop = yOf(Math.max(o, c));
-            const yBot = yOf(Math.min(o, c));
-            const bodyH = Math.max(1, yBot - yTop);
-            ctx.fillStyle = up ? 'rgba(16,185,129,0.8)' : 'rgba(239,68,68,0.8)';
-            ctx.fillRect(x - bodyW / 2, yTop, bodyW, bodyH);
-        }
-
-        // Y labels
-        ctx.fillStyle = 'rgba(255,255,255,0.7)';
-        ctx.font = '12px monospace';
-        ctx.textAlign = 'right';
-        for (let i = 0; i <= 4; i++) {
-            const p = maxP - (span * i) / 4;
-            const y = pad.top + (plotH * i) / 4;
-            ctx.fillText(p.toFixed(2), pad.left - 8, y + 4);
-        }
-
-        // X labels
-        ctx.textAlign = 'left';
-        ctx.fillText(data[0].date, pad.left, height - 8);
-        ctx.textAlign = 'right';
-        ctx.fillText(data[n - 1].date, width - pad.right, height - 8);
-
-        this.state.candleFallback = true;
-    }
-
-    initVolumeChart(data) {
-        const ctx = document.getElementById('volumeChart');
-        if (!ctx || !data || data.length === 0) return;
-
-        if (this.state.volumeInstance) this.state.volumeInstance.destroy();
-
-        const labels = data.map(d => d.date);
-        const volumes = data.map(d => Number(d.volume));
-
-        this.state.volumeInstance = new window.Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Volume',
-                    data: volumes,
-                    backgroundColor: 'rgba(99, 102, 241, 0.4)',
-                    borderColor: 'rgba(99, 102, 241, 0.8)',
-                    borderWidth: 1
-                }]
+        const chart = LW.createChart(container, {
+            width: container.clientWidth,
+            height: 420,
+            layout: {
+                background: { type: 'solid', color: 'rgba(0,0,0,0)' },
+                textColor: 'rgba(255,255,255,0.65)',
+                fontSize: 11,
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { mode: 'index', intersect: false }
-                },
-                scales: {
-                    x: { grid: { display: false }, ticks: { display: false } },
-                    y: { position: 'left', grid: { display: false } }
+            grid: {
+                vertLines: { color: 'rgba(255,255,255,0.04)' },
+                horzLines: { color: 'rgba(255,255,255,0.06)' },
+            },
+            crosshair: { mode: LW.CrosshairMode.Normal },
+            rightPriceScale: { borderColor: 'rgba(255,255,255,0.1)' },
+            timeScale: { borderColor: 'rgba(255,255,255,0.1)', timeVisible: true },
+            handleScroll: true,
+            handleScale: true,
+        });
+
+        let mainSeries;
+        if (this.state.chartType === 'candlestick') {
+            mainSeries = chart.addCandlestickSeries({
+                upColor: '#10b981',
+                downColor: '#ef4444',
+                borderUpColor: '#10b981',
+                borderDownColor: '#ef4444',
+                wickUpColor: '#10b981',
+                wickDownColor: '#ef4444',
+            });
+            mainSeries.setData(data.map(d => ({
+                time: d.date,
+                open: Number(d.open),
+                high: Number(d.high),
+                low: Number(d.low),
+                close: Number(d.close),
+            })));
+        } else {
+            mainSeries = chart.addAreaSeries({
+                lineColor: 'rgba(99, 102, 241, 1)',
+                topColor: 'rgba(99, 102, 241, 0.28)',
+                bottomColor: 'rgba(99, 102, 241, 0.02)',
+                lineWidth: 2,
+            });
+            mainSeries.setData(data.map(d => ({
+                time: d.date,
+                value: Number(d.close),
+            })));
+        }
+
+        // Volume histogram (bottom 20% of chart)
+        const volumeSeries = chart.addHistogramSeries({
+            color: 'rgba(99, 102, 241, 0.4)',
+            priceFormat: { type: 'volume' },
+            priceScaleId: '',
+        });
+        volumeSeries.priceScale().applyOptions({
+            scaleMargins: { top: 0.82, bottom: 0 },
+        });
+        volumeSeries.setData(data.map(d => ({
+            time: d.date,
+            value: Number(d.volume),
+            color: Number(d.close) >= Number(d.open)
+                ? 'rgba(16,185,129,0.35)'
+                : 'rgba(239,68,68,0.35)',
+        })));
+
+        // Restore saved price lines
+        this.state.drawPriceLines.forEach(pl => {
+            try {
+                pl.priceLine = mainSeries.createPriceLine({
+                    price: pl.price,
+                    color: '#f59e0b',
+                    lineWidth: 1,
+                    lineStyle: LW.LineStyle.Dashed,
+                    axisLabelVisible: true,
+                    title: pl.title || '',
+                });
+            } catch (e) {}
+        });
+
+        // Click handler for drawing tools
+        chart.subscribeClick((param) => {
+            if (!param.point) return;
+            const price = mainSeries.coordinateToPrice(param.point.y);
+            if (price == null) return;
+
+            if (this.state.drawMode === 'hline') {
+                const priceLine = mainSeries.createPriceLine({
+                    price,
+                    color: '#f59e0b',
+                    lineWidth: 1,
+                    lineStyle: LW.LineStyle.Dashed,
+                    axisLabelVisible: true,
+                    title: `${price.toFixed(2)}`,
+                });
+                this.state.drawPriceLines.push({ price, priceLine, title: `${price.toFixed(2)}` });
+                return;
+            }
+
+            if (this.state.drawMode === 'trendline') {
+                if (!param.time) return;
+                if (!this.state.trendLineStart) {
+                    // 1クリック目: 起点を記録
+                    this.state.trendLineStart = { time: param.time, price };
+                    const container = document.getElementById('lwChartContainer');
+                    if (container) container.title = '2点目をクリックして斜め線を確定';
+                } else {
+                    // 2クリック目: 斜め線を描画
+                    const start = this.state.trendLineStart;
+                    const end = { time: param.time, price };
+                    this.state.trendLineStart = null;
+                    const container = document.getElementById('lwChartContainer');
+                    if (container) container.title = '';
+
+                    // 時系列順に並べる（LightweightCharts は昇順必須）
+                    let p1 = start, p2 = end;
+                    if (String(p1.time) > String(p2.time)) { p1 = end; p2 = start; }
+                    if (p1.time === p2.time) return; // 同一バーは無視
+
+                    const trendSeries = chart.addLineSeries({
+                        color: '#f59e0b',
+                        lineWidth: 1,
+                        lineStyle: LW.LineStyle.Solid,
+                        crosshairMarkerVisible: false,
+                        priceLineVisible: false,
+                        lastValueVisible: false,
+                    });
+                    trendSeries.setData([
+                        { time: p1.time, value: p1.price },
+                        { time: p2.time, value: p2.price },
+                    ]);
+                    this.state.trendLines.push(trendSeries);
                 }
             }
         });
+
+        // Responsive resize
+        this._lwResizeObserver = new ResizeObserver(() => {
+            if (container.clientWidth > 0 && this.state.lwChart) {
+                this.state.lwChart.applyOptions({ width: container.clientWidth });
+            }
+        });
+        this._lwResizeObserver.observe(container);
+
+        this.state.lwChart = chart;
+        this.state.lwMainSeries = mainSeries;
+        this.state.lwVolumeSeries = volumeSeries;
     }
 
     setupChartToggle() {
@@ -371,265 +316,52 @@ class StockDetailApp {
         const btnTrend = document.getElementById('btnDrawTrendLine');
         const btnClear = document.getElementById('btnClearLines');
         const btnZoom = document.getElementById('btnResetZoom');
-        const overlay = this.getOverlayCanvas();
 
         const setMode = (mode) => {
             this.state.drawMode = mode;
-            this.state.draftLine = null;
+            this.state.trendLineStart = null; // モード切替時に起点リセット
             if (btnNone) btnNone.style.background = mode === 'none' ? 'rgba(99, 102, 241, 0.2)' : '';
             if (btnH) btnH.style.background = mode === 'hline' ? 'rgba(245, 158, 11, 0.2)' : '';
-            if (btnTrend) btnTrend.style.background = mode === 'trend' ? 'rgba(16, 185, 129, 0.2)' : '';
-            if (overlay) overlay.style.pointerEvents = mode === 'none' ? 'none' : 'auto';
-            this.redrawOverlay();
+            if (btnTrend) btnTrend.style.background = mode === 'trendline' ? 'rgba(245, 158, 11, 0.2)' : '';
+            const container = document.getElementById('lwChartContainer');
+            if (container) { container.style.cursor = mode !== 'none' ? 'crosshair' : ''; container.title = ''; }
         };
         setMode('none');
 
         if (btnNone) btnNone.addEventListener('click', () => setMode('none'));
         if (btnH) btnH.addEventListener('click', () => setMode('hline'));
-        if (btnTrend) btnTrend.addEventListener('click', () => setMode('trend'));
+        if (btnTrend) btnTrend.addEventListener('click', () => setMode('trendline'));
         if (btnClear) {
             btnClear.addEventListener('click', () => {
-                this.state.drawLines = [];
-                this.state.draftLine = null;
-                this.redrawOverlay();
+                if (this.state.lwMainSeries) {
+                    this.state.drawPriceLines.forEach(pl => {
+                        try { this.state.lwMainSeries.removePriceLine(pl.priceLine); } catch (e) {}
+                    });
+                }
+                this.state.drawPriceLines = [];
+                // 斜め線（LineSeries）も削除
+                if (this.state.lwChart) {
+                    this.state.trendLines.forEach(s => {
+                        try { this.state.lwChart.removeSeries(s); } catch (e) {}
+                    });
+                }
+                this.state.trendLines = [];
+                this.state.trendLineStart = null;
             });
         }
         if (btnZoom) {
             btnZoom.addEventListener('click', () => {
-                try {
-                    if (this.state.chartInstance?.resetZoom) this.state.chartInstance.resetZoom();
-                } catch (e) {
-                    console.warn('[Chart] resetZoom failed:', e);
+                if (this.state.lwChart) {
+                    this.state.lwChart.timeScale().fitContent();
                 }
-                if (this.state.chartType === 'candlestick' && this.state.candleFallback) {
-                    const base = this.getBaseChartData();
-                    this.resetFallbackView(base.length);
-                }
-                this.renderCharts();
             });
         }
-        const baseCanvas = document.getElementById('mainPriceChart');
-        if (baseCanvas) {
-            baseCanvas.addEventListener('wheel', (evt) => this.handleFallbackWheel(evt), { passive: false });
-            baseCanvas.addEventListener('mousedown', (evt) => this.handleFallbackPanStart(evt));
-            baseCanvas.addEventListener('mousemove', (evt) => this.handleFallbackPanMove(evt));
-            baseCanvas.addEventListener('mouseup', () => this.handleFallbackPanEnd());
-            baseCanvas.addEventListener('mouseleave', () => this.handleFallbackPanEnd());
-        }
-        if (overlay) {
-            overlay.addEventListener('mousedown', (evt) => {
-                if (this.state.drawMode === 'none') return;
-                const p = this.getMousePos(overlay, evt);
-                this.state.isDrawing = true;
-                this.state.draftLine = {
-                    type: this.state.drawMode,
-                    x1: p.x,
-                    y1: p.y,
-                    x2: p.x,
-                    y2: p.y
-                };
-                this.redrawOverlay();
-            });
-            overlay.addEventListener('mousemove', (evt) => {
-                if (!this.state.isDrawing || !this.state.draftLine) return;
-                const p = this.getMousePos(overlay, evt);
-                this.state.draftLine.x2 = p.x;
-                this.state.draftLine.y2 = this.state.draftLine.type === 'hline' ? this.state.draftLine.y1 : p.y;
-                this.redrawOverlay();
-            });
-            const finishDraw = () => {
-                if (!this.state.isDrawing || !this.state.draftLine) return;
-                const l = this.state.draftLine;
-                const dx = Math.abs(l.x2 - l.x1);
-                const dy = Math.abs(l.y2 - l.y1);
-                if (dx > 2 || dy > 2) this.state.drawLines.push({ ...l });
-                this.state.draftLine = null;
-                this.state.isDrawing = false;
-                this.redrawOverlay();
-            };
-            overlay.addEventListener('mouseup', finishDraw);
-            overlay.addEventListener('mouseleave', finishDraw);
-        }
-        window.addEventListener('resize', () => this.syncOverlayCanvas());
-    }
-
-    getOverlayCanvas() {
-        const container = document.querySelector('.chart-container');
-        if (!container) return null;
-        let overlay = document.getElementById('drawOverlay');
-        if (!overlay) {
-            overlay = document.createElement('canvas');
-            overlay.id = 'drawOverlay';
-            overlay.style.position = 'absolute';
-            overlay.style.inset = '0';
-            overlay.style.zIndex = '5';
-            overlay.style.pointerEvents = 'none';
-            overlay.style.cursor = 'crosshair';
-            container.appendChild(overlay);
-        }
-        this.syncOverlayCanvas();
-        return overlay;
-    }
-
-    syncOverlayCanvas() {
-        const base = document.getElementById('mainPriceChart');
-        const overlay = document.getElementById('drawOverlay');
-        if (!base || !overlay) return;
-        const w = base.clientWidth || base.width || 0;
-        const h = base.clientHeight || base.height || 0;
-        if (w <= 0 || h <= 0) return;
-        if (overlay.width !== w || overlay.height !== h) {
-            overlay.width = w;
-            overlay.height = h;
-        }
-        this.redrawOverlay();
-    }
-
-    getMousePos(canvas, evt) {
-        const r = canvas.getBoundingClientRect();
-        return {
-            x: evt.clientX - r.left,
-            y: evt.clientY - r.top
-        };
     }
 
     getBaseChartData() {
         return this.state.chartDataFiltered && this.state.chartDataFiltered.length > 0
             ? this.state.chartDataFiltered
             : this.state.chartData;
-    }
-
-    resetFallbackView(len) {
-        this.state.fallbackViewStart = 0;
-        this.state.fallbackViewEnd = Math.max(0, len);
-    }
-
-    ensureFallbackView(len) {
-        if (len <= 0) {
-            this.resetFallbackView(0);
-            return;
-        }
-        if (
-            this.state.fallbackViewStart === null ||
-            this.state.fallbackViewEnd === null ||
-            this.state.fallbackViewEnd > len ||
-            this.state.fallbackViewStart < 0 ||
-            this.state.fallbackViewStart >= this.state.fallbackViewEnd
-        ) {
-            this.resetFallbackView(len);
-        }
-    }
-
-    getFallbackVisibleData(data) {
-        if (!data || data.length === 0) return [];
-        this.ensureFallbackView(data.length);
-        const s = Math.max(0, Math.floor(this.state.fallbackViewStart));
-        const e = Math.min(data.length, Math.floor(this.state.fallbackViewEnd));
-        return data.slice(s, e);
-    }
-
-    handleFallbackWheel(evt) {
-        if (!(this.state.chartType === 'candlestick' && this.state.candleFallback)) return;
-        const base = this.getBaseChartData();
-        if (!base || base.length < 20) return;
-        evt.preventDefault();
-
-        this.ensureFallbackView(base.length);
-        let s = this.state.fallbackViewStart;
-        let e = this.state.fallbackViewEnd;
-        const len = e - s;
-        const minWindow = 20;
-        const maxWindow = base.length;
-        const zoomIn = evt.deltaY < 0;
-        const factor = zoomIn ? 0.85 : 1.15;
-        let nextLen = Math.round(len * factor);
-        nextLen = Math.max(minWindow, Math.min(maxWindow, nextLen));
-        if (nextLen === len) return;
-
-        const canvas = document.getElementById('mainPriceChart');
-        const rect = canvas.getBoundingClientRect();
-        const px = Math.min(Math.max(evt.clientX - rect.left, 0), rect.width);
-        const ratio = rect.width > 0 ? px / rect.width : 0.5;
-        const anchor = s + Math.round(len * ratio);
-
-        let ns = anchor - Math.round(nextLen * ratio);
-        let ne = ns + nextLen;
-        if (ns < 0) {
-            ns = 0;
-            ne = nextLen;
-        }
-        if (ne > base.length) {
-            ne = base.length;
-            ns = ne - nextLen;
-        }
-        this.state.fallbackViewStart = ns;
-        this.state.fallbackViewEnd = ne;
-        this.renderCharts();
-    }
-
-    handleFallbackPanStart(evt) {
-        if (!(this.state.chartType === 'candlestick' && this.state.candleFallback)) return;
-        if (this.state.drawMode !== 'none') return;
-        const base = this.getBaseChartData();
-        if (!base || base.length < 2) return;
-        this.ensureFallbackView(base.length);
-        this.state.isPanningFallback = true;
-        this.state.panStartX = evt.clientX;
-        this.state.panStartStart = this.state.fallbackViewStart;
-        this.state.panStartEnd = this.state.fallbackViewEnd;
-    }
-
-    handleFallbackPanMove(evt) {
-        if (!this.state.isPanningFallback) return;
-        const base = this.getBaseChartData();
-        const canvas = document.getElementById('mainPriceChart');
-        if (!base || !canvas) return;
-
-        const width = Math.max(1, canvas.clientWidth || canvas.width || 1);
-        const windowLen = Math.max(1, this.state.panStartEnd - this.state.panStartStart);
-        const deltaPx = evt.clientX - this.state.panStartX;
-        const shiftBars = Math.round((deltaPx / width) * windowLen);
-
-        let ns = this.state.panStartStart - shiftBars;
-        let ne = this.state.panStartEnd - shiftBars;
-        if (ns < 0) {
-            ns = 0;
-            ne = windowLen;
-        }
-        if (ne > base.length) {
-            ne = base.length;
-            ns = Math.max(0, ne - windowLen);
-        }
-        this.state.fallbackViewStart = ns;
-        this.state.fallbackViewEnd = ne;
-        this.renderCharts();
-    }
-
-    handleFallbackPanEnd() {
-        this.state.isPanningFallback = false;
-    }
-
-    redrawOverlay() {
-        const overlay = document.getElementById('drawOverlay');
-        if (!overlay) return;
-        const ctx = overlay.getContext('2d');
-        if (!ctx) return;
-        ctx.clearRect(0, 0, overlay.width, overlay.height);
-
-        const drawOne = (line, draft = false) => {
-            const isH = line.type === 'hline';
-            ctx.strokeStyle = isH ? 'rgba(245, 158, 11, 0.95)' : 'rgba(16, 185, 129, 0.95)';
-            ctx.lineWidth = draft ? 1.2 : 1.6;
-            ctx.setLineDash(draft ? [4, 4] : []);
-            ctx.beginPath();
-            ctx.moveTo(line.x1, line.y1);
-            ctx.lineTo(line.x2, isH ? line.y1 : line.y2);
-            ctx.stroke();
-            ctx.setLineDash([]);
-        };
-
-        this.state.drawLines.forEach((l) => drawOne(l, false));
-        if (this.state.draftLine) drawOne(this.state.draftLine, true);
     }
 
     setupChartPeriod() {
@@ -701,8 +433,6 @@ class StockDetailApp {
         } else {
             this.state.chartDataFiltered = source.slice(Math.max(0, source.length - bars));
         }
-        this.resetFallbackView(this.state.chartDataFiltered.length);
-
         const btns = document.querySelectorAll('.chart-period-btn');
         btns.forEach((b) => {
             b.classList.remove('btn-primary', 'active');
@@ -722,25 +452,165 @@ class StockDetailApp {
             if (window.UI?.showToast) window.UI.showToast('No chart data available', 'warning');
             return;
         }
-        let renderData = baseData;
-        if (this.state.chartType === 'candlestick') {
-            if (window.financialReady) {
-                this.state.candleFallback = false;
-                this.initMainChartCandle(baseData);
-            } else {
-                this.state.candleFallback = true;
-                this.ensureFallbackView(baseData.length);
-                renderData = this.getFallbackVisibleData(baseData);
-                this.drawCandlestickFallback(renderData);
-            }
-        } else {
-            this.state.candleFallback = false;
-            this.initMainChartLine(baseData);
-            renderData = baseData;
+        this.initLwChart(baseData);
+        this.renderVolumePricePattern();
+    }
+
+    renderVolumePricePattern() {
+        const el = document.getElementById('tpVolPricePattern');
+        if (!el) return;
+
+        const data = this.state.chartData;
+        if (!data || data.length < 2) {
+            el.innerHTML = '<span class="tp-label">データ不足（2日分以上必要）</span>';
+            return;
         }
-        this.initVolumeChart(renderData);
-        this.syncOverlayCanvas();
-        this.redrawOverlay();
+
+        const today = data[data.length - 1];
+        const prev  = data[data.length - 2];
+
+        const todayVol   = Number(today.volume);
+        const prevVol    = Number(prev.volume);
+        const todayClose = Number(today.close);
+        const prevClose  = Number(prev.close);
+
+        if (!todayVol || !prevVol || !todayClose || !prevClose) {
+            el.innerHTML = '<span class="tp-label">価格/出来高データなし</span>';
+            return;
+        }
+
+        // Volume direction (±5% threshold)
+        const volRatio = todayVol / prevVol;
+        let volDir, volSymbol;
+        if (volRatio > 1.05)      { volDir = 'up';   volSymbol = '↑'; }
+        else if (volRatio < 0.95) { volDir = 'down'; volSymbol = '↓'; }
+        else                      { volDir = 'flat'; volSymbol = '→'; }
+
+        // Price direction vs previous close (±0.2% threshold)
+        const pricePct = (todayClose - prevClose) / prevClose * 100;
+        let priceDir, priceSymbol;
+        if (pricePct > 0.2)       { priceDir = 'up';   priceSymbol = '↑'; }
+        else if (pricePct < -0.2) { priceDir = 'down'; priceSymbol = '↓'; }
+        else                      { priceDir = 'flat'; priceSymbol = '→'; }
+
+        // Trend: 20-bar slope (±5% total)
+        const lookback   = Math.min(20, data.length);
+        const firstClose = Number(data[data.length - lookback].close);
+        const trendPct   = (todayClose - firstClose) / firstClose * 100;
+        const trend = trendPct > 5 ? 'up' : trendPct < -5 ? 'down' : 'neutral';
+        const trendLabel = trend === 'up' ? '上昇トレンド中' : trend === 'down' ? '下落トレンド中' : 'トレンドなし';
+
+        const pattern = this._getVolPricePattern(volDir, priceDir, trend);
+
+        const volPctStr = volRatio >= 1
+            ? `+${((volRatio - 1) * 100).toFixed(0)}%`
+            : `${((volRatio - 1) * 100).toFixed(0)}%`;
+        const priceSign = pricePct >= 0 ? '+' : '';
+
+        el.innerHTML = `
+            <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
+                <div style="font-size:1.6rem; font-family:var(--font-mono); letter-spacing:-0.02em;">
+                    Vol${volSymbol} × Price${priceSymbol}
+                </div>
+                <div style="font-size:0.72rem; color:var(--text-muted); line-height:1.4;">
+                    ${today.date}<br>
+                    出来高: ${volPctStr} (前日比) &nbsp;|&nbsp; 株価: ${priceSign}${pricePct.toFixed(2)}%<br>
+                    直近20日: <span style="color:${trend === 'up' ? '#10b981' : trend === 'down' ? '#ef4444' : '#9ca3af'}">${trendLabel}</span>
+                </div>
+            </div>
+            <div style="padding:12px 14px; background:${pattern.bgColor}; border-radius:6px; border-left:3px solid ${pattern.borderColor}; margin-bottom:10px;">
+                <div style="font-weight:700; color:${pattern.borderColor}; font-size:0.95rem; margin-bottom:4px;">${pattern.label}</div>
+                <div style="font-size:0.85rem; color:var(--text-main); line-height:1.5;">${pattern.meaning}</div>
+            </div>
+            <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.6; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px;">
+                ${pattern.note}
+            </div>
+            <div style="margin-top:10px; padding:8px 10px; background:rgba(255,255,255,0.02); border-radius:4px; font-size:0.75rem; color:var(--text-muted);">
+                <b style="color:rgba(255,255,255,0.4);">判定のコツ</b>　重要ライン（高値更新/サポ割れ/MA）で起きたか？　翌日〜3日で否定されないか確認。
+            </div>
+        `;
+    }
+
+    _getVolPricePattern(volDir, priceDir, trend) {
+        const up   = trend === 'up';
+        const down = trend === 'down';
+
+        const P = {
+            'up_up': {
+                label: '【強気】買いが本気で入っている',
+                meaning: '出来高↑×株価↑：需要が供給を上回る。基本：良い（強気）',
+                note: up
+                    ? '上昇末期に「急騰＋出来高爆発」が出ると<b>買いのクライマックス（天井）</b>の可能性あり。ブレイクアウト（高値更新）で出ればかなり良い。'
+                    : down
+                    ? '下落トレンド中の急反発。本格転換かは翌日以降に安値を割らないか確認。'
+                    : '高値更新・重要ライン上抜けと重なれば非常に強い。出来高増を伴う上昇は継続しやすい。',
+                bgColor:    'rgba(16,185,129,0.08)',
+                borderColor: '#10b981',
+            },
+            'up_down': {
+                label: '【弱気】売りが本気（ディストリビューション候補）',
+                meaning: '出来高↑×株価↓：供給が需要を上回る。基本：悪い（弱気）',
+                note: up
+                    ? '上昇トレンド中にこれが増える → <b>分配（ディストリビューション）</b>サイン。連続すると危険。'
+                    : down
+                    ? '下落末期の<b>投げ売り</b>の可能性あり。翌日以降に安値を割らなければ底打ち候補。VIX急騰日は特に注意。'
+                    : '高値圏での大商いで下落 → 天井形成のシグナル。翌3日の値動きで判断。',
+                bgColor:    'rgba(239,68,68,0.08)',
+                borderColor: '#ef4444',
+            },
+            'down_up': {
+                label: '【弱い強気】勢いに欠ける上昇（ショートカバー/薄商い）',
+                meaning: '出来高↓×株価↑：上がっているが買いの勢いが弱い。基本：微妙',
+                note: up
+                    ? '強い上昇トレンド調整後のじわ上げでは出来高が自然に減るので普通。悪いとまでは言えない。'
+                    : '押し目からの小反発に出やすい。"一時的"な戻りになりやすいため次の出来高増を待ちたい。',
+                bgColor:    'rgba(245,158,11,0.06)',
+                borderColor: '#f59e0b',
+            },
+            'down_down': {
+                label: '【中立〜やや良い】売り枯れ・調整の可能性',
+                meaning: '出来高↓×株価↓：下がっているが売りの勢いは強くない。基本：中立〜やや良い',
+                note: up
+                    ? '上昇トレンドの押し目として<b>健全な調整</b>になりやすい。買い場の候補。'
+                    : '下落トレンドでのダラ下げ。良いとは言えない。底打ち確認が必要。',
+                bgColor:    'rgba(99,102,241,0.06)',
+                borderColor: '#818cf8',
+            },
+            'flat_up': {
+                label: '【やや強気】普通の上昇（決定打なし）',
+                meaning: '出来高→×株価↑：買い優勢だが強さは普通。基本：やや良い',
+                note: '重要ライン上抜けでこれ → 本物かは次の日以降の出来高増が欲しい。確認が必要。',
+                bgColor:    'rgba(16,185,129,0.05)',
+                borderColor: '#34d399',
+            },
+            'flat_down': {
+                label: '【やや弱気】じわり下落（パニックではない）',
+                meaning: '出来高→×株価↓：売り優勢だがパニックではない。基本：やや悪い',
+                note: '重要サポート割れでこれ → 悪い（出来高横でもライン割れは重い）。徐々に悪化するケースに注意。',
+                bgColor:    'rgba(239,68,68,0.05)',
+                borderColor: '#f87171',
+            },
+            'up_flat': {
+                label: '【状況次第・注意】大商いで拮抗（分岐点）',
+                meaning: '出来高↑×株価→：激しい売買で均衡。評価：状況次第（中立〜注意）',
+                note: up
+                    ? '高値圏でこれ → <b>天井形成（分配）</b>のことが多く悪い寄り。翌日の方向で判断。'
+                    : down
+                    ? '安値圏でこれ → <b>底固め（吸収）</b>のことが多く良い寄り。'
+                    : '次の方向性を決める重要局面。翌日の値動きと出来高を必ず確認。',
+                bgColor:    'rgba(245,158,11,0.08)',
+                borderColor: '#fbbf24',
+            },
+            'down_flat': {
+                label: '【中立】関心薄・エネルギー溜め',
+                meaning: '出来高↓×株価→：関心が薄い、またはエネルギーを溜めている。基本：中立',
+                note: 'レンジ上限近く → ブレイクの力が不足している可能性あり。<br>レンジ下限近く → 売り枯れなら悪くない。<br>レンジ真ん中 → 何も言えない。',
+                bgColor:    'rgba(156,163,175,0.06)',
+                borderColor: '#6b7280',
+            },
+        };
+
+        return P[`${volDir}_${priceDir}`] || P['down_flat'];
     }
 
     render(data) {
@@ -1033,6 +903,9 @@ class StockDetailApp {
             this.state.ratiosLoaded = true;
             this.loadRatiosData();
         }
+        if (tabName === 'news' && !this.state.newsLoaded) {
+            this.fetchNews();
+        }
     }
 
     formatFundValue(value, digits = 2) {
@@ -1258,23 +1131,26 @@ class StockDetailApp {
         const handle = () => {
             const raw = input.value.trim();
             if (!raw) return;
-            let symbol = raw.toUpperCase();
-            if (!symbol.includes(':')) {
-                if (/^\d{4}$/.test(symbol)) {
-                    symbol = `JP:${symbol}`;
-                } else {
-                    symbol = `US:${symbol.replace(/\./g, '-')}`;
-                }
-            } else {
-                const parts = symbol.split(':', 2);
-                const market = parts[0];
-                const code = parts[1] || '';
-                symbol = market === 'US' ? `${market}:${code.replace(/\./g, '-')}` : `${market}:${code}`;
-            }
+            const symbol = this.normalizeSymbolKey(raw);
             window.location.href = `stock_detail.html?symbol=${encodeURIComponent(symbol)}`;
         };
         btn.onclick = handle;
         input.onkeydown = (e) => { if (e.key === 'Enter') handle(); };
+    }
+
+    normalizeSymbolKey(rawSymbol) {
+        let symbol = String(rawSymbol || '').trim().toUpperCase();
+        if (!symbol) return '';
+        if (!symbol.includes(':')) {
+            if (/^\d{4}$/.test(symbol)) {
+                return `JP:${symbol}`;
+            }
+            return `US:${symbol.replace(/\./g, '-')}`;
+        }
+        const parts = symbol.split(':', 2);
+        const market = parts[0];
+        const code = parts[1] || '';
+        return market === 'US' ? `${market}:${code.replace(/\./g, '-')}` : `${market}:${code}`;
     }
 
     setupTradePlan() {
@@ -1328,7 +1204,7 @@ class StockDetailApp {
     getAiSymbolKey() {
         const raw = (this.symbol || '').trim();
         if (!raw) return '';
-        return raw.includes(':') ? raw.toUpperCase() : `US:${raw.toUpperCase()}`;
+        return this.normalizeSymbolKey(raw);
     }
 
     loadTradePlan() {
@@ -1406,7 +1282,9 @@ class StockDetailApp {
 
     renderAiPrediction(data) {
         const probEl        = document.getElementById('tpAiProbUp5');
+        const probBarEl     = document.getElementById('tpAiProbBar');
         const decisionEl    = document.getElementById('tpAiDecision');
+        const actionLabelEl = document.getElementById('tpAiActionLabel');
         const dateEl        = document.getElementById('tpAiDate');
         const thresholdNote = document.getElementById('tpAiThresholdNote');
         const thresholdPct  = document.getElementById('tpAiThresholdPct');
@@ -1419,7 +1297,9 @@ class StockDetailApp {
         const errEl         = document.getElementById('tpAiProbError');
 
         if (!data || !data.has_prediction) {
-            if (probEl)        { probEl.textContent = '--'; probEl.className = 'tp-value'; }
+            if (probEl)         { probEl.textContent = '--'; probEl.className = 'tp-value'; }
+            if (probBarEl)      probBarEl.style.width = '0%';
+            if (actionLabelEl)  actionLabelEl.style.display = 'none';
             if (decisionEl) {
                 decisionEl.className = 'tp-value';
                 if (data && data.message) {
@@ -1444,7 +1324,7 @@ class StockDetailApp {
         const threshold = data.threshold_buy || 0.5;
         const thresholdPctVal = (threshold * 100).toFixed(0);
 
-        // 遒ｺ邇・｡ｨ遉ｺ・郁牡蛻・￠・・
+        // 上昇確率バー
         if (probEl) {
             probEl.textContent = `${pct}%`;
             probEl.className = 'tp-value';
@@ -1456,29 +1336,67 @@ class StockDetailApp {
                 probEl.classList.add('ai-prob-low');
             }
         }
+        if (probBarEl) {
+            const barW = Math.min(100, Math.round(data.p_up5 * 100));
+            probBarEl.style.width = `${barW}%`;
+            probBarEl.style.background = data.p_up5 >= threshold ? '#22c55e'
+                                        : data.p_up5 >= 0.3     ? '#f59e0b'
+                                        : '#ef4444';
+        }
 
-        // 蛻､螳夊｡ｨ遉ｺ
-        if (decisionEl) {
-            decisionEl.className = 'tp-value';
-            decisionEl.style.fontSize = '';
-            if (data.decision === 'BUY') {
-                decisionEl.textContent = 'BUY';
-                decisionEl.classList.add('ai-signal-buy');
-            } else if (data.decision === 'GATE_BLOCKED') {
-                decisionEl.textContent = 'GATE BLOCKED';
-                decisionEl.classList.add('ai-signal-blocked');
-            } else if (data.decision === 'CAUTION') {
-                decisionEl.textContent = 'CAUTION';
-                decisionEl.classList.add('ai-signal-caution');
+        // action_label バッジ — Screener の renderActionLabel と同一ロジック
+        const actionLabel = data.action_label || null;
+        const gateReasons = Array.isArray(data.gate_reasons) ? data.gate_reasons : [];
+        if (actionLabelEl && actionLabel) {
+            const labelStyles = {
+                BUY:     { bg: 'rgba(34,197,94,0.15)',   color: '#4ade80', border: 'rgba(34,197,94,0.4)' },
+                HOLD:    { bg: 'rgba(148,163,184,0.1)',  color: '#94a3b8', border: 'rgba(148,163,184,0.3)' },
+                SELL:    { bg: 'rgba(239,68,68,0.15)',   color: '#f87171', border: 'rgba(239,68,68,0.4)' },
+                WATCH:   { bg: 'rgba(245,158,11,0.15)',  color: '#fbbf24', border: 'rgba(245,158,11,0.4)' },
+                BLOCKED: { bg: 'rgba(239,68,68,0.15)',   color: '#f87171', border: 'rgba(239,68,68,0.4)' },
+            };
+            const s = labelStyles[actionLabel] || labelStyles.HOLD;
+            // WATCH 内訳 — Screener と同一
+            let displayText = actionLabel;
+            if (actionLabel === 'BLOCKED') {
+                displayText = '🚫 BLOCKED';
+            } else if (actionLabel === 'WATCH') {
+                if (gateReasons.includes('market_regime_blocked')) {
+                    displayText = '⛔ WATCH';
+                } else if (gateReasons.includes('market_regime_caution')) {
+                    displayText = '⚠ WATCH';
+                }
+            }
+            actionLabelEl.textContent = displayText;
+            actionLabelEl.style.cssText = `display:inline-flex; align-items:center; font-size:0.85rem; font-weight:700; padding:3px 10px; border-radius:999px; background:${s.bg}; color:${s.color}; border:1px solid ${s.border};`;
+        } else if (actionLabelEl) {
+            actionLabelEl.style.display = 'none';
+        }
+
+        // Gate reasons バッジ表示 (Screener ツールチップの内容を Stock Detail では直接表示)
+        const gateReasonsEl = document.getElementById('tpAiGateReasons');
+        if (gateReasonsEl) {
+            if (gateReasons.length) {
+                const REASON_LABELS = {
+                    'market_regime_blocked':          { text: '市場: 新規買い停止',       color: '#f87171' },
+                    'market_regime_caution':          { text: '市場: 注意モード',          color: '#fbbf24' },
+                    'prob_below_caution_threshold':   { text: 'AI確率 < 0.6 (閾値未満)', color: '#fbbf24' },
+                    'market_env_unavailable':         { text: '市場データ未取得',          color: '#94a3b8' },
+                };
+                const badges = gateReasons.map(r => {
+                    const info = REASON_LABELS[r] || { text: r, color: '#94a3b8' };
+                    return `<span style="font-size:0.72rem;padding:2px 6px;border-radius:4px;background:rgba(0,0,0,0.2);color:${info.color};border:1px solid ${info.color}40;margin-right:4px;">${info.text}</span>`;
+                }).join('');
+                gateReasonsEl.innerHTML = badges;
+                gateReasonsEl.style.display = 'block';
             } else {
-                decisionEl.textContent = 'NO TRADE';
-                decisionEl.classList.add('ai-signal-notrade');
+                gateReasonsEl.style.display = 'none';
             }
         }
 
-        // Gate note (GATE_BLOCKED / CAUTION)
+        // Legacy gate note (gate_reasons がない古いレスポンス用フォールバック)
         if (gateNoteEl) {
-            if (data.gate_reason) {
+            if (!gateReasons.length && data.gate_reason) {
                 gateNoteEl.textContent = data.gate_reason;
                 gateNoteEl.style.display = 'block';
             } else {
@@ -1486,7 +1404,31 @@ class StockDetailApp {
             }
         }
 
-        // threshold 陬懆ｶｳ・亥ｸｸ縺ｫ陦ｨ遉ｺ・・
+        // 生 decision (raw model output, サブテキストとして表示)
+        if (decisionEl) {
+            decisionEl.className = 'tp-value';
+            decisionEl.style.fontSize = '0.8rem';
+            decisionEl.style.color = 'var(--text-muted)';
+            const rawText = { BUY: 'BUY', NO_TRADE: 'NO_TRADE', GATE_BLOCKED: 'GATE_BLOCKED', CAUTION: 'CAUTION' };
+            decisionEl.textContent = `raw: ${rawText[data.decision] || data.decision || '--'}`;
+        }
+
+        // AI Signal Strength bar
+        const signalEl  = document.getElementById('tpAiSignalStrength');
+        const signalBar = document.getElementById('tpAiSignalBar');
+        if (data.ai_signal_strength != null) {
+            const sv = Number(data.ai_signal_strength);
+            if (signalEl) signalEl.textContent = `${sv.toFixed(1)}`;
+            if (signalBar) {
+                signalBar.style.width  = `${Math.min(100, sv)}%`;
+                signalBar.style.background = sv === 0 ? '#ef4444' : sv >= 60 ? '#22c55e' : sv >= 40 ? '#f59e0b' : '#94a3b8';
+            }
+        } else {
+            if (signalEl)  signalEl.textContent = '--';
+            if (signalBar) signalBar.style.width = '0%';
+        }
+
+        // threshold note
         if (thresholdNote) thresholdNote.style.display = 'flex';
         if (thresholdPct)  thresholdPct.textContent = thresholdPctVal;
 
@@ -1513,7 +1455,49 @@ class StockDetailApp {
             }
         }
         this.renderAiPredictionNewsUsage(data);
+        this.renderClass15(data.class15);
     }
+
+    renderClass15(c15) {
+        const dirEl       = document.getElementById('tpClass15Direction');
+        const asofEl      = document.getElementById('tpClass15Asof');
+        const barUp       = document.getElementById('tpClass15BarUp');
+        const barFlat     = document.getElementById('tpClass15BarFlat');
+        const barDown     = document.getElementById('tpClass15BarDown');
+        const pctUp       = document.getElementById('tpClass15PctUp');
+        const pctFlat     = document.getElementById('tpClass15PctFlat');
+        const pctDown     = document.getElementById('tpClass15PctDown');
+        if (!dirEl) return;
+
+        if (!c15) {
+            dirEl.textContent = '未計算';
+            dirEl.style.cssText = 'font-size:0.85rem;font-weight:700;padding:3px 10px;border-radius:999px;background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.3);';
+            if (asofEl) asofEl.textContent = '';
+            return;
+        }
+
+        const dirLabels = {
+            Up:   { text: '↑ 上昇優勢', bg: 'rgba(34,197,94,0.15)',  color: '#4ade80', border: 'rgba(34,197,94,0.4)' },
+            Flat: { text: '→ 横ばい',   bg: 'rgba(148,163,184,0.1)', color: '#94a3b8', border: 'rgba(148,163,184,0.3)' },
+            Down: { text: '↓ 下落警戒', bg: 'rgba(239,68,68,0.15)',  color: '#f87171', border: 'rgba(239,68,68,0.4)' },
+        };
+        const d = dirLabels[c15.direction] || dirLabels.Flat;
+        dirEl.textContent = d.text;
+        dirEl.style.cssText = `font-size:0.85rem;font-weight:700;padding:3px 10px;border-radius:999px;background:${d.bg};color:${d.color};border:1px solid ${d.border};`;
+
+        if (asofEl) asofEl.textContent = c15.asof ? `asof: ${c15.asof}` : '';
+
+        const fmtPct = v => v != null ? `${(v * 100).toFixed(1)}%` : '--';
+        const toW    = v => v != null ? `${Math.min(100, Math.round(v * 100))}%` : '0%';
+
+        if (pctUp)   pctUp.textContent   = fmtPct(c15.prob_up);
+        if (pctFlat) pctFlat.textContent = fmtPct(c15.prob_flat);
+        if (pctDown) pctDown.textContent = fmtPct(c15.prob_down);
+        if (barUp)   barUp.style.width   = toW(c15.prob_up);
+        if (barFlat) barFlat.style.width = toW(c15.prob_flat);
+        if (barDown) barDown.style.width = toW(c15.prob_down);
+    }
+
     async refreshAiAnalytics() {
         const panelEl = document.getElementById('tpAiAnalyticsPanel');
         const rankEl = document.getElementById('tpAiErrorRanking');
@@ -1728,7 +1712,7 @@ class StockDetailApp {
                             <div class="kv-item"><span class="kv-key">Breakout Point</span><span class="kv-value">${chart?.cup_with_handle?.breakout_point ?? '-'}</span></div>
                             <div class="kv-item"><span class="kv-key">Distance from Pivot</span><span class="kv-value">${chart?.cup_with_handle?.distance_from_pivot_pct != null ? Number(chart.cup_with_handle.distance_from_pivot_pct).toFixed(2) + '%' : '-'}</span></div>
                             <div class="kv-item"><span class="kv-key">Breakout Volume Ratio</span><span class="kv-value">${chart?.cup_with_handle?.breakout_volume_ratio ?? '-'}</span></div>
-                            <div class="kv-item"><span class="kv-key">2.5x Rule</span><span class="kv-value">${chart?.cup_with_handle?.rule_2_5x_violation ? 'Violation' : 'N/A or Not judged'}</span></div>
+                            <div class="kv-item"><span class="kv-key">2.5x Rule</span><span class="kv-value">${chart?.cup_with_handle?.rule_2_5x_violation == null ? 'N/A (ピボット未設定)' : chart.cup_with_handle.rule_2_5x_violation ? '⚠ Violation (5%超延伸)' : '✓ OK (買いゾーン内)'}</span></div>
                         </div>
                     </div>
                     <div class="indicator-card" style="padding:14px;">
@@ -1764,6 +1748,51 @@ class StockDetailApp {
             </div>
             <div class="muted" style="padding:10px 0 0 0;">${trade.reason_template || 'Additional decision summary will be shown after API response.'}</div>
         `;
+    }
+
+    async fetchNews() {
+        const el = document.getElementById('newsList');
+        const loading = document.getElementById('newsLoading');
+        if (!el) return;
+        if (loading) loading.style.display = 'block';
+        try {
+            const url = `${this.API_BASE}/stock/${encodeURIComponent(this.symbol)}/news?limit=30`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            this.state.newsLoaded = true;
+            const items = data.items || [];
+            if (!items.length) {
+                el.innerHTML = '<div class="muted">ニュースデータがありません。</div>';
+                return;
+            }
+            el.innerHTML = items.map(item => {
+                const date = item.published_at
+                    ? new Date(item.published_at).toLocaleDateString('ja-JP', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' })
+                    : '';
+                const url = item.source_ref || '#';
+                const isExternal = url.startsWith('http');
+                const titleHtml = isExternal
+                    ? `<a href="${this._esc(url)}" target="_blank" rel="noopener">${this._esc(item.title || '(no title)')}</a>`
+                    : this._esc(item.title || '(no title)');
+                const src = (item.source_type || '').replace(/_/g, ' ');
+                return `<div class="news-item">
+                    <div class="news-title">${titleHtml}</div>
+                    <div class="news-meta">
+                        <span>${date}</span>
+                        ${src ? `<span class="news-source-badge">${this._esc(src)}</span>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        } catch (e) {
+            el.innerHTML = `<div class="muted text-danger">ニュースの取得に失敗しました: ${e.message}</div>`;
+        } finally {
+            if (loading) loading.style.display = 'none';
+        }
+    }
+
+    _esc(str) {
+        return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     showFatal(msg) {
@@ -1824,9 +1853,11 @@ async function runAiPrediction() {
     try {
         const aiSymbol = (typeof window.app.getAiSymbolKey === 'function')
             ? window.app.getAiSymbolKey()
-            : ((window.app.symbol || '').includes(':')
-                ? String(window.app.symbol).toUpperCase()
-                : `US:${String(window.app.symbol || '').toUpperCase()}`);
+            : (typeof window.app.normalizeSymbolKey === 'function'
+                ? window.app.normalizeSymbolKey(window.app.symbol || '')
+                : ((window.app.symbol || '').includes(':')
+                    ? String(window.app.symbol).toUpperCase()
+                    : `US:${String(window.app.symbol || '').toUpperCase()}`));
         const url = `${window.app.API_BASE}/stock/${encodeURIComponent(aiSymbol)}/ai-prediction/run`;
         const res = await fetch(url, { method: 'POST' });
         if (!res.ok) throw new Error(await getApiErrorMessage(res));
@@ -1874,9 +1905,11 @@ async function backfillAiPredictionActuals() {
     try {
         const aiSymbol = (typeof window.app.getAiSymbolKey === 'function')
             ? window.app.getAiSymbolKey()
-            : ((window.app.symbol || '').includes(':')
-                ? String(window.app.symbol).toUpperCase()
-                : `US:${String(window.app.symbol || '').toUpperCase()}`);
+            : (typeof window.app.normalizeSymbolKey === 'function'
+                ? window.app.normalizeSymbolKey(window.app.symbol || '')
+                : ((window.app.symbol || '').includes(':')
+                    ? String(window.app.symbol).toUpperCase()
+                    : `US:${String(window.app.symbol || '').toUpperCase()}`));
         const url = `${window.app.API_BASE}/stock/${encodeURIComponent(aiSymbol)}/ai-prediction/backfill-actuals?horizon_days=10&limit=500`;
         const res = await fetch(url, { method: 'POST' });
         if (!res.ok) throw new Error(await getApiErrorMessage(res));

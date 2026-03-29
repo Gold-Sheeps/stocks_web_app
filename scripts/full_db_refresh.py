@@ -163,7 +163,6 @@ def main() -> int:
                 "sector",
                 "--quarters",
                 "8",
-                "--include-snapshot",
                 "--delay",
                 "0.2",
             ],

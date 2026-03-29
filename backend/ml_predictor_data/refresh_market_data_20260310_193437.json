@@ -1,0 +1,95 @@
+{
+  "run_at": "2026-03-10T19:34:35",
+  "source": "yfinance",
+  "db_only_check": false,
+  "start": null,
+  "end": "2026-03-10",
+  "symbols": [
+    {
+      "symbol_key": "JP:1301",
+      "status": "OK",
+      "db_before": {
+        "rows": 1223,
+        "max_date": "2026-02-27"
+      },
+      "db_after": {
+        "rows": 1230,
+        "max_date": "2026-03-10"
+      },
+      "fetch": {
+        "from": "2026-02-28",
+        "to": "2026-03-10",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 7,
+        "inserted": 7,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "JP:1305",
+      "status": "OK",
+      "db_before": {
+        "rows": 1222,
+        "max_date": "2026-02-27"
+      },
+      "db_after": {
+        "rows": 1229,
+        "max_date": "2026-03-10"
+      },
+      "fetch": {
+        "from": "2026-02-28",
+        "to": "2026-03-10",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 7,
+        "inserted": 7,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": null
+    },
+    {
+      "symbol_key": "JP:1306",
+      "status": "OK",
+      "db_before": {
+        "rows": 1222,
+        "max_date": "2026-02-27"
+      },
+      "db_after": {
+        "rows": 1229,
+        "max_date": "2026-03-10"
+      },
+      "fetch": {
+        "from": "2026-02-28",
+        "to": "2026-03-10",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 7,
+        "inserted": 7,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": null
+    }
+  ],
+  "totals": {
+    "symbols": 3,
+    "failed": 0,
+    "fetched_rows": 21,
+    "inserted": 21,
+    "updated": 0,
+    "skipped_overflow": 0
+  }
+}

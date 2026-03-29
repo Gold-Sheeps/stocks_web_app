@@ -12,6 +12,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from typing import List
+import re
 
 # backend/ をパスに追加
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -40,6 +41,17 @@ def _parse_iso_date(value: str) -> "datetime.date":
         return datetime.strptime(value, "%Y-%m-%d").date()
     except ValueError as exc:
         raise ValueError(f"--asof must be YYYY-MM-DD, got: {value}") from exc
+
+
+def _normalize_symbol_key(raw: str) -> str:
+    s = str(raw or "").strip().upper()
+    if not s:
+        return s
+    if ":" in s:
+        return s
+    if re.fullmatch(r"\d{4}", s):
+        return f"JP:{s}"
+    return f"US:{s}"
 
 
 def _collect_tickers_from_db(db: Database, max_tickers: int) -> List[str]:
@@ -71,8 +83,8 @@ def _collect_tickers_from_canslim() -> List[str]:
                         break
                 if col is None:
                     return []
-                tickers = [str(v).strip().upper() for v in df[col].dropna().unique()]
-                tickers = [f"US:{t}" if ":" not in t else t for t in tickers if t]
+                tickers = [_normalize_symbol_key(v) for v in df[col].dropna().unique()]
+                tickers = [t for t in tickers if t]
                 print(f"[INFO] canslim CSV loaded from {csv_path} ({len(tickers)} tickers)")
                 return tickers
             except Exception as e:
@@ -81,11 +93,12 @@ def _collect_tickers_from_canslim() -> List[str]:
 
 
 def _collect_tickers_from_volume(db: Database, max_tickers: int) -> List[str]:
-    """price_daily の出来高上位銘柄を返す（フォールバック）。"""
+    """price_daily の出来高上位銘柄を返す（フォールバック）。JP株はAIモデルが未対応なので除外。"""
     sql = """
         SELECT symbol_key, AVG(volume) AS avg_vol
         FROM price_daily
         WHERE volume > 0
+          AND symbol_key NOT LIKE 'JP:%%'
         GROUP BY symbol_key
         HAVING COUNT(*) >= 20
         ORDER BY avg_vol DESC

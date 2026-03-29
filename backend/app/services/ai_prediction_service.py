@@ -37,6 +37,7 @@ SELECT_LATEST_SQL = """
     SELECT symbol_key, asof, p_up5, threshold_buy, decision, cal_method, artifact_path, updated_at
     FROM ai_predictions
     WHERE symbol_key = %s
+      AND COALESCE(cal_method, 'none') != 'class15'
     ORDER BY
         asof DESC,
         CASE LOWER(COALESCE(cal_method, ''))
@@ -50,7 +51,102 @@ SELECT_LATEST_SQL = """
     LIMIT 1
 """
 
+# ── class15: 15営業日3クラス予測 ──────────────────────────────────────────────
+# prediction_type='class15' として cal_method='class15' で ai_predictions に共存保存
+# predicted_class: 0=Down, 1=Flat, 2=Up
+# prob_up + prob_flat + prob_down = 1.0
+CLASS15_HORIZON_DAYS  = 15
+CLASS15_FLAT_BAND_PCT = 3.0  # ±3% で Flat 判定（対称）
+
+UPSERT_CLASS15_SQL = """
+    INSERT INTO ai_predictions
+        (symbol_key, asof, cal_method, horizon_days, flat_band_pct,
+         prob_up, prob_flat, prob_down, predicted_class,
+         p_up5, threshold_buy, decision, updated_at)
+    VALUES (%s, %s, 'class15', %s, %s, %s, %s, %s, %s, %s, 0.5, 'class15', CURRENT_TIMESTAMP)
+    ON CONFLICT (symbol_key, asof, cal_method)
+    DO UPDATE SET
+        horizon_days   = EXCLUDED.horizon_days,
+        flat_band_pct  = EXCLUDED.flat_band_pct,
+        prob_up        = EXCLUDED.prob_up,
+        prob_flat      = EXCLUDED.prob_flat,
+        prob_down      = EXCLUDED.prob_down,
+        predicted_class= EXCLUDED.predicted_class,
+        p_up5          = EXCLUDED.p_up5,
+        updated_at     = CURRENT_TIMESTAMP
+"""
+
+SELECT_LATEST_CLASS15_SQL = """
+    SELECT symbol_key, asof, prob_up, prob_flat, prob_down, predicted_class,
+           horizon_days, flat_band_pct, updated_at
+    FROM ai_predictions
+    WHERE symbol_key = %s
+      AND cal_method = 'class15'
+    ORDER BY asof DESC, updated_at DESC
+    LIMIT 1
+"""
+
 logger = logging.getLogger(__name__)
+
+# ── 予測ホライゾン定義 ────────────────────────────────────────────────────────
+# Phase 1: 5営業日予測 (既存 up5 モデルを再利用)
+#   - prob_up = p_up5: 「5日以内に+5%超」の確率
+#   - FLAT_BAND_HIGH = +5.0: up5 モデルの正クラス閾値に合わせた意図的な非対称設計
+#     （「+5%未満は上昇確定とみなさない」という保守的判定）
+#   - FLAT_BAND_LOW = -3.0: -3%超の下落はフラット扱い（ノイズ許容）
+#   → 非対称は仕様。対称化は Phase 3 での3クラスモデル再訓練時に検討
+# Phase 3（将来）: 15営業日3クラス予測に切り替え予定
+#   - HORIZON_DAYS=15, FLAT_BAND_LOW=-3.0, FLAT_BAND_HIGH=+3.0（対称）に変更
+#   - モデル再訓練が必要。DB スキーマはそのまま使える
+# ─────────────────────────────────────────────────────────────────────────────
+HORIZON_DAYS   = 5
+FLAT_BAND_LOW  = -3.0   # -3% 未満 → class 0 (下落)
+FLAT_BAND_HIGH = +5.0   # +5% 超   → class 2 (上昇)  ※up5モデル正クラス閾値に合わせた非対称設計
+FLAT_BAND_PCT  = 3.0    # DB保存用（対称代表値として記録）
+
+
+def _compute_action_label(decision: str | None, gate_reason: str | None) -> str:
+    """
+    DB に保存せず、API 返却直前に呼ぶ。
+    decision + gate_reason から最終的な action_label を返す。
+    戻り値: "BUY" | "HOLD" | "SELL" | "WATCH" | "BLOCKED"
+    """
+    if decision == "GATE_BLOCKED" or (gate_reason and "停止" in gate_reason):
+        return "BLOCKED"
+    if decision == "CAUTION":
+        return "WATCH"
+    if decision == "BUY":
+        return "BUY"
+    if decision == "SELL":
+        return "SELL"
+    if decision in ("HOLD", "WAIT", "NO TRADE", "NO_TRADE"):
+        return "HOLD"
+    return "WATCH"
+
+
+def _compute_ai_signal_strength(
+    p_up5: float | None,
+    action_label: str,
+    gate_reasons: list[str],
+) -> float:
+    """
+    Stock Detail 用の AI シグナル強度 (0-100)。
+    final_rank_score から tech/CANSLIM 成分を除いたAI純粋シグナル。
+    - BLOCKED → 0
+    - WATCH (ゲート起因) → p * 0.5
+    - それ以外 → p * 1.0
+    """
+    if action_label == "BLOCKED":
+        return 0.0
+    p = float(p_up5 or 0) * 100
+    # ゲート起因 WATCH（market_env_unavailable はゲートなしと同扱い）
+    is_gate_caused = bool(gate_reasons) and any(
+        r in ("market_regime_blocked", "market_regime_caution", "prob_below_caution_threshold")
+        for r in gate_reasons
+    )
+    if action_label == "WATCH" and is_gate_caused:
+        return round(p * 0.5, 1)
+    return round(p, 1)
 
 
 class AiPredictionService:
@@ -71,7 +167,7 @@ class AiPredictionService:
     # -----------------------------------------------------------------------
 
     def get_latest(self, symbol_key: str) -> Dict[str, Any]:
-        """DB から最新の推論結果を返す。なければ has_prediction=False。"""
+        """DB から最新の推論結果を返す。なければ has_prediction=False。class15 も追加で返す。"""
         symbol_key = symbol_key.upper()
         try:
             db = Database()
@@ -80,27 +176,105 @@ class AiPredictionService:
             try:
                 rows = db.execute_query(SELECT_LATEST_SQL, (symbol_key,))
                 if not rows:
-                    return {"has_prediction": False, "symbol_key": symbol_key}
-                row = rows[0]
-                result = {
-                    "has_prediction": True,
-                    "symbol_key": row[0],
-                    "asof": str(row[1]),
-                    "p_up5": float(row[2]),
-                    "threshold_buy": float(row[3]),
-                    "decision": str(row[4]),
-                    "cal_method": row[5],
-                    "artifact_path": row[6],
-                    "updated_at": str(row[7]),
-                }
-                meta = self._get_latest_run_meta(db, str(row[0]), row[1], str(row[5] or "none"))
-                if meta:
-                    result.update(meta)
+                    result = {"has_prediction": False, "symbol_key": symbol_key}
+                else:
+                    row = rows[0]
+                    result = {
+                        "has_prediction": True,
+                        "symbol_key": row[0],
+                        "asof": str(row[1]),
+                        "p_up5": float(row[2]),
+                        "threshold_buy": float(row[3]),
+                        "decision": str(row[4]),
+                        "cal_method": row[5],
+                        "artifact_path": row[6],
+                        "updated_at": str(row[7]),
+                    }
+                    meta = self._get_latest_run_meta(db, str(row[0]), row[1], str(row[5] or "none"))
+                    if meta:
+                        result.update(meta)
+                    # ゲート適用 + action_label 付与（DB には保存しない）
+                    result = self._apply_gate_and_action_label(result)
+
+                # class15 を追加（無くても落ちない）
+                result["class15"] = self._load_latest_class15(db, symbol_key)
                 return result
             finally:
                 db.disconnect()
         except Exception as e:
             return {"has_prediction": False, "symbol_key": symbol_key, "error": str(e)}
+
+    def _load_latest_class15(self, db: Database, symbol_key: str) -> Dict[str, Any] | None:
+        """ai_predictions から最新の class15 レコードを返す。なければ None。"""
+        try:
+            rows = db.execute_query(SELECT_LATEST_CLASS15_SQL, (symbol_key,))
+            if not rows:
+                return None
+            row = rows[0]
+            prob_up   = float(row[2]) if row[2] is not None else None
+            prob_flat = float(row[3]) if row[3] is not None else None
+            prob_down = float(row[4]) if row[4] is not None else None
+            predicted_class = int(row[5]) if row[5] is not None else None
+            # 方向ラベル: 2=Up, 1=Flat, 0=Down
+            _labels = {2: "Up", 1: "Flat", 0: "Down"}
+            direction = _labels.get(predicted_class) if predicted_class is not None else None
+            return {
+                "prediction_type": "class15",
+                "horizon_days": int(row[6]) if row[6] is not None else CLASS15_HORIZON_DAYS,
+                "flat_band_pct": float(row[7]) if row[7] is not None else CLASS15_FLAT_BAND_PCT,
+                "prob_up": prob_up,
+                "prob_flat": prob_flat,
+                "prob_down": prob_down,
+                "predicted_class": predicted_class,
+                "direction": direction,
+                "asof": str(row[1]),
+                "updated_at": str(row[8]),
+            }
+        except Exception as e:
+            logger.warning("_load_latest_class15 failed for %s: %s", symbol_key, e)
+            return None
+
+    def _apply_gate_and_action_label(self, result: Dict[str, Any]) -> Dict[str, Any]:
+        """market_environment からゲートを適用し action_label / gate_reasons を付与する。DB には保存しない。"""
+        market_env = self._get_latest_market_environment()
+        decision = result.get("decision", "") or ""
+        p_up5 = float(result.get("p_up5") or 0.0)
+        gate_reason: str | None = None
+        gate_reasons: list[str] = []  # 構造化された理由リスト（UI説明用）
+
+        if market_env:
+            market_regime = market_env.get("regime", "")
+            position_limit_pct = market_env.get("position_limit_pct")
+
+            if market_regime == "新規買い停止" and decision == "BUY":
+                decision = "GATE_BLOCKED"
+                gate_reason = "新規買い停止中（市場環境）"
+                gate_reasons.append("market_regime_blocked")
+            elif market_regime == "注意" and p_up5 < 0.6 and decision == "BUY":
+                decision = "CAUTION"
+                gate_reason = "市場環境「注意」のため閾値引き上げ（p<0.6）"
+                gate_reasons.append("market_regime_caution")
+                gate_reasons.append("prob_below_caution_threshold")
+
+            result["market_regime"] = market_regime
+            if position_limit_pct is not None:
+                result["position_limit_pct"] = position_limit_pct
+        else:
+            # market_environment テーブルが空 / DB 接続失敗 → ゲートなし（素通し）
+            gate_reasons.append("market_env_unavailable")
+
+        if gate_reason:
+            result["gate_reason"] = gate_reason
+            result["original_decision"] = result.get("decision")
+            result["decision"] = decision
+
+        result["action_label"] = _compute_action_label(decision, gate_reason)
+        result["gate_reasons"] = gate_reasons  # [] = ゲート発動なし
+        # AI信号強度: p_up5ベース + ゲート調整 (tech/CANSLIM なしの純粋AIシグナル, 0-100)
+        result["ai_signal_strength"] = _compute_ai_signal_strength(
+            result.get("p_up5"), result["action_label"], gate_reasons
+        )
+        return result
 
     def run_on_demand(self, symbol_key: str) -> Dict[str, Any]:
         """オンデマンドで推論を実行し、DB に保存して結果を返す。
@@ -128,7 +302,8 @@ class AiPredictionService:
             from app.services.explanation_summary_service import ExplanationSummaryService
             from app.services.rag_retrieval_service import RagRetrievalService
 
-            artifact_path = _latest_artifact_path()
+            market = "JP" if symbol_key.startswith("JP:") else "US"
+            artifact_path = _latest_artifact_path(market=market)
             artifact = _load_artifact(artifact_path)
             cal_method = "none"
 

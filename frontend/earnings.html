@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Earnings Calendar - Trading System</title>
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    .page-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 24px; padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .page-title { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.02em; }
+    .input-row {
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .symbol-input {
+      flex: 1; min-width: 280px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px; font-size: 0.9rem; color: white;
+    }
+    .symbol-input:focus {
+      outline: none; border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+    }
+    .earnings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px; margin-top: 24px;
+    }
+    .earnings-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .earnings-card:hover {
+      border-color: rgba(99,102,241,0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .earnings-card.soon {
+      border-color: rgba(245,158,11,0.4);
+      background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.02));
+    }
+    .earnings-card.today {
+      border-color: rgba(239,68,68,0.5);
+      background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.02));
+    }
+    .ec-symbol {
+      font-family: var(--font-mono); font-weight: 700; font-size: 1.1rem;
+      color: var(--primary); margin-bottom: 4px;
+    }
+    .ec-name { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ec-date-row { display: flex; justify-content: space-between; align-items: center; }
+    .ec-date {
+      font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700;
+    }
+    .ec-days {
+      font-size: 0.78rem; padding: 3px 10px; border-radius: 20px;
+      font-weight: 700;
+    }
+    .days-today { background: rgba(239,68,68,0.2); color: #ef4444; }
+    .days-soon { background: rgba(245,158,11,0.2); color: #f59e0b; }
+    .days-future { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+    .days-past { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+    .days-unknown { background: rgba(255,255,255,0.04); color: var(--text-muted); }
+    .ec-eps {
+      margin-top: 12px; padding-top: 10px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      font-size: 0.78rem; color: var(--text-muted);
+    }
+    .ec-sector {
+      display: inline-block; margin-top: 8px;
+      font-size: 0.68rem; padding: 2px 8px;
+      background: rgba(255,255,255,0.06); border-radius: 4px;
+      color: var(--text-muted);
+    }
+    .no-data { text-align: center; padding: 60px; color: var(--text-muted); }
+    .tab-toggle {
+      display: flex; gap: 4px;
+      background: rgba(255,255,255,0.04);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+    }
+    .tab-toggle button {
+      padding: 6px 16px; border-radius: 4px; font-size: 0.82rem;
+      font-weight: 600; background: transparent; color: var(--text-muted);
+      border: none; cursor: pointer; transition: all 0.2s;
+    }
+    .tab-toggle button.active {
+      background: rgba(99,102,241,0.2); color: white;
+    }
+    .list-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .list-table thead th {
+      background: rgba(255,255,255,0.04);
+      padding: 11px 16px; text-align: left;
+      font-size: 0.7rem; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--text-muted); font-weight: 600;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .list-table thead th.text-right { text-align: right; }
+    .list-table tbody tr { border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.15s; }
+    .list-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+    .list-table tbody td { padding: 13px 16px; font-size: 0.88rem; }
+    .list-table tbody td.text-right { text-align: right; font-family: var(--font-mono); }
+    .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 40px auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div id="sidebar-container"></div>
+  <div class="main-content">
+    <div class="container">
+      <div class="page-header">
+        <div class="page-title">Earnings Calendar</div>
+        <div class="tab-toggle">
+          <button class="active" id="btnViewGrid" onclick="setView('grid')">Grid</button>
+          <button id="btnViewList" onclick="setView('list')">List</button>
+        </div>
+      </div>
+
+      <div class="input-row">
+        <input type="text" class="symbol-input" id="symbolInput"
+          placeholder="Symbols: US:NVDA, US:AAPL, JP:7203 (comma-separated)">
+        <button class="btn btn-primary" id="btnFetch">Fetch</button>
+        <button class="btn btn-ghost" id="btnWatchlist">Watchlist + Portfolio</button>
+      </div>
+
+      <div id="loadingSpinner" style="display:none;"><div class="spinner"></div></div>
+      <div id="earningsContent"></div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    const API_BASE = window.CONFIG?.API_BASE || 'http://localhost:8010/api/v1';
+    let currentView = 'grid';
+    let currentData = [];
+
+    function setView(v) {
+      currentView = v;
+      document.getElementById('btnViewGrid').classList.toggle('active', v === 'grid');
+      document.getElementById('btnViewList').classList.toggle('active', v === 'list');
+      renderEarnings(currentData);
+    }
+
+    function daysUntil(dateStr) {
+      if (!dateStr) return null;
+      const today = new Date(); today.setHours(0,0,0,0);
+      const target = new Date(dateStr); target.setHours(0,0,0,0);
+      return Math.round((target - today) / 86400000);
+    }
+
+    function daysLabel(days) {
+      if (days === null) return { text: 'N/A', cls: 'days-unknown' };
+      if (days === 0) return { text: 'TODAY', cls: 'days-today' };
+      if (days > 0 && days <= 7) return { text: `${days}d`, cls: 'days-soon' };
+      if (days > 0) return { text: `${days}d`, cls: 'days-future' };
+      return { text: `${Math.abs(days)}d ago`, cls: 'days-past' };
+    }
+
+    function fmtMarketCap(v) {
+      if (!v) return '-';
+      if (v >= 1e12) return `$${(v/1e12).toFixed(1)}T`;
+      if (v >= 1e9) return `$${(v/1e9).toFixed(1)}B`;
+      if (v >= 1e6) return `$${(v/1e6).toFixed(1)}M`;
+      return `$${v.toLocaleString()}`;
+    }
+
+    function renderEarnings(data) {
+      const container = document.getElementById('earningsContent');
+      if (!data || data.length === 0) {
+        container.innerHTML = '<div class="no-data">No data. Enter symbols and click Fetch.</div>';
+        return;
+      }
+
+      if (currentView === 'grid') {
+        container.innerHTML = `<div class="earnings-grid">${data.map(item => {
+          const days = daysUntil(item.next_earnings_date);
+          const dl = daysLabel(days);
+          const cardCls = days === 0 ? 'today' : (days !== null && days > 0 && days <= 7 ? 'soon' : '');
+          return `<div class="earnings-card ${cardCls}" onclick="window.open('stock_detail.html?symbol=${encodeURIComponent(item.symbol)}', '_blank')">
+            <div class="ec-symbol">${item.symbol}</div>
+            <div class="ec-name">${item.name || '-'}</div>
+            <div class="ec-date-row">
+              <div class="ec-date">${item.next_earnings_date || 'Unknown'}</div>
+              <div class="ec-days ${dl.cls}">${dl.text}</div>
+            </div>
+            ${item.eps_estimate != null ? `<div class="ec-eps">EPS Est: <strong>$${Number(item.eps_estimate).toFixed(2)}</strong></div>` : ''}
+            ${item.sector ? `<div class="ec-sector">${item.sector}</div>` : ''}
+          </div>`;
+        }).join('')}</div>`;
+      } else {
+        container.innerHTML = `
+        <div class="glass-panel">
+          <div class="table-container">
+          <table class="list-table">
+            <thead>
+              <tr>
+                <th>Symbol</th><th>Company</th><th>Sector</th>
+                <th class="text-right">Earnings Date</th>
+                <th class="text-right">Days</th>
+                <th class="text-right">EPS Est.</th>
+                <th class="text-right">Market Cap</th>
+              </tr>
+            </thead>
+            <tbody>${data.map(item => {
+              const days = daysUntil(item.next_earnings_date);
+              const dl = daysLabel(days);
+              return `<tr>
+                <td style="font-family:var(--font-mono);font-weight:700;">
+                  <a href="stock_detail.html?symbol=${encodeURIComponent(item.symbol)}" style="color:var(--primary);text-decoration:none;">${item.symbol}</a>
+                </td>
+                <td style="color:var(--text-muted); max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.name || '-'}</td>
+                <td style="color:var(--text-muted); font-size:0.8rem;">${item.sector || '-'}</td>
+                <td class="text-right">${item.next_earnings_date || '-'}</td>
+                <td class="text-right"><span class="ec-days ${dl.cls}" style="display:inline-block;">${dl.text}</span></td>
+                <td class="text-right">${item.eps_estimate != null ? `$${Number(item.eps_estimate).toFixed(2)}` : '-'}</td>
+                <td class="text-right">${fmtMarketCap(item.market_cap)}</td>
+              </tr>`;
+            }).join('')}</tbody>
+          </table>
+          </div>
+        </div>`;
+      }
+    }
+
+    async function fetchEarnings(symbols) {
+      document.getElementById('loadingSpinner').style.display = 'block';
+      document.getElementById('earningsContent').innerHTML = '';
+      try {
+        const res = await fetch(`${API_BASE}/earnings?symbols=${encodeURIComponent(symbols)}`);
+        if (!res.ok) throw new Error(`API ${res.status}`);
+        const data = await res.json();
+        currentData = data;
+        renderEarnings(data);
+      } catch (e) {
+        document.getElementById('earningsContent').innerHTML = `<div class="no-data" style="color:var(--danger);">Error: ${e.message}</div>`;
+        UI.showToast('Failed to fetch earnings data', 'error');
+      } finally {
+        document.getElementById('loadingSpinner').style.display = 'none';
+      }
+    }
+
+    async function fetchWatchlist() {
+      document.getElementById('loadingSpinner').style.display = 'block';
+      document.getElementById('earningsContent').innerHTML = '';
+      try {
+        const res = await fetch(`${API_BASE}/earnings/watchlist`);
+        if (!res.ok) throw new Error(`API ${res.status}`);
+        const data = await res.json();
+        currentData = data;
+        if (data.length > 0) {
+          const syms = data.map(d => d.symbol).join(', ');
+          document.getElementById('symbolInput').value = syms;
+        }
+        renderEarnings(data);
+      } catch (e) {
+        document.getElementById('earningsContent').innerHTML = `<div class="no-data" style="color:var(--danger);">Error: ${e.message}</div>`;
+        UI.showToast('Failed to fetch watchlist', 'error');
+      } finally {
+        document.getElementById('loadingSpinner').style.display = 'none';
+      }
+    }
+
+    document.getElementById('btnFetch').addEventListener('click', () => {
+      const val = document.getElementById('symbolInput').value.trim();
+      if (!val) { UI.showToast('Enter at least one symbol', 'warning'); return; }
+      fetchEarnings(val);
+    });
+
+    document.getElementById('btnWatchlist').addEventListener('click', fetchWatchlist);
+
+    document.getElementById('symbolInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('btnFetch').click();
+    });
+
+    // Auto-load watchlist on open
+    fetchWatchlist();
+  </script>
+</body>
+</html>

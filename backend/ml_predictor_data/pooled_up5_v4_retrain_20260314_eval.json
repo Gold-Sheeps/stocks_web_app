@@ -1,0 +1,1693 @@
+{
+  "period": {
+    "start": "2024-01-01",
+    "end": "2026-03-13",
+    "asof": "2026-03-13"
+  },
+  "metrics": {
+    "precision_at_p70": 0.0,
+    "coverage_at_p70": 0.0,
+    "n_trades_at_p70": 0,
+    "avg_return_at_p70": 0.0,
+    "effective_threshold_buy": 0.6,
+    "precision_at_threshold": 0.0,
+    "coverage_at_threshold": 0.0,
+    "n_trades_at_threshold": 0,
+    "avg_return_at_threshold": 0.0,
+    "folds_used": 100
+  },
+  "diagnostics": {
+    "fixed_threshold_metrics": {
+      "0.5": {
+        "precision": 0.0,
+        "coverage": 0.0,
+        "n_trades": 0,
+        "avg_return": 0.0,
+        "confusion_matrix": [
+          [
+            1920,
+            0
+          ],
+          [
+            580,
+            0
+          ]
+        ]
+      },
+      "0.6": {
+        "precision": 0.0,
+        "coverage": 0.0,
+        "n_trades": 0,
+        "avg_return": 0.0,
+        "confusion_matrix": [
+          [
+            1920,
+            0
+          ],
+          [
+            580,
+            0
+          ]
+        ]
+      },
+      "0.7": {
+        "precision": 0.0,
+        "coverage": 0.0,
+        "n_trades": 0,
+        "avg_return": 0.0,
+        "confusion_matrix": [
+          [
+            1920,
+            0
+          ],
+          [
+            580,
+            0
+          ]
+        ]
+      }
+    },
+    "confidence_bins": [
+      {
+        "bin": "[0.5,0.6)",
+        "lo": 0.5,
+        "hi": 0.6,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      },
+      {
+        "bin": "[0.6,0.7)",
+        "lo": 0.6,
+        "hi": 0.7,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      },
+      {
+        "bin": "[0.7,0.8)",
+        "lo": 0.7,
+        "hi": 0.8,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      },
+      {
+        "bin": "[0.8,0.9)",
+        "lo": 0.8,
+        "hi": 0.9,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      },
+      {
+        "bin": "[0.9,1.0]",
+        "lo": 0.9,
+        "hi": 1.0,
+        "n": 0,
+        "win_rate": null,
+        "avg_return": null
+      }
+    ],
+    "probability_audit": {
+      "pre_calibration_summary": {
+        "n": 2500,
+        "min": 1e-06,
+        "max": 0.9473796486854553,
+        "mean": 0.5111094276433981,
+        "std": 0.2520397712332169,
+        "quantiles": {
+          "0.1": 0.15137456953525544,
+          "0.25": 0.2942628264427185,
+          "0.5": 0.5543369650840759,
+          "0.75": 0.7111792862415314,
+          "0.9": 0.8239220499992331,
+          "0.95": 0.8965733051300049,
+          "0.99": 0.94155077934265
+        }
+      },
+      "post_calibration_summary": {
+        "n": 2500,
+        "min": 1e-06,
+        "max": 0.4931324392170593,
+        "mean": 0.22364955669716818,
+        "std": 0.07744031898083047,
+        "quantiles": {
+          "0.1": 0.1266848406627111,
+          "0.25": 0.1826174968885392,
+          "0.5": 0.22249565077573924,
+          "0.75": 0.265875300227317,
+          "0.9": 0.31936161085084763,
+          "0.95": 0.3430969532324497,
+          "0.99": 0.4021951669279572
+        }
+      }
+    },
+    "prob_calibration_audit": {
+      "high_confidence_miss": {
+        "threshold": 0.7,
+        "count": 0,
+        "top_misses": []
+      },
+      "low_confidence_miss": {
+        "threshold": 0.7,
+        "count": 580,
+        "top_misses": [
+          {
+            "date": "2024-01-02",
+            "ticker": "US:ACU",
+            "probability": 1e-06,
+            "realized_return": 0.08734444705329893,
+            "actual": 1
+          },
+          {
+            "date": "2024-01-02",
+            "ticker": "US:ACU",
+            "probability": 1e-06,
+            "realized_return": 0.08734444705329893,
+            "actual": 1
+          },
+          {
+            "date": "2024-01-02",
+            "ticker": "US:ACU",
+            "probability": 1e-06,
+            "realized_return": 0.08734444705329893,
+            "actual": 1
+          },
+          {
+            "date": "2024-01-02",
+            "ticker": "US:ACU",
+            "probability": 1e-06,
+            "realized_return": 0.08734444705329893,
+            "actual": 1
+          },
+          {
+            "date": "2024-01-02",
+            "ticker": "US:ACU",
+            "probability": 1e-06,
+            "realized_return": 0.08734444705329893,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          }
+        ],
+        "top_misses_dedup": [
+          {
+            "date": "2024-01-02",
+            "ticker": "US:ACU",
+            "probability": 1e-06,
+            "realized_return": 0.08734444705329893,
+            "actual": 1
+          },
+          {
+            "date": "2024-12-18",
+            "ticker": "US:AEMD",
+            "probability": 0.06793641366740001,
+            "realized_return": 0.21212121212121215,
+            "actual": 1
+          },
+          {
+            "date": "2024-04-19",
+            "ticker": "US:AMAT",
+            "probability": 0.12408452148746295,
+            "realized_return": 0.07545976708647295,
+            "actual": 1
+          },
+          {
+            "date": "2024-06-06",
+            "ticker": "US:AAON",
+            "probability": 0.13621568093228079,
+            "realized_return": 0.09578438147892211,
+            "actual": 1
+          },
+          {
+            "date": "2025-04-03",
+            "ticker": "US:AGEN",
+            "probability": 0.15460335114680185,
+            "realized_return": 0.30000000000000004,
+            "actual": 1
+          },
+          {
+            "date": "2025-01-14",
+            "ticker": "US:ANIP",
+            "probability": 0.16941756622510518,
+            "realized_return": 0.09582717872968981,
+            "actual": 1
+          },
+          {
+            "date": "2025-03-04",
+            "ticker": "US:ACNT",
+            "probability": 0.17093618251058093,
+            "realized_return": 0.17194570135746587,
+            "actual": 1
+          },
+          {
+            "date": "2024-07-01",
+            "ticker": "US:ACAD",
+            "probability": 0.1826174968885392,
+            "realized_return": 0.1608478802992519,
+            "actual": 1
+          },
+          {
+            "date": "2024-05-14",
+            "ticker": "US:ADI",
+            "probability": 0.1868079219862349,
+            "realized_return": 0.07648391054071912,
+            "actual": 1
+          },
+          {
+            "date": "2025-01-06",
+            "ticker": "US:AMGN",
+            "probability": 0.18906775052972313,
+            "realized_return": 0.05742681464867183,
+            "actual": 1
+          },
+          {
+            "date": "2025-08-15",
+            "ticker": "US:ACN",
+            "probability": 0.19924530301738408,
+            "realized_return": 0.052467511436784076,
+            "actual": 1
+          },
+          {
+            "date": "2024-07-01",
+            "ticker": "US:ALNT",
+            "probability": 0.1996830312359241,
+            "realized_return": 0.2050020500205001,
+            "actual": 1
+          },
+          {
+            "date": "2025-04-28",
+            "ticker": "US:ALRS",
+            "probability": 0.2005586410701571,
+            "realized_return": 0.2398648648648647,
+            "actual": 1
+          },
+          {
+            "date": "2024-08-23",
+            "ticker": "US:AEP",
+            "probability": 0.21582057632225626,
+            "realized_return": 0.05506361323155207,
+            "actual": 1
+          },
+          {
+            "date": "2025-05-20",
+            "ticker": "US:AAP",
+            "probability": 0.2173250513575955,
+            "realized_return": 0.51288056206089,
+            "actual": 1
+          },
+          {
+            "date": "2025-05-05",
+            "ticker": "US:AAL",
+            "probability": 0.24130571162254383,
+            "realized_return": 0.11257035647279533,
+            "actual": 1
+          },
+          {
+            "date": "2025-12-26",
+            "ticker": "US:ADTN",
+            "probability": 0.24584168007675272,
+            "realized_return": 0.06971428571428562,
+            "actual": 1
+          },
+          {
+            "date": "2024-11-15",
+            "ticker": "US:A",
+            "probability": 0.25221552282743115,
+            "realized_return": 0.09844967340835777,
+            "actual": 1
+          },
+          {
+            "date": "2024-07-09",
+            "ticker": "US:AGM",
+            "probability": 0.2817905986366202,
+            "realized_return": 0.17413152720122338,
+            "actual": 1
+          },
+          {
+            "date": "2025-07-23",
+            "ticker": "US:AIZ",
+            "probability": 0.2952821026312625,
+            "realized_return": 0.11955652683758844,
+            "actual": 1
+          },
+          {
+            "date": "2024-07-17",
+            "ticker": "US:ABG",
+            "probability": 0.29654051025347605,
+            "realized_return": 0.05229831144465291,
+            "actual": 1
+          },
+          {
+            "date": "2026-02-05",
+            "ticker": "US:AMRN",
+            "probability": 0.31394592238782587,
+            "realized_return": 0.10645848119233502,
+            "actual": 1
+          },
+          {
+            "date": "2025-08-29",
+            "ticker": "US:AIOT",
+            "probability": 0.31936161085084763,
+            "realized_return": 0.12633832976445403,
+            "actual": 1
+          },
+          {
+            "date": "2024-01-17",
+            "ticker": "US:ALK",
+            "probability": 0.32363560606147584,
+            "realized_return": 0.06605177030645648,
+            "actual": 1
+          },
+          {
+            "date": "2024-03-12",
+            "ticker": "US:AIRI",
+            "probability": 0.37632780877739214,
+            "realized_return": 0.18115942028985502,
+            "actual": 1
+          },
+          {
+            "date": "2024-05-06",
+            "ticker": "US:AD",
+            "probability": 0.38681210695030105,
+            "realized_return": 0.23234561063417344,
+            "actual": 1
+          }
+        ]
+      }
+    }
+  },
+  "meta": {
+    "run_params": {
+      "label_mode": "up5_2w",
+      "horizon": 10,
+      "target_return": 0.05,
+      "fixed_thresholds": [
+        0.5,
+        0.6,
+        0.7
+      ],
+      "feature_set": "v4_ohlcv_ta_relregime_event_fundflow_signals",
+      "feature_set_version": "xgb_only_v1",
+      "include_llm_features": false,
+      "tickers_file": "backend/config/universe_100.txt",
+      "n_tickers": 100,
+      "train_tickers": [
+        "US:A",
+        "US:AA",
+        "US:AAL",
+        "US:AAON",
+        "US:AAP",
+        "US:AAPL",
+        "US:ABCB",
+        "US:ABEO",
+        "US:ABG",
+        "US:ABM",
+        "US:ABT",
+        "US:ABVC",
+        "US:ACAD",
+        "US:ACCO",
+        "US:ACFN",
+        "US:ACGL",
+        "US:ACH",
+        "US:ACHC",
+        "US:ACHV",
+        "US:ACIW",
+        "US:ACLS",
+        "US:ACN",
+        "US:ACNB",
+        "US:ACNT",
+        "US:ACTG",
+        "US:ACU",
+        "US:AD",
+        "US:ADBE",
+        "US:ADEA",
+        "US:ADI",
+        "US:ADM",
+        "US:ADP",
+        "US:ADSK",
+        "US:ADTN",
+        "US:AEE",
+        "US:AEG",
+        "US:AEHR",
+        "US:AEIS",
+        "US:AEM",
+        "US:AEMD",
+        "US:AEO",
+        "US:AEP",
+        "US:AES",
+        "US:AFG",
+        "US:AFL",
+        "US:AGCO",
+        "US:AGEN",
+        "US:AGG",
+        "US:AGI",
+        "US:AGIG",
+        "US:AGM",
+        "US:AGO",
+        "US:AGX",
+        "US:AGYS",
+        "US:AIFF",
+        "US:AIG",
+        "US:AIN",
+        "US:AIOT",
+        "US:AIR",
+        "US:AIRI",
+        "US:AIRT",
+        "US:AIT",
+        "US:AIZ",
+        "US:AJG",
+        "US:AKAM",
+        "US:ALB",
+        "US:ALCO",
+        "US:ALG",
+        "US:ALGN",
+        "US:ALK",
+        "US:ALKS",
+        "US:ALL",
+        "US:ALNT",
+        "US:ALNY",
+        "US:ALOT",
+        "US:ALRS",
+        "US:ALTO",
+        "US:ALTS",
+        "US:ALV",
+        "US:AMAT",
+        "US:AMD",
+        "US:AME",
+        "US:AMG",
+        "US:AMGN",
+        "US:AMKR",
+        "US:AMN",
+        "US:AMP",
+        "US:AMRN",
+        "US:AMS",
+        "US:AMSC",
+        "US:AMSF",
+        "US:AMWD",
+        "US:AMX",
+        "US:AMZN",
+        "US:AN",
+        "US:ANDE",
+        "US:ANF",
+        "US:ANGO",
+        "US:ANIK",
+        "US:ANIP"
+      ],
+      "holdout_tickers": []
+    }
+  },
+  "per_ticker": [
+    {
+      "ticker": "US:A",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AA",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AAL",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AAON",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AAP",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AAPL",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ABG",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ABVC",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ACAD",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ACCO",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ACFN",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ACHV",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ACLS",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ACN",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ACNB",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ACNT",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ACTG",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ACU",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AD",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ADBE",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ADEA",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ADI",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ADP",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ADSK",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ADTN",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AEE",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AEG",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AEM",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AEMD",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AEP",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AFG",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AGCO",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AGEN",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AGG",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AGM",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AGYS",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AIFF",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AIN",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AIOT",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AIR",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AIRI",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AIZ",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AJG",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AKAM",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ALB",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ALG",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ALGN",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ALK",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ALKS",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ALL",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ALNT",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ALNY",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ALOT",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ALRS",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ALTO",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ALTS",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ALV",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AMAT",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AME",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AMG",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AMGN",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AMP",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AMRN",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AMS",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AMSC",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AMSF",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AMWD",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AMX",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AMZN",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:AN",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ANDE",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ANIK",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    },
+    {
+      "ticker": "US:ANIP",
+      "precision_at_p70": 0.0,
+      "coverage_at_p70": 0.0,
+      "n_trades_at_p70": 0,
+      "avg_return_at_p70": 0.0,
+      "effective_threshold_buy": 0.6,
+      "precision_at_threshold": 0.0,
+      "coverage_at_threshold": 0.0,
+      "n_trades_at_threshold": 0,
+      "avg_return_at_threshold": 0.0
+    }
+  ],
+  "artifact_path": "C:\\Users\\o_van\\Desktop\\stocks_web_app\\backend\\ml_predictor_data\\pooled_up5_v4_retrain_20260314_artifact.pkl"
+}

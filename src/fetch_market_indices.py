@@ -42,6 +42,8 @@ MARKET_INDICES = {
     
     # VIX（恐怖指数）
     '^VIX': {'name': 'CBOE Volatility Index', 'market': 'US', 'currency': 'USD', 'type': 'VIX'},
+    '^VVIX': {'name': 'CBOE VVIX Index (Volatility of VIX)', 'market': 'US', 'currency': 'USD', 'type': 'VIX'},
+    '^VIX3M': {'name': 'CBOE 3-Month Volatility Index', 'market': 'US', 'currency': 'USD', 'type': 'VIX'},
     
     # 為替
     'USDJPY=X': {'name': 'USD/JPY', 'market': 'FX', 'currency': 'JPY', 'type': 'FX'},

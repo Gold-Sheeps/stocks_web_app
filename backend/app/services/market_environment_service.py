@@ -68,6 +68,23 @@ class MarketEnvironmentService:
         nasdaq_dd_dates = d.get("nasdaq_dd_dates") or []
         sp500_dd_dates  = d.get("sp500_dd_dates")  or []
 
+        # M Judgment: derive from buy_permission + regime
+        gate = (d.get("buy_permission") or "unknown").upper()
+        regime = (d.get("regime") or "").strip()
+        dd_max = max((nasdaq_dd_count or 0), (sp500_dd_count or 0))
+        if gate == "OFF":
+            m_judgment = "弱気相場（新規買い停止）"
+        elif gate == "HALF":
+            m_judgment = "注意相場（半値ポジション）"
+        elif any(k in regime for k in ("Bull", "強気", "上昇")):
+            m_judgment = "強気相場"
+        elif any(k in regime for k in ("Bear", "弱気", "下降")):
+            m_judgment = "弱気相場"
+        elif dd_max >= 5:
+            m_judgment = "調整相場"
+        else:
+            m_judgment = "中立相場"
+
         summary = {
             "market_regime":              d.get("regime",               "不明"),
             "market_gate":                d.get("buy_permission",        "unknown"),
@@ -80,6 +97,7 @@ class MarketEnvironmentService:
             "sp500_dd_count_5w":          sp500_dd_count,
             "vix_level":                  d.get("vix"),
             "vix_mode":                   d.get("vix_mode"),
+            "m_judgment":                 m_judgment,
         }
 
         # --- sections ---
@@ -245,6 +263,123 @@ class MarketEnvironmentService:
         count = len(recent)
         return {"count": count, "days": recent, "threshold_reached": count >= 5}
 
+    def _ftd_analysis(self, symbol_key: str) -> dict[str, Any] | None:
+        """
+        フォロースルーデー（FTD）分析。
+        直近40日の最安値を底（Day1の基点）とし、そこからの反発カウント・FTD有無を返す。
+        """
+        rows_desc = self._get_series(symbol_key, limit=60)
+        if len(rows_desc) < 10:
+            return None
+
+        rows = list(reversed(rows_desc))  # oldest → newest
+
+        # 直近40日の中で最安値の日を「底」とする
+        window = rows[-40:] if len(rows) >= 40 else rows
+        window_start = len(rows) - len(window)
+        min_idx_in_win = min(range(len(window)), key=lambda i: window[i].close)
+        bottom_abs = window_start + min_idx_in_win
+        bottom_row = rows[bottom_abs]
+
+        # Day1: 底の翌日以降で初めて底値より高く引けた日
+        day1_abs = None
+        for i in range(bottom_abs + 1, len(rows)):
+            if rows[i].close > bottom_row.close:
+                day1_abs = i
+                break
+
+        if day1_abs is None:
+            return {
+                "status": "底打ち試行なし（下降継続）",
+                "status_type": "declining",
+                "day1_date": None,
+                "day_count": None,
+                "ftd_date": None,
+                "ftd_day": None,
+                "ftd_change_pct": None,
+                "day1_undercut": False,
+                "post_ftd_dd_date": None,
+                "ftd_low_breached": False,
+            }
+
+        day1_row = rows[day1_abs]
+        rally_rows = rows[day1_abs:]   # Day1 = index 0
+        day_count = len(rally_rows)    # Day1 = 1
+
+        # Day1 安値割れ（終値ベース）
+        day1_undercut = any(r.close < bottom_row.close for r in rally_rows[1:])
+
+        # FTD 検出: Day4（index 3）以降で +1.25% 以上かつ出来高増
+        ftd_date = None
+        ftd_day = None
+        ftd_change_pct = None
+        ftd_idx = None
+        for i in range(3, len(rally_rows)):
+            cur = rally_rows[i]
+            prev = rally_rows[i - 1]
+            if prev.close == 0:
+                continue
+            chg = (cur.close - prev.close) / prev.close * 100
+            vol_up = cur.volume > prev.volume and cur.volume > 0
+            if chg >= 1.25 and vol_up:
+                ftd_date = cur.trading_date.isoformat()
+                ftd_day = i + 1   # 1-indexed
+                ftd_change_pct = round(chg, 2)
+                ftd_idx = i
+                break
+
+        # FTD 後の失敗シグナル
+        post_ftd_dd_date = None
+        ftd_low_breached = False
+        if ftd_idx is not None:
+            ftd_row = rally_rows[ftd_idx]
+            # FTD 直後 3 日以内の配布日（-0.2% 以上下落 + 出来高増）
+            for j in range(ftd_idx + 1, min(ftd_idx + 4, len(rally_rows))):
+                cur = rally_rows[j]
+                prev = rally_rows[j - 1]
+                if prev.close == 0:
+                    continue
+                chg = (cur.close - prev.close) / prev.close * 100
+                if chg <= -0.2 and cur.volume > prev.volume:
+                    post_ftd_dd_date = cur.trading_date.isoformat()
+                    break
+            # FTD 当日終値（安値 proxy）を後日下抜け
+            ftd_low_breached = any(r.close < ftd_row.close for r in rally_rows[ftd_idx + 1:])
+
+        # ステータス判定
+        if day1_undercut:
+            status = "リセット（底打ち試行失敗）"
+            status_type = "reset"
+        elif ftd_date is None:
+            if day_count <= 3:
+                status = f"底打ち試行中（Day {day_count}・静観）"
+                status_type = "waiting_early"
+            elif day_count <= 7:
+                status = f"FTD待ち（Day {day_count}・勝負所）"
+                status_type = "waiting_critical"
+            else:
+                status = f"FTD未確認（Day {day_count}・勢い弱い）"
+                status_type = "waiting_late"
+        elif ftd_low_breached or post_ftd_dd_date:
+            status = "FTD失敗の兆候あり"
+            status_type = "failed"
+        else:
+            status = "FTD確認済み（上昇継続監視中）"
+            status_type = "confirmed"
+
+        return {
+            "status": status,
+            "status_type": status_type,
+            "day1_date": day1_row.trading_date.isoformat(),
+            "day_count": day_count,
+            "ftd_date": ftd_date,
+            "ftd_day": ftd_day,
+            "ftd_change_pct": ftd_change_pct,
+            "day1_undercut": day1_undercut,
+            "post_ftd_dd_date": post_ftd_dd_date,
+            "ftd_low_breached": ftd_low_breached,
+        }
+
     def _index_trend_state(self, symbol_key: str) -> str:
         rows_desc = self._get_series(symbol_key, limit=30)
         if len(rows_desc) < 22:
@@ -389,9 +524,19 @@ class MarketEnvironmentService:
             # DB から最新レコードを試みる
             record = self._load_from_db()
             if record:
-                return self._db_record_to_dashboard(record)
-            # fallback
-            return self._live_dashboard()
+                dashboard = self._db_record_to_dashboard(record)
+            else:
+                dashboard = self._live_dashboard()
+
+            # FTD 分析は常に price_daily からライブ計算して注入
+            ftd_qqq = self._ftd_analysis("US:QQQ")
+            ftd_spy = self._ftd_analysis("US:SPY")
+            if ftd_qqq or ftd_spy:
+                dashboard["sections"]["ftd_analysis"] = {
+                    "qqq": ftd_qqq,
+                    "spy": ftd_spy,
+                }
+            return dashboard
         finally:
             self.db.disconnect()
 

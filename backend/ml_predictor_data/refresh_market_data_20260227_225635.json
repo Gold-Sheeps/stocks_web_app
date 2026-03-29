@@ -1,0 +1,43 @@
+{
+  "run_at": "2026-02-27T22:56:34",
+  "source": "yfinance",
+  "db_only_check": false,
+  "start": "2024-01-01",
+  "end": "2026-02-27",
+  "symbols": [
+    {
+      "symbol_key": "JP:7203",
+      "status": "OK",
+      "db_before": {
+        "rows": 0,
+        "max_date": null
+      },
+      "db_after": {
+        "rows": 525,
+        "max_date": "2026-02-27"
+      },
+      "fetch": {
+        "from": "2024-01-01",
+        "to": "2026-02-27",
+        "attempts": 1,
+        "source_used": "yfinance",
+        "skipped": false
+      },
+      "upsert": {
+        "fetched_rows": 525,
+        "inserted": 525,
+        "updated": 0,
+        "skipped_overflow": 0
+      },
+      "error": null
+    }
+  ],
+  "totals": {
+    "symbols": 1,
+    "failed": 0,
+    "fetched_rows": 525,
+    "inserted": 525,
+    "updated": 0,
+    "skipped_overflow": 0
+  }
+}

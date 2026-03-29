@@ -191,8 +191,10 @@ class StockDetailService:
                         ytd_start = ytd_res[0][0]
                         ytd_change = ((close_price - ytd_start) / ytd_start) * 100
 
+                market_val = row[2] or "US"
+                currency = "JPY" if market_val.upper() == "JP" else "USD"
                 stock_info = StockInfo(
-                    symbol=row[0], name=row[1], market=row[2] or "US", currency="USD",
+                    symbol=row[0], name=row[1], market=market_val, currency=currency,
                     current_price=close_price if price_valid else None, # STRICT rule
                     volume=row[4] if row[4] else 0,
                     change_pct=change_pct,
@@ -400,6 +402,130 @@ class StockDetailService:
             up += 100 - total
         return {"up": up, "flat": flat, "down": down}
 
+    # GICS sector name → SPDR sector ETF ticker
+    _SECTOR_TO_ETF: dict[str, str] = {
+        "Technology": "XLK",
+        "Health Care": "XLV",
+        "Financials": "XLF",
+        "Consumer Discretionary": "XLY",
+        "Consumer Staples": "XLP",
+        "Energy": "XLE",
+        "Basic Materials": "XLB",
+        "Industrials": "XLI",
+        "Utilities": "XLU",
+        "Real Estate": "XLRE",
+        "Communication Services": "XLC",
+    }
+
+    def _build_sector_evaluation(self, symbol_key: str) -> dict:
+        """sector_rotation + fundamentals からセクター評価を構築。"""
+        sector_rs: float | None = None
+        sector_rank: int | None = None
+        sector_name: str | None = None
+        etf_sym: str | None = None
+        total_sectors = 11
+
+        try:
+            ticker_sym = symbol_key.split(":")[-1]
+            import yfinance as yf
+            full_info = yf.Ticker(ticker_sym).info
+            sector_name = full_info.get("sector")
+            etf_sym = self._SECTOR_TO_ETF.get(sector_name or "")
+        except Exception:
+            pass
+
+        if etf_sym:
+            try:
+                rows = self.db.execute_query(
+                    """
+                    SELECT relative_strength, rank
+                    FROM sector_rotation
+                    WHERE symbol = %s
+                    ORDER BY trading_date DESC
+                    LIMIT 1
+                    """,
+                    (etf_sym,),
+                ) or []
+                if rows:
+                    sector_rs = float(rows[0][0]) if rows[0][0] is not None else None
+                    sector_rank = int(rows[0][1]) if rows[0][1] is not None else None
+            except Exception:
+                pass
+
+        # Competitive metrics from fundamentals
+        net_margin: float | None = None
+        roe: float | None = None
+        rev_yoy: float | None = None
+        try:
+            ticker = symbol_key.split(":")[-1]
+            rat = self.db.execute_query(
+                "SELECT net_margin_pct, roe_pct FROM fundamentals_ratios_latest WHERE UPPER(symbol) = UPPER(%s)",
+                (ticker,),
+            ) or []
+            if rat:
+                net_margin = float(rat[0][0]) if rat[0][0] is not None else None
+                roe = float(rat[0][1]) if rat[0][1] is not None else None
+            comp = self.db.execute_query(
+                "SELECT revenue_yoy_pct FROM fundamentals_comparison_latest WHERE UPPER(symbol) = UPPER(%s)",
+                (ticker,),
+            ) or []
+            if comp:
+                rev_yoy = float(comp[0][0]) if comp[0][0] is not None else None
+        except Exception:
+            pass
+
+        # Substitution Difficulty: net_margin proxy (高マージン = 価格支配力 = 代替困難)
+        if net_margin is not None:
+            if net_margin >= 25:
+                subst_score = f"高 (net margin {net_margin:.1f}%)"
+            elif net_margin >= 10:
+                subst_score = f"中 (net margin {net_margin:.1f}%)"
+            else:
+                subst_score = f"低 (net margin {net_margin:.1f}%)"
+        else:
+            subst_score = None
+
+        # Ecosystem Dependency: ROE + net_margin proxy (高収益構造 = エコシステム依存)
+        if roe is not None and net_margin is not None:
+            if roe >= 20 and net_margin >= 15:
+                eco_score = f"高 (ROE {roe:.1f}%, margin {net_margin:.1f}%)"
+            elif roe >= 10 or net_margin >= 8:
+                eco_score = f"中 (ROE {roe:.1f}%, margin {net_margin:.1f}%)"
+            else:
+                eco_score = f"低 (ROE {roe:.1f}%, margin {net_margin:.1f}%)"
+        else:
+            eco_score = None
+
+        # Share Gain Score: revenue_yoy proxy (売上成長 = シェア拡大)
+        if rev_yoy is not None:
+            if rev_yoy >= 20:
+                share_score = f"高 (revenue YoY {rev_yoy:+.1f}%)"
+            elif rev_yoy >= 5:
+                share_score = f"中 (revenue YoY {rev_yoy:+.1f}%)"
+            elif rev_yoy >= 0:
+                share_score = f"横ばい (revenue YoY {rev_yoy:+.1f}%)"
+            else:
+                share_score = f"低 (revenue YoY {rev_yoy:+.1f}%)"
+        else:
+            share_score = None
+
+        return {
+            "sector_name": sector_name,
+            "sector_etf": etf_sym,
+            "sector_relative_strength": round(sector_rs, 2) if sector_rs is not None else None,
+            "sector_rank": sector_rank,
+            "sector_rank_of": total_sectors,
+            "sector_leader_rank": sector_rank,
+            "substitution_difficulty_score": subst_score,
+            "ecosystem_dependency_score": eco_score,
+            "market_share_gain_score": share_score,
+            "note": (
+                f"{sector_name}（{etf_sym}）のセクター相対強度"
+                if sector_name and etf_sym
+                else "セクター情報取得不可"
+            ),
+        }
+
     def _market_gate_label(self, gate: str) -> str:
         g = (gate or "").upper()
         if g == "OFF":
@@ -437,7 +563,43 @@ class StockDetailService:
         rs = getattr(indicators, "rs_rating", None)
         dist52 = self._safe_float(getattr(indicators, "dist_52w_high_pct", None))
         rsi = self._safe_float(getattr(indicators, "rsi", None))
-        vol_ratio = self._safe_float(getattr(indicators, "volume_ratio", None))
+
+        # S/I: computed from price_daily — indicator_daily volume_ratio is always None
+        vol_ratio_computed: float | None = None
+        accum_days: int = 0
+        dist_days: int = 0
+        try:
+            pd_rows = self.db.execute_query(
+                """
+                SELECT close, open, volume
+                FROM price_daily
+                WHERE symbol_key = %s AND volume IS NOT NULL AND volume > 0
+                ORDER BY trading_date DESC
+                LIMIT 60
+                """,
+                (symbol_key,),
+            ) or []
+            volumes = [float(r[2]) for r in pd_rows if r[2]]
+            if len(volumes) >= 20:
+                avg_10d = sum(volumes[:10]) / 10
+                avg_50d = sum(volumes[:50]) / min(len(volumes), 50)
+                if avg_50d > 0:
+                    vol_ratio_computed = round(avg_10d / avg_50d, 2)
+                # Accumulation/Distribution: last 25 days vs 50d avg volume threshold
+                threshold_vol = avg_50d
+                for close_p, open_p, vol in pd_rows[:25]:
+                    if close_p is None or open_p is None or vol is None:
+                        continue
+                    high_vol = float(vol) >= threshold_vol
+                    if high_vol:
+                        if float(close_p) > float(open_p):
+                            accum_days += 1  # 上昇+高出来高 = 集積
+                        elif float(close_p) < float(open_p):
+                            dist_days += 1   # 下落+高出来高 = 分散
+        except Exception:
+            vol_ratio_computed = None
+            accum_days = 0
+            dist_days = 0
 
         market_gate = (market_summary.get("market_gate") or "ON").upper()
         market_gate_label = self._market_gate_label(market_gate)
@@ -450,7 +612,7 @@ class StockDetailService:
             reasons.append("下落トレンド（SMA200下）")
         if pivot and cp and cp < pivot:
             reasons.append("ブレイクポイント未到達")
-        if vol_ratio is not None and vol_ratio < 1.5:
+        if vol_ratio_computed is not None and vol_ratio_computed < 1.5:
             reasons.append("ブレイク出来高不足")
         if rs is not None and int(rs) < 70:
             reasons.append("主導株性不足（RS弱め）")
@@ -466,7 +628,7 @@ class StockDetailService:
         hard_exclusion = False
         if cp is not None and sma200 is not None and cp < sma200:
             hard_exclusion = True
-        if vol_ratio is not None and vol_ratio < 1.5:
+        if vol_ratio_computed is not None and vol_ratio_computed < 1.5:
             hard_exclusion = True
 
         ai_pct = (p_up5 * 100.0) if p_up5 is not None else None
@@ -493,13 +655,46 @@ class StockDetailService:
             final_status = "見送り"
             action = "見送り"
 
-        # CAN-SLIM proxy details (non-breaking, uses available DB snapshot + placeholders)
-        c_ok = None
-        a_ok = None
+        # CAN-SLIM proxy details
+        # Fetch fundamentals for C/A criteria
+        fund_data: dict = {}
+        try:
+            if ":" in symbol_key:
+                _, ticker = symbol_key.split(":", 1)
+            else:
+                ticker = symbol_key
+            rows = self.db.execute_query(
+                """
+                SELECT symbol, eps_yoy_pct, revenue_yoy_pct
+                FROM fundamentals_comparison_latest
+                WHERE UPPER(symbol) = UPPER(%s)
+                """,
+                (ticker,),
+            ) or []
+            if rows:
+                fund_data = {
+                    "eps_yoy_pct": float(rows[0][1]) if rows[0][1] is not None else None,
+                    "revenue_yoy_pct": float(rows[0][2]) if rows[0][2] is not None else None,
+                }
+        except Exception:
+            fund_data = {}
+
+        eps_yoy = fund_data.get("eps_yoy_pct")
+        rev_yoy = fund_data.get("revenue_yoy_pct")
+
+        c_ok = (eps_yoy >= 25.0) if eps_yoy is not None else None
+        a_ok = (rev_yoy >= 20.0) if rev_yoy is not None else None
         n_ok = bool(pivot and cp and cp >= (pivot * 0.98))
-        s_ok = None if vol_ratio is None else (vol_ratio >= 1.5)
+        s_ok = (vol_ratio_computed >= 1.5) if vol_ratio_computed is not None else None
         l_ok = None if rs is None else (int(rs) >= 80)
-        i_ok = None
+        # I: Accumulation/Distribution proxy
+        # - accum_days > dist_days (買いが売りを上回る) かつ RS >= 70 (市場で認知されている)
+        # - accum_days >= 3 (最低限のプロの買いサイン)
+        if accum_days + dist_days >= 5:
+            i_ok = (accum_days > dist_days and accum_days >= 3
+                    and (rs is None or int(rs) >= 70))
+        else:
+            i_ok = None
         m_ok = market_gate == "ON"
         canslim_flags = [c_ok, a_ok, n_ok, s_ok, l_ok, i_ok, m_ok]
         canslim_pass_count = sum(1 for v in canslim_flags if v is True)
@@ -544,12 +739,39 @@ class StockDetailService:
                 "pass_count": canslim_pass_count,
                 "total": 7,
                 "items": {
-                    "C": {"status": c_ok, "label": "四半期EPS", "note": "fundamentals未接続時は未判定"},
-                    "A": {"status": a_ok, "label": "年間収益", "note": "fundamentals未接続時は未判定"},
+                    "C": {
+                        "status": c_ok,
+                        "label": "四半期EPS",
+                        "value": {"eps_yoy_pct": eps_yoy},
+                        "note": "fundamentals未取得" if eps_yoy is None else f"EPS YoY {eps_yoy:+.1f}%",
+                    },
+                    "A": {
+                        "status": a_ok,
+                        "label": "年間収益",
+                        "value": {"revenue_yoy_pct": rev_yoy},
+                        "note": "fundamentals未取得" if rev_yoy is None else f"Revenue YoY {rev_yoy:+.1f}%",
+                    },
                     "N": {"status": n_ok, "label": "新要素/新高値", "value": {"pivot": pivot, "price": cp}},
-                    "S": {"status": s_ok, "label": "需給", "value": {"volume_ratio_breakout": vol_ratio}},
+                    "S": {
+                        "status": s_ok,
+                        "label": "需給",
+                        "value": {"vol_ratio_10d_50d": vol_ratio_computed},
+                        "note": "出来高未取得" if vol_ratio_computed is None else f"10日/50日出来高比 {vol_ratio_computed:.2f}x",
+                    },
                     "L": {"status": l_ok, "label": "主導株", "value": {"rs_rating": rs}},
-                    "I": {"status": i_ok, "label": "機関投資家", "note": "データ未取得"},
+                    "I": {
+                        "status": i_ok,
+                        "label": "機関投資家",
+                        "value": {
+                            "accum_days": accum_days,
+                            "dist_days": dist_days,
+                            "rs_rating": rs,
+                        },
+                        "note": (
+                            "データ不足" if accum_days + dist_days < 5
+                            else f"集積{accum_days}日 / 分散{dist_days}日 (25日間)"
+                        ),
+                    },
                     "M": {"status": m_ok, "label": "市場", "value": {"market_gate": market_gate}},
                 },
             },
@@ -564,20 +786,12 @@ class StockDetailService:
                     "handle_volume_dryup": None,
                     "breakout_point": pivot,
                     "distance_from_pivot_pct": (((cp - pivot) / pivot) * 100.0) if (cp and pivot) else None,
-                    "breakout_volume_ratio": vol_ratio,
-                    "rule_2_5x_violation": False,
+                    "breakout_volume_ratio": vol_ratio_computed,
+                    "rule_2_5x_violation": (((cp - pivot) / pivot * 100) > 5.0) if (cp and pivot) else None,
                 },
                 "breakout_judgment": breakout_status,
             },
-            "sector_evaluation": {
-                "sector_relative_strength": None,
-                "sector_rank": None,
-                "sector_leader_rank": None,
-                "substitution_difficulty_score": None,
-                "ecosystem_dependency_score": None,
-                "market_share_gain_score": None,
-                "note": "セクターデータ連携前のプレースホルダ",
-            },
+            "sector_evaluation": self._build_sector_evaluation(symbol_key),
             "market_environment_summary": {
                 "m_total_judgment": market_summary.get("m_judgment"),
                 "market_gate": market_summary.get("market_gate"),
@@ -601,6 +815,7 @@ class StockDetailService:
                 "display_3class": f"上昇 {probs3['up']}% / 横ばい {probs3['flat']}% / 下落 {probs3['down']}%",
                 "plus_factors": [x for x in plus_factors if x],
                 "minus_factors": [x for x in minus_factors if x],
+                "class15": ai_raw.get("class15"),  # Phase 3-1: 15営業日3クラス予測
                 "raw": ai_raw,
             },
         }
@@ -615,6 +830,39 @@ class StockDetailService:
     def get_signals(self, symbol: str) -> Dict[str, Any]:
         """(Deprecated) Return Signals for specific endpoint"""
         return {"signals": {}}
+
+    def get_news(self, symbol: str, limit: int = 20) -> dict:
+        """rag_documents から銘柄の最新ニュースを返す"""
+        import datetime
+        self.db.connect()
+        try:
+            candidates = self._candidate_symbol_keys(symbol)
+            if not candidates:
+                return {"items": [], "total": 0}
+            sym = candidates[0]
+            rows = self.db.execute_query(
+                """
+                SELECT document_id, source_type, source_ref, published_at, title
+                FROM rag_documents
+                WHERE symbol_key = ANY(%s)
+                ORDER BY published_at DESC NULLS LAST, updated_at DESC
+                LIMIT %s
+                """,
+                (candidates, int(limit)),
+            ) or []
+            items = []
+            for r in rows:
+                pub = r[3]
+                items.append({
+                    "document_id": r[0],
+                    "source_type": r[1],
+                    "source_ref": r[2],
+                    "published_at": pub.isoformat() if hasattr(pub, 'isoformat') else str(pub) if pub else None,
+                    "title": r[4],
+                })
+            return {"symbol": sym, "items": items, "total": len(items)}
+        except Exception as e:
+            return {"items": [], "total": 0, "error": str(e)}
 
     def get_ratios(self, symbol: str) -> Dict[str, Any]:
         self.db.connect()
@@ -788,10 +1036,13 @@ class StockDetailService:
             market = "JP" if raw.isdigit() and len(raw) == 4 else "US"
             ticker = raw
 
-        # Fundamentals updater primarily stores raw symbol (e.g., AMD).
+        # Fundamentals updater primarily stores raw symbol (e.g., AMD, 7203).
         candidates.append(ticker)
         candidates.append(ticker.replace("-", "."))
         candidates.append(ticker.replace(".", "-"))
+        if market == "JP":
+            # JP stocks may be stored with .T suffix (yfinance format) as fallback.
+            candidates.append(f"{ticker}.T")
         if market != "US":
             candidates.append(f"{market}:{ticker}")
 
@@ -803,6 +1054,40 @@ class StockDetailService:
                 seen.add(cc)
                 uniq.append(cc)
         return uniq
+
+    def _has_null_fundamental_fields(self, raw_results: list) -> bool:
+        """Check if any of the first 4 rows have NULL in key fundamental fields."""
+        # Columns: 0=symbol, 1=period_end_date, 2=eps, 3=revenue, 4=net_income,
+        #          5=ocf, 6=investing_cf, 7=financing_cf, 8=fcf, 9=capex, 10=updated_at
+        null_cols = [2, 3, 4, 5, 8, 9]
+        for row in raw_results[:4]:
+            if any(row[i] is None for i in null_cols):
+                return True
+        return False
+
+    def _rag_fill_null_fundamentals(self, symbol: str, candidates: List[str]) -> None:
+        """Try to fill NULL fundamental fields from RAG documents."""
+        try:
+            from app.services.rag_retrieval_service import RagRetrievalService
+            from app.services.rag_fundamentals_fill_service import RagFundamentalsFillService
+
+            # Build symbol_key (prefer "US:AAPL" style)
+            raw = (symbol or "").strip().upper()
+            if ":" in raw:
+                symbol_key = raw
+            else:
+                market = "JP" if raw.isdigit() and len(raw) == 4 else "US"
+                symbol_key = f"{market}:{raw}"
+
+            today = date.today()
+            docs = RagRetrievalService().get_documents_for_asof(symbol_key, today, limit=20)
+            if not docs:
+                return
+            fill_result = RagFundamentalsFillService().fill_missing_from_documents(symbol_key, today, docs)
+            if fill_result.get("updated_fields"):
+                print(f"[StockDetailService] RAG filled {fill_result['updated_fields']} for {symbol_key}")
+        except Exception as e:
+            print(f"[StockDetailService] rag_fill error for {symbol}: {e}")
 
     def get_fundamentals(self, symbol: str, limit: Optional[int] = None) -> Dict[str, Any]:
         self.db.connect()
@@ -850,6 +1135,11 @@ class StockDetailService:
                     fetched = self._auto_fetch_fundamentals(raw_ticker)
                     if fetched:
                         results = self.db.execute_query(query, params) or []
+
+            # RAG fill: if rows exist but have NULL fields, try to fill from news documents
+            if results and self._has_null_fundamental_fields(results):
+                self._rag_fill_null_fundamentals(symbol, candidates)
+                results = self.db.execute_query(query, params) or []
 
             rows: List[Dict[str, Any]] = []
             for row in results:

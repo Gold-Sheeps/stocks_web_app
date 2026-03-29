@@ -145,7 +145,14 @@ class FreshnessService:
         tz_name: str = "America/New_York",
         close_cutoff_hour_local: int = 18,
         note: str | None = None,
+        market_prefix: str | None = None,
     ) -> DataFreshness:
+        """Check data freshness for active instruments.
+
+        Args:
+            market_prefix: When set (e.g. "JP"), only check symbols whose
+                symbol_key starts with that prefix (e.g. "JP:").
+        """
         if not self.db.connect():
             market_now, expected_date = self._expected_trading_date(tz_name, close_cutoff_hour_local)
             return DataFreshness(
@@ -164,18 +171,34 @@ class FreshnessService:
             )
 
         try:
-            q = """
-                WITH latest AS (
-                    SELECT p.symbol_key, MAX(p.trading_date) AS latest_date
-                    FROM price_daily p
-                    INNER JOIN instruments i ON i.symbol_key = p.symbol_key
-                    WHERE i.is_active = true
-                    GROUP BY p.symbol_key
-                )
-                SELECT symbol_key, latest_date
-                FROM latest
-            """
-            rows = self.db.execute_query(q) or []
+            if market_prefix:
+                prefix_filter = f"{market_prefix.strip().upper()}:%"
+                q = """
+                    WITH latest AS (
+                        SELECT p.symbol_key, MAX(p.trading_date) AS latest_date
+                        FROM price_daily p
+                        INNER JOIN instruments i ON i.symbol_key = p.symbol_key
+                        WHERE i.is_active = true
+                          AND p.symbol_key LIKE %s
+                        GROUP BY p.symbol_key
+                    )
+                    SELECT symbol_key, latest_date
+                    FROM latest
+                """
+                rows = self.db.execute_query(q, (prefix_filter,)) or []
+            else:
+                q = """
+                    WITH latest AS (
+                        SELECT p.symbol_key, MAX(p.trading_date) AS latest_date
+                        FROM price_daily p
+                        INNER JOIN instruments i ON i.symbol_key = p.symbol_key
+                        WHERE i.is_active = true
+                        GROUP BY p.symbol_key
+                    )
+                    SELECT symbol_key, latest_date
+                    FROM latest
+                """
+                rows = self.db.execute_query(q) or []
             latest_rows = [(str(r[0]), r[1]) for r in rows]
             return self._build_from_latest_rows(
                 scope=scope,

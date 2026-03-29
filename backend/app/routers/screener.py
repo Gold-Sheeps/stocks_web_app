@@ -18,7 +18,8 @@ async def scan_stocks(
     max_price: Optional[float] = Query(default=None, description="Maximum close price"),
     volume_min: Optional[int] = Query(default=None, description="Minimum volume"),
     rsi_filter: Optional[str] = Query(default=None, description="RSI filter: oversold, neutral, overbought"),
-    symbol: Optional[str] = Query(default=None, description="Symbol search query")
+    symbol: Optional[str] = Query(default=None, description="Symbol search query"),
+    market: Optional[str] = Query(default="US", description="Market filter: US, JP, all"),
 ):
     """
     銘柄スクリーニング
@@ -28,5 +29,5 @@ async def scan_stocks(
         mode=mode, ai_mode=ai_mode, sector=sector, limit=limit, offset=offset,
         min_rs=min_rs, min_total_score=min_total_score,
         min_price=min_price, max_price=max_price,
-        volume_min=volume_min, rsi_filter=rsi_filter, symbol=symbol
+        volume_min=volume_min, rsi_filter=rsi_filter, symbol=symbol, market=market
     )

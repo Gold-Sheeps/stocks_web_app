@@ -1,0 +1,48 @@
+{
+  "run_at": "2026-02-27T20:14:39",
+  "period": {
+    "start": "2021-02-27",
+    "end": "2026-02-27",
+    "years": 5
+  },
+  "symbols_count": 100,
+  "refresh": {
+    "batches_total": 2,
+    "batches_success": 0,
+    "batches_failed": 2,
+    "batches_retried": 2,
+    "batch_attempts_total": 4
+  },
+  "indicators": {
+    "processed": 100,
+    "failed": 0
+  },
+  "rs_update": "skipped",
+  "sector_rotation": "skipped",
+  "full_refresh_pipeline": {
+    "status": "skipped",
+    "returncode": 0,
+    "message": "skipped"
+  },
+  "args": {
+    "years": 5,
+    "end": null,
+    "symbols": null,
+    "symbols_file": "backend/config/universe_jp_sample100.txt",
+    "default_market": "JP",
+    "include_inactive": false,
+    "include_existing_price_keys": true,
+    "source": "yfinance",
+    "chunk_size": 50,
+    "max_retries": 2,
+    "batch_retries": 1,
+    "skip_indicators": false,
+    "skip_rs": true,
+    "skip_sector_rotation": true,
+    "run_full_refresh": false,
+    "full_refresh_backfill_days": 14,
+    "full_refresh_delay": 0.5,
+    "skip_fundamentals": false,
+    "skip_canslim": false
+  }
+}

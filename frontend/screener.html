@@ -497,11 +497,47 @@
  }
  }
 
+ /* Market Toggle Buttons */
+ .market-btn {
+ padding: 8px 18px;
+ border-radius: 8px;
+ font-weight: 700;
+ font-size: 0.9rem;
+ background: rgba(255, 255, 255, 0.05);
+ border: 1px solid rgba(255, 255, 255, 0.12);
+ color: var(--text-muted);
+ transition: all 0.2s ease;
+ cursor: pointer;
+ }
+
+ .market-btn:hover {
+ border-color: rgba(255, 255, 255, 0.25);
+ color: var(--text-primary);
+ background: rgba(255, 255, 255, 0.08);
+ transform: translateY(-1px);
+ }
+
+ .market-btn.active {
+ background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(99, 102, 241, 0.15));
+ border-color: var(--primary);
+ color: #fff;
+ box-shadow: 0 0 16px rgba(99, 102, 241, 0.35);
+ }
+
+ .market-btn.active[data-market="JP"] {
+ background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(239, 68, 68, 0.15));
+ border-color: #ef4444;
+ box-shadow: 0 0 16px rgba(239, 68, 68, 0.3);
+ }
+
  /* Responsive */
  @media (max-width: 768px) {
  .page-header {
  flex-direction: column;
  align-items: stretch;
+ }
+ #marketToggle {
+ justify-content: center;
  }
 
  .search-container {
@@ -581,6 +617,34 @@
  .btn-primary:hover:not(:disabled) {
  background: linear-gradient(135deg, rgba(99, 102, 241, 1) 0%, var(--primary) 100%);
  }
+
+ /* Column Sort */
+ .table-finance thead th[data-sort] {
+  cursor: pointer;
+  user-select: none;
+ }
+ .table-finance thead th[data-sort]:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.07);
+ }
+ .sort-icon {
+  display: inline-block;
+  margin-left: 4px;
+  opacity: 0.35;
+  font-size: 0.65rem;
+  vertical-align: middle;
+ }
+ .sort-icon.active {
+  opacity: 1;
+  color: var(--primary);
+ }
+
+ /* Preset toast */
+ .preset-dot {
+  display:inline-block; width:8px; height:8px;
+  border-radius:50%; background:var(--success);
+  margin-left:4px; vertical-align:middle;
+ }
  </style>
 </head>
 
@@ -594,12 +658,20 @@
  <!-- Page Header -->
  <div class="page-header">
  <div class="page-title">
- <span>Screener</span> Stock Screener
+ <span id="pageMarketLabel">Stock Screener</span>
  <button id="btnDiag" class="btn btn-ghost btn-sm"
  style="margin-left: 8px; font-size: 0.7rem; opacity: 0.7;">Diagnostics</button>
  <a href="market_dashboard.html" class="btn btn-ghost btn-sm"
- style="margin-left: 8px; font-size: 0.75rem; text-decoration:none;">Market Dashboard</a>
+ style="margin-left: 8px; font-size: 0.75rem; text-decoration:none;">Market</a>
  </div>
+
+ <!-- Market Toggle Buttons -->
+ <div id="marketToggle" style="display:flex; gap:4px; align-items:center;">
+ <button class="btn market-btn" data-market="US" id="mBtnUS">🇺🇸 US</button>
+ <button class="btn market-btn" data-market="JP" id="mBtnJP">🇯🇵 JP</button>
+ <button class="btn market-btn" data-market="all" id="mBtnAll">🌐 All</button>
+ </div>
+
  <div class="search-container">
  <div class="search-input-wrapper">
  <input type="text" id="searchInput" placeholder="Search by symbol (e.g. AAPL, 7203)"
@@ -626,6 +698,8 @@
  </button>
  <button id="btnReset" class="btn btn-ghost btn-sm" type="button">Reset</button>
  <button id="btnExport" class="btn btn-ghost btn-sm" type="button">Export CSV</button>
+ <button id="btnSavePreset" class="btn btn-ghost btn-sm" type="button" title="現在のフィルターを保存">Save</button>
+ <button id="btnLoadPreset" class="btn btn-ghost btn-sm" type="button" title="保存済みフィルターを呼出し">Load</button>
  </div>
  </div>
 
@@ -665,6 +739,15 @@
  </div>
 
  <div class="input-group">
+ <label>Display Currency</label>
+ <select id="currencyMode">
+ <option value="local" selected>Local (US:$ / JP:¥)</option>
+ <option value="usd">USD</option>
+ <option value="jpy">JPY</option>
+ </select>
+ </div>
+
+ <div class="input-group">
  <label>AI Prediction Mode</label>
  <select id="aiMode">
  <option value="balanced">Balanced (Precision ~54% / more trades)</option>
@@ -701,23 +784,28 @@
  <thead>
  <tr>
  <th style="width:60px;">Rank</th>
- <th>Symbol</th>
- <th>Company Name</th>
- <th class="text-right">RS Score</th>
- <th class="text-right">Total Score</th>
- <th class="text-right">Price</th>
- <th class="text-right">Pivot</th>
- <th class="text-right">Change</th>
- <th class="text-right">52W Dist</th>
+ <th data-sort="symbol">Symbol</th>
+ <th data-sort="name">Company Name</th>
+ <th class="text-right" data-sort="rs_rating">RS Score</th>
+ <th class="text-right" data-sort="total_score">Total Score</th>
+ <th class="text-right" data-sort="price">Price</th>
+ <th class="text-right" data-sort="pivot">Pivot</th>
+ <th class="text-right" data-sort="change_pct">Change</th>
+ <th class="text-right" data-sort="dist_52w_high_pct">52W Dist</th>
  <th>M判定</th>
  <th>DD</th>
  <th>VIX</th>
  <th>ブレイク</th>
- <th class="text-right">CAN-SLIM</th>
+ <th class="text-right" data-sort="canslim_pass_count">CAN-SLIM</th>
+ <th class="text-right" data-sort="institutional_score" title="機関投資家フットプリントスコア: breakout/accumulation/OBV等を合成 (0-100)">I Score</th>
  <th>総合</th>
- <th class="text-right">AI +5%(2W)</th>
+ <th class="text-right" data-sort="final_rank_score">Final Rank</th>
+ <th>AI判定</th>
+ <th class="text-right" data-sort="ai_p_up5_2w">AI +5%(5日)</th>
  <th>AI 3分類</th>
+ <th>15日AI</th>
  <th>Signals</th>
+ <th></th>
  </tr>
  </thead>
  <tbody id="resultsBody"></tbody>
@@ -763,7 +851,7 @@
  <!-- Scripts: Root Relative + Cache Busters + Defer -->
  <script defer src="/js/config.js?v=20260211"></script>
  <script defer src="/js/common.js?v=20260211"></script>
- <script defer src="/js/screener.js?v=20260219_search1"></script>
+ <script defer src="/js/screener.js?v=20260227_jp_preset2"></script>
 </body>
 
 </html>
