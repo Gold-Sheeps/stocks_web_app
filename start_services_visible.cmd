@@ -16,15 +16,18 @@ for %%P in (3000 8000 8010) do (
 
 echo.
 echo Starting FRONTEND-3000 (window will stay open)...
-start "FRONTEND-3000" cmd /k "cd /d %FRONTEND% && echo [FRONTEND] python -m http.server 3000 && %PY_SYS% -m http.server 3000 && echo. && echo [FRONTEND] EXITED with errorlevel !errorlevel! && pause"
+start "FRONTEND-3000" cmd /k "cd /d %FRONTEND% && echo [FRONTEND] python -m http.server 3000 && %PY_SYS% -m http.server 3000 && echo. && echo [FRONTEND] EXITED && pause"
 
 echo Starting BACKEND-8000 (window will stay open)...
-start "BACKEND-8000" cmd /k "cd /d %BACKEND% && echo [BACKEND] uvicorn :8000 && %PY_VENV% -m uvicorn app.main:app --host 0.0.0.0 --port 8000 && echo. && echo [BACKEND] EXITED with errorlevel !errorlevel! && pause"
+start "BACKEND-8000" cmd /k "cd /d %BACKEND% && echo [BACKEND] uvicorn :8000 && %PY_VENV% -m uvicorn app.main:app --host 0.0.0.0 --port 8000 && echo. && echo [BACKEND] EXITED && pause"
 
 echo Starting API-8010 (window will stay open)...
-start "API-8010" cmd /k "cd /d %BACKEND% && echo [API] uvicorn :8010 && %PY_VENV% -m uvicorn app.main:app --host 0.0.0.0 --port 8010 && echo. && echo [API] EXITED with errorlevel !errorlevel! && pause"
+start "API-8010" cmd /k "cd /d %BACKEND% && echo [API] uvicorn :8010 && %PY_VENV% -m uvicorn app.main:app --host 0.0.0.0 --port 8010 && echo. && echo [API] EXITED && pause"
 
-timeout /t 3 >nul
+echo.
+echo Waiting 5 seconds for ports to open...
+timeout /t 5 >nul
+
 echo.
 echo ===== PORT CHECK =====
 netstat -ano | findstr :3000
@@ -32,5 +35,6 @@ netstat -ano | findstr :8000
 netstat -ano | findstr :8010
 echo.
 echo Open: http://127.0.0.1:3000/screener.html
+start "" "http://127.0.0.1:3000/screener.html"
 
 endlocal
